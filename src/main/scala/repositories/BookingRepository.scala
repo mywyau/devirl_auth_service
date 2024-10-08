@@ -5,20 +5,22 @@ import doobie._
 import doobie.implicits._
 import doobie.util.meta.Meta
 import models._
-import java.time.LocalDateTime
+
 import java.sql.Timestamp
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
-class BookingRepository[F[_]: Sync](transactor: Transactor[F]) {
+// Import JDBC metadata instances
+import doobie.implicits.javasql._
 
-  // Define Meta[Timestamp] explicitly if it's not available
-  implicit val timestampMeta: Meta[Timestamp] = Meta[Long].imap(new Timestamp(_))(_.getTime)
+class BookingRepository[F[_] : Sync](transactor: Transactor[F]) {
 
-  // Teach Doobie how to map LocalDateTime to SQL timestamps
-  implicit val localDateTimeMeta: Meta[LocalDateTime] = Meta[Timestamp].imap(
-    timestamp => timestamp.toLocalDateTime     // Convert Timestamp to LocalDateTime when reading
-  )(                                           // Convert LocalDateTime to Timestamp when writing
-    localDateTime => Timestamp.valueOf(localDateTime)
-  )
+  def getAllDesks: F[List[Desk]] = {
+    sql"SELECT * FROM desks"
+      .query[Desk]
+      .to[List]
+      .transact(transactor)
+  }
 
   def getAvailableDesks: F[List[Desk]] = {
     sql"SELECT * FROM desks WHERE status = 'available'"
@@ -34,10 +36,25 @@ class BookingRepository[F[_]: Sync](transactor: Transactor[F]) {
       .transact(transactor)
   }
 
+  //  val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+
+  // Meta instance to map between LocalDateTime and Timestamp
+  implicit val localDateTimeMeta: Meta[LocalDateTime] =
+    Meta[Timestamp].imap(_.toLocalDateTime)(Timestamp.valueOf)
+
   def bookDesk(booking: Booking): F[Int] = {
+    val deskId: Option[String] = booking.deskId
+    val roomId: Option[String] = booking.roomId
+
+    // Correct logging to show the actual values (without "Some" in the log)
+    println(s"VALUES (${booking.id}, ${booking.userId}, ${deskId.getOrElse("NULL")}, ${roomId.getOrElse("NULL")}, ${booking.startTime}, ${booking.endTime})")
+
+    // Pass deskId and roomId as Option values, so Doobie will handle them
     sql"""
-      INSERT INTO bookings (id, user_id, desk_id, start_time, end_time)
-      VALUES (${booking.id}, ${booking.userId}, ${booking.deskId}, ${booking.startTime}, ${booking.endTime})
-    """.update.run.transact(transactor)
+    INSERT INTO bookings (id, user_id, desk_id, room_id, start_time, end_time)
+    VALUES (${booking.id}, ${booking.userId}, $deskId, $roomId, ${booking.startTime}, ${booking.endTime})
+  """.update.run.transact(transactor)
   }
+
+
 }

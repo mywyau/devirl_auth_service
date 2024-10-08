@@ -18,9 +18,9 @@ object Main extends IOApp {
       ce <- ExecutionContexts.fixedThreadPool(32) // Specify thread pool size (32 threads in this case)
       xa <- HikariTransactor.newHikariTransactor[F](
         driverClassName = "org.postgresql.Driver",
-        url = "jdbc:postgresql://localhost:5432/your_database",
-        user = "your_username",
-        pass = "your_password",
+        url = "jdbc:postgresql://localhost:5450/bookingdb",
+        user = "cashew_user",
+        pass = "cashew",
         connectEC = ce // Connect execution context
       )
     } yield xa
