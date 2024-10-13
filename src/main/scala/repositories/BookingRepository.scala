@@ -8,7 +8,6 @@ import models._
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 // Import JDBC metadata instances
 import doobie.implicits.javasql._
@@ -35,8 +34,6 @@ class BookingRepository[F[_] : Sync](transactor: Transactor[F]) {
       .option
       .transact(transactor)
   }
-
-  //  val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
   // Meta instance to map between LocalDateTime and Timestamp
   implicit val localDateTimeMeta: Meta[LocalDateTime] =
