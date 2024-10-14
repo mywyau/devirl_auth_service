@@ -10,8 +10,6 @@ import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.dsl.io._
 import services.BookingService
 
-import java.time.LocalDateTime
-
 object DeskController {
   def deskRoutes(bookingService: BookingService[IO]): HttpRoutes[IO] =
     HttpRoutes.of[IO] {
