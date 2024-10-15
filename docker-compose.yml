@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Service
+  postgres:
+    image: postgres:latest
+    container_name: postgres-container
+    environment:
+      POSTGRES_DB: cashew_db                          # The default database to create
+      POSTGRES_USER: cashew_user                      # The default user to create
+      POSTGRES_PASSWORD: cashew_password              # The user's password
+    ports:
+      - "5450:5432"                                   # Map port 5450 on the host to 5432 inside the container
+    volumes:
+      - postgres_data:/var/lib/postgresql/data        # Persistent storage for the database
+#      - ./db-init:/docker-entrypoint-initdb.d         # Initialize the DB schema from the db-init folder
+    networks:
+      - db-network
+
+  # Flyway Service for Database Migrations
+  flyway:
+    image: flyway/flyway:latest
+    container_name: flyway-migration
+    depends_on:
+      - postgres
+    command: -url=jdbc:postgresql://postgres:5432/cashew_db -user=cashew_user -password=cashew_password migrate
+    volumes:
+      - ./migrations:/flyway/sql                     # Migrations folder where Flyway will look for scripts
+    networks:
+      - db-network
+
+# Define a volume for persistent PostgreSQL data storage
+volumes:
+  postgres_data:
+
+# Define a custom network for your services
+networks:
+  db-network:
