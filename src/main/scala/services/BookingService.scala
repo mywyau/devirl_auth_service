@@ -2,7 +2,7 @@ package services
 
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.{EitherT, ValidatedNel}
-import cats.effect.{Concurrent, Sync}
+import cats.effect.Concurrent
 import cats.implicits._
 import models.Booking
 import repositories.BookingRepository
@@ -41,8 +41,10 @@ class BookingServiceImpl[F[_] : Concurrent](repository: BookingRepository[F]) ex
 
   // Validation function for time range (make sure start_time is before end_time)
   def validateTimeRange(startTime: LocalDateTime, endTime: LocalDateTime): ValidatedNel[ValidationError, (LocalDateTime, LocalDateTime)] = {
-    if (startTime.isBefore(endTime)) (startTime, endTime).validNel
-    else InvalidTimeRange.invalidNel
+    if (startTime.isBefore(endTime))
+      (startTime, endTime).validNel
+    else
+      InvalidTimeRange.invalidNel
   }
 
   // Validate if a booking exists by its ID
@@ -56,10 +58,13 @@ class BookingServiceImpl[F[_] : Concurrent](repository: BookingRepository[F]) ex
 
     validation match {
       case Valid(_) => repository.findBookingById(bookingId).map {
-        case Some(booking) => Right(booking)
-        case None => Left(BookingNotFound)
+        case Some(booking) =>
+          Right(booking)
+        case None =>
+          Left(BookingNotFound)
       }
-      case Invalid(errors) => Concurrent[F].pure(Left(errors.head)) // Return the first validation error
+      case Invalid(errors) =>
+        Concurrent[F].pure(Left(errors.head)) // Return the first validation error
     }
   }
 

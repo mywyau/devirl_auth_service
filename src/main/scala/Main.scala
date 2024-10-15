@@ -30,7 +30,7 @@ object Main extends IOApp {
         driverClassName = "org.postgresql.Driver",
         url = "jdbc:postgresql://localhost:5450/cashew_db", // Moved to config/env variables later
         user = sys.env.getOrElse("DB_USER", "cashew_user"), // Default to "postgres"
-        pass = sys.env.getOrElse("DB_PASS", "cashew"), // Default password
+        pass = sys.env.getOrElse("DB_PASS", "cashew_password"), // Default password
         connectEC = ce // Connect execution context (for managing connection pool)
       )
     } yield xa

@@ -12,6 +12,6 @@ CREATE TABLE reviews (
 );
 
 -- Indexes for faster queries
-CREATE INDEX idx_user_id ON reviews (user_id);
-CREATE INDEX idx_workspace_id ON reviews (workspace_id);
-CREATE INDEX idx_rating ON reviews (rating);
+CREATE INDEX idx_user_id_reviews ON reviews (user_id);
+CREATE INDEX idx_workspace_id_reviews ON reviews (workspace_id);
+CREATE INDEX idx_rating_reviews ON reviews (rating);

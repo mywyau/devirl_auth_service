@@ -1,16 +1,15 @@
 package controllers
 
-import cats.effect.{Concurrent, Sync}
-import org.http4s._
-import org.http4s.dsl.Http4sDsl
-import org.http4s.circe._
-import io.circe.generic.auto._
+import cats.effect.Concurrent
+import cats.implicits._
 import io.circe.syntax._
 import models.Booking
+import org.http4s._
+import org.http4s.circe._
+import org.http4s.dsl.Http4sDsl
 import services._
-import cats.implicits._
 
-class BookingController[F[_]: Concurrent](bookingService: BookingService[F]) extends Http4sDsl[F] {
+class BookingController[F[_] : Concurrent](bookingService: BookingService[F]) extends Http4sDsl[F] {
 
   // Create or get JSON decoder/encoder for Booking object (if needed)
   implicit val bookingDecoder: EntityDecoder[F, Booking] = jsonOf[F, Booking]
@@ -27,7 +26,7 @@ class BookingController[F[_]: Concurrent](bookingService: BookingService[F]) ext
       }
 
     // Create a new booking
-    case req @ POST -> Root / "bookings" =>
+    case req@POST -> Root / "bookings" =>
       req.decode[Booking] { booking =>
         bookingService.createBooking(booking).flatMap {
           case Right(_) => Created("Booking created successfully")
@@ -38,7 +37,7 @@ class BookingController[F[_]: Concurrent](bookingService: BookingService[F]) ext
       }
 
     // Update an existing booking by ID
-    case req @ PUT -> Root / "bookings" / bookingId =>
+    case req@PUT -> Root / "bookings" / bookingId =>
       req.decode[Booking] { updatedBooking =>
         bookingService.updateBooking(bookingId, updatedBooking).flatMap {
           case Right(_) => Ok("Booking updated successfully")

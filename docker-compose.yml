@@ -13,7 +13,6 @@ services:
       - "5450:5432"                                   # Map port 5450 on the host to 5432 inside the container
     volumes:
       - postgres_data:/var/lib/postgresql/data        # Persistent storage for the database
-#      - ./db-init:/docker-entrypoint-initdb.d         # Initialize the DB schema from the db-init folder
     networks:
       - db-network
 
