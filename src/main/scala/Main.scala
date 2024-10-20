@@ -10,10 +10,13 @@ import org.http4s.HttpRoutes
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits._
 import org.http4s.server.Router
+import org.http4s.server.middleware.Throttle
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import repositories._
-import services._ // Brings in orNotFound for HttpRoutes
+import services._
+
+import scala.concurrent.duration._
 
 object Main extends IOApp {
 
@@ -23,9 +26,7 @@ object Main extends IOApp {
   // Resource-safe way to initialize the transactor
   def transactorResource[F[_] : Async]: Resource[F, HikariTransactor[F]] =
     for {
-      // Create a fixed size connection pool (32 threads in this case)
       ce <- ExecutionContexts.fixedThreadPool(32)
-      // Initialize HikariTransactor for the PostgreSQL database
       xa <- HikariTransactor.newHikariTransactor[F](
         driverClassName = "org.postgresql.Driver",
         url = "jdbc:postgresql://localhost:5450/cashew_db", // Moved to config/env variables later
@@ -35,22 +36,39 @@ object Main extends IOApp {
       )
     } yield xa
 
-  // Method to create routes by injecting services and repositories
-  def createRouter[F[_] : Concurrent](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+  // Throttle middleware to apply rate limiting
+  def throttleMiddleware[F[_] : Temporal](routes: HttpRoutes[F]): F[HttpRoutes[F]] = {
+    Throttle.httpRoutes(
+      amount = 500, // Maximum number of requests
+      per = 1.minute // Time period for requests allowed, refreshes tokens in the bucket to allow for 500 requests per minute
+    )(routes) // Apply throttling to the routes, returns F[HttpRoutes[F]]
+  }
 
-    // Repositories
-    val bookingRepository = new BookingRepository[F](transactor) // Create repository instance
+  def createBusinessRoutes[F[_] : Concurrent : Temporal](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+    // Repositories, services, and controllers setup as before
+    val businessRepository = new BusinessRepository[F](transactor)
+    val businessService = new BusinessServiceImpl[F](businessRepository)
+    val businessController = new BusinessControllerImpl[F](businessService)
 
-    // Services
-    val bookingService = new BookingServiceImpl[F](bookingRepository) // Create service instance
+    businessController.routes
+  }
 
-    // Controllers
-    val bookingController = new BookingController[F](bookingService) // Create controller instance
 
-    // Combine the routes (more controllers can be added here)
-    Router(
-      "/api" -> bookingController.routes // Prefix all booking routes with /api
-    )
+  def createRouterResource[F[_] : Concurrent : Temporal](transactor: HikariTransactor[F]): Resource[F, HttpRoutes[F]] = {
+    Resource.eval {
+      // Repositories, services, and controllers setup as before
+      val bookingRepository = new BookingRepository[F](transactor)
+      val bookingService = new BookingServiceImpl[F](bookingRepository)
+      val bookingController = new BookingControllerImpl[F](bookingService)
+
+      // Apply throttle middleware
+      throttleMiddleware(
+        Router(
+          "/cashew" -> bookingController.routes,
+          "/cashew" -> createBusinessRoutes(transactor),
+        )
+      )
+    }
   }
 
   // Method to create the Ember server resource
@@ -65,10 +83,10 @@ object Main extends IOApp {
 
   // Main program entry point
   override def run(args: List[String]): IO[ExitCode] = {
-
-    // Combine the transactor and server in a resource-safe way
     transactorResource[IO].flatMap { transactor =>
-      createServer(createRouter(transactor))
-    }.use(_ => IO.never).as(ExitCode.Success) // Keeps the server running
+      createRouterResource[IO](transactor).flatMap { router =>
+        createServer(router)
+      }
+    }.use(_ => IO.never).as(ExitCode.Success)
   }
 }

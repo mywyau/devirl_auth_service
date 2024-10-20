@@ -7,17 +7,27 @@ import doobie.implicits._
 import doobie.implicits.javasql._
 import doobie.util.meta.Meta
 import models._
+import models.bookings.BookingStatus
 
 import java.sql.{Date, Timestamp}
 import java.time.{LocalDate, LocalDateTime}
 
-sealed trait ValidationError
+trait BookingRepositoryAlgebra[F[_]] {
 
-case object InvalidBookingId extends ValidationError
+  def findBookingById(bookingId: String): F[Option[Booking]]
 
-case object InvalidTimeRange extends ValidationError
+  def getAllBookings: F[List[Booking]]
 
-class BookingRepository[F[_] : Concurrent](transactor: Transactor[F]) {
+  def setBooking(booking: Booking): F[Int]
+
+  def updateBooking(bookingId: String, updatedBooking: Booking): F[Int]
+
+  def deleteBooking(bookingId: String): F[Int]
+
+  def doesOverlap(booking: Booking): F[Boolean]
+}
+
+class BookingRepository[F[_] : Concurrent](transactor: Transactor[F]) extends BookingRepositoryAlgebra[F] {
 
   // Meta instance to map between LocalDateTime and Timestamp
   implicit val localDateTimeMeta: Meta[LocalDateTime] =
@@ -98,7 +108,6 @@ class BookingRepository[F[_] : Concurrent](transactor: Transactor[F]) {
       )
   """.query[Int].unique.transact(transactor).map(_ > 0)
   }
-
 
 
   def setBookingsWithOverlapCheck(booking: Booking): F[Either[String, Int]] = {

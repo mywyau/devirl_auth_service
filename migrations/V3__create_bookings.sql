@@ -15,9 +15,23 @@ CREATE TABLE workspaces (
     price_per_day DECIMAL(10, 2) NOT NULL CHECK (price_per_day >= 0),  -- Price per day (non-negative)
     latitude DECIMAL(9, 6) NOT NULL,               -- Latitude for the workspace location
     longitude DECIMAL(9, 6) NOT NULL,              -- Longitude for the workspace location
-    image_url VARCHAR(255),                        -- URL for the workspace image
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Timestamp of workspace creation
 );
+
+CREATE TABLE workspace_images (
+    id SERIAL PRIMARY KEY,
+    workspace_id INT REFERENCES workspaces(id) ON DELETE CASCADE,
+    image_url VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE business_hours (
+    id SERIAL PRIMARY KEY,
+    workspace_id INT REFERENCES workspaces(id) ON DELETE CASCADE,
+    day_of_week VARCHAR(10) NOT NULL,  -- Example values: "Monday", "Tuesday"
+    opening_time TIME NOT NULL,
+    closing_time TIME NOT NULL
+);
+
 
 -- Create the bookings table
 CREATE TABLE bookings (

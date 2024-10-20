@@ -5,7 +5,8 @@ import cats.data.{EitherT, ValidatedNel}
 import cats.effect.Concurrent
 import cats.implicits._
 import models.Booking
-import repositories.BookingRepository
+import models.bookings.errors._
+import repositories.{BookingRepository, BookingRepositoryAlgebra}
 
 import java.time.LocalDateTime
 
@@ -21,17 +22,8 @@ trait BookingService[F[_]] {
   def deleteBooking(bookingId: String): F[Either[ValidationError, Int]]
 }
 
-sealed trait ValidationError
 
-case object InvalidBookingId extends ValidationError
-
-case object InvalidTimeRange extends ValidationError
-
-case object BookingNotFound extends ValidationError
-
-case object OverlappingBooking extends ValidationError
-
-class BookingServiceImpl[F[_] : Concurrent](repository: BookingRepository[F]) extends BookingService[F] {
+class BookingServiceImpl[F[_] : Concurrent](repository: BookingRepositoryAlgebra[F]) extends BookingService[F] {
 
   // Validation function for booking ID (example: make sure it's not empty or too short)
   def validateBookingId(bookingId: String): ValidatedNel[ValidationError, String] = {
