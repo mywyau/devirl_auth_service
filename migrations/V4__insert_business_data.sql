@@ -30,6 +30,15 @@ INSERT INTO amenities (name) VALUES
     ('Childcare Facility'),
     ('Yoga/Meditation Room');
 
+-- Insert initial workspaces
+INSERT INTO workspaces (business_id, workspace_id, name, description, address, city, country, postcode, price_per_day, latitude, longitude)
+VALUES
+('BUS123456', 'WORK123456', 'Downtown Office', 'A modern office in the city center', '123 Main St', 'New York', 'USA', '10001', 50.00, 40.7128, -74.0060),
+('BUS123457', 'WORK123457', 'Uptown Workspace', 'Spacious shared workspace with amenities', '456 Elm St', 'New York', 'USA', '10002', 30.00, 40.7306, -73.9352),
+('BUS123458', 'WORK123458', 'London Workspace', 'Spacious shared workspace with amenities', 'Canary Wharf', 'London', 'United Kingdom', 'NW1 4NP', 30.00, 40.7306, -73.9352),
+('BUS123459', 'WORK123459', 'New York Workspace', 'Spacious shared workspace with amenities', '456 Elm St', 'New York', 'USA', '10002', 30.00, 40.7306, -73.9352),
+('BUS123460', 'WORK123460', 'Cardiff Workspace', 'Spacious shared workspace with amenities', '456 Cardiff Bay', 'Cardiff', 'United Kingdom', 'CF3 3NJ', 30.00, 40.7306, -73.9352);
+
 
 -- Insert data into the workspace_facilities table
 -- Assuming workspace IDs are already created, linking facilities to these workspaces.
@@ -51,3 +60,5 @@ INSERT INTO workspace_facilities (workspace_id, facility_id) VALUES
 
     (5, 1),  -- Workspace 5 has Wi-Fi
     (5, 7);  -- Workspace 5 has Lockable Storage
+
+

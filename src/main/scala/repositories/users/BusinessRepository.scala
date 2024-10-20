@@ -14,7 +14,7 @@ trait BusinessRepositoryAlgebra[F[_]] {
 
   def findBusinessById(businessId: String): F[Option[Business]]
 
-  def findBusinessByName(businessId: String): F[Option[Business]]
+  def findBusinessByName(businessName: String): F[Option[Business]]
 
   def getAllBusiness: F[List[Business]]
 
@@ -45,7 +45,6 @@ class BusinessRepository[F[_] : Concurrent](transactor: Transactor[F]) extends B
   }
 
   def findBusinessByName(businessName: String): F[Option[Business]] = {
-
     sql"SELECT * FROM business WHERE business_name = $businessName"
       .query[Business]
       .option

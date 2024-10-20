@@ -14,6 +14,7 @@ import org.http4s.server.middleware.Throttle
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import repositories._
+import repositories.workspaces.WorkspaceRepository
 import services._
 
 import scala.concurrent.duration._
@@ -53,6 +54,14 @@ object Main extends IOApp {
     businessController.routes
   }
 
+  def createWorkspaceRoutes[F[_] : Concurrent : Temporal](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+    // Repositories, services, and controllers setup as before
+    val workspaceRepository = new WorkspaceRepository[F](transactor)
+    val workspaceService = new WorkspaceServiceImpl[F](workspaceRepository)
+    val workspaceController = new WorkspaceControllerImpl[F](workspaceService)
+
+    workspaceController.routes
+  }
 
   def createRouterResource[F[_] : Concurrent : Temporal](transactor: HikariTransactor[F]): Resource[F, HttpRoutes[F]] = {
     Resource.eval {
@@ -66,6 +75,7 @@ object Main extends IOApp {
         Router(
           "/cashew" -> bookingController.routes,
           "/cashew" -> createBusinessRoutes(transactor),
+          "/cashew" -> createWorkspaceRoutes(transactor),
         )
       )
     }

@@ -36,9 +36,6 @@ object BusinessSpec extends SimpleIOSuite {
 
     val expectedResult: Json = parse(expectedJson).getOrElse(Json.Null)
 
-    println(jsonResult)
-    println(expectedResult)
-
     IO(expect(jsonResult == expectedResult))
   }
 }

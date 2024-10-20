@@ -1,11 +1,30 @@
--- Drop the bookings and workspaces tables if they exist
-DROP TABLE IF EXISTS bookings;
+CREATE TABLE business (
+    id BIGSERIAL PRIMARY KEY,                             -- Primary key with auto-increment, better scalability with BIGSERIAL
+    business_id VARCHAR(255) NOT NULL UNIQUE,
+    business_name VARCHAR(255) NOT NULL,
+    contact_email VARCHAR(255) NOT NULL,
+    contact_phone VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE facilities (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE -- Example: "Wi-Fi", "Parking", "Projector"
+);
+
+CREATE TABLE amenities (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE -- Example: "Coffee machine", "Printing", "Kitchenette", "Lounge Area" etc.
+);
+
+
 DROP TABLE IF EXISTS workspaces;
 
 -- Create the workspaces table
 CREATE TABLE workspaces (
     id SERIAL PRIMARY KEY,                         -- Unique ID for each workspace
-    business_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,  -- Foreign key to users table (business owners)
+    business_id VARCHAR(255) NOT NULL REFERENCES business(business_id) ON DELETE CASCADE,  -- Foreign key to users table (business owners)
+    workspace_id VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,                    -- Name of the workspace
     description TEXT,                              -- Description of the workspace
     address VARCHAR(255) NOT NULL,                 -- Address of the workspace
@@ -24,6 +43,13 @@ CREATE TABLE workspace_images (
     image_url VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE workspace_facilities (
+    workspace_id INT REFERENCES workspaces(id) ON DELETE CASCADE,
+    facility_id INT REFERENCES facilities(id) ON DELETE CASCADE,
+    PRIMARY KEY (workspace_id, facility_id) -- Composite primary key
+);
+
+
 CREATE TABLE business_hours (
     id SERIAL PRIMARY KEY,
     workspace_id INT REFERENCES workspaces(id) ON DELETE CASCADE,
@@ -32,25 +58,6 @@ CREATE TABLE business_hours (
     closing_time TIME NOT NULL
 );
 
-
--- Create the bookings table
-CREATE TABLE bookings (
-    id SERIAL PRIMARY KEY,
-    booking_id VARCHAR(255) NOT NULL,
-    booking_name VARCHAR(255) NOT NULL,
-    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,  -- Foreign key to users table (user who made the booking)
-    workspace_id INT NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,  -- Foreign key to workspaces table (workspace being booked)
-    booking_date DATE NOT NULL,                    -- Date of the booking
-    start_datetime TIMESTAMP NOT NULL,  -- Start date and time (must be in future)
-    end_datetime TIMESTAMP NOT NULL CHECK (end_datetime > start_datetime),           -- End time must be after start
-    status VARCHAR(50) DEFAULT 'Pending' CHECK (status IN ('Pending', 'Confirmed', 'Cancelled')),  -- Status of the booking
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Timestamp of booking creation
-);
-
--- Indexes for faster querying
-CREATE INDEX idx_user_id_bookings ON bookings (user_id);
-CREATE INDEX idx_workspace_id_bookings ON bookings (workspace_id);
-CREATE INDEX idx_booking_date ON bookings (booking_date);
 CREATE INDEX idx_city ON workspaces (city);
 CREATE INDEX idx_price_per_day ON workspaces (price_per_day);
 CREATE INDEX idx_lat_lng ON workspaces (latitude, longitude);
