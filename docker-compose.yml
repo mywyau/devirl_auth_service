@@ -28,6 +28,18 @@ services:
     networks:
       - db-network
 
+  # Flyway Service for Cleaning Database
+  flyway_clean:
+    image: flyway/flyway:latest
+    container_name: flyway-clean
+    depends_on:
+      - postgres
+    command: -url=jdbc:postgresql://postgres:5432/cashew_db -user=cashew_user -password=cashew_password clean
+    volumes:
+      - ./migrations:/flyway/sql                     # Attach same migrations folder to avoid volume errors
+    networks:
+      - db-network
+
 # Define a volume for persistent PostgreSQL data storage
 volumes:
   postgres_data:

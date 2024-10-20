@@ -1,9 +1,9 @@
-CREATE TABLE businesses (
-    id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,  -- Foreign key to users table
-    name VARCHAR(255) NOT NULL,                                    -- Business name
-    contact_email VARCHAR(255),
-    contact_phone VARCHAR(20),
+CREATE TABLE business (
+    id BIGSERIAL PRIMARY KEY,                             -- Primary key with auto-increment, better scalability with BIGSERIAL
+    business_id VARCHAR(255) NOT NULL UNIQUE,
+    business_name VARCHAR(255) NOT NULL,
+    contact_email VARCHAR(255) NOT NULL,
+    contact_phone VARCHAR(20) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

@@ -41,8 +41,8 @@ CREATE TABLE bookings (
     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,  -- Foreign key to users table (user who made the booking)
     workspace_id INT NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,  -- Foreign key to workspaces table (workspace being booked)
     booking_date DATE NOT NULL,                    -- Date of the booking
-    start_time TIME NOT NULL,                      -- Start time of the booking
-    end_time TIME NOT NULL CHECK (end_time > start_time),  -- End time of the booking (must be after start time)
+    start_datetime TIMESTAMP NOT NULL,  -- Start date and time (must be in future)
+    end_datetime TIMESTAMP NOT NULL CHECK (end_datetime > start_datetime),           -- End time must be after start
     status VARCHAR(50) DEFAULT 'Pending' CHECK (status IN ('Pending', 'Confirmed', 'Cancelled')),  -- Status of the booking
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Timestamp of booking creation
 );
