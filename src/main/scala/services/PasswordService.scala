@@ -1,0 +1,77 @@
+package services
+
+import cats.data.Validated
+import cats.data.Validated.{Invalid, Valid}
+import cats.effect.Concurrent
+import cats.implicits.*
+import models.auth.InvalidPasswordError
+
+import java.security.MessageDigest
+import java.util.Base64
+
+trait PasswordServiceAlgebra[F[_]] {
+
+  def validatePassword(plainTextPassword: String): Validated[List[String], String]
+  
+  def hashPassword(plainTextPassword: String): F[String]
+  
+  def checkPassword(plainTextPassword: String, hashedPassword: String): F[Boolean]
+}
+
+class PasswordServiceImpl[F[_] : Concurrent] extends PasswordServiceAlgebra[F] {
+
+  private def validateLength(password: String): Validated[List[String], String] =
+    if (password.length >= 8 && password.length <= 20) password.valid
+    else List("Password must be between 8 and 20 characters.").invalid
+
+  private def validateUppercase(password: String): Validated[List[String], String] =
+    if (password.exists(_.isUpper)) password.valid
+    else List("Password must contain at least one uppercase letter.").invalid
+
+  private def validateDigit(password: String): Validated[List[String], String] =
+    if (password.exists(_.isDigit)) password.valid
+    else List("Password must contain at least one digit.").invalid
+
+  private def validateSpecialChar(password: String): Validated[List[String], String] =
+    if (password.exists(ch => "!@#$%^&*()_+-=[]|,./?><".contains(ch))) password.valid
+    else List("Password must contain at least one special character.").invalid
+
+  private def validateNoWhitespace(password: String): Validated[List[String], String] =
+    if (!password.exists(_.isWhitespace)) password.valid
+    else List("Password must not contain whitespace.").invalid
+
+  override def validatePassword(plainTextPassword: String): Validated[List[String], String] = {
+    (
+      validateLength(plainTextPassword),
+      validateUppercase(plainTextPassword),
+      validateDigit(plainTextPassword),
+      validateSpecialChar(plainTextPassword),
+      validateNoWhitespace(plainTextPassword)
+    ).mapN((_, _, _, _, _) => plainTextPassword)
+  }
+
+  override def hashPassword(plainTextPassword: String): F[String] =
+    Concurrent[F].pure {
+      val digest = MessageDigest.getInstance("SHA-256")
+      val hashBytes = digest.digest(plainTextPassword.getBytes("UTF-8"))
+      Base64.getEncoder.encodeToString(hashBytes)
+    }
+
+  override def checkPassword(plainTextPassword: String, hashedPassword: String): F[Boolean] = {
+    val digest = MessageDigest.getInstance("SHA-256")
+    val plainTextHash = Base64.getEncoder.encodeToString(digest.digest(plainTextPassword.getBytes("UTF-8")))
+
+    Concurrent[F].pure {
+      validatePassword(plainTextPassword) match {
+        case Valid(_) =>
+          plainTextHash == hashedPassword
+        case Invalid(errors) =>
+          throw new IllegalArgumentException(errors.mkString("; "))
+      }
+    }
+  }
+}
+
+object PasswordService {
+  def apply[F[_] : Concurrent]: PasswordServiceAlgebra[F] = new PasswordServiceImpl[F]
+}

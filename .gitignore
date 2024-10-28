@@ -5,6 +5,7 @@
 hs_err_pid*
 
 /target
+/it/target
 /project/target
 .bsp
 .idea/

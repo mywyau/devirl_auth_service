@@ -8,10 +8,10 @@ import models.workspaces.errors.WorkspaceValidationError
 import models.workspaces.responses._
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
-import org.http4s.implicits.http4sLiteralsSyntax
 import org.http4s.{Method, Request, Response, Status}
 import services.WorkspaceService
 import weaver.SimpleIOSuite
+import org.http4s.implicits.uri
 
 import java.time.LocalDateTime
 

@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_DB: cashew_db                          # The default database to create
       POSTGRES_USER: cashew_user                      # The default user to create
-      POSTGRES_PASSWORD: cashew_password              # The user's password
+      POSTGRES_PASSWORD: cashew                       # The user's password
     ports:
       - "5450:5432"                                   # Map port 5450 on the host to 5432 inside the container
     volumes:

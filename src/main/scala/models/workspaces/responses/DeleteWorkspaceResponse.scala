@@ -7,6 +7,6 @@ case class DeleteWorkspaceResponse(response: String)
 
 object DeleteWorkspaceResponse {
   // Manually derive Encoder and Decoder for Workspace
-  implicit val WorkspaceEncoder: Encoder[DeleteWorkspaceResponse] = deriveEncoder[DeleteWorkspaceResponse]
-  implicit val WorkspaceDecoder: Decoder[DeleteWorkspaceResponse] = deriveDecoder[DeleteWorkspaceResponse]
+  implicit val workspaceEncoder: Encoder[DeleteWorkspaceResponse] = deriveEncoder[DeleteWorkspaceResponse]
+  implicit val workspaceDecoder: Decoder[DeleteWorkspaceResponse] = deriveDecoder[DeleteWorkspaceResponse]
 }

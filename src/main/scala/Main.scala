@@ -1,23 +1,19 @@
 package main
 
+import cats.NonEmptyParallel
 import cats.effect._
 import cats.implicits._
 import com.comcast.ip4s._
-import controllers._
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
+import middleware.Middleware.throttleMiddleware
 import org.http4s.HttpRoutes
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits._
 import org.http4s.server.Router
-import org.http4s.server.middleware.Throttle
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import repositories._
-import repositories.workspaces.WorkspaceRepository
-import services._
-
-import scala.concurrent.duration._
+import routes.Routes._
 
 object Main extends IOApp {
 
@@ -32,48 +28,18 @@ object Main extends IOApp {
         driverClassName = "org.postgresql.Driver",
         url = "jdbc:postgresql://localhost:5450/cashew_db", // Moved to config/env variables later
         user = sys.env.getOrElse("DB_USER", "cashew_user"), // Default to "postgres"
-        pass = sys.env.getOrElse("DB_PASS", "cashew_password"), // Default password
+        pass = sys.env.getOrElse("DB_PASS", "cashew"), // Default password
         connectEC = ce // Connect execution context (for managing connection pool)
       )
     } yield xa
 
-  // Throttle middleware to apply rate limiting
-  def throttleMiddleware[F[_] : Temporal](routes: HttpRoutes[F]): F[HttpRoutes[F]] = {
-    Throttle.httpRoutes(
-      amount = 500, // Maximum number of requests
-      per = 1.minute // Time period for requests allowed, refreshes tokens in the bucket to allow for 500 requests per minute
-    )(routes) // Apply throttling to the routes, returns F[HttpRoutes[F]]
-  }
-
-  def createBusinessRoutes[F[_] : Concurrent : Temporal](transactor: HikariTransactor[F]): HttpRoutes[F] = {
-    // Repositories, services, and controllers setup as before
-    val businessRepository = new BusinessRepository[F](transactor)
-    val businessService = new BusinessServiceImpl[F](businessRepository)
-    val businessController = new BusinessControllerImpl[F](businessService)
-
-    businessController.routes
-  }
-
-  def createWorkspaceRoutes[F[_] : Concurrent : Temporal](transactor: HikariTransactor[F]): HttpRoutes[F] = {
-    // Repositories, services, and controllers setup as before
-    val workspaceRepository = new WorkspaceRepository[F](transactor)
-    val workspaceService = new WorkspaceServiceImpl[F](workspaceRepository)
-    val workspaceController = new WorkspaceControllerImpl[F](workspaceService)
-
-    workspaceController.routes
-  }
-
-  def createRouterResource[F[_] : Concurrent : Temporal](transactor: HikariTransactor[F]): Resource[F, HttpRoutes[F]] = {
+  def createRouterResource[F[_] : Concurrent : Temporal: NonEmptyParallel](transactor: HikariTransactor[F]): Resource[F, HttpRoutes[F]] = {
     Resource.eval {
-      // Repositories, services, and controllers setup as before
-      val bookingRepository = new BookingRepository[F](transactor)
-      val bookingService = new BookingServiceImpl[F](bookingRepository)
-      val bookingController = new BookingControllerImpl[F](bookingService)
-
       // Apply throttle middleware
       throttleMiddleware(
         Router(
-          "/cashew" -> bookingController.routes,
+          "/cashew" -> createAuthRoutes(transactor),
+          "/cashew" -> createBookingRoutes(transactor),
           "/cashew" -> createBusinessRoutes(transactor),
           "/cashew" -> createWorkspaceRoutes(transactor),
         )

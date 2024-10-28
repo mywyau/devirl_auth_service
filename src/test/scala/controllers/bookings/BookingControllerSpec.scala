@@ -2,17 +2,18 @@ package controllers.bookings
 
 import cats.effect.{Concurrent, IO}
 import controllers.{BookingController, BookingControllerImpl}
-import io.circe.syntax._
+import io.circe.syntax.*
 import models.Booking
-import models.bookings._
+import models.bookings.*
 import models.bookings.errors.ValidationError
 import models.bookings.responses.{CreatedBookingResponse, DeleteBookingResponse, UpdatedBookingResponse}
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
-import org.http4s.implicits.http4sLiteralsSyntax
 import org.http4s.{Method, Request, Response, Status}
 import services.BookingService
 import weaver.SimpleIOSuite
+import org.http4s.implicits.uri
+
 
 import java.time.{LocalDate, LocalDateTime}
 

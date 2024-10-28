@@ -8,7 +8,7 @@ case class UpdatedWorkspaceResponse(response: String)
 
 object UpdatedWorkspaceResponse {
   // Manually derive Encoder and Decoder for Workspace
-  implicit val WorkspaceEncoder: Encoder[UpdatedWorkspaceResponse] = deriveEncoder[UpdatedWorkspaceResponse]
-  implicit val WorkspaceDecoder: Decoder[UpdatedWorkspaceResponse] = deriveDecoder[UpdatedWorkspaceResponse]
+  implicit val workspaceEncoder: Encoder[UpdatedWorkspaceResponse] = deriveEncoder[UpdatedWorkspaceResponse]
+  implicit val workspaceDecoder: Decoder[UpdatedWorkspaceResponse] = deriveDecoder[UpdatedWorkspaceResponse]
 }
 

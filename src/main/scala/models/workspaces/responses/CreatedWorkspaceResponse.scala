@@ -7,6 +7,6 @@ case class CreatedWorkspaceResponse(response: String)
 
 object CreatedWorkspaceResponse {
   // Manually derive Encoder and Decoder for Booking
-  implicit val bookingEncoder: Encoder[CreatedWorkspaceResponse] = deriveEncoder[CreatedWorkspaceResponse]
-  implicit val bookingDecoder: Decoder[CreatedWorkspaceResponse] = deriveDecoder[CreatedWorkspaceResponse]
+  implicit val workspaceEncoder: Encoder[CreatedWorkspaceResponse] = deriveEncoder[CreatedWorkspaceResponse]
+  implicit val workspaceDecoder: Decoder[CreatedWorkspaceResponse] = deriveDecoder[CreatedWorkspaceResponse]
 }

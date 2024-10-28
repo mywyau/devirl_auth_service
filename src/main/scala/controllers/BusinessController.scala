@@ -3,9 +3,9 @@ package controllers
 import cats.effect.Concurrent
 import cats.implicits._
 import io.circe.syntax._
-import models.users.Business
-import models.users.errors._
-import models.users.responses._
+import models.business.Business
+import models.business.errors.{BusinessNotFound, InvalidBusinessId, InvalidTimeRange}
+import models.business.responses.{CreatedBusinessResponse, DeleteBusinessResponse, ErrorBusinessResponse, UpdatedBusinessResponse}
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
