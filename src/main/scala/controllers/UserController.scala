@@ -2,25 +2,25 @@ package controllers
 
 import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
-import cats.implicits._
+import cats.implicits.*
 import io.circe.syntax.EncoderOps
-import models.users.responses._
+import models.users.responses.*
 import models.users.{UserLoginRequest, UserRegistrationRequest}
-import org.http4s._
-import org.http4s.circe._
+import org.http4s.*
+import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
-import services.AuthenticationService
+import services.{AuthenticationService, RegistrationService}
 
 trait UserController[F[_]] {
   def routes: HttpRoutes[F]
 }
 
 object UserController {
-  def apply[F[_] : Concurrent](userService: AuthenticationService[F]): UserController[F] =
-    new UserControllerImpl[F](userService)
+  def apply[F[_] : Concurrent](userService: AuthenticationService[F], registrationService: RegistrationService[F]): UserController[F] =
+    new UserControllerImpl[F](userService, registrationService)
 }
 
-class UserControllerImpl[F[_] : Concurrent](authService: AuthenticationService[F]) extends Http4sDsl[F] with UserController[F] {
+class UserControllerImpl[F[_] : Concurrent](authService: AuthenticationService[F], registrationService: RegistrationService[F]) extends Http4sDsl[F] with UserController[F] {
 
   implicit val registrationDecoder: EntityDecoder[F, UserRegistrationRequest] = jsonOf[F, UserRegistrationRequest]
   implicit val loginDecoder: EntityDecoder[F, UserLoginRequest] = jsonOf[F, UserLoginRequest]
@@ -29,7 +29,7 @@ class UserControllerImpl[F[_] : Concurrent](authService: AuthenticationService[F
     // Register a new user
     case req @ POST -> Root / "register" =>
       req.decode[UserRegistrationRequest] { request =>
-        authService.registerUser(request).flatMap {
+        registrationService.registerUser(request).flatMap {
           case Valid(user) =>
             Created(LoginResponse("User created successfully").asJson)
           case Invalid(errors) =>

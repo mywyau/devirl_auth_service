@@ -1,4 +1,4 @@
-package service.business
+package services.business
 
 import cats.effect.IO
 import models.business.Business

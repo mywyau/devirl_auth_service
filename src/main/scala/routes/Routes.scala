@@ -14,17 +14,16 @@ import services._
 object Routes {
 
   def createAuthRoutes[F[_]: Concurrent: Temporal: NonEmptyParallel](transactor: HikariTransactor[F]): HttpRoutes[F] = {
-    // Create repositories, services, and controllers as needed
     val userRepository = new UserRepositoryImpl[F](transactor)
-    val authService = new AuthenticationServiceImpl[F](userRepository)
-    val userController = new UserControllerImpl[F](authService)
-
-    // Return the routes defined by the user controller
+    val passwordService = new PasswordServiceImpl[F]
+    val registrationService = new RegistrationServiceImpl[F](userRepository, passwordService)
+    val authService = new AuthenticationServiceImpl[F](userRepository, passwordService)
+    val userController = new UserControllerImpl[F](authService, registrationService)
+    
     userController.routes
   }
 
   def createBookingRoutes[F[_] : Concurrent : Temporal](transactor: HikariTransactor[F]): HttpRoutes[F] = {
-    // Repositories, services, and controllers setup as before
     val bookingRepository = new BookingRepository[F](transactor)
     val bookingService = new BookingServiceImpl[F](bookingRepository)
     val bookingController = new BookingControllerImpl[F](bookingService)
@@ -33,7 +32,6 @@ object Routes {
   }
 
   def createBusinessRoutes[F[_] : Concurrent : Temporal](transactor: HikariTransactor[F]): HttpRoutes[F] = {
-    // Repositories, services, and controllers setup as before
     val businessRepository = new BusinessRepository[F](transactor)
     val businessService = new BusinessServiceImpl[F](businessRepository)
     val businessController = new BusinessControllerImpl[F](businessService)
@@ -42,7 +40,6 @@ object Routes {
   }
 
   def createWorkspaceRoutes[F[_] : Concurrent : Temporal](transactor: HikariTransactor[F]): HttpRoutes[F] = {
-    // Repositories, services, and controllers setup as before
     val workspaceRepository = new WorkspaceRepository[F](transactor)
     val workspaceService = new WorkspaceServiceImpl[F](workspaceRepository)
     val workspaceController = new WorkspaceControllerImpl[F](workspaceService)

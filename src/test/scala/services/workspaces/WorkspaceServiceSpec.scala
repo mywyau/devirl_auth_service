@@ -1,4 +1,4 @@
-package service.workspaces
+package services.workspaces
 
 import cats.effect.IO
 import models.workspaces.Workspace

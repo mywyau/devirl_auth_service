@@ -4,8 +4,6 @@ import doobie.h2.H2Transactor
 import doobie.implicits.*
 import weaver.{GlobalResource, GlobalWrite, Log}
 
-// Define the wrapper case class for the Transactor
-//case class TransactorResource(xa: Transactor[IO])
 import cats.implicits._
 
 object DatabaseResource extends GlobalResource {

@@ -89,7 +89,6 @@ object UserRepositoryImplSpec extends SimpleIOSuite {
 
   test(".findByEmail() - should return a user if email exists") {
     val existingUser = testUser("user1", "123456789", "user1@example.com")
-
     for {
       mockRepo <- createMockRepo(List(existingUser)) // User already exists
       result <- mockRepo.findByEmail("user1@example.com")

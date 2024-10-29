@@ -1,4 +1,4 @@
-package service.bookings
+package services.bookings
 
 import cats.effect.IO
 import models._

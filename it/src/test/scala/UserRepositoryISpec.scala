@@ -7,7 +7,7 @@ import weaver.{GlobalRead, IOSuite, ResourceTag}
 
 import java.time.LocalDateTime
 
-// Define a wrapper case class
+// Define a wrapper case class to help with runtime type issues
 case class TransactorResource(xa: Transactor[IO])
 
 // Define test suite using ResourceSuite to share the Transactor[IO] within this file

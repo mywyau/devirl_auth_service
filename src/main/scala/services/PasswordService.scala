@@ -4,7 +4,6 @@ import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
-import models.auth.InvalidPasswordError
 
 import java.security.MessageDigest
 import java.util.Base64
@@ -12,31 +11,31 @@ import java.util.Base64
 trait PasswordServiceAlgebra[F[_]] {
 
   def validatePassword(plainTextPassword: String): Validated[List[String], String]
-  
+
   def hashPassword(plainTextPassword: String): F[String]
-  
+
   def checkPassword(plainTextPassword: String, hashedPassword: String): F[Boolean]
 }
 
 class PasswordServiceImpl[F[_] : Concurrent] extends PasswordServiceAlgebra[F] {
 
-  private def validateLength(password: String): Validated[List[String], String] =
+  private[services] def validateLength(password: String): Validated[List[String], String] =
     if (password.length >= 8 && password.length <= 20) password.valid
     else List("Password must be between 8 and 20 characters.").invalid
 
-  private def validateUppercase(password: String): Validated[List[String], String] =
+  private[services] def validateUppercase(password: String): Validated[List[String], String] =
     if (password.exists(_.isUpper)) password.valid
     else List("Password must contain at least one uppercase letter.").invalid
 
-  private def validateDigit(password: String): Validated[List[String], String] =
+  private[services] def validateDigit(password: String): Validated[List[String], String] =
     if (password.exists(_.isDigit)) password.valid
     else List("Password must contain at least one digit.").invalid
 
-  private def validateSpecialChar(password: String): Validated[List[String], String] =
+  private[services] def validateSpecialChar(password: String): Validated[List[String], String] =
     if (password.exists(ch => "!@#$%^&*()_+-=[]|,./?><".contains(ch))) password.valid
     else List("Password must contain at least one special character.").invalid
 
-  private def validateNoWhitespace(password: String): Validated[List[String], String] =
+  private[services] def validateNoWhitespace(password: String): Validated[List[String], String] =
     if (!password.exists(_.isWhitespace)) password.valid
     else List("Password must not contain whitespace.").invalid
 
@@ -66,7 +65,10 @@ class PasswordServiceImpl[F[_] : Concurrent] extends PasswordServiceAlgebra[F] {
         case Valid(_) =>
           plainTextHash == hashedPassword
         case Invalid(errors) =>
-          throw new IllegalArgumentException(errors.mkString("; "))
+          false
+        // TODO: Improve and fix this Mikey!!!!
+
+        //          throw new IllegalArgumentException(errors.mkString("; "))
       }
     }
   }
