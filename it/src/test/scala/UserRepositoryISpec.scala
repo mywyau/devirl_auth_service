@@ -19,8 +19,9 @@ class UserRepositoryISpec(global: GlobalRead) extends IOSuite {
   def sharedResource: Resource[IO, TransactorResource] =
     global.getOrFailR[TransactorResource]()
 
-  def sampleUser(username: String, contactNumber: String, email: String) =
+  def sampleUser(userId: String, username: String, contactNumber: String, email: String) =
     User(
+      userId = userId,
       username = username,
       password_hash = "hashedpassword",
       first_name = "Test",
@@ -36,7 +37,7 @@ class UserRepositoryISpec(global: GlobalRead) extends IOSuite {
   test("createUser should insert a new user") { transactorResource =>
     val userRepository = new UserRepositoryImpl[IO](transactorResource.xa)
 
-    val user = sampleUser("mikey5922", "07402205071", "mikey5922@gmail,com")
+    val user = sampleUser("user_id_1", "mikey5922", "07402205071", "mikey5922@gmail,com")
 
     for {
       result <- userRepository.createUser(user)
@@ -46,7 +47,7 @@ class UserRepositoryISpec(global: GlobalRead) extends IOSuite {
 
   test("findByUsername should return the user if username exists") { transactorResource =>
 
-    val user = sampleUser("mikey5923", "07402205072", "mikey5923@gmail,com")
+    val user = sampleUser("user_id_2", "mikey5923", "07402205072", "mikey5923@gmail,com")
 
     val userRepository = new UserRepositoryImpl[IO](transactorResource.xa)
     for {
@@ -57,7 +58,7 @@ class UserRepositoryISpec(global: GlobalRead) extends IOSuite {
 
   test("findByContactNumber should return the user if contact number exists") { transactorResource =>
 
-    val user = sampleUser("mikey5924", "1234567890", "mikey5924@gmail,com")
+    val user = sampleUser("user_id_3", "mikey5924", "1234567890", "mikey5924@gmail,com")
 
     val userRepository = new UserRepositoryImpl[IO](transactorResource.xa)
     for {
@@ -68,7 +69,7 @@ class UserRepositoryISpec(global: GlobalRead) extends IOSuite {
 
   test("findByEmail should return the user if email exists") { transactorResource =>
 
-    val user = sampleUser("mikey5925", "07402205074", "mikey5925@gmail,com")
+    val user = sampleUser("user_id_4", "mikey5925", "07402205074", "mikey5925@gmail,com")
 
     val userRepository = new UserRepositoryImpl[IO](transactorResource.xa)
     for {

@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,         -- Unique ID for each user
+    userId VARCHAR(255) NOT NULL,    -- Name of the user
     username VARCHAR(255) NOT NULL,    -- Name of the user
     password_hash TEXT NOT NULL,   -- Hashed password for security
     first_name VARCHAR(255) NOT NULL,    -- Name of the user

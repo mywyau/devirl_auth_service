@@ -22,7 +22,7 @@ services:
     container_name: flyway-migration
     depends_on:
       - postgres
-    command: -url=jdbc:postgresql://postgres:5432/cashew_db -user=cashew_user -password=cashew_password migrate
+    command: -url=jdbc:postgresql://postgres:5432/cashew_db -user=cashew_user -password=cashew migrate
     volumes:
       - ./migrations:/flyway/sql                     # Migrations folder where Flyway will look for scripts
     networks:
@@ -34,7 +34,7 @@ services:
     container_name: flyway-clean
     depends_on:
       - postgres
-    command: -url=jdbc:postgresql://postgres:5432/cashew_db -user=cashew_user -password=cashew_password clean
+    command: -url=jdbc:postgresql://postgres:5432/cashew_db -user=cashew_user -password=cashew clean
     volumes:
       - ./migrations:/flyway/sql                     # Attach same migrations folder to avoid volume errors
     networks:

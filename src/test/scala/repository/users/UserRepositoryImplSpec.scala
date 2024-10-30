@@ -14,6 +14,7 @@ object UserRepositoryImplSpec extends SimpleIOSuite {
   // Helper method to create a test user
   def testUser(username: String, contactNumber: String, email: String): User =
     User(
+      userId = "user_id_1",
       username = username,
       password_hash = "hashed_password",
       first_name = "John",

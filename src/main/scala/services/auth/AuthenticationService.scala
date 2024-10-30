@@ -81,7 +81,7 @@ class AuthenticationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
   // Validate user token and return authenticated user
   def authUser(token: String): F[Option[User]] = {
     // Replace with actual token validation
-    val user = User("username", "hashed_password", "John", "Doe", "07402205071", "john@example.com", Admin, LocalDateTime.of(2025, 1, 1, 0, 0, 0))
+    val user = User("user_id_1", "username", "hashed_password", "John", "Doe", "07402205071", "john@example.com", Admin, LocalDateTime.of(2025, 1, 1, 0, 0, 0))
     Concurrent[F].pure(Some(user)) // Replace with actual logic
   }
 
@@ -107,7 +107,6 @@ class AuthenticationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
       }
     }
 
-    // Apply the UserAuthMiddleware
     UserAuthMiddleware(authService)
   }
 }

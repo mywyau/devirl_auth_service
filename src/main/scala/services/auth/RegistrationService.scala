@@ -1,10 +1,8 @@
 package services
 
-import cats.data.{NonEmptyList, ValidatedNel}
-import cats.implicits._
-import cats.data.*
 import cats.data.Validated.{Invalid, Valid}
-import cats.effect.{Concurrent, IO}
+import cats.data.*
+import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.users.*
@@ -20,7 +18,7 @@ case object UniqueUser extends RegistrationValidation
 
 
 trait RegistrationService[F[_]] {
-  
+
   def registerUser(request: UserRegistrationRequest): F[Validated[List[String], User]]
 }
 
@@ -59,7 +57,7 @@ class RegistrationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
 
     val passwordValidationF: F[Validated[List[String], String]] =
       Concurrent[F].pure(passwordService.validatePassword(request.password))
-    
+
     (passwordValidationF, uniqueUser(request)).parMapN { (passwordValid, uniqueValid) =>
       passwordValid.product(uniqueValid).map(_ => request)
     }.flatMap {
@@ -67,6 +65,7 @@ class RegistrationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
         passwordService.hashPassword(request.password).flatMap { hashedPassword =>
           val newUser =
             User(
+              userId = request.userId,
               username = request.username,
               password_hash = hashedPassword,
               first_name = request.first_name,

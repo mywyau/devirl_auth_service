@@ -45,6 +45,7 @@ object UserControllerSpec extends SimpleIOSuite {
   // Helper to create a test user
   def testUser(username: String): User =
     User(
+      userId = "user_id_1",
       username = username,
       password_hash = "hashed_password",
       first_name = "John",
@@ -63,6 +64,7 @@ object UserControllerSpec extends SimpleIOSuite {
   test("POST /register should return 201 when user is created successfully") {
     val registrationRequest =
       UserRegistrationRequest(
+        userId = "user_id_2",
         username = "newuser",
         password = "password123",
         first_name = "Jane",
@@ -75,6 +77,7 @@ object UserControllerSpec extends SimpleIOSuite {
     val validRegisterUserMockResult =
       IO.pure(Valid(
         User(
+          userId = "user_id_1",
           username = "test_user",
           password_hash = "hashed_password",
           first_name = "John",
@@ -107,6 +110,7 @@ object UserControllerSpec extends SimpleIOSuite {
 
     val registrationRequest =
       UserRegistrationRequest(
+        userId = "user_id_1",
         username = "existinguser",
         password = "password123",
         first_name = "Jane",
@@ -147,6 +151,7 @@ object UserControllerSpec extends SimpleIOSuite {
     val validRegisterUserMockResult =
       IO.pure(Valid(
         User(
+          userId = "user_id_2",
           username = "test_user",
           password_hash = "hashed_password",
           first_name = "John",

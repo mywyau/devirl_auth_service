@@ -3,42 +3,15 @@ package services.auth
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.{NonEmptyList, Validated}
 import cats.effect.IO
-import cats.implicits.*
 import models.users.*
-import repositories.UserRepositoryAlgebra
-import services.auth.constants.RegistrationConstants._
-import services.{PasswordServiceAlgebra, RegistrationServiceImpl, UniqueUser}
+import services.auth.constants.RegistrationServiceConstants.*
+import services.auth.mocks.RegistrationServiceMocks.*
+import services.{RegistrationServiceImpl, UniqueUser}
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
 
 object RegistrationServiceSpec extends SimpleIOSuite {
-  
-  class MockUserRepository(
-                            existingUsers: Map[String, User] = Map.empty
-                          ) extends UserRepositoryAlgebra[IO] {
-
-    def showAllUsers: IO[Map[String, User]] = IO.pure(existingUsers)
-
-    override def findByUsername(username: String): IO[Option[User]] = IO.pure(existingUsers.get(username))
-
-    override def findByContactNumber(contactNumber: String): IO[Option[User]] = IO.pure(existingUsers.values.find(_.contact_number == contactNumber))
-
-    override def findByEmail(email: String): IO[Option[User]] = IO.pure(existingUsers.values.find(_.email == email))
-
-    override def createUser(user: User): IO[Int] = IO.pure(1) // Assume user creation always succeeds
-  }
-
-  class MockPasswordService(
-                             passwordValidationResult: Validated[List[String], String],
-                             hashedPassword: String
-                           ) extends PasswordServiceAlgebra[IO] {
-    override def validatePassword(plainTextPassword: String): Validated[List[String], String] = passwordValidationResult
-
-    override def hashPassword(plainTextPassword: String): IO[String] = IO.pure(hashedPassword)
-
-    override def checkPassword(plainTextPassword: String, hashedPassword: String): IO[Boolean] = IO.pure(true)
-  }
 
   test(".uniqueUser() - should pass when all fields are unique") {
 
@@ -153,9 +126,9 @@ object RegistrationServiceSpec extends SimpleIOSuite {
 
   test(".registerUser() - should fail when username already exists") {
 
-    // Sample data
     val validRequest: UserRegistrationRequest = {
       UserRegistrationRequest(
+        userId = "user_id_1",
         username = "existinguser",
         password = "ValidPass123!",
         first_name = "First",
@@ -168,6 +141,7 @@ object RegistrationServiceSpec extends SimpleIOSuite {
 
     val existingUser: User = {
       User(
+        userId = "user_id_2",
         username = "existinguser",
         password_hash = "hashedpassword",
         first_name = "First",
@@ -193,9 +167,9 @@ object RegistrationServiceSpec extends SimpleIOSuite {
 
   test(".registerUser() - should fail when contact_number already exists") {
 
-    // Sample data
     val validRequest: UserRegistrationRequest = {
       UserRegistrationRequest(
+        userId = "user_id_1",
         username = "newuser",
         password = "ValidPass123!",
         first_name = "First",
@@ -208,6 +182,7 @@ object RegistrationServiceSpec extends SimpleIOSuite {
 
     val existingUser: User = {
       User(
+        userId = "user_id_2",
         username = "existinguser",
         password_hash = "hashedpassword",
         first_name = "First",
@@ -233,9 +208,9 @@ object RegistrationServiceSpec extends SimpleIOSuite {
 
   test(".registerUser() - should fail when email already exists") {
 
-    // Sample data
     val validRequest: UserRegistrationRequest = {
       UserRegistrationRequest(
+        userId = "user_id_1",
         username = "newuser",
         password = "ValidPass123!",
         first_name = "First",
@@ -248,6 +223,7 @@ object RegistrationServiceSpec extends SimpleIOSuite {
 
     val existingUser: User = {
       User(
+        userId = "user_id_2",
         username = "existinguser",
         password_hash = "hashedpassword",
         first_name = "First",
@@ -273,9 +249,9 @@ object RegistrationServiceSpec extends SimpleIOSuite {
 
   test(".registerUser() - should fail and return multiple errors") {
 
-    // Sample data
     val validRequest: UserRegistrationRequest = {
       UserRegistrationRequest(
+        userId = "user_id_1",
         username = "same_user_name",
         password = "ValidPass123!",
         first_name = "First",
@@ -288,6 +264,7 @@ object RegistrationServiceSpec extends SimpleIOSuite {
 
     val existingUser: User = {
       User(
+        userId = "user_id_2",
         username = "same_user_name",
         password_hash = "hashedpassword",
         first_name = "First",
@@ -355,5 +332,4 @@ object RegistrationServiceSpec extends SimpleIOSuite {
       expect(result == Invalid(NonEmptyList.of("contact_number already exists")))
     }
   }
-
 }

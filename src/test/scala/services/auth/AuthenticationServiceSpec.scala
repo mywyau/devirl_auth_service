@@ -1,48 +1,15 @@
 package services.auth
 
-import cats.data.Validated
 import cats.effect.IO
 import models.users.{Admin, User, UserLoginRequest, Wanderer}
-import repositories.UserRepositoryAlgebra
-import services.{AuthenticationServiceImpl, PasswordServiceAlgebra, UserAuth}
+import services.auth.constants.AuthenticationServiceConstants.*
+import services.auth.mocks.AuthenticationServiceMocks.*
+import services.{AuthenticationServiceImpl, UserAuth}
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
 
 object AuthenticationServiceSpec extends SimpleIOSuite {
-
-  class MockUserRepository(
-                            users: Map[String, User] = Map.empty
-                          ) extends UserRepositoryAlgebra[IO] {
-
-    def showAllUsers: IO[Map[String, User]] = IO.pure(users)
-
-    override def findByUsername(username: String): IO[Option[User]] = IO.pure(users.get(username))
-
-    override def findByContactNumber(contactNumber: String): IO[Option[User]] = IO.pure(users.values.find(_.contact_number == contactNumber))
-
-    override def findByEmail(email: String): IO[Option[User]] = IO.pure(users.values.find(_.email == email))
-
-    override def createUser(user: User): IO[Int] = IO.pure(1) // Assume user creation always succeeds
-  }
-
-
-  class MockPasswordService(expectedHash: String) extends PasswordServiceAlgebra[IO] {
-
-    override def validatePassword(plainTextPassword: String): Validated[List[String], String] =
-      if (plainTextPassword.nonEmpty) Validated.valid(plainTextPassword) else Validated.invalid(List("Invalid password"))
-
-    override def hashPassword(plainTextPassword: String): IO[String] = IO.pure(expectedHash)
-
-    override def checkPassword(plainTextPassword: String, hashedPassword: String): IO[Boolean] =
-      IO.pure(expectedHash == hashedPassword)
-  }
-
-
-  // Sample data
-  val testUser = User("username", "hashed_password", "John", "Doe", "07402205071", "john@example.com", Admin, LocalDateTime.now())
-  val users = Map("username" -> testUser)
-
 
   test("loginUser should return Right(User) for valid credentials") {
 
@@ -96,16 +63,16 @@ object AuthenticationServiceSpec extends SimpleIOSuite {
     )
   }
 
-//  test("authUser should return None for an invalid token") {
-//
-//    val passwordServiceMock = new MockPasswordService("hashed_password")
-//    val userRepositoryMock = new MockUserRepository(users)
-//    val authService = new AuthenticationServiceImpl[IO](userRepositoryMock, passwordServiceMock)
-//
-//    for {
-//      result <- authService.authUser("invalid_token")
-//    } yield expect(result.isEmpty) //TODO: Fix - Broken test since we have no implementation
-//  }
+  //  test("authUser should return None for an invalid token") {
+  //
+  //    val passwordServiceMock = new MockPasswordService("hashed_password")
+  //    val userRepositoryMock = new MockUserRepository(users)
+  //    val authService = new AuthenticationServiceImpl[IO](userRepositoryMock, passwordServiceMock)
+  //
+  //    for {
+  //      result <- authService.authUser("invalid_token")
+  //    } yield expect(result.isEmpty) //TODO: Fix - Broken test since we have no implementation
+  //  }
 
   test("authorize should return Right(UserAuth) if user has required role") {
 

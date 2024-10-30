@@ -33,8 +33,8 @@ class UserRepositoryImpl[F[_] : Concurrent](transactor: Transactor[F]) extends U
 
   def createUser(user: User): F[Int] = {
     sql"""
-      INSERT INTO users (username, password_hash, first_name, last_name, contact_number, email, role, created_at)
-      VALUES (${user.username}, ${user.password_hash}, ${user.first_name}, ${user.last_name}, ${user.contact_number}, ${user.email}, ${user.role.toString}, ${user.created_at})
+      INSERT INTO users (userId, username, password_hash, first_name, last_name, contact_number, email, role, created_at)
+      VALUES (${user.userId}, ${user.username}, ${user.password_hash}, ${user.first_name}, ${user.last_name}, ${user.contact_number}, ${user.email}, ${user.role.toString}, ${user.created_at})
     """.update
       .run
       .transact(transactor)

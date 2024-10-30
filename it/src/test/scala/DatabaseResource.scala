@@ -2,9 +2,7 @@ import cats.effect.{IO, Resource}
 import doobie.*
 import doobie.h2.H2Transactor
 import doobie.implicits.*
-import weaver.{GlobalResource, GlobalWrite, Log}
-
-import cats.implicits._
+import weaver.{GlobalResource, GlobalWrite}
 
 object DatabaseResource extends GlobalResource {
 
@@ -26,7 +24,8 @@ object DatabaseResource extends GlobalResource {
   private def initializeSchema(xa: Transactor[IO]): IO[Unit] = {
     sql"""
       CREATE TABLE users (
-        username VARCHAR(255) NOT NULL PRIMARY KEY,
+        userId VARCHAR(255) NOT NULL PRIMARY KEY,
+        username VARCHAR(255) NOT NULL,
         password_hash TEXT NOT NULL,
         first_name VARCHAR(255) NOT NULL,
         last_name VARCHAR(255) NOT NULL,

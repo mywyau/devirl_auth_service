@@ -4,6 +4,7 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 case class UserRegistrationRequest(
+                                    userId: String,
                                     username: String,
                                     password: String,
                                     first_name: String,

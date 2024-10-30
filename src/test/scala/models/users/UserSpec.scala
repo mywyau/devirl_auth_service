@@ -12,6 +12,7 @@ object UserSpec extends SimpleIOSuite {
 
   val sample_user1: User =
     User(
+      userId = "user_id_1",
       username = "mikey5922",
       password_hash = "hashed_password_1",
       first_name = "michael",
@@ -28,6 +29,7 @@ object UserSpec extends SimpleIOSuite {
 
     val expectedJson =
       """{
+        |"userId":"user_id_1",
         |"username":"mikey5922",
         |"password_hash":"hashed_password_1",
         |"first_name":"michael",
