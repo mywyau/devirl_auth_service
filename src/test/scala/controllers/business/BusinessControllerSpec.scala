@@ -121,7 +121,7 @@ object BusinessControllerSpec extends SimpleIOSuite {
     val request = Request[IO](
       method = Method.DELETE,
       uri = uri"/business/1"
-    ) // Encode business as JSON for the request body
+    )
 
     val responseIO: IO[Response[IO]] = controller.routes.orNotFound.run(request)
 

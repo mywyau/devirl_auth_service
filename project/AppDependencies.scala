@@ -31,21 +31,26 @@ object AppDependencies {
     "dev.profunktor" %% "redis4cats-effects" % redis4catsVersion,
     "io.circe" %% "circe-generic" % circeVersion,
     "io.circe" %% "circe-core" % circeVersion,
-    "io.circe" %% "circe-parser" % circeVersion
+    "io.circe" %% "circe-parser" % circeVersion,
+    "org.http4s" %% "http4s-ember-client" % "0.23.28"
   )
 
   // Test dependencies
   val test: Seq[ModuleID] = Seq(
     "org.scalatest" %% "scalatest" % scalatestVersion % Test,
     "org.tpolecat" %% "doobie-scalatest" % doobieVersion % Test,
-    "com.disneystreaming" %% "weaver-cats" % weaverVersion % Test
+    "com.disneystreaming" %% "weaver-cats" % weaverVersion % Test,
+    "com.disneystreaming" %% "weaver-scalacheck" % "0.7.6" % Test,
+    "org.http4s" %% "http4s-ember-client" % "0.23.28" % Test
   )
 
   // Integration test dependencies
   val integrationTest: Seq[ModuleID] = Seq(
     "org.tpolecat" %% "doobie-h2" % doobieVersion % Test,
     "org.flywaydb" % "flyway-core" % flywayVersion,
-    "com.disneystreaming" %% "weaver-cats" % weaverVersion % Test
+    "com.disneystreaming" %% "weaver-cats" % weaverVersion % Test,
+    "org.http4s" %% "http4s-ember-client" % "0.23.28" % Test,
+    "com.disneystreaming" %% "weaver-scalacheck" % "0.7.6" % Test
   )
 
   // Additional workaround for macOS if needed

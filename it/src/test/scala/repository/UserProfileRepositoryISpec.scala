@@ -1,3 +1,5 @@
+package repository
+
 import cats.effect.{IO, Resource}
 import doobie.*
 import doobie.implicits.*
@@ -6,9 +8,6 @@ import repositories.users.UserProfileRepositoryImpl
 import weaver.{GlobalRead, IOSuite, ResourceTag}
 
 import java.time.LocalDateTime
-
-// Define a wrapper case class to help with runtime type issues
-case class TransactorResource(xa: Transactor[IO])
 
 // Define test suite using ResourceSuite to share the Transactor[IO] within this file
 class UserProfileRepositoryISpec(global: GlobalRead) extends IOSuite {

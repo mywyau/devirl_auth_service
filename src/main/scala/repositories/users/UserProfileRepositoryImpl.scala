@@ -40,41 +40,41 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
   implicit val roleMeta: Meta[Role] = Meta[String].imap(Role.fromString)(_.toString)
 
   override def createUserProfile(user: UserProfile): F[Int] = {
-    println(
-      s"""
-    INSERT INTO user_profile (
-      userId,
-      username,
-      password_hash,
-      first_name,
-      last_name,
-      street,
-      city,
-      country,
-      county,
-      postcode,
-      contact_number,
-      email,
-      role,
-      created_at
-    ) VALUES (
-      '${user.userId}',
-      '${user.userLoginDetails.username}',
-      '${user.userLoginDetails.password_hash}',
-      '${user.first_name}',
-      '${user.last_name}',
-      '${user.userAddress.street}',
-      '${user.userAddress.city}',
-      '${user.userAddress.country}',
-      '${user.userAddress.county}',
-      '${user.userAddress.postcode}',
-      '${user.contact_number}',
-      '${user.email}',
-      '${user.role.toString}',
-      '${user.created_at}'
-    )
-  """
-    )
+//    println(
+//      s"""
+//    INSERT INTO user_profile (
+//      userId,
+//      username,
+//      password_hash,
+//      first_name,
+//      last_name,
+//      street,
+//      city,
+//      country,
+//      county,
+//      postcode,
+//      contact_number,
+//      email,
+//      role,
+//      created_at
+//    ) VALUES (
+//      '${user.userId}',
+//      '${user.userLoginDetails.username}',
+//      '${user.userLoginDetails.password_hash}',
+//      '${user.first_name}',
+//      '${user.last_name}',
+//      '${user.userAddress.street}',
+//      '${user.userAddress.city}',
+//      '${user.userAddress.country}',
+//      '${user.userAddress.county}',
+//      '${user.userAddress.postcode}',
+//      '${user.contact_number}',
+//      '${user.email}',
+//      '${user.role.toString}',
+//      '${user.created_at}'
+//    )
+//  """
+//    )
 
     sql"""
       INSERT INTO user_profile (

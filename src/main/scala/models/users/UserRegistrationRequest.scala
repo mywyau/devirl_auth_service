@@ -16,7 +16,7 @@ case class UserRegistrationRequest(
                                     postcode: String,
                                     contact_number: String,
                                     email: String,
-                                    role: Role,
+                                    role: Role
                                   )
 
 

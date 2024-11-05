@@ -1,3 +1,5 @@
+package repository
+
 import cats.effect.{IO, Resource}
 import doobie.*
 import doobie.hikari.HikariTransactor
@@ -16,7 +18,7 @@ object DatabaseResource extends GlobalResource {
         pass = sys.env.getOrElse("TEST_DB_PASS", "cashew"), // Default password
         connectEC = ce // Connect execution context (for managing connection pool)
       )
-      _ <- global.putR(TransactorResource(xa)) // Store TransactorResource in global context
+      _ <- global.putR(TransactorResource(xa)) // Store repository.TransactorResource in global context
       //      _ <- Resource.eval(printSchema(xa)) // Print the schema
       //      _ <- Resource.eval(testInsert(xa)) // Print the schema
     } yield ()
