@@ -1,37 +1,27 @@
-package services
+package services.auth
 
-import cats.data.Validated.{Invalid, Valid}
 import cats.data.*
+import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
+import models.auth.{RegistrationValidation, UniqueUser}
 import models.users.*
-import repositories.UserRepositoryAlgebra
+import repositories.users.UserProfileRepositoryAlgebra
+import services.auth.algebra.{PasswordServiceAlgebra, RegistrationServiceAlgebra}
 
 import java.time.LocalDateTime
 
-sealed trait RegistrationValidation
-
-case object NotUnique extends RegistrationValidation
-
-case object UniqueUser extends RegistrationValidation
-
-
-trait RegistrationService[F[_]] {
-
-  def registerUser(request: UserRegistrationRequest): F[Validated[List[String], User]]
-}
-
 
 class RegistrationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
-                                                                             userRepository: UserRepositoryAlgebra[F],
+                                                                             userRepository: UserProfileRepositoryAlgebra[F],
                                                                              passwordService: PasswordServiceAlgebra[F]
-                                                                           ) extends RegistrationService[F] {
+                                                                           ) extends RegistrationServiceAlgebra[F] {
 
   def validateUnique(
                       field: String,
                       value: String,
-                      lookup: String => F[Option[User]]
+                      lookup: String => F[Option[UserProfile]]
                     ): F[ValidatedNel[String, RegistrationValidation]] = {
     lookup(value).map {
       case Some(_) => s"$field already exists".invalidNel
@@ -53,7 +43,7 @@ class RegistrationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
   }
 
 
-  override def registerUser(request: UserRegistrationRequest): F[Validated[List[String], User]] = {
+  override def registerUser(request: UserRegistrationRequest): F[Validated[List[String], UserProfile]] = {
 
     val passwordValidationF: F[Validated[List[String], String]] =
       Concurrent[F].pure(passwordService.validatePassword(request.password))
@@ -64,18 +54,30 @@ class RegistrationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
       case Valid(request) =>
         passwordService.hashPassword(request.password).flatMap { hashedPassword =>
           val newUser =
-            User(
+            UserProfile(
               userId = request.userId,
-              username = request.username,
-              password_hash = hashedPassword,
+              UserLoginDetails(
+                userId = request.userId,
+                username = request.username,
+                password_hash = hashedPassword
+              ),
               first_name = request.first_name,
               last_name = request.last_name,
+              UserAddress(
+                userId = request.userId,
+                street = request.street,
+                city = request.city,
+                country = request.country,
+                county = request.county,
+                postcode = request.postcode,
+                created_at = LocalDateTime.now()
+              ),
               contact_number = request.contact_number,
               email = request.email,
               role = request.role,
               created_at = LocalDateTime.now()
             )
-          userRepository.createUser(newUser).map { rows =>
+          userRepository.createUserProfile(newUser).map { rows =>
             if (rows > 0) Validated.valid(newUser)
             else Validated.invalid(List("Failed to create user."))
           }
@@ -86,13 +88,35 @@ class RegistrationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
         Concurrent[F].pure(Validated.invalid(errors))
     }
   }
+
+//  override def signUp(request: SignUpRequest): F[Validated[List[String], UserProfile]] = {
+//    val passwordValidationF: F[Validated[List[String], String]] =
+//      Concurrent[F].pure(passwordService.validatePassword(request.password))
+//
+//    (passwordValidationF, uniqueUser(request)).parMapN { (passwordValid, uniqueValid) =>
+//      passwordValid.product(uniqueValid).map(_ => request)
+//    }.flatMap {
+//      case Valid(request) =>
+//        passwordService.hashPassword(request.password).flatMap { hashedPassword =>
+//          userRepository.createUser(newUser).map { rows =>
+//            if (rows > 0) Validated.valid(newUser)
+//            else Validated.invalid(List("Failed to create user."))
+//          }
+//        }
+//
+//      case Invalid(errors) =>
+//        // Collect all validation errors
+//        Concurrent[F].pure(Validated.invalid(errors))
+//    }
+//  }
+
 }
 
-object RegistrationService {
+object RegistrationServiceAlgebra {
   def apply[F[_] : Concurrent : NonEmptyParallel](
-                                                   userRepository: UserRepositoryAlgebra[F],
+                                                   userRepository: UserProfileRepositoryAlgebra[F],
                                                    passwordService: PasswordServiceAlgebra[F]
-                                                 ): RegistrationService[F] =
+                                                 ): RegistrationServiceAlgebra[F] =
     new RegistrationServiceImpl[F](userRepository, passwordService)
 }
 

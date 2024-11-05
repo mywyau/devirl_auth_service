@@ -3,25 +3,14 @@ package services
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.{EitherT, ValidatedNel}
 import cats.effect.Concurrent
-import cats.implicits._
+import cats.implicits.*
 import models.workspaces.Workspace
-import models.workspaces.errors._
+import models.workspaces.errors.*
 import repositories.workspaces.WorkspaceRepositoryAlgebra
+import services.workspaces.algebra.WorkspaceServiceAlgebra
 
 
-trait WorkspaceService[F[_]] {
-
-  def findWorkspaceById(workspaceId: String): F[Either[WorkspaceValidationError, Workspace]]
-
-  def createWorkspace(workspace: Workspace): F[Either[WorkspaceValidationError, Int]]
-
-  def updateWorkspace(workspaceId: String, updatedWorkspace: Workspace): F[Either[WorkspaceValidationError, Int]]
-
-  def deleteWorkspace(workspaceId: String): F[Either[WorkspaceValidationError, Int]]
-}
-
-
-class WorkspaceServiceImpl[F[_] : Concurrent](repository: WorkspaceRepositoryAlgebra[F]) extends WorkspaceService[F] {
+class WorkspaceServiceImpl[F[_] : Concurrent](repository: WorkspaceRepositoryAlgebra[F]) extends WorkspaceServiceAlgebra[F] {
 
   // Validation function for workspace ID (example: make sure it's not empty or too short)
   def validateWorkspaceId(workspaceId: String): ValidatedNel[WorkspaceValidationError, String] = {

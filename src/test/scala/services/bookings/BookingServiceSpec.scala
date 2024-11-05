@@ -1,11 +1,10 @@
 package services.bookings
 
 import cats.effect.IO
-import models._
+import models.*
 import models.bookings.Confirmed
 import models.bookings.errors.BookingNotFound
-import repositories.BookingRepositoryAlgebra
-import services.BookingServiceImpl
+import repositories.bookings.BookingRepositoryAlgebra
 import weaver.SimpleIOSuite
 
 import java.time.{LocalDate, LocalDateTime}

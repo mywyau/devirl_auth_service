@@ -7,22 +7,21 @@ import models.Booking
 import models.bookings.*
 import models.bookings.errors.ValidationError
 import models.bookings.responses.{CreatedBookingResponse, DeleteBookingResponse, UpdatedBookingResponse}
-import org.http4s.circe.CirceEntityDecoder._
-import org.http4s.circe.CirceEntityEncoder._
-import org.http4s.{Method, Request, Response, Status}
-import services.BookingService
-import weaver.SimpleIOSuite
+import org.http4s.circe.CirceEntityDecoder.*
+import org.http4s.circe.CirceEntityEncoder.*
 import org.http4s.implicits.uri
-
+import org.http4s.{Method, Request, Response, Status}
+import services.bookings.algebra.BookingServiceAlgebra
+import weaver.SimpleIOSuite
 
 import java.time.{LocalDate, LocalDateTime}
 
 object TestBookingController {
-  def apply[F[_] : Concurrent](bookingService: BookingService[F]): BookingController[F] =
+  def apply[F[_] : Concurrent](bookingService: BookingServiceAlgebra[F]): BookingController[F] =
     new BookingControllerImpl[F](bookingService)
 }
 
-class MockBookingService extends BookingService[IO] {
+class MockBookingService extends BookingServiceAlgebra[IO] {
 
   // Sample booking data
   val sampleBooking_1: Booking =

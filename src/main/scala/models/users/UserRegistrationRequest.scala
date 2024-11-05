@@ -9,9 +9,14 @@ case class UserRegistrationRequest(
                                     password: String,
                                     first_name: String,
                                     last_name: String,
+                                    street: String,
+                                    city: String,
+                                    country: String,
+                                    county: Option[String],
+                                    postcode: String,
                                     contact_number: String,
+                                    email: String,
                                     role: Role,
-                                    email: String
                                   )
 
 

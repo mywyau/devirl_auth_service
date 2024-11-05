@@ -1,29 +1,18 @@
-package services
+package services.bookings
 
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.{EitherT, ValidatedNel}
 import cats.effect.Concurrent
-import cats.implicits._
+import cats.implicits.*
 import models.Booking
-import models.bookings.errors._
-import repositories.{BookingRepository, BookingRepositoryAlgebra}
+import models.bookings.errors.*
+import repositories.bookings.BookingRepositoryAlgebra
+import services.bookings.algebra.BookingServiceAlgebra
 
 import java.time.LocalDateTime
 
 
-trait BookingService[F[_]] {
-
-  def findBookingById(bookingId: String): F[Either[ValidationError, Booking]]
-
-  def createBooking(booking: Booking): F[Either[ValidationError, Int]]
-
-  def updateBooking(bookingId: String, updatedBooking: Booking): F[Either[ValidationError, Int]]
-
-  def deleteBooking(bookingId: String): F[Either[ValidationError, Int]]
-}
-
-
-class BookingServiceImpl[F[_] : Concurrent](repository: BookingRepositoryAlgebra[F]) extends BookingService[F] {
+class BookingServiceImpl[F[_] : Concurrent](repository: BookingRepositoryAlgebra[F]) extends BookingServiceAlgebra[F] {
 
   // Validation function for booking ID (example: make sure it's not empty or too short)
   def validateBookingId(bookingId: String): ValidatedNel[ValidationError, String] = {

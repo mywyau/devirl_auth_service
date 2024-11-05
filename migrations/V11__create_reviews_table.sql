@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS reviews;
 -- Create the reviews table
 CREATE TABLE reviews (
     id SERIAL PRIMARY KEY,                               -- Unique ID for each review
-    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,  -- Foreign key referencing the user who wrote the review
+    userId INT NOT NULL REFERENCES user_profile(id) ON DELETE CASCADE,  -- Foreign key referencing the user who wrote the review
     workspace_id INT NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,  -- Foreign key referencing the workspace being reviewed
     rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),  -- Rating (1 to 5 stars)
     comment TEXT,                                          -- Optional review comment
@@ -12,6 +12,6 @@ CREATE TABLE reviews (
 );
 
 -- Indexes for faster queries
-CREATE INDEX idx_user_id_reviews ON reviews (user_id);
+CREATE INDEX idx_user_id_reviews ON reviews (userId);
 CREATE INDEX idx_workspace_id_reviews ON reviews (workspace_id);
 CREATE INDEX idx_rating_reviews ON reviews (rating);

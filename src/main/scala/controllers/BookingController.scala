@@ -1,26 +1,27 @@
 package controllers
 
 import cats.effect.Concurrent
-import cats.implicits._
-import io.circe.syntax._
+import cats.implicits.*
+import io.circe.syntax.*
 import models.Booking
-import models.bookings.errors._
+import models.bookings.errors.*
 import models.bookings.responses.{CreatedBookingResponse, DeleteBookingResponse, ErrorBookingResponse, UpdatedBookingResponse}
-import org.http4s._
-import org.http4s.circe._
+import org.http4s.*
+import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
-import services._
+import services.*
+import services.bookings.algebra.BookingServiceAlgebra
 
 trait BookingController[F[_]] {
   def routes: HttpRoutes[F]
 }
 
 object BookingController {
-  def apply[F[_] : Concurrent](bookingService: BookingService[F]): BookingController[F] =
+  def apply[F[_] : Concurrent](bookingService: BookingServiceAlgebra[F]): BookingController[F] =
     new BookingControllerImpl[F](bookingService)
 }
 
-class BookingControllerImpl[F[_] : Concurrent](bookingService: BookingService[F]) extends BookingController[F] with Http4sDsl[F] {
+class BookingControllerImpl[F[_] : Concurrent](bookingService: BookingServiceAlgebra[F]) extends BookingController[F] with Http4sDsl[F] {
 
   // Create or get JSON decoder/encoder for Booking object (if needed)
   implicit val bookingDecoder: EntityDecoder[F, Booking] = jsonOf[F, Booking]

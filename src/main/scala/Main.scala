@@ -1,19 +1,22 @@
 package main
 
 import cats.NonEmptyParallel
-import cats.effect._
-import cats.implicits._
-import com.comcast.ip4s._
+import cats.effect.*
+import cats.implicits.*
+import com.comcast.ip4s.*
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
 import middleware.Middleware.throttleMiddleware
 import org.http4s.HttpRoutes
 import org.http4s.ember.server.EmberServerBuilder
-import org.http4s.implicits._
+import org.http4s.implicits.*
 import org.http4s.server.Router
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import routes.Routes._
+import routes.Routes.*
+import dev.profunktor.redis4cats.effect.Log
+import dev.profunktor.redis4cats.effect.Log.Stdout._
+
 
 object Main extends IOApp {
 
@@ -33,18 +36,21 @@ object Main extends IOApp {
       )
     } yield xa
 
-  def createRouterResource[F[_] : Concurrent : Temporal: NonEmptyParallel](transactor: HikariTransactor[F]): Resource[F, HttpRoutes[F]] = {
-    Resource.eval {
-      // Apply throttle middleware
-      throttleMiddleware(
+  def createRouterResource[F[_] : Concurrent : Temporal : NonEmptyParallel : Async: Log](transactor: HikariTransactor[F]): Resource[F, HttpRoutes[F]] = {
+    for {
+      authRoutes <- createAuthRoutes(transactor) // Already returns Resource[F, HttpRoutes[F]]
+      bookingRoutes <- Resource.pure(createBookingRoutes(transactor))
+      businessRoutes <- Resource.pure(createBusinessRoutes(transactor))
+      workspaceRoutes <- Resource.pure(createWorkspaceRoutes(transactor))
+
+      // Combine all routes under the `/cashew` prefix
+      combinedRoutes =
         Router(
-          "/cashew" -> createAuthRoutes(transactor),
-          "/cashew" -> createBookingRoutes(transactor),
-          "/cashew" -> createBusinessRoutes(transactor),
-          "/cashew" -> createWorkspaceRoutes(transactor),
+          "/cashew" -> (authRoutes <+> bookingRoutes <+> businessRoutes <+> workspaceRoutes)
         )
-      )
-    }
+      // Apply throttle middleware in the F effect context
+      throttledRoutes <- Resource.eval(throttleMiddleware(combinedRoutes))
+    } yield throttledRoutes
   }
 
   // Method to create the Ember server resource

@@ -1,10 +1,10 @@
 package services.auth
 
 import cats.effect.IO
-import models.users.{Admin, User, UserLoginRequest, Wanderer}
+import models.users.{Admin, UserProfile, UserLoginRequest, Wanderer}
+import services.auth.algebra.UserAuth
 import services.auth.constants.AuthenticationServiceConstants.*
 import services.auth.mocks.AuthenticationServiceMocks.*
-import services.{AuthenticationServiceImpl, UserAuth}
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
@@ -48,7 +48,7 @@ object AuthenticationServiceSpec extends SimpleIOSuite {
     } yield expect(result == Left("Username not found"))
   }
 
-  test("authUser should return Some(User) for a valid token") {
+  test(".authUser() - should return Some(User) for a valid token") {
 
     val passwordServiceMock = new MockPasswordService("hashed_password")
     val userRepositoryMock = new MockUserRepository(users)

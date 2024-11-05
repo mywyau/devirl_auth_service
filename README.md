@@ -147,3 +147,9 @@ http POST http://localhost:8080/api/bookings booking_id="booking_7" booking_name
 ```
 http POST http://localhost:8080/cashew/register username="mikey5922" password="secure_password" first_name="mike" last_name="smith" contact_number="+07402205071" role="user" email="mikey5922@example.com" created_at="2024-10-20T10:00:00"
 ```
+
+
+### IT Test DB
+```
+psql -h localhost -p 5450 -U cashew_user -d cashew_test_db
+```

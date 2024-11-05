@@ -1,24 +1,38 @@
 package services.auth
 
 import cats.effect.{IO, Ref}
-import models.users.{User, Wanderer}
+import models.users.{UserAddress, UserLoginDetails, UserProfile, Wanderer}
 import services.auth.mocks.{MockRefreshTokenRepository, MockTokenService, MockUserRepository}
 import weaver.SimpleIOSuite
+
 import java.time.{Instant, LocalDateTime}
 
 object SessionManagerServiceSpec extends SimpleIOSuite {
 
-  val testUser = User(
-    userId = "userId",
-    username = "username",
-    password_hash = "hashed_password",
-    first_name = "John",
-    last_name = "Doe",
-    contact_number = "07402205071",
-    email = "john@example.com",
-    role = Wanderer,
-    created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-  )
+  val testUser =
+    UserProfile(
+      userId = "userId",
+      UserLoginDetails(
+        userId = "userId",
+        username = "username",
+        password_hash = "hashed_password"
+      ),
+      first_name = "John",
+      last_name = "Doe",
+      UserAddress(
+        userId = "user_id_1",
+        street = "fake street 1",
+        city = "fake city 1",
+        country = "UK",
+        county = Some("County 1"),
+        postcode = "CF3 3NJ",
+        created_at = LocalDateTime.now()
+      ),
+      contact_number = "07402205071",
+      email = "john@example.com",
+      role = Wanderer,
+      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+    )
 
   test(".generateTokens() - should return a new access and refresh token") {
     for {

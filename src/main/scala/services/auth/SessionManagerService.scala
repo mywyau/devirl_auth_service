@@ -3,9 +3,10 @@ package services.auth
 import cats.Monad
 import cats.effect.Concurrent
 import cats.syntax.all.*
-import cats.syntax.functor.*
-import models.users.User
-import repositories.{RefreshTokenRepositoryAlgebra, UserRepositoryAlgebra}
+import models.users.UserProfile
+import repositories.RefreshTokenRepositoryAlgebra
+import repositories.users.UserProfileRepositoryAlgebra
+import services.auth.algebra.TokenServiceAlgebra
 
 import java.time.Instant
 import java.util.UUID
@@ -13,7 +14,7 @@ import java.util.UUID
 trait SessionManagerAlgebra[F[_]] {
 
   /** Generate access and refresh tokens for a user */
-  def generateTokens(user: User): F[(String, String)]
+  def generateTokens(user: UserProfile): F[(String, String)]
 
   /** Refresh an access token using a refresh token */
   def refreshAccessToken(username: String, refreshToken: String): F[Option[String]]
@@ -25,11 +26,11 @@ trait SessionManagerAlgebra[F[_]] {
 class SessionManager[F[_] : Concurrent : Monad](
                                                  tokenService: TokenServiceAlgebra[F],
                                                  refreshTokenRepo: RefreshTokenRepositoryAlgebra[F],
-                                                 userRepository: UserRepositoryAlgebra[F]
+                                                 userRepository: UserProfileRepositoryAlgebra[F]
                                                ) extends SessionManagerAlgebra[F] {
 
   // Generate access and refresh tokens for a user
-  override def generateTokens(user: User): F[(String, String)] = {
+  override def generateTokens(user: UserProfile): F[(String, String)] = {
     for {
       accessToken <- tokenService.createToken(user, Instant.now.plusSeconds(900)) // 15 minutes expiration
       refreshToken = UUID.randomUUID().toString

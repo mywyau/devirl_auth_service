@@ -4,7 +4,6 @@ import cats.effect.IO
 import models.business.Business
 import models.business.errors.BusinessNotFound
 import repositories.business.BusinessRepositoryAlgebra
-import services.BusinessServiceImpl
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
@@ -19,14 +18,13 @@ class MockBusinessRepository extends BusinessRepositoryAlgebra[IO] {
     repository.business = initial
     repository
   }
-
-  // Get all businesses
-  override def getAllBusiness: IO[List[Business]] = IO.pure(business.values.toList)
-
-  // Find business by ID
-  override def findBusinessById(businessId: String): IO[Option[Business]] = IO.pure(business.get(businessId))
-
-  // Find business by name (This is corrected to search through the values)
+  
+  override def getAllBusiness: IO[List[Business]] = 
+    IO.pure(business.values.toList)
+  
+  override def findBusinessById(businessId: String): IO[Option[Business]] = 
+    IO.pure(business.get(businessId))
+  
   override def findBusinessByName(businessName: String): IO[Option[Business]] = {
     IO.pure(business.values.find(_.business_name == businessName))
   }

@@ -1,8 +1,8 @@
-package repository
+package repository.bookings
 
 import cats.effect.IO
-import models._
-import repositories.BookingRepositoryAlgebra
+import models.*
+import repositories.bookings.BookingRepositoryAlgebra
 
 class MockBookingRepository extends BookingRepositoryAlgebra[IO] {
 

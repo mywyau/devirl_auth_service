@@ -1,66 +1,34 @@
 package controllers.workspaces
 
 import cats.effect.{Concurrent, IO}
+import controllers.workspaces.mocks.MockWorkspaceService
 import controllers.{WorkspaceController, WorkspaceControllerImpl}
-import io.circe.syntax._
+import io.circe.syntax.*
 import models.workspaces.Workspace
-import models.workspaces.errors.WorkspaceValidationError
-import models.workspaces.responses._
-import org.http4s.circe.CirceEntityDecoder._
-import org.http4s.circe.CirceEntityEncoder._
-import org.http4s.{Method, Request, Response, Status}
-import services.WorkspaceService
-import weaver.SimpleIOSuite
+import models.workspaces.responses.*
+import org.http4s.circe.CirceEntityDecoder.*
+import org.http4s.circe.CirceEntityEncoder.*
 import org.http4s.implicits.uri
+import org.http4s.{Method, Request, Response, Status}
+import services.workspaces.algebra.WorkspaceServiceAlgebra
+import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
 
 object TestWorkspaceController {
-  def apply[F[_] : Concurrent](workspaceService: WorkspaceService[F]): WorkspaceController[F] =
+  def apply[F[_] : Concurrent](workspaceService: WorkspaceServiceAlgebra[F]): WorkspaceController[F] =
     new WorkspaceControllerImpl[F](workspaceService)
-}
-
-class MockWorkspaceService extends WorkspaceService[IO] {
-
-  val sample_workspace1: Workspace =
-    Workspace(
-      id = Some(1),
-      business_id = "BUS123456",
-      workspace_id = "WORK12345",
-      name = "Desk 1",
-      description = "A modern coworking space with all amenities for tech startups.",
-      address = "123 Main Street",
-      city = "New York",
-      country = "USA",
-      postcode = "10001",
-      price_per_day = BigDecimal(75.00),
-      latitude = BigDecimal(40.7128),
-      longitude = BigDecimal(-74.0060),
-      created_at = LocalDateTime.of(2024, 10, 10, 10, 0)
-    )
-
-  override def findWorkspaceById(workspaceId: String): IO[Either[WorkspaceValidationError, Workspace]] =
-    IO.pure(Right(sample_workspace1))
-
-  override def createWorkspace(workspace: Workspace): IO[Either[WorkspaceValidationError, Int]] =
-    IO.pure(Right(1))
-
-  override def updateWorkspace(workspaceId: String, workspace: Workspace): IO[Either[WorkspaceValidationError, Int]] =
-    IO.pure(Right(1))
-
-  override def deleteWorkspace(workspaceId: String): IO[Either[WorkspaceValidationError, Int]] =
-    IO.pure(Right(1))
 }
 
 object WorkspaceControllerSpec extends SimpleIOSuite {
 
   val workspaceService = new MockWorkspaceService
 
-  test("GET /workspace/:workspaceId should return the workspace when it exists") {
+  test("GET - /workspace/find/:workspaceId - should return the workspace when it exists") {
 
     val controller = WorkspaceController[IO](workspaceService)
 
-    val request = Request[IO](Method.GET, uri"/workspace/1")
+    val request = Request[IO](Method.GET, uri"/workspace/find/1")
     val responseIO: IO[Response[IO]] = controller.routes.orNotFound.run(request)
 
     for {
@@ -74,7 +42,7 @@ object WorkspaceControllerSpec extends SimpleIOSuite {
     }
   }
 
-  test("POST /workspace should create a new workspace and return Created status with body") {
+  test("POST - /workspace/add - should create a new workspace and return Created status with body") {
     val workspaceService = new MockWorkspaceService
     val controller = WorkspaceController[IO](workspaceService)
 
@@ -99,7 +67,7 @@ object WorkspaceControllerSpec extends SimpleIOSuite {
     // Create a POST request with the workspace as JSON
     val request = Request[IO](
       method = Method.POST,
-      uri = uri"/workspace"
+      uri = uri"/workspace/add"
     ).withEntity(newWorkspace.asJson) // Encode workspace as JSON for the request body
 
     val responseIO: IO[Response[IO]] = controller.routes.orNotFound.run(request)
@@ -115,7 +83,7 @@ object WorkspaceControllerSpec extends SimpleIOSuite {
     }
   }
 
-  test("PUT /workspace/:workspaceId should update a old workspace and return OK status with body") {
+  test("PUT - /workspace/update/:workspaceId - should update a old workspace and return OK status with body") {
 
     val workspaceService = new MockWorkspaceService
     val controller = WorkspaceController[IO](workspaceService)
@@ -138,10 +106,10 @@ object WorkspaceControllerSpec extends SimpleIOSuite {
         created_at = LocalDateTime.of(2024, 10, 10, 10, 0)
       )
 
-    // Create a POST request with the workspace as JSON
+    // Create a PUT request with the workspace as JSON
     val request = Request[IO](
       method = Method.PUT,
-      uri = uri"/workspace/1"
+      uri = uri"/workspace/update/1"
     ).withEntity(updatedWorkspace.asJson) // Encode workspace as JSON for the request body
 
     val responseIO: IO[Response[IO]] = controller.routes.orNotFound.run(request)
@@ -157,15 +125,15 @@ object WorkspaceControllerSpec extends SimpleIOSuite {
     }
   }
 
-  test("DELETE /workspace/:workspaceId should update a old workspace and return OK status with body") {
+  test("DELETE - /workspace/delete/:workspaceId - should update a old workspace and return OK status with body") {
 
     val workspaceService = new MockWorkspaceService
     val controller = WorkspaceController[IO](workspaceService)
 
-    // Create a POST request with the workspace as JSON
+    // Create a DELETE request with the workspace as JSON
     val request = Request[IO](
       method = Method.DELETE,
-      uri = uri"/workspace/1"
+      uri = uri"/workspace/delete/1"
     ) // Encode workspace as JSON for the request body
 
     val responseIO: IO[Response[IO]] = controller.routes.orNotFound.run(request)

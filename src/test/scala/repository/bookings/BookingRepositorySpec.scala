@@ -2,7 +2,6 @@ package repository.bookings
 
 import models._
 import models.bookings.Confirmed
-import repository.MockBookingRepository
 import weaver.SimpleIOSuite
 
 import java.time.{LocalDate, LocalDateTime}

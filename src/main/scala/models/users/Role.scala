@@ -54,7 +54,7 @@ case object EditBooking extends Permission
 
 case object DeleteBooking extends Permission
 
-object Permissons {
+object Permissions {
 
   val rolePermissions: Map[Role, Set[Permission]] =
     Map(

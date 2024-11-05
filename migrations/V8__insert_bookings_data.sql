@@ -1,5 +1,5 @@
 -- Insert initial bookings (ensure these correspond to valid user_id and workspace_id)
-INSERT INTO bookings (booking_id, booking_name, user_id, workspace_id, booking_date, start_datetime, end_datetime, status, created_at)
+INSERT INTO bookings (booking_id, booking_name, userId, workspace_id, booking_date, start_datetime, end_datetime, status, created_at)
 VALUES
 ('booking_1', 'mikey party booking',  1, 1, '2024-10-10', '2024-10-10 09:00:00', '2024-10-10 12:00:00', 'Confirmed', NOW()),
 ('booking_2', 'mikey work booking',   2, 2, '2024-10-11', '2024-10-11 13:00:00', '2024-10-11 16:00:00', 'Pending', NOW()),

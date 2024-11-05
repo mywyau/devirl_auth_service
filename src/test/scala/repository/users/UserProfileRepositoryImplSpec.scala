@@ -2,56 +2,52 @@ package repository.users
 
 import cats.effect.IO
 import cats.effect.kernel.Ref
-import models.users.User
-import models.users.Wanderer
-import repositories.UserRepositoryAlgebra
+import models.users.*
+import repository.users.mocks.MockUserProfileRepository
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
 
-object UserRepositoryImplSpec extends SimpleIOSuite {
+object UserProfileRepositoryImplSpec extends SimpleIOSuite {
 
-  // Helper method to create a test user
-  def testUser(username: String, contactNumber: String, email: String): User =
-    User(
+  def testUser(username: String, contactNumber: String, email: String): UserProfile =
+    UserProfile(
       userId = "user_id_1",
-      username = username,
-      password_hash = "hashed_password",
+      userLoginDetails =
+        UserLoginDetails(
+          userId = "user_id_1",
+          username = username,
+          password_hash = "hashed_password"
+        ),
       first_name = "John",
       last_name = "Doe",
+      userAddress =
+        UserAddress(
+          userId = "user_id_1",
+          street = "fake street 1",
+          city = "fake city 1",
+          country = "UK",
+          county = Some("County 1"),
+          postcode = "CF3 3NJ",
+          created_at = LocalDateTime.now()
+        ),
       contact_number = contactNumber,
       email = email,
       role = Wanderer,
       created_at = LocalDateTime.now()
     )
 
-  // Mock UserRepositoryAlgebra using Cats Ref to simulate state
-  case class MockUserRepository(ref: Ref[IO, List[User]]) extends UserRepositoryAlgebra[IO] {
-    override def createUser(user: User): IO[Int] =
-      ref.modify(users => (user :: users, 1)) // Simulate inserting the user and returning success
-
-    override def findByUsername(username: String): IO[Option[User]] =
-      ref.get.map(_.find(_.username == username)) // Simulate finding the user by username
-
-    override def findByContactNumber(contactNumber: String): IO[Option[User]] =
-      ref.get.map(_.find(_.contact_number == contactNumber)) // Simulate finding the user by contact number
-
-    override def findByEmail(email: String): IO[Option[User]] =
-      ref.get.map(_.find(_.email == email)) // Simulate finding the user by email
-  }
-
   // Helper method to create a mock repository with initial state
-  def createMockRepo(initialUsers: List[User]): IO[MockUserRepository] =
-    Ref.of[IO, List[User]](initialUsers).map(MockUserRepository.apply)
+  def createMockRepo(initialUsers: List[UserProfile]): IO[MockUserProfileRepository] =
+    Ref.of[IO, List[UserProfile]](initialUsers).map(MockUserProfileRepository.apply)
 
-  // Tests
 
   test(".createUser() - should successfully create a new user") {
     val newUser = testUser("newuser", "123456789", "newuser@example.com")
 
     for {
       mockRepo <- createMockRepo(Nil) // No users initially
-      result <- mockRepo.createUser(newUser)
+      result <- mockRepo.createUserProfile(newUser)
       users <- mockRepo.ref.get
     } yield expect(result == 1) and expect(users.contains(newUser))
   }
@@ -100,6 +96,37 @@ object UserRepositoryImplSpec extends SimpleIOSuite {
     for {
       mockRepo <- createMockRepo(Nil) // No users initially
       result <- mockRepo.findByEmail("nonexistentemail@example.com")
+    } yield expect(result.isEmpty)
+  }
+
+  test(".findByUserId() - should return a user if userId exists") {
+    val existingUser = testUser("user1", "123456789", "user1@example.com")
+    for {
+      mockRepo <- createMockRepo(List(existingUser)) // User already exists
+      result <- mockRepo.findByUserId("user_id_1")
+    } yield expect(result.contains(existingUser))
+  }
+
+  test(".findByUserId() - should return None if userId does not exist") {
+    for {
+      mockRepo <- createMockRepo(Nil) // No users initially
+      result <- mockRepo.findByUserId("nonexistentUserId")
+    } yield expect(result.isEmpty)
+  }
+
+  test(".updateUserRole() - should update the role if userId exists") {
+    val existingUser = testUser("user1", "123456789", "user1@example.com")
+    val updatedRole = Business // Assuming Business is a valid Role
+    for {
+      mockRepo <- createMockRepo(List(existingUser))
+      updatedUser <- mockRepo.updateUserRole("user_id_1", updatedRole)
+    } yield expect(updatedUser.exists(_.role == updatedRole))
+  }
+
+  test(".updateUserRole() - should return None if userId does not exist") {
+    for {
+      mockRepo <- createMockRepo(Nil)
+      result <- mockRepo.updateUserRole("nonexistentUserId", Business)
     } yield expect(result.isEmpty)
   }
 }

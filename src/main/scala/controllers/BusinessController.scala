@@ -1,26 +1,27 @@
 package controllers
 
 import cats.effect.Concurrent
-import cats.implicits._
-import io.circe.syntax._
+import cats.implicits.*
+import io.circe.syntax.*
 import models.business.Business
 import models.business.errors.{BusinessNotFound, InvalidBusinessId, InvalidTimeRange}
 import models.business.responses.{CreatedBusinessResponse, DeleteBusinessResponse, ErrorBusinessResponse, UpdatedBusinessResponse}
-import org.http4s._
-import org.http4s.circe._
+import org.http4s.*
+import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
-import services._
+import services.*
+import services.business.algebra.BusinessServiceAlgebra
 
 trait BusinessController[F[_]] {
   def routes: HttpRoutes[F]
 }
 
 object BusinessController {
-  def apply[F[_] : Concurrent](businessService: BusinessService[F]): BusinessController[F] =
+  def apply[F[_] : Concurrent](businessService: BusinessServiceAlgebra[F]): BusinessController[F] =
     new BusinessControllerImpl[F](businessService)
 }
 
-class BusinessControllerImpl[F[_] : Concurrent](businessService: BusinessService[F]) extends BusinessController[F] with Http4sDsl[F] {
+class BusinessControllerImpl[F[_] : Concurrent](businessService: BusinessServiceAlgebra[F]) extends BusinessController[F] with Http4sDsl[F] {
 
   // Create or get JSON decoder/encoder for Business object (if needed)
   implicit val businessDecoder: EntityDecoder[F, Business] = jsonOf[F, Business]

@@ -4,18 +4,10 @@ import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
+import services.auth.algebra.PasswordServiceAlgebra
 
 import java.security.MessageDigest
 import java.util.Base64
-
-trait PasswordServiceAlgebra[F[_]] {
-
-  def validatePassword(plainTextPassword: String): Validated[List[String], String]
-
-  def hashPassword(plainTextPassword: String): F[String]
-
-  def checkPassword(plainTextPassword: String, hashedPassword: String): F[Boolean]
-}
 
 class PasswordServiceImpl[F[_] : Concurrent] extends PasswordServiceAlgebra[F] {
 

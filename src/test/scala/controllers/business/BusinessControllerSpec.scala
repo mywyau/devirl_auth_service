@@ -1,57 +1,31 @@
 package controllers.business
 
 import cats.effect.{Concurrent, IO}
+import controllers.business.constants.BusinessControllerConstants.sampleBusiness_1
+import controllers.business.mocks.MockBusinessService
 import controllers.{BusinessController, BusinessControllerImpl}
 import io.circe.syntax.*
 import models.business.Business
-import models.business.errors.BusinessValidationError
 import models.business.responses.{CreatedBusinessResponse, DeleteBusinessResponse, UpdatedBusinessResponse}
 import org.http4s.circe.CirceEntityDecoder.*
 import org.http4s.circe.CirceEntityEncoder.*
 import org.http4s.implicits.*
 import org.http4s.{Method, Request, Response, Status}
-import services.BusinessService
+import services.business.algebra.BusinessServiceAlgebra
 import weaver.SimpleIOSuite
-import org.http4s.implicits.uri
-
 
 import java.time.LocalDateTime
 
 object TestBusinessController {
-  def apply[F[_] : Concurrent](businessService: BusinessService[F]): BusinessController[F] =
+  def apply[F[_] : Concurrent](businessService: BusinessServiceAlgebra[F]): BusinessController[F] =
     new BusinessControllerImpl[F](businessService)
-}
-
-class MockBusinessService extends BusinessService[IO] {
-
-  val sampleBusiness_1: Business =
-    Business(
-      id = Some(1),
-      business_id = "business_1",
-      business_name = "Sample Business 1",
-      contact_number = "07402205071",
-      contact_email = "business_1@gmail.com",
-      created_at = LocalDateTime.of(2024, 10, 5, 15, 0)
-    )
-
-  override def findBusinessById(businessId: String): IO[Either[BusinessValidationError, Business]] =
-    IO.pure(Right(sampleBusiness_1))
-
-  override def createBusiness(business: Business): IO[Either[BusinessValidationError, Int]] =
-    IO.pure(Right(1))
-
-  override def updateBusiness(businessId: String, business: Business): IO[Either[BusinessValidationError, Int]] =
-    IO.pure(Right(1))
-
-  override def deleteBusiness(businessId: String): IO[Either[BusinessValidationError, Int]] =
-    IO.pure(Right(1))
 }
 
 object BusinessControllerSpec extends SimpleIOSuite {
 
   val businessService = new MockBusinessService
 
-  test("GET /business/:businessId should return the business when it exists") {
+  test("GET - /business/:businessId - should return the business when it exists") {
 
     val controller = BusinessController[IO](businessService)
 
@@ -64,12 +38,12 @@ object BusinessControllerSpec extends SimpleIOSuite {
     } yield {
       expect.all(
         response.status == Status.Ok,
-        business == businessService.sampleBusiness_1
+        business == sampleBusiness_1
       )
     }
   }
 
-  test("POST /business should create a new business and return Created status with body") {
+  test("POST - /business - should create a new business and return Created status with body") {
     val businessService = new MockBusinessService
     val controller = BusinessController[IO](businessService)
 
@@ -103,7 +77,7 @@ object BusinessControllerSpec extends SimpleIOSuite {
     }
   }
 
-  test("PUT /business/:businessId should update a old business and return OK status with body") {
+  test("PUT - /business/:businessId - should update a old business and return OK status with body") {
 
     val businessService = new MockBusinessService
     val controller = BusinessController[IO](businessService)
@@ -138,7 +112,7 @@ object BusinessControllerSpec extends SimpleIOSuite {
     }
   }
 
-  test("DELETE /business/:businessId should update a old business and return OK status with body") {
+  test("DELETE - /business/:businessId - should update a old business and return OK status with body") {
 
     val businessService = new MockBusinessService
     val controller = BusinessController[IO](businessService)

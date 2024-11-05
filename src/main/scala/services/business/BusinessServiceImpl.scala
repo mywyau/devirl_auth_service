@@ -1,27 +1,16 @@
-package services
+package services.business
 
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.{EitherT, ValidatedNel}
 import cats.effect.Concurrent
-import cats.implicits._
+import cats.implicits.*
 import models.business.Business
 import models.business.errors.{BusinessNotFound, BusinessValidationError, InvalidBusinessId}
 import repositories.business.BusinessRepositoryAlgebra
+import services.business.algebra.BusinessServiceAlgebra
 
 
-trait BusinessService[F[_]] {
-
-  def findBusinessById(businessId: String): F[Either[BusinessValidationError, Business]]
-
-  def createBusiness(business: Business): F[Either[BusinessValidationError, Int]]
-
-  def updateBusiness(businessId: String, updatedBusiness: Business): F[Either[BusinessValidationError, Int]]
-
-  def deleteBusiness(businessId: String): F[Either[BusinessValidationError, Int]]
-}
-
-
-class BusinessServiceImpl[F[_] : Concurrent](repository: BusinessRepositoryAlgebra[F]) extends BusinessService[F] {
+class BusinessServiceImpl[F[_] : Concurrent](repository: BusinessRepositoryAlgebra[F]) extends BusinessServiceAlgebra[F] {
 
   // Validation function for business ID (example: make sure it's not empty or too short)
   def validateBusinessId(businessId: String): ValidatedNel[BusinessValidationError, String] = {
