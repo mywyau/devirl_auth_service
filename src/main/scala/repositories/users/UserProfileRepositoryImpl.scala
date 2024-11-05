@@ -11,6 +11,7 @@ import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import models.users.*
+import models.users.database.UserLoginDetails
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -40,42 +41,6 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
   implicit val roleMeta: Meta[Role] = Meta[String].imap(Role.fromString)(_.toString)
 
   override def createUserProfile(user: UserProfile): F[Int] = {
-//    println(
-//      s"""
-//    INSERT INTO user_profile (
-//      userId,
-//      username,
-//      password_hash,
-//      first_name,
-//      last_name,
-//      street,
-//      city,
-//      country,
-//      county,
-//      postcode,
-//      contact_number,
-//      email,
-//      role,
-//      created_at
-//    ) VALUES (
-//      '${user.userId}',
-//      '${user.userLoginDetails.username}',
-//      '${user.userLoginDetails.password_hash}',
-//      '${user.first_name}',
-//      '${user.last_name}',
-//      '${user.userAddress.street}',
-//      '${user.userAddress.city}',
-//      '${user.userAddress.country}',
-//      '${user.userAddress.county}',
-//      '${user.userAddress.postcode}',
-//      '${user.contact_number}',
-//      '${user.email}',
-//      '${user.role.toString}',
-//      '${user.created_at}'
-//    )
-//  """
-//    )
-
     sql"""
       INSERT INTO user_profile (
         userId,
@@ -128,9 +93,13 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
           userId = user.userId,
           userLoginDetails =
             UserLoginDetails(
-              userId = user.userId,
+              id = Some(user.id),
+              user_id = user.userId,
               username = user.username,
-              password_hash = user.password_hash
+              password_hash = user.password_hash,
+              email = user.email,
+              role = user.role,
+              created_at = user.created_at
             ),
           first_name = user.first_name,
           last_name = user.last_name,
@@ -169,9 +138,13 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
           userId = user.userId,
           userLoginDetails =
             UserLoginDetails(
-              userId = user.userId,
+              id = Some(user.id),
+              user_id = user.userId,
               username = user.username,
-              password_hash = user.password_hash
+              password_hash = user.password_hash,
+              email = user.email,
+              role = user.role,
+              created_at = user.created_at
             ),
           first_name = user.first_name,
           last_name = user.last_name,
@@ -210,9 +183,13 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
           userId = user.userId,
           userLoginDetails =
             UserLoginDetails(
-              userId = user.userId,
+              id = Some(user.id),
+              user_id = user.userId,
               username = user.username,
-              password_hash = user.password_hash
+              password_hash = user.password_hash,
+              email = user.email,
+              role = user.role,
+              created_at = user.created_at
             ),
           first_name = user.first_name,
           last_name = user.last_name,
@@ -251,9 +228,13 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
           userId = user.userId,
           userLoginDetails =
             UserLoginDetails(
-              userId = user.userId,
+              id = Some(user.id),
+              user_id = user.userId,
               username = user.username,
-              password_hash = user.password_hash
+              password_hash = user.password_hash,
+              email = user.email,
+              role = user.role,
+              created_at = user.created_at
             ),
           first_name = user.first_name,
           last_name = user.last_name,
@@ -304,9 +285,13 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
           userId = userSql.userId,
           userLoginDetails =
             UserLoginDetails(
-              userId = userSql.userId,
+              id = Some(userSql.id),
+              user_id = userSql.userId,
               username = userSql.username,
-              password_hash = userSql.password_hash
+              password_hash = userSql.password_hash,
+              email = userSql.email,
+              role = userSql.role,
+              created_at = userSql.created_at
             ),
           first_name = userSql.first_name,
           last_name = userSql.last_name,

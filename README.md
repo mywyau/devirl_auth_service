@@ -156,3 +156,8 @@ http POST http://localhost:8080/cashew/register username="mikey5922" password="s
 ```
 psql -h localhost -p 5450 -U cashew_user -d cashew_test_db
 ```
+
+### Create user request
+```
+http POST http://localhost:8080/cashew/register userId="user_id_123" username="newuser" password="SecurePass123@" email="newuser@example.com" role="Wanderer" created_at="2024-01-01T12:00:00"
+```

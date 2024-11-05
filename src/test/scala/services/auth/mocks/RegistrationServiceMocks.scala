@@ -3,7 +3,8 @@ package services.auth.mocks
 import cats.data.Validated
 import cats.effect.IO
 import models.users.*
-import repositories.users.UserProfileRepositoryAlgebra
+import models.users.database.UserLoginDetails
+import repositories.users.{UserLoginDetailsRepositoryAlgebra, UserProfileRepositoryAlgebra}
 import services.auth.algebra.PasswordServiceAlgebra
 import services.auth.constants.RegistrationServiceConstants.*
 
@@ -11,23 +12,21 @@ import java.time.LocalDateTime
 
 object RegistrationServiceMocks {
 
-  class MockUserRepository(
-                            existingUsers: Map[String, UserProfile] = Map.empty
-                          ) extends UserProfileRepositoryAlgebra[IO] {
+  class MockUserLoginDetailsRepository(
+                            existingUserLoginDetails: Map[String, UserLoginDetails] = Map.empty
+                          ) extends UserLoginDetailsRepositoryAlgebra[IO] {
 
-    def showAllUsers: IO[Map[String, UserProfile]] = IO.pure(existingUsers)
+    def showAllUsers: IO[Map[String, UserLoginDetails]] = IO.pure(existingUserLoginDetails)
 
-    override def findByUsername(username: String): IO[Option[UserProfile]] = IO.pure(existingUsers.get(username))
+    override def createUserLoginDetails(user: UserLoginDetails): IO[Int] = IO.pure(1) // Assume user creation always succeeds
 
-    override def findByContactNumber(contactNumber: String): IO[Option[UserProfile]] = IO.pure(existingUsers.values.find(_.contact_number.contains(contactNumber)))
+    override def findByUserId(userId: String): IO[Option[UserLoginDetails]] = IO.pure(existingUserLoginDetails.get(userId))
 
-    override def findByEmail(email: String): IO[Option[UserProfile]] = IO.pure(existingUsers.values.find(_.email.contains(email)))
-
-    override def createUserProfile(user: UserProfile): IO[Int] = IO.pure(1) // Assume user creation always succeeds
-
-    override def findByUserId(userId: String): IO[Option[UserProfile]] = ???
-
-    override def updateUserRole(userId: String, desiredRole: Role): IO[Option[UserProfile]] = ???
+    override def findByUsername(username: String): IO[Option[UserLoginDetails]] = IO.pure(existingUserLoginDetails.get(username))
+    
+    override def findByEmail(email: String): IO[Option[UserLoginDetails]] = IO.pure(existingUserLoginDetails.values.find(_.email.contains(email)))
+    
+    override def updateUserLoginDetails(userId: String, userLoginDetails: UserLoginDetails): IO[Option[UserLoginDetails]] = ???
   }
 
   class MockPasswordService(

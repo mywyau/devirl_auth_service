@@ -2,6 +2,7 @@ package models.users
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
+import models.users.database.UserLoginDetails
 
 import java.time.LocalDateTime
 

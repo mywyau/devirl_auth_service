@@ -2,7 +2,8 @@ package services.auth
 
 import cats.effect.{IO, Ref}
 import io.circe.syntax.*
-import models.users.{UserAddress, UserLoginDetails, UserProfile}
+import models.users.database.UserLoginDetails
+import models.users.{UserAddress, UserProfile, Wanderer}
 import pdi.jwt.{JwtAlgorithm, JwtCirce}
 import weaver.SimpleIOSuite
 
@@ -28,9 +29,13 @@ object TokenServiceSpec extends SimpleIOSuite {
     UserProfile(
       userId = "user_id_1",
       UserLoginDetails(
-        userId = "user_id_1",
+        id = Some(1),
+        user_id = "user_id_1",
         username = "username",
-        password_hash = "hashed_password"
+        password_hash = "hashed_password",
+        email = "john@example.com",
+        role = Wanderer,
+        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       ),
       first_name = "John",
       last_name = "Doe",

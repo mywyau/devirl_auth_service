@@ -3,6 +3,7 @@ package services.auth.mocks
 import cats.effect.{IO, Ref}
 import cats.syntax.all.*
 import models.users.*
+import models.users.database.UserLoginDetails
 import repositories.RefreshTokenRepositoryAlgebra
 import repositories.users.UserProfileRepositoryAlgebra
 import services.auth.algebra.TokenServiceAlgebra
@@ -53,9 +54,13 @@ class MockUserRepository extends UserProfileRepositoryAlgebra[IO] {
       UserProfile(
         userId = "userId",
         UserLoginDetails(
-          userId = "userId",
+          id = Some(1),
+          user_id = "userId",
           username = "username",
           password_hash = "hashed_password",
+          email = "john@example.com",
+          role = Wanderer,
+          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
         ),
         first_name = "John",
         last_name = "Doe",

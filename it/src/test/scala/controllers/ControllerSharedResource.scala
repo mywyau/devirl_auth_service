@@ -1,7 +1,6 @@
 package controllers
 
 import cats.effect.*
-import dev.profunktor.redis4cats.effect.Log
 import doobie.*
 import doobie.hikari.HikariTransactor
 import doobie.implicits.*
@@ -35,14 +34,14 @@ object ControllerSharedResource extends GlobalResource {
       sql"""
         SELECT column_name, data_type, is_nullable
         FROM information_schema.columns
-        WHERE table_name = 'user_profile'
+        WHERE table_name = 'user_login_details'
       """.query[(String, String, String)]
         .to[List]
         .transact(xa)
 
     schemaQuery.flatMap { schema =>
       IO {
-        println("Table Schema for 'user_profile':")
+        println("Table Schema for 'user_login_details':")
         schema.foreach { case (name, typ, nullable) =>
           println(s"Column: $name, Type: $typ, Nullable: $nullable")
         }

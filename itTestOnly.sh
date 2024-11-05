@@ -19,14 +19,11 @@ fi
 # Set default test spec to "all" if not provided
 TESTSPEC=${1:-all}
 
-## Normalize to lowercase for case-insensitive matching
-#TESTSPEC=$(echo "$TESTSPEC" | tr '[:upper:]' '[:lower:]')
-
 # Run the tests based on the specified test spec
 if [ "$TESTSPEC" = "all" ]; then
   echo "Running all it tests"
-  sbt it/test
+  sbt clearCaches clean it/test
 else
   echo "Running it tests matching '$TESTSPEC'"
-  sbt "it/testOnly *$TESTSPEC*"
+  sbt "clearCaches clean it/testOnly *$TESTSPEC*"
 fi

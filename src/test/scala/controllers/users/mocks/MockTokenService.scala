@@ -3,8 +3,9 @@ package controllers.users.mocks
 import cats.data.Validated
 import cats.effect.IO
 import models.users.*
+import models.users.database.UserLoginDetails
+import models.users.requests.UserSignUpRequest
 import org.http4s.*
-import org.http4s.circe.*
 import services.auth.algebra.*
 import services.auth.{InvalidToken, TokenStatus}
 
@@ -42,10 +43,10 @@ case class MockAuthService(
 
 
 class MockRegistrationService(
-                               registerUserMock: UserRegistrationRequest => IO[Validated[List[String], UserProfile]]
+                               registerUserMock: UserSignUpRequest => IO[Validated[List[String], UserLoginDetails]]
                              ) extends RegistrationServiceAlgebra[IO] {
 
-  def registerUser(request: UserRegistrationRequest): IO[Validated[List[String], UserProfile]] = {
+
+  override def registerUser(request: UserSignUpRequest): IO[Validated[List[String], UserLoginDetails]] =
     registerUserMock(request)
-  }
 }

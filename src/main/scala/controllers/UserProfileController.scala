@@ -4,8 +4,9 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
+import models.users.requests.UserSignUpRequest
 import models.users.responses.*
-import models.users.{SignUpRequest, UserLoginRequest, UserRegistrationRequest, UserRoleUpdateRequest}
+import models.users.{UserLoginRequest, UserRegistrationRequest, UserRoleUpdateRequest}
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
@@ -28,7 +29,7 @@ class UserControllerImpl[F[_] : Concurrent](
                                              tokenService: TokenServiceAlgebra[F]
                                            ) extends Http4sDsl[F] with UserProfileController[F] {
 
-  implicit val signUpRequestDecoder: EntityDecoder[F, SignUpRequest] = jsonOf[F, SignUpRequest]
+  implicit val userSignUpRequestDecoder: EntityDecoder[F, UserSignUpRequest] = jsonOf[F, UserSignUpRequest]
   implicit val registrationDecoder: EntityDecoder[F, UserRegistrationRequest] = jsonOf[F, UserRegistrationRequest]
   implicit val loginDecoder: EntityDecoder[F, UserLoginRequest] = jsonOf[F, UserLoginRequest]
   implicit val roleUpdateDecoder: EntityDecoder[F, UserRoleUpdateRequest] = jsonOf[F, UserRoleUpdateRequest]
@@ -37,7 +38,7 @@ class UserControllerImpl[F[_] : Concurrent](
 
     // Register a new user
     case req@POST -> Root / "register" =>
-      req.decode[UserRegistrationRequest] { request =>
+      req.decode[UserSignUpRequest] { request =>
         registrationService.registerUser(request).flatMap {
           case Valid(user) =>
             Created(LoginResponse("User created successfully").asJson)
@@ -78,19 +79,5 @@ class UserControllerImpl[F[_] : Concurrent](
           case Left(error) => Forbidden(ErrorUserResponse(List(error)).asJson)
         }
       }
-
-    //    // Get user details
-    //    case GET -> Root / "user" / userId =>
-    //      authService.getUserDetails(userId).flatMap {
-    //        case Some(user) => Ok(user.asJson)
-    //        case None => NotFound(ErrorUserResponse(List("User not found")).asJson)
-    //      }
-    //
-    //    // Sample protected route requiring specific role (e.g., Admin access only)
-    //    case GET -> Root / "admin" / "protected" =>
-    //      authService.requireRole("Admin").flatMap {
-    //        case true => Ok(LoginResponse("Welcome, Admin!").asJson)
-    //        case false => Forbidden(ErrorUserResponse(List("Access denied")).asJson)
-    //      }
   }
 }

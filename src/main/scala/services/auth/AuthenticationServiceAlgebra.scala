@@ -5,6 +5,7 @@ import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.users.*
+import models.users.database.UserLoginDetails
 import org.http4s.Request
 import org.http4s.server.AuthMiddleware
 import org.typelevel.ci.CIStringSyntax
@@ -74,9 +75,13 @@ class AuthenticationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
       UserProfile(
         userId = "user_id_1",
         UserLoginDetails(
-          userId = "user_id_1",
+          id = Some(1),
+          user_id = "user_id_1",
           username = "username",
-          password_hash = "hashed_password"
+          password_hash = "hashed_password",
+          email = "john@example.com",
+          role = Wanderer,
+          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
         ),
         first_name = "John",
         last_name = "Doe",

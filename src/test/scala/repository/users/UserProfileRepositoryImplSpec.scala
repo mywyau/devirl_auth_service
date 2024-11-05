@@ -3,6 +3,7 @@ package repository.users
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import models.users.*
+import models.users.database.UserLoginDetails
 import repository.users.mocks.MockUserProfileRepository
 import weaver.SimpleIOSuite
 
@@ -15,9 +16,13 @@ object UserProfileRepositoryImplSpec extends SimpleIOSuite {
       userId = "user_id_1",
       userLoginDetails =
         UserLoginDetails(
-          userId = "user_id_1",
+          id = Some(1),
+          user_id = "user_id_1",
           username = username,
-          password_hash = "hashed_password"
+          password_hash = "hashed_password",
+          email = email,
+          role = Wanderer,
+          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
         ),
       first_name = "John",
       last_name = "Doe",
@@ -29,12 +34,12 @@ object UserProfileRepositoryImplSpec extends SimpleIOSuite {
           country = "UK",
           county = Some("County 1"),
           postcode = "CF3 3NJ",
-          created_at = LocalDateTime.now()
+          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
         ),
       contact_number = contactNumber,
       email = email,
       role = Wanderer,
-      created_at = LocalDateTime.now()
+      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
   // Helper method to create a mock repository with initial state

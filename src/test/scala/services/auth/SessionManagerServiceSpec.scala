@@ -1,7 +1,8 @@
 package services.auth
 
 import cats.effect.{IO, Ref}
-import models.users.{UserAddress, UserLoginDetails, UserProfile, Wanderer}
+import models.users.database.UserLoginDetails
+import models.users.{UserAddress, UserProfile, Wanderer}
 import services.auth.mocks.{MockRefreshTokenRepository, MockTokenService, MockUserRepository}
 import weaver.SimpleIOSuite
 
@@ -13,9 +14,13 @@ object SessionManagerServiceSpec extends SimpleIOSuite {
     UserProfile(
       userId = "userId",
       UserLoginDetails(
-        userId = "userId",
+        id = Some(1),
+        user_id = "userId",
         username = "username",
-        password_hash = "hashed_password"
+        password_hash = "hashed_password",
+        email = "existing@example.com",
+        role = Wanderer,
+        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       ),
       first_name = "John",
       last_name = "Doe",

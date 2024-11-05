@@ -4,6 +4,7 @@ import cats.effect.IO
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
+import models.users.database.UserLoginDetails
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
@@ -14,9 +15,13 @@ object UserProfileSpec extends SimpleIOSuite {
     UserProfile(
       userId = "user_id_1",
       UserLoginDetails(
-        userId = "user_id_1",
+        id = Some(1),
+        user_id = "user_id_1",
         username = "mikey5922",
-        password_hash = "hashed_password_1"
+        password_hash = "hashed_password_1",
+        email = "mikey5922@gmail.com",
+        role = Wanderer,
+        created_at = LocalDateTime.of(2024, 10, 10, 10, 0)
       ),
       first_name = "michael",
       last_name = "yau",
@@ -43,9 +48,13 @@ object UserProfileSpec extends SimpleIOSuite {
       """{
         |"userId" : "user_id_1",
         |"userLoginDetails" : {
-        |   "userId" : "user_id_1",
+        |   "id": 1,
+        |   "user_id" : "user_id_1",
         |   "username" : "mikey5922",
-        |   "password_hash" : "hashed_password_1"
+        |   "password_hash" : "hashed_password_1",
+        |   "email": "mikey5922@gmail.com",
+        |   "role": "Wanderer",
+        |   "created_at" : "2024-10-10T10:00:00"
         |},
         |"first_name" : "michael",
         |"last_name" : "yau",

@@ -6,11 +6,12 @@ import controllers.*
 import dev.profunktor.redis4cats.effect.Log
 import dev.profunktor.redis4cats.{Redis, RedisCommands}
 import doobie.hikari.HikariTransactor
+import models.users.database.UserLoginDetails
 import org.http4s.HttpRoutes
 import repositories.*
 import repositories.bookings.BookingRepository
 import repositories.business.BusinessRepository
-import repositories.users.UserProfileRepositoryImpl
+import repositories.users.{UserLoginDetailsRepositoryImpl, UserProfileRepositoryImpl}
 import repositories.workspaces.WorkspaceRepository
 import services.*
 import services.auth.{AuthenticationServiceImpl, RedisTokenCommands, RegistrationServiceImpl, TokenServiceImpl}
@@ -32,8 +33,9 @@ object Routes {
 
     redisResource.map { redisCommands =>
       val userRepository = new UserProfileRepositoryImpl[F](transactor)
+      val userLoginDetailsRepository = new UserLoginDetailsRepositoryImpl[F](transactor)
       val passwordService = new PasswordServiceImpl[F]
-      val registrationService = new RegistrationServiceImpl[F](userRepository, passwordService)
+      val registrationService = new RegistrationServiceImpl[F](userLoginDetailsRepository, passwordService)
       val authService = new AuthenticationServiceImpl[F](userRepository, passwordService)
       val redisTokenCommands = new RedisTokenCommands[F](redisCommands)
       val tokenService = new TokenServiceImpl[F](secretKey, clock, redisTokenCommands)

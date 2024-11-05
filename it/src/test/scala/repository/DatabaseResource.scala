@@ -28,14 +28,14 @@ object DatabaseResource extends GlobalResource {
     val schemaQuery = sql"""
       SELECT column_name, data_type, is_nullable
       FROM information_schema.columns
-      WHERE table_name = 'user_profile'
+      WHERE table_name = 'user_login_details'
     """.query[(String, String, String)]
       .to[List]
       .transact(xa)
 
     schemaQuery.flatMap { schema =>
       IO {
-        println("Table Schema for 'user_profile':")
+        println("Table Schema for 'user_login_details':")
         schema.foreach { case (name, typ, nullable) =>
           println(s"Column: $name, Type: $typ, Nullable: $nullable")
         }
@@ -47,18 +47,10 @@ object DatabaseResource extends GlobalResource {
   private def testInsert(xa: Transactor[IO]): IO[Unit] = {
     val insertTest =
       sql"""
-      INSERT INTO user_profile (
-        userId,
+      INSERT INTO user_login_details (
+        user_id,
         username,
         password_hash,
-        first_name,
-        last_name,
-        street,
-        city,
-        country,
-        county,
-        postcode,
-        contact_number,
         email,
         role,
         created_at
@@ -66,14 +58,6 @@ object DatabaseResource extends GlobalResource {
         'test_user_id',
         'test_user',
         'hashed_password',
-        'First',
-        'Last',
-        'Street 1',
-        'City',
-        'Country',
-        'County',
-        '12345',
-        '1234567890',
         'test@example.com',
         'Wanderer',
         CURRENT_TIMESTAMP

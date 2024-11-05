@@ -4,9 +4,11 @@ DROP TABLE IF EXISTS user_login_details;
 
 CREATE TABLE user_login_details (
     id BIGSERIAL PRIMARY KEY,
-    userId VARCHAR(255) NOT NULL,
+    user_id VARCHAR(255) NOT NULL,
     username VARCHAR(255) NOT NULL,
     password_hash TEXT NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    role VARCHAR(50) NOT NULL DEFAULT 'Wanderer',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -15,7 +17,7 @@ DROP TABLE IF EXISTS user_address;
 
 CREATE TABLE user_address (
     id BIGSERIAL PRIMARY KEY,
-    userId VARCHAR(255) NOT NULL,
+    user_id VARCHAR(255) NOT NULL,
     street VARCHAR(255) NOT NULL,
     city VARCHAR(255) NOT NULL,
     country VARCHAR(255) NOT NULL,
@@ -51,7 +53,7 @@ CREATE TABLE user_profile (
     postcode VARCHAR(255) NOT NULL,
     contact_number VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL,
-    role VARCHAR(50) NOT NULL DEFAULT 'wanderer',
+    role VARCHAR(50) NOT NULL DEFAULT 'Wanderer',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

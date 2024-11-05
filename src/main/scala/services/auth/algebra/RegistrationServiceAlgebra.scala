@@ -2,10 +2,10 @@ package services.auth.algebra
 
 import cats.data.*
 import models.users.*
+import models.users.database.UserLoginDetails
+import models.users.requests.UserSignUpRequest
 
 trait RegistrationServiceAlgebra[F[_]] {
 
-//  def signUp(request: SignUpRequest): F[Validated[List[String], UserProfile]]
-  
-  def registerUser(request: UserRegistrationRequest): F[Validated[List[String], UserProfile]]
+  def registerUser(request: UserSignUpRequest): F[Validated[List[String], UserLoginDetails]]
 }

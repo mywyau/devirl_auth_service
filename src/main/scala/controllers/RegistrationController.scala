@@ -5,7 +5,7 @@
 //import cats.implicits.*
 //import io.circe.syntax.EncoderOps
 //import models.users.responses.*
-//import models.users.{SignUpRequest, UserLoginRequest, UserRegistrationRequest, UserRoleUpdateRequest}
+//import models.users.{SignUpRequest, UserSignUpRequest, UserRegistrationRequest, UserRoleUpdateRequest}
 //import org.http4s.*
 //import org.http4s.circe.*
 //import org.http4s.dsl.Http4sDsl
