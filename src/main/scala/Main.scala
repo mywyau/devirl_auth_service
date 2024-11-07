@@ -15,8 +15,9 @@ import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import routes.Routes.*
 import dev.profunktor.redis4cats.effect.Log
-import dev.profunktor.redis4cats.effect.Log.Stdout._
-
+import dev.profunktor.redis4cats.effect.Log.Stdout.*
+import org.http4s.server.middleware.{CORS, CORSConfig}
+import concurrent.duration.DurationInt
 
 object Main extends IOApp {
 
@@ -36,7 +37,16 @@ object Main extends IOApp {
       )
     } yield xa
 
-  def createRouterResource[F[_] : Concurrent : Temporal : NonEmptyParallel : Async: Log](transactor: HikariTransactor[F]): Resource[F, HttpRoutes[F]] = {
+  def createRouterResource[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F]): Resource[F, HttpRoutes[F]] = {
+
+    // CORS Configuration
+    //    val corsConfig = CORSConfig(
+    //      anyOrigin = true, // Allow requests from any origin
+    //      anyMethod = true, // Allow all HTTP methods
+    //      allowCredentials = true, // Allow credentials to be sent
+    //      maxAge = 1.day.toSeconds // Cache preflight response for 1 day
+    //    )
+
     for {
       authRoutes <- createAuthRoutes(transactor) // Already returns Resource[F, HttpRoutes[F]]
       bookingRoutes <- Resource.pure(createBookingRoutes(transactor))
@@ -48,8 +58,14 @@ object Main extends IOApp {
         Router(
           "/cashew" -> (authRoutes <+> bookingRoutes <+> businessRoutes <+> workspaceRoutes)
         )
+      // Wrap the combined routes with CORS middleware
+      corsRoutes = CORS.policy
+        .withAllowOriginAll
+        .withAllowCredentials(false)
+        .withMaxAge(1.day)
+        .apply(combinedRoutes)
       // Apply throttle middleware in the F effect context
-      throttledRoutes <- Resource.eval(throttleMiddleware(combinedRoutes))
+      throttledRoutes <- Resource.eval(throttleMiddleware(corsRoutes))
     } yield throttledRoutes
   }
 

@@ -1,6 +1,7 @@
 package repository
 
 import cats.effect.{IO, Resource}
+import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
 import models.users.Wanderer
@@ -13,14 +14,11 @@ import java.time.LocalDateTime
 // Define test suite using ResourceSuite to share the Transactor[IO] within this file
 class UserLoginDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
 
-  type Res = TransactorResource // needed for the shared resource, set the type of 'Res' here to be used in tests
+  type Res = UserLoginDetailsRepositoryImpl[IO] // needed for the shared resource, set the type of 'Res' here to be used in tests
 
-  // Return the wrapped Transactor resource
-  def sharedResource: Resource[IO, TransactorResource] = {
-    val setup = for {
-      transactor <- global.getOrFailR[TransactorResource]()
-      // Create the table if it doesn't exist
-      _ <- Resource.eval(
+  // Initializes the database schema
+  private def initializeSchema(transactor: TransactorResource): Resource[IO, Unit] =
+    Resource.eval(
         sql"""
         CREATE TABLE IF NOT EXISTS user_login_details (
           id BIGSERIAL PRIMARY KEY,
@@ -31,16 +29,39 @@ class UserLoginDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
           role VARCHAR(50) NOT NULL,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
-      """.update.run.transact(transactor.xa).void
-      )
-      // Delete all existing data from the user_profile table before tests start
-      //      _ <- Resource.eval(
-      //        sql"DELETE FROM user_login_details".update.run.transact(transactor.xa).void
-      //      )
-      _ <- Resource.eval(
+      """.update.run.transact(transactor.xa).void *>
         sql"TRUNCATE TABLE user_login_details RESTART IDENTITY".update.run.transact(transactor.xa).void
       )
-    } yield transactor
+
+  def sampleUser(id: Option[Int], userId: String, username: String, email: String) =
+    UserLoginDetails(
+      id = id,
+      user_id = userId,
+      username = username,
+      password_hash = "hashedpassword",
+      email = email,
+      role = Wanderer,
+      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+    )
+
+  private def seedTestUsers(userLoginDetailsRepo: UserLoginDetailsRepositoryImpl[IO]): IO[Unit] = {
+    val users = List(
+      sampleUser(Some(1), "user_id_1", "mikey1", "mikey1@gmail.com"),
+      sampleUser(Some(2), "user_id_2", "mikey2", "mikey2@gmail.com"),
+      sampleUser(Some(3), "user_id_3", "mikey3", "mikey3@gmail.com")
+    )
+    users.traverse(userLoginDetailsRepo.createUserLoginDetails).void
+  }
+
+  // Return the wrapped Transactor resource
+  def sharedResource: Resource[IO, UserLoginDetailsRepositoryImpl[IO]] = {
+    val setup = for {
+      transactor <- global.getOrFailR[TransactorResource]()
+      userLoginDetailsRepo = new UserLoginDetailsRepositoryImpl[IO](transactor.xa)
+      _ <- initializeSchema(transactor) // Create the table if it doesn't exist and reset the id
+      _ <- Resource.eval(seedTestUsers(userLoginDetailsRepo)) // seed the table with user data
+    } yield userLoginDetailsRepo
+
     setup
   }
 
@@ -62,44 +83,38 @@ class UserLoginDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
     )
 
   // Test case to verify user creation and retrieval by username
-  test(".createUser() - should insert a new user") { transactorResource =>
+  test(".createUser() - should insert a new user") { userLoginDetailsRepo =>
 
-    val userRepository = new UserLoginDetailsRepositoryImpl[IO](transactorResource.xa)
-
-    val user = sampleUser(Some(1), userId = "user_id_1", username = "mikey5922", contactNumber = "07402205071", email = "mikey5922@gmail.com")
+    val user = sampleUser(Some(4), userId = "user_id_4", username = "mikey4", contactNumber = "07402205071", email = "mikey4@gmail.com")
 
     for {
-      result <- userRepository.createUserLoginDetails(user)
-      userOpt <- userRepository.findByUsername("mikey5922")
+      result <- userLoginDetailsRepo.createUserLoginDetails(user)
+      userOpt <- userLoginDetailsRepo.findByUsername("mikey4")
     } yield expect(result == 1) and expect(userOpt.contains(user))
   }
 
-  test(".findByUsername() - should return the user if username exists") { transactorResource =>
+  test(".findByUsername() - should return the user if username exists") { userLoginDetailsRepo =>
 
-    val user = sampleUser(Some(3), "user_id_2", "mikey5923", "07402205072", "mikey5923@gmail.com")
+    val user = sampleUser(Some(1), "user_id_1", "mikey1", "mikey1@gmail.com")
 
-    val userRepository = new UserLoginDetailsRepositoryImpl[IO](transactorResource.xa)
     for {
-      _ <- userRepository.createUserLoginDetails(user)
-      userOpt <- userRepository.findByUsername("mikey5923")
+      userOpt <- userLoginDetailsRepo.findByUsername("mikey1")
     } yield expect(userOpt.contains(user))
   }
 
-  test(".findByEmail() - should return the user if email exists") { transactorResource =>
+  test(".findByEmail() - should return the user if email exists") { userLoginDetailsRepo =>
 
-    val user = sampleUser(Some(2), "user_id_4", "mikey5925", "07402205074", "mikey5925@gmail.com")
+    val user = sampleUser(Some(1), "user_id_1", "mikey1", "mikey1@gmail.com")
 
-    val userRepository = new UserLoginDetailsRepositoryImpl[IO](transactorResource.xa)
     for {
-      _ <- userRepository.createUserLoginDetails(user)
-      userOpt <- userRepository.findByEmail("mikey5925@gmail.com")
+      userOpt <- userLoginDetailsRepo.findByEmail("mikey1@gmail.com")
     } yield expect(userOpt.contains(user))
   }
 
-  test(".findByUsername() - should return None if username does not exist") { transactorResource =>
-    val userRepository = new UserLoginDetailsRepositoryImpl[IO](transactorResource.xa)
+  test(".findByUsername() - should return None if username does not exist") { userLoginDetailsRepo =>
+
     for {
-      userOpt <- userRepository.findByUsername("nonexistentuser")
+      userOpt <- userLoginDetailsRepo.findByUsername("nonexistentuser")
     } yield expect(userOpt.isEmpty)
   }
 }

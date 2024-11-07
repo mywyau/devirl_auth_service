@@ -1,7 +1,7 @@
 package controllers
 
 import cats.data.Validated.{Invalid, Valid}
-import cats.effect.Concurrent
+import cats.effect.{Concurrent, IO}
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
 import models.users.requests.UserSignUpRequest
@@ -11,6 +11,7 @@ import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
 import services.auth.algebra.*
+import cats.effect.unsafe.implicits.global
 
 trait UserProfileController[F[_]] {
   def routes: HttpRoutes[F]
@@ -36,9 +37,10 @@ class UserControllerImpl[F[_] : Concurrent](
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
-    // Register a new user
     case req@POST -> Root / "register" =>
+//      IO(println("Received a POST /register request")).unsafeRunSync() // Print immediately
       req.decode[UserSignUpRequest] { request =>
+//        IO(println(s"Received UserSignUpRequest: $request")).unsafeRunSync() // Log incoming payload
         registrationService.registerUser(request).flatMap {
           case Valid(user) =>
             Created(LoginResponse("User created successfully").asJson)
