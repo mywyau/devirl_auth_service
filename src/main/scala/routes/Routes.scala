@@ -36,7 +36,7 @@ object Routes {
       val userLoginDetailsRepository = new UserLoginDetailsRepositoryImpl[F](transactor)
       val passwordService = new PasswordServiceImpl[F]
       val registrationService = new RegistrationServiceImpl[F](userLoginDetailsRepository, passwordService)
-      val authService = new AuthenticationServiceImpl[F](userRepository, passwordService)
+      val authService = new AuthenticationServiceImpl[F](userLoginDetailsRepository, userRepository, passwordService)
       val redisTokenCommands = new RedisTokenCommands[F](redisCommands)
       val tokenService = new TokenServiceImpl[F](secretKey, clock, redisTokenCommands)
       val userController = new UserControllerImpl[F](authService, registrationService, tokenService)

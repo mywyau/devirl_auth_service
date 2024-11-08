@@ -1,11 +1,13 @@
 package services.auth.algebra
 
 import models.users.*
+import models.users.database.UserLoginDetails
 
 
 trait AuthenticationServiceAlgebra[F[_]] {
 
-  def loginUser(request: UserLoginRequest): F[Either[String, UserProfile]]
+  def loginUser(request: UserLoginRequest): F[Either[String, UserLoginDetails]]
+//  def loginUser(request: UserLoginRequest): F[Either[String, UserProfile]]
 
   def authUser(token: String): F[Option[UserProfile]]
 

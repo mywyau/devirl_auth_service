@@ -81,7 +81,7 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
   override def findByUserId(userId: String): F[Option[UserProfile]] = {
     // Define the query to retrieve a user profile by email
     val findQuery: F[Option[UserProfileSqlRetrieval]] =
-      sql"SELECT * FROM user_profile WHERE userId = $userId"
+      sql"SELECT * FROM user_login_details WHERE userId = $userId"
         .query[UserProfileSqlRetrieval]
         .option
         .transact(transactor)

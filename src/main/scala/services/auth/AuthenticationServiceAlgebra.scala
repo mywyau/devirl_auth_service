@@ -9,7 +9,7 @@ import models.users.database.UserLoginDetails
 import org.http4s.Request
 import org.http4s.server.AuthMiddleware
 import org.typelevel.ci.CIStringSyntax
-import repositories.users.UserProfileRepositoryAlgebra
+import repositories.users.{UserLoginDetailsRepositoryAlgebra, UserProfileRepositoryAlgebra}
 import services.auth.algebra.{AuthenticationServiceAlgebra, PasswordServiceAlgebra, UserAuth}
 
 import java.time.LocalDateTime
@@ -24,6 +24,7 @@ object UserAuthMiddleware {
 
 
 class AuthenticationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
+                                                                               userLoginDetailsRepository: UserLoginDetailsRepositoryAlgebra[F],
                                                                                userRepository: UserProfileRepositoryAlgebra[F],
                                                                                passwordService: PasswordServiceAlgebra[F]
                                                                              ) extends AuthenticationServiceAlgebra[F] {
@@ -50,13 +51,12 @@ class AuthenticationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
     UserAuthMiddleware(roleCheckService)
   }
 
-  // Login user
-  override def loginUser(request: UserLoginRequest): F[Either[String, UserProfile]] = {
+  override def loginUser(request: UserLoginRequest): F[Either[String, UserLoginDetails]] = {
     for {
       hashed_password <- passwordService.hashPassword(request.password)
-      result: Either[String, UserProfile] <-
-        userRepository.findByUsername(request.username).flatMap {
-          case Some(user) if hashed_password == user.userLoginDetails.password_hash =>
+      result: Either[String, UserLoginDetails] <-
+        userLoginDetailsRepository.findByUsername(request.username).flatMap {
+          case Some(user) if hashed_password == user.password_hash =>
             Concurrent[F].pure(Right(user))
           case Some(user) =>
             Concurrent[F].pure(Left("Invalid password"))
@@ -67,6 +67,24 @@ class AuthenticationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
       result
     }
   }
+
+  // Login user
+  //  override def loginUser(request: UserLoginRequest): F[Either[String, UserProfile]] = {
+  //    for {
+  //      hashed_password <- passwordService.hashPassword(request.password)
+  //      result: Either[String, UserProfile] <-
+  //        userRepository.findByUsername(request.username).flatMap {
+  //          case Some(user) if hashed_password == user.userLoginDetails.password_hash =>
+  //            Concurrent[F].pure(Right(user))
+  //          case Some(user) =>
+  //            Concurrent[F].pure(Left("Invalid password"))
+  //          case None =>
+  //            Concurrent[F].pure(Left("Username not found"))
+  //        }
+  //    } yield {
+  //      result
+  //    }
+  //  }
 
   // Validate user token and return authenticated user
   def authUser(token: String): F[Option[UserProfile]] = {
@@ -161,9 +179,10 @@ class AuthenticationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
 
 object AuthenticationServiceAlgebra {
   def apply[F[_] : Concurrent : NonEmptyParallel](
+                                                   userLoginDetailsRepository: UserLoginDetailsRepositoryAlgebra[F],
                                                    userRepository: UserProfileRepositoryAlgebra[F],
                                                    passwordService: PasswordServiceAlgebra[F]
                                                  ): AuthenticationServiceAlgebra[F] =
-    new AuthenticationServiceImpl[F](userRepository, passwordService)
+    new AuthenticationServiceImpl[F](userLoginDetailsRepository, userRepository, passwordService)
 }
 

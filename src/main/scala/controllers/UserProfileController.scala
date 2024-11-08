@@ -1,7 +1,7 @@
 package controllers
 
 import cats.data.Validated.{Invalid, Valid}
-import cats.effect.{Concurrent, IO}
+import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
 import models.users.requests.UserSignUpRequest
@@ -11,7 +11,6 @@ import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
 import services.auth.algebra.*
-import cats.effect.unsafe.implicits.global
 
 trait UserProfileController[F[_]] {
   def routes: HttpRoutes[F]
@@ -38,14 +37,14 @@ class UserControllerImpl[F[_] : Concurrent](
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
     case req@POST -> Root / "register" =>
-//      IO(println("Received a POST /register request")).unsafeRunSync() // Print immediately
+      //      IO(println("Received a POST /register request")).unsafeRunSync() // Print immediately
       req.decode[UserSignUpRequest] { request =>
-//        IO(println(s"Received UserSignUpRequest: $request")).unsafeRunSync() // Log incoming payload
+        //        IO(println(s"Received UserSignUpRequest: $request")).unsafeRunSync() // Log incoming payload
         registrationService.registerUser(request).flatMap {
           case Valid(user) =>
-            Created(LoginResponse("User created successfully").asJson)
+            Created(CreatedUserResponse("User created successfully").asJson)
           case Invalid(errors) =>
-            BadRequest(ErrorUserResponse(errors).asJson)
+            BadRequest(ErrorUserResponse(errors).asJson) // TODO: Fix and change to return all validation errors for fields like password, email, username etc. 
         }
       }
 
@@ -53,33 +52,44 @@ class UserControllerImpl[F[_] : Concurrent](
     case req@POST -> Root / "login" =>
       req.decode[UserLoginRequest] { request =>
         authService.loginUser(request).flatMap {
-          case Right(_) => Ok(LoginResponse("User logged in successfully").asJson)
-          case _ => BadRequest(ErrorUserResponse(List("Invalid username or password")).asJson) // TODO: Fix and change to Unauthorzied
+          case Right(userLoginDetails) => Ok(
+            LoginResponse(
+              userId = userLoginDetails.user_id,
+              username = userLoginDetails.username,
+              password_hash = userLoginDetails.password_hash,
+              email = userLoginDetails.email,
+              role = userLoginDetails.role
+            ).asJson)
+          case _ =>
+            BadRequest(
+              ErrorUserResponse(
+                List("Invalid username or password")
+              ).asJson) // TODO: Fix and change to Unauthorzied and return all validation errors
         }
       }
 
-    // Logout user and invalidate session
-    case POST -> Root / "logout" / token =>
-      tokenService.invalidateToken(token).flatMap {
-        case true => Ok(LoginResponse("User logged out successfully").asJson)
-        case false => BadRequest(ErrorUserResponse(List("Invalid token")).asJson)
-      }
+    //    // Logout user and invalidate session
+    //    case POST -> Root / "logout" / token =>
+    //      tokenService.invalidateToken(token).flatMap {
+    //        case true => Ok(LoginResponse("User logged out successfully").asJson)
+    //        case false => BadRequest(ErrorUserResponse(List("Invalid token")).asJson)
+    //      }
 
-    // Refresh access token using a refresh token
-    case POST -> Root / "refresh" / token =>
-      tokenService.refreshAccessToken(token).flatMap {
-        case Some(newToken) => Ok(LoginResponse("Token refreshed successfully").asJson)
-        case None =>
-          BadRequest(ErrorUserResponse(List("Invalid or expired refresh token")).asJson) // TODO: Fix and change to Unauthorzied
-      }
+    //    // Refresh access token using a refresh token
+    //    case POST -> Root / "refresh" / token =>
+    //      tokenService.refreshAccessToken(token).flatMap {
+    //        case Some(newToken) => Ok(LoginResponse("Token refreshed successfully").asJson)
+    //        case None =>
+    //          BadRequest(ErrorUserResponse(List("Invalid or expired refresh token")).asJson) // TODO: Fix and change to Unauthorzied
+    //      }
 
-    // Update user role (Admin only)
-    case req@PUT -> Root / "user" / "role" / userId =>
-      req.decode[UserRoleUpdateRequest] { request =>
-        authService.updateUserRole(userId, request.userId, request.newRole).flatMap {
-          case Right(_) => Ok(LoginResponse("User role updated successfully").asJson)
-          case Left(error) => Forbidden(ErrorUserResponse(List(error)).asJson)
-        }
-      }
+    //    // Update user role (Admin only)
+    //    case req@PUT -> Root / "user" / "role" / userId =>
+    //      req.decode[UserRoleUpdateRequest] { request =>
+    //        authService.updateUserRole(userId, request.userId, request.newRole).flatMap {
+    //          case Right(_) => Ok(LoginResponse("User role updated successfully").asJson)
+    //          case Left(error) => Forbidden(ErrorUserResponse(List(error)).asJson)
+    //        }
+    //      }
   }
 }
