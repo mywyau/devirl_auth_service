@@ -5,7 +5,7 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
-import models.auth.{RegistrationValidation, UniqueUser}
+import models.auth.*
 import models.users.*
 import models.users.database.UserLoginDetails
 import models.users.requests.UserSignUpRequest
@@ -18,20 +18,32 @@ class RegistrationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
                                                                              passwordService: PasswordServiceAlgebra[F]
                                                                            ) extends RegistrationServiceAlgebra[F] {
 
-  def validateUnique(
-                      field: String,
-                      value: String,
-                      lookup: String => F[Option[UserLoginDetails]]
-                    ): F[ValidatedNel[String, RegistrationValidation]] = {
-    lookup(value).map {
-      case Some(_) => s"$field already exists".invalidNel
-      case None => UniqueUser.validNel
+  def validateUsernameUnique(value: String): F[ValidatedNel[RegistrationErrors, RegistrationValidation]] = {
+    userLoginDetailsRepo.findByUsername(value).map {
+      case Some(_) =>
+        println("Username")
+        UsernameAlreadyExists.invalidNel
+      case None =>
+        println("Oh no username")
+        UniqueUser.validNel
     }
   }
 
-  def uniqueUsernameAndEmail(request: UserSignUpRequest): F[Validated[List[String], RegistrationValidation]] = {
-    val usernameValidation = validateUnique("username", request.username, userLoginDetailsRepo.findByUsername)
-    val emailValidation = validateUnique("email", request.email, userLoginDetailsRepo.findByEmail)
+
+  def validateEmailUnique(value: String): F[ValidatedNel[RegistrationErrors, RegistrationValidation]] = {
+    userLoginDetailsRepo.findByEmail(value).map {
+      case Some(_) =>
+        println("Email")
+        EmailAlreadyExists.invalidNel
+      case None =>
+        println("Oh no email")
+        UniqueUser.validNel
+    }
+  }
+
+  def uniqueUsernameAndEmail(request: UserSignUpRequest): F[Validated[List[RegistrationErrors], RegistrationValidation]] = {
+    val usernameValidation = validateUsernameUnique(request.username)
+    val emailValidation = validateEmailUnique(request.email)
 
     // Run validations in parallel and combine results
     (usernameValidation, emailValidation).parMapN { (usernameResult, emailResult) =>
@@ -42,15 +54,17 @@ class RegistrationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
   }
 
 
-  override def registerUser(request: UserSignUpRequest): F[Validated[List[String], UserLoginDetails]] = {
+  override def registerUser(request: UserSignUpRequest): F[Validated[List[RegistrationErrors], UserLoginDetails]] = {
 
-    val passwordValidationF: F[Validated[List[String], String]] =
+    val passwordValidationF: F[Validated[List[RegisterPasswordErrors], String]] =
       Concurrent[F].pure(passwordService.validatePassword(request.password))
 
     (passwordValidationF, uniqueUsernameAndEmail(request)).parMapN { (passwordValid, usernameAndEmailUnique) =>
+      println(passwordValid)
       passwordValid.product(usernameAndEmailUnique).map(_ => request)
     }.flatMap {
       case Valid(request) =>
+        println("Here")
         passwordService.hashPassword(request.password).flatMap { hashedPassword =>
           val newUser =
             UserLoginDetails(
@@ -64,12 +78,12 @@ class RegistrationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
             )
           userLoginDetailsRepo.createUserLoginDetails(newUser).map { rows =>
             if (rows > 0) Validated.valid(newUser)
-            else Validated.invalid(List("Failed to create user."))
+            else Validated.invalid(List(CannotCreateUser))
           }
         }
 
       case Invalid(errors) =>
-        // Collect all validation errors
+        println("There")
         Concurrent[F].pure(Validated.invalid(errors))
     }
   }

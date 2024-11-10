@@ -1,9 +1,11 @@
 package controllers
 
 import cats.data.Validated.{Invalid, Valid}
-import cats.effect.Concurrent
+import cats.effect.unsafe.implicits.global
+import cats.effect.{Concurrent, IO}
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
+import models.auth.{RegisterEmailErrors, RegisterPasswordErrors, RegisterUsernameErrors}
 import models.users.requests.UserSignUpRequest
 import models.users.responses.*
 import models.users.{UserLoginRequest, UserRegistrationRequest, UserRoleUpdateRequest}
@@ -11,6 +13,7 @@ import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
 import services.auth.algebra.*
+
 
 trait UserProfileController[F[_]] {
   def routes: HttpRoutes[F]
@@ -37,14 +40,39 @@ class UserControllerImpl[F[_] : Concurrent](
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
     case req@POST -> Root / "register" =>
-      //      IO(println("Received a POST /register request")).unsafeRunSync() // Print immediately
+      IO(println("Received a POST /register request")).unsafeRunSync() // Print immediately
       req.decode[UserSignUpRequest] { request =>
-        //        IO(println(s"Received UserSignUpRequest: $request")).unsafeRunSync() // Log incoming payload
+        IO(println(s"Received UserSignUpRequest: $request")).unsafeRunSync() // Log incoming payload
         registrationService.registerUser(request).flatMap {
           case Valid(user) =>
             Created(CreatedUserResponse("User created successfully").asJson)
-          case Invalid(errors) =>
-            BadRequest(ErrorUserResponse(errors).asJson) // TODO: Fix and change to return all validation errors for fields like password, email, username etc. 
+          case Invalid(errors) => {
+
+            val passwordErrors =
+              errors.collect {
+                case e: RegisterPasswordErrors => e.errorMessage
+              }
+
+            val usernameErrors =
+              errors.collect {
+                case e: RegisterUsernameErrors => e.errorMessage
+              }
+
+            val emailErrors =
+              errors.collect {
+                case e: RegisterEmailErrors => e.errorMessage
+              }
+
+            // Create the structured error response
+            val errorResponse =
+              RegistrationErrorResponse(
+                usernameErrors = usernameErrors,
+                passwordErrors = passwordErrors,
+                emailErrors = emailErrors
+              )
+
+            BadRequest(errorResponse.asJson)
+          }
         }
       }
 

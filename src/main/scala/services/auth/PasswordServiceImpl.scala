@@ -4,34 +4,36 @@ import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
+import models.auth.*
 import services.auth.algebra.PasswordServiceAlgebra
 
 import java.security.MessageDigest
 import java.util.Base64
 
+
 class PasswordServiceImpl[F[_] : Concurrent] extends PasswordServiceAlgebra[F] {
 
-  private[services] def validateLength(password: String): Validated[List[String], String] =
+  private[services] def validateLength(password: String): Validated[List[RegisterPasswordErrors], String] =
     if (password.length >= 8 && password.length <= 20) password.valid
-    else List("Password must be between 8 and 20 characters.").invalid
+    else List(PasswordLengthError).invalid
 
-  private[services] def validateUppercase(password: String): Validated[List[String], String] =
+  private[services] def validateUppercase(password: String): Validated[List[RegisterPasswordErrors], String] =
     if (password.exists(_.isUpper)) password.valid
-    else List("Password must contain at least one uppercase letter.").invalid
+    else List(PasswordNoUppercase).invalid
 
-  private[services] def validateDigit(password: String): Validated[List[String], String] =
+  private[services] def validateDigit(password: String): Validated[List[RegisterPasswordErrors], String] =
     if (password.exists(_.isDigit)) password.valid
-    else List("Password must contain at least one digit.").invalid
+    else List(PasswordNoDigit).invalid
 
-  private[services] def validateSpecialChar(password: String): Validated[List[String], String] =
+  private[services] def validateSpecialChar(password: String): Validated[List[RegisterPasswordErrors], String] =
     if (password.exists(ch => "!@#$%^&*()_+-=[]|,./?><".contains(ch))) password.valid
-    else List("Password must contain at least one special character.").invalid
+    else List(PasswordNoSpecialCharacters).invalid
 
-  private[services] def validateNoWhitespace(password: String): Validated[List[String], String] =
+  private[services] def validateNoWhitespace(password: String): Validated[List[RegisterPasswordErrors], String] =
     if (!password.exists(_.isWhitespace)) password.valid
-    else List("Password must not contain whitespace.").invalid
+    else List(PasswordContainsWhitespace).invalid
 
-  override def validatePassword(plainTextPassword: String): Validated[List[String], String] = {
+  override def validatePassword(plainTextPassword: String): Validated[List[RegisterPasswordErrors], String] = {
     (
       validateLength(plainTextPassword),
       validateUppercase(plainTextPassword),

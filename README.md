@@ -166,3 +166,5 @@ http POST http://localhost:8080/cashew/register userId="user_id_123" username="n
 ```
 http POST http://localhost:8080/cashew/login username="mikey5922" password="X10gk7rm@"
 ```
+
+http POST http://localhost:8080/cashew/register user_id="mikey5922_new" username="mikey5922" password="SecurePass123@" email="m.yw.yau@gmail.com" role="Wanderer" created_at="2024-01-01T12:00:00"
