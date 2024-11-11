@@ -1,12 +1,12 @@
 package controllers
 
+//import cats.effect.unsafe.implicits.global // for debugging and IO printlns
+
 import cats.data.Validated.{Invalid, Valid}
-import cats.effect.unsafe.implicits.global
-import cats.effect.{Concurrent, IO}
+import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
 import models.auth.{RegisterEmailErrors, RegisterPasswordErrors, RegisterUsernameErrors}
-import models.users.login.requests.UserLoginRequest
 import models.users.wanderer_profile.requests.UserSignUpRequest
 import models.users.wanderer_profile.responses.CreatedUserResponse
 import models.users.wanderer_profile.responses.error.RegistrationErrorResponse
@@ -28,18 +28,18 @@ object WandererProfileController {
 }
 
 class WandererProfileControllerImpl[F[_] : Concurrent](
-                                             authService: AuthenticationServiceAlgebra[F],
-                                             registrationService: RegistrationServiceAlgebra[F],
-                                           ) extends Http4sDsl[F] with WandererProfileController[F] {
+                                                        authService: AuthenticationServiceAlgebra[F],
+                                                        registrationService: RegistrationServiceAlgebra[F],
+                                                      ) extends Http4sDsl[F] with WandererProfileController[F] {
 
   implicit val userSignUpRequestDecoder: EntityDecoder[F, UserSignUpRequest] = jsonOf[F, UserSignUpRequest]
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
     case req@POST -> Root / "wanderer" / "user" / "profile" / "all-data" =>
-      IO(println("Received a POST /register request")).unsafeRunSync() // Print immediately
+      //      IO(println("Received a POST /register request")).unsafeRunSync() // Print immediately
       req.decode[UserSignUpRequest] { request =>
-        IO(println(s"Received UserSignUpRequest: $request")).unsafeRunSync() // Log incoming payload
+        //        IO(println(s"Received UserSignUpRequest: $request")).unsafeRunSync() // Log incoming payload
         registrationService.registerUser(request).flatMap {
           case Valid(user) =>
             Created(CreatedUserResponse("User created successfully").asJson)

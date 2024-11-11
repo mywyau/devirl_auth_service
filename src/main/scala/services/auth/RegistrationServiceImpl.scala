@@ -56,11 +56,9 @@ class RegistrationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
       Concurrent[F].pure(passwordService.validatePassword(request.password))
 
     (passwordValidationF, uniqueUsernameAndEmail(request)).parMapN { (passwordValid, usernameAndEmailUnique) =>
-      println(passwordValid)
       passwordValid.product(usernameAndEmailUnique).map(_ => request)
     }.flatMap {
       case Valid(request) =>
-        println("Here")
         passwordService.hashPassword(request.password).flatMap { hashedPassword =>
           val newUser =
             UserLoginDetails(
@@ -80,7 +78,6 @@ class RegistrationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
         }
 
       case Invalid(errors) =>
-        println("There")
         Concurrent[F].pure(Validated.invalid(errors))
     }
   }

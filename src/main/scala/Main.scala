@@ -39,7 +39,9 @@ object Main extends IOApp {
   def createRouterResource[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F]): Resource[F, HttpRoutes[F]] = {
 
     for {
-      authRoutes <- createAuthRoutes(transactor) // Already returns Resource[F, HttpRoutes[F]]
+      authRoutes <- Resource.pure(createAuthRoutes(transactor))
+      registrationRoutes <- Resource.pure(registrationRoutes(transactor))
+      loginRoutes <- Resource.pure(loginRoutes(transactor))
       bookingRoutes <- Resource.pure(createBookingRoutes(transactor))
       businessRoutes <- Resource.pure(createBusinessRoutes(transactor))
       workspaceRoutes <- Resource.pure(createWorkspaceRoutes(transactor))
@@ -47,7 +49,7 @@ object Main extends IOApp {
       // Combine all routes under the `/cashew` prefix
       combinedRoutes =
         Router(
-          "/cashew" -> (authRoutes <+> bookingRoutes <+> businessRoutes <+> workspaceRoutes)
+          "/cashew" -> (authRoutes <+> registrationRoutes <+> loginRoutes <+> bookingRoutes <+> businessRoutes <+> workspaceRoutes)
         )
       // Wrap the combined routes with CORS middleware
       corsRoutes =

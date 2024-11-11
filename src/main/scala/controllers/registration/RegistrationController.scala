@@ -1,7 +1,9 @@
 package controllers.registration
 
+import cats.effect.unsafe.implicits.global // for debugging and IO printlns
+
 import cats.data.Validated.{Invalid, Valid}
-import cats.effect.Concurrent
+import cats.effect.{Concurrent, IO}
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
 import models.auth.{RegisterEmailErrors, RegisterPasswordErrors, RegisterUsernameErrors}
@@ -36,7 +38,9 @@ class RegistrationControllerImpl[F[_] : Concurrent](
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
     case req@POST -> Root / "register" =>
+      IO(println("Received a POST /register request")).unsafeRunSync() // Print immediately
       req.decode[UserSignUpRequest] { request =>
+        IO(println(s"Received UserSignUpRequest: $request")).unsafeRunSync() // Log incoming payload
         registrationService.registerUser(request).flatMap {
           case Valid(user) =>
             Created(CreatedUserResponse("User created successfully").asJson)
