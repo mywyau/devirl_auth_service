@@ -4,6 +4,8 @@ package repository.users.mocks
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import models.users.*
+import models.users.adts.Role
+import models.users.wanderer_profile.profile.UserProfile
 import repositories.users.UserProfileRepositoryAlgebra
 import weaver.SimpleIOSuite
 

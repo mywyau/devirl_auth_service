@@ -11,7 +11,8 @@ import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import models.users.*
-import models.users.database.UserLoginDetails
+import models.users.adts.Role
+import models.users.wanderer_profile.profile.UserLoginDetails
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -46,7 +47,8 @@ class UserLoginDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Tran
         password_hash,
         email,
         role,
-        created_at
+        created_at,
+        updated_at
       )
       VALUES (
               ${user.user_id},
@@ -54,7 +56,8 @@ class UserLoginDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Tran
               ${user.password_hash},
               ${user.email},
               ${user.role.toString},
-              ${user.created_at}
+              ${user.created_at},
+              ${user.updated_at}
       )""".update
       .run
       .transact(transactor)

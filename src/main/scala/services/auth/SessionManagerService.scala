@@ -3,7 +3,7 @@ package services.auth
 import cats.Monad
 import cats.effect.Concurrent
 import cats.syntax.all.*
-import models.users.UserProfile
+import models.users.wanderer_profile.profile.UserProfile
 import repositories.RefreshTokenRepositoryAlgebra
 import repositories.users.UserProfileRepositoryAlgebra
 import services.auth.algebra.TokenServiceAlgebra

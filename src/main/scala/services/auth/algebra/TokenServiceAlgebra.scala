@@ -1,6 +1,6 @@
 package services.auth.algebra
 
-import models.users.UserProfile
+import models.users.wanderer_profile.profile.UserProfile
 import services.auth.TokenStatus
 
 import java.time.Instant

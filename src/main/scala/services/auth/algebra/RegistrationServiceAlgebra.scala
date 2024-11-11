@@ -3,8 +3,8 @@ package services.auth.algebra
 import cats.data.*
 import models.users.*
 import models.auth.*
-import models.users.database.UserLoginDetails
-import models.users.requests.UserSignUpRequest
+import models.users.wanderer_profile.profile.UserLoginDetails
+import models.users.wanderer_profile.requests.UserSignUpRequest
 
 trait RegistrationServiceAlgebra[F[_]] {
 

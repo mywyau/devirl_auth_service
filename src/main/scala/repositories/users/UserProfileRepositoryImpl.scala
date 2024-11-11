@@ -11,7 +11,9 @@ import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import models.users.*
-import models.users.database.UserLoginDetails
+import models.users.adts.Role
+import models.users.wanderer_profile.database.UserProfileSqlModel
+import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserProfile}
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -80,44 +82,48 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
 
   override def findByUserId(userId: String): F[Option[UserProfile]] = {
     // Define the query to retrieve a user profile by email
-    val findQuery: F[Option[UserProfileSqlRetrieval]] =
+    val findQuery: F[Option[UserProfileSqlModel]] =
       sql"SELECT * FROM user_login_details WHERE userId = $userId"
-        .query[UserProfileSqlRetrieval]
+        .query[UserProfileSqlModel]
         .option
         .transact(transactor)
 
     // Process the query result
     findQuery.map {
       case Some(user) =>
-        Some(UserProfile(
-          userId = user.userId,
-          userLoginDetails =
-            UserLoginDetails(
-              id = Some(user.id),
-              user_id = user.userId,
-              username = user.username,
-              password_hash = user.password_hash,
-              email = user.email,
-              role = user.role,
-              created_at = user.created_at
-            ),
-          first_name = user.first_name,
-          last_name = user.last_name,
-          userAddress =
-            UserAddress(
-              userId = user.userId,
-              street = user.street,
-              city = user.city,
-              country = user.country,
-              county = user.county,
-              postcode = user.postcode,
-              created_at = user.created_at
-            ),
-          contact_number = user.contact_number,
-          email = user.email,
-          role = user.role,
-          created_at = user.created_at
-        ))
+        Some(
+          UserProfile(
+            userId = user.userId,
+            userLoginDetails =
+              UserLoginDetails(
+                id = Some(user.id),
+                user_id = user.userId,
+                username = user.username,
+                password_hash = user.password_hash,
+                email = user.email,
+                role = user.role,
+                created_at = user.created_at,
+                updated_at = user.updated_at
+              ),
+            first_name = user.first_name,
+            last_name = user.last_name,
+            userAddress =
+              UserAddress(
+                userId = user.userId,
+                street = user.street,
+                city = user.city,
+                country = user.country,
+                county = user.county,
+                postcode = user.postcode,
+                created_at = user.created_at,
+                updated_at = user.updated_at
+              ),
+            contact_number = user.contact_number,
+            email = user.email,
+            role = user.role,
+            created_at = user.created_at,
+            updated_at = user.updated_at
+          ))
       case None =>
         None
     }
@@ -125,44 +131,48 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
 
   override def findByUsername(username: String): F[Option[UserProfile]] = {
     // Define the query to retrieve a user profile by email
-    val findQuery: F[Option[UserProfileSqlRetrieval]] =
+    val findQuery: F[Option[UserProfileSqlModel]] =
       sql"SELECT * FROM user_profile WHERE username = $username"
-        .query[UserProfileSqlRetrieval]
+        .query[UserProfileSqlModel]
         .option
         .transact(transactor)
 
     // Process the query result
     findQuery.map {
       case Some(user) =>
-        Some(UserProfile(
-          userId = user.userId,
-          userLoginDetails =
-            UserLoginDetails(
-              id = Some(user.id),
-              user_id = user.userId,
-              username = user.username,
-              password_hash = user.password_hash,
-              email = user.email,
-              role = user.role,
-              created_at = user.created_at
-            ),
-          first_name = user.first_name,
-          last_name = user.last_name,
-          userAddress =
-            UserAddress(
-              userId = user.userId,
-              street = user.street,
-              city = user.city,
-              country = user.country,
-              county = user.county,
-              postcode = user.postcode,
-              created_at = user.created_at
-            ),
-          contact_number = user.contact_number,
-          email = user.email,
-          role = user.role,
-          created_at = user.created_at
-        ))
+        Some(
+          UserProfile(
+            userId = user.userId,
+            userLoginDetails =
+              UserLoginDetails(
+                id = Some(user.id),
+                user_id = user.userId,
+                username = user.username,
+                password_hash = user.password_hash,
+                email = user.email,
+                role = user.role,
+                created_at = user.created_at,
+                updated_at = user.updated_at
+              ),
+            first_name = user.first_name,
+            last_name = user.last_name,
+            userAddress =
+              UserAddress(
+                userId = user.userId,
+                street = user.street,
+                city = user.city,
+                country = user.country,
+                county = user.county,
+                postcode = user.postcode,
+                created_at = user.created_at,
+                updated_at = user.updated_at
+              ),
+            contact_number = user.contact_number,
+            email = user.email,
+            role = user.role,
+            created_at = user.created_at,
+            updated_at = user.updated_at
+          ))
       case None =>
         None
     }
@@ -170,9 +180,9 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
 
   override def findByContactNumber(contactNumber: String): F[Option[UserProfile]] = {
     // Define the query to retrieve a user profile by email
-    val findQuery: F[Option[UserProfileSqlRetrieval]] =
+    val findQuery: F[Option[UserProfileSqlModel]] =
       sql"SELECT * FROM user_profile WHERE contact_number = $contactNumber"
-        .query[UserProfileSqlRetrieval]
+        .query[UserProfileSqlModel]
         .option
         .transact(transactor)
 
@@ -189,7 +199,8 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
               password_hash = user.password_hash,
               email = user.email,
               role = user.role,
-              created_at = user.created_at
+              created_at = user.created_at,
+              updated_at = user.updated_at
             ),
           first_name = user.first_name,
           last_name = user.last_name,
@@ -201,12 +212,14 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
               country = user.country,
               county = user.county,
               postcode = user.postcode,
-              created_at = user.created_at
+              created_at = user.created_at,
+              updated_at = user.updated_at
             ),
           contact_number = user.contact_number,
           email = user.email,
           role = user.role,
-          created_at = user.created_at
+          created_at = user.created_at,
+          updated_at = user.updated_at
         ))
       case None =>
         None
@@ -215,9 +228,9 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
 
   override def findByEmail(email: String): F[Option[UserProfile]] = {
     // Define the query to retrieve a user profile by email
-    val findQuery: F[Option[UserProfileSqlRetrieval]] =
+    val findQuery: F[Option[UserProfileSqlModel]] =
       sql"SELECT * FROM user_profile WHERE email = $email"
-        .query[UserProfileSqlRetrieval]
+        .query[UserProfileSqlModel]
         .option
         .transact(transactor)
 
@@ -234,7 +247,8 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
               password_hash = user.password_hash,
               email = user.email,
               role = user.role,
-              created_at = user.created_at
+              created_at = user.created_at,
+              updated_at = user.updated_at
             ),
           first_name = user.first_name,
           last_name = user.last_name,
@@ -246,12 +260,14 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
               country = user.country,
               county = user.county,
               postcode = user.postcode,
-              created_at = user.created_at
+              created_at = user.created_at,
+              updated_at = user.updated_at
             ),
           contact_number = user.contact_number,
           email = user.email,
           role = user.role,
-          created_at = user.created_at
+          created_at = user.created_at,
+          updated_at = user.updated_at
         ))
       case None =>
         None
@@ -268,17 +284,17 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
       """.update.run
 
     // Query the updated user
-    val selectQuery: ConnectionIO[Option[UserProfileSqlRetrieval]] =
+    val selectQuery: ConnectionIO[Option[UserProfileSqlModel]] =
       sql"""
         SELECT userId, username, password_hash, first_name, last_name, street, city, country, county, postcode, contact_number, email, role, created_at
         FROM user_profile WHERE userId = $userId
-      """.query[UserProfileSqlRetrieval].option
+      """.query[UserProfileSqlModel].option
 
     // Combine update and select logic
     val result: ConnectionIO[Option[UserProfile]] =
       for {
         rowsAffected <- updateQuery
-        updatedUser <- if (rowsAffected == 1) selectQuery else none[UserProfileSqlRetrieval].pure[ConnectionIO]
+        updatedUser <- if (rowsAffected == 1) selectQuery else none[UserProfileSqlModel].pure[ConnectionIO]
       } yield updatedUser.map { userSql =>
         // Transform UserProfileSqlRetrieval to UserProfile
         UserProfile(
@@ -291,7 +307,8 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
               password_hash = userSql.password_hash,
               email = userSql.email,
               role = userSql.role,
-              created_at = userSql.created_at
+              created_at = userSql.created_at,
+              updated_at = userSql.updated_at
             ),
           first_name = userSql.first_name,
           last_name = userSql.last_name,
@@ -303,12 +320,14 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
               country = userSql.country,
               county = userSql.county,
               postcode = userSql.postcode,
-              created_at = userSql.created_at
+              created_at = userSql.created_at,
+              updated_at = userSql.updated_at
             ),
           contact_number = userSql.contact_number,
           email = userSql.email,
           role = userSql.role,
-          created_at = userSql.created_at
+          created_at = userSql.created_at,
+          updated_at = userSql.updated_at
         )
       }
 
@@ -318,6 +337,4 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
       case None => Concurrent[F].pure(None)
     }
   }
-
-
 }

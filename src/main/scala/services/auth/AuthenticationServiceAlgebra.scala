@@ -5,7 +5,9 @@ import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.users.*
-import models.users.database.UserLoginDetails
+import models.users.adts.{Admin, Role, Wanderer}
+import models.users.login.requests.UserLoginRequest
+import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserProfile}
 import org.http4s.Request
 import org.http4s.server.AuthMiddleware
 import org.typelevel.ci.CIStringSyntax
@@ -51,6 +53,43 @@ class AuthenticationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
     UserAuthMiddleware(roleCheckService)
   }
 
+  // Validate user token and return authenticated user
+  def authUser(token: String): F[Option[UserProfile]] = {
+    // Replace with actual token validation
+    val user =
+      UserProfile(
+        userId = "user_id_1",
+        UserLoginDetails(
+          id = Some(1),
+          user_id = "user_id_1",
+          username = "username",
+          password_hash = "hashed_password",
+          email = "john@example.com",
+          role = Wanderer,
+          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+          updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        ),
+        first_name = "John",
+        last_name = "Doe",
+        UserAddress(
+          userId = "user_id_1",
+          street = "fake street 1",
+          city = "fake city 1",
+          country = "UK",
+          county = Some("County 1"),
+          postcode = "CF3 3NJ",
+          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+          updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        ),
+        contact_number = "07402205071",
+        email = "john@example.com",
+        role = Admin,
+        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+        updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      )
+    Concurrent[F].pure(Some(user)) // Replace with actual logic
+  }
+
   override def loginUser(request: UserLoginRequest): F[Either[String, UserLoginDetails]] = {
     for {
       hashed_password <- passwordService.hashPassword(request.password)
@@ -66,58 +105,6 @@ class AuthenticationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
     } yield {
       result
     }
-  }
-
-  // Login user
-  //  override def loginUser(request: UserLoginRequest): F[Either[String, UserProfile]] = {
-  //    for {
-  //      hashed_password <- passwordService.hashPassword(request.password)
-  //      result: Either[String, UserProfile] <-
-  //        userRepository.findByUsername(request.username).flatMap {
-  //          case Some(user) if hashed_password == user.userLoginDetails.password_hash =>
-  //            Concurrent[F].pure(Right(user))
-  //          case Some(user) =>
-  //            Concurrent[F].pure(Left("Invalid password"))
-  //          case None =>
-  //            Concurrent[F].pure(Left("Username not found"))
-  //        }
-  //    } yield {
-  //      result
-  //    }
-  //  }
-
-  // Validate user token and return authenticated user
-  def authUser(token: String): F[Option[UserProfile]] = {
-    // Replace with actual token validation
-    val user =
-      UserProfile(
-        userId = "user_id_1",
-        UserLoginDetails(
-          id = Some(1),
-          user_id = "user_id_1",
-          username = "username",
-          password_hash = "hashed_password",
-          email = "john@example.com",
-          role = Wanderer,
-          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-        ),
-        first_name = "John",
-        last_name = "Doe",
-        UserAddress(
-          userId = "user_id_1",
-          street = "fake street 1",
-          city = "fake city 1",
-          country = "UK",
-          county = Some("County 1"),
-          postcode = "CF3 3NJ",
-          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-        ),
-        contact_number = "07402205071",
-        email = "john@example.com",
-        role = Admin,
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-      )
-    Concurrent[F].pure(Some(user)) // Replace with actual logic
   }
 
   // Role-based authorization

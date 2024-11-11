@@ -2,12 +2,16 @@ package controllers
 
 import cats.effect.*
 import com.comcast.ip4s.{ipv4, port}
+import controllers.registration.RegistrationController
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.syntax.*
 import models.users.*
-import models.users.requests.*
-import models.users.responses.*
+import models.users.adts.Wanderer
+import models.users.wanderer_profile.profile.UserProfile
+import models.users.wanderer_profile.requests.UserSignUpRequest
+import models.users.wanderer_profile.responses.CreatedUserResponse
+import models.users.wanderer_profile.responses.error.RegistrationErrorResponse
 import org.http4s.*
 import org.http4s.Method.*
 import org.http4s.circe.*
@@ -23,7 +27,7 @@ import weaver.*
 
 import java.time.{Instant, LocalDateTime}
 
-class UserProfileControllerISpec(global: GlobalRead) extends IOSuite {
+class RegistrationControllerISpec(global: GlobalRead) extends IOSuite {
 
   type Res = (TransactorResource, HttpClientResource)
 
@@ -48,7 +52,8 @@ class UserProfileControllerISpec(global: GlobalRead) extends IOSuite {
             password_hash TEXT NOT NULL,
             email VARCHAR(255) NOT NULL,
             role VARCHAR(50) NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
           )
         """.update.run.transact(transactor.xa).void
       )
@@ -74,15 +79,15 @@ class UserProfileControllerISpec(global: GlobalRead) extends IOSuite {
   // Set up actual service implementations using the transactor resource
   def createController(transactor: Transactor[IO]): HttpRoutes[IO] = {
     val passwordService = new PasswordServiceImpl[IO]()
-    val userRepository = new UserProfileRepositoryImpl[IO](transactor)
+    val userProfileRepository = new UserProfileRepositoryImpl[IO](transactor)
     val userLoginDetailsRepository = new UserLoginDetailsRepositoryImpl[IO](transactor)
-    val authService = new AuthenticationServiceImpl[IO](userRepository, passwordService)
+    val authService = new AuthenticationServiceImpl[IO](userLoginDetailsRepository, userProfileRepository, passwordService)
     val registrationService = new RegistrationServiceImpl[IO](userLoginDetailsRepository, passwordService)
     val tokenService = MockTokenService
-    val userController = UserProfileController(authService, registrationService, tokenService)
+    val registrationController = RegistrationController(authService, registrationService)
 
     Router(
-      "/cashew" -> userController.routes
+      "/cashew" -> registrationController.routes
     )
   }
 
@@ -104,7 +109,7 @@ class UserProfileControllerISpec(global: GlobalRead) extends IOSuite {
     val request = Request[IO](POST, uri"http://127.0.0.1:9999/cashew/register").withEntity(signupRequest)
 
     client.run(request).use { response =>
-      response.as[LoginResponse].map { body =>
+      response.as[CreatedUserResponse].map { body =>
         expect.all(
           response.status == Status.Created,
           body.response == "User created successfully"
@@ -133,7 +138,7 @@ class UserProfileControllerISpec(global: GlobalRead) extends IOSuite {
     for {
       // First request - should create the user successfully
       firstResponse <- client.run(request).use { response =>
-        response.as[LoginResponse].map { body =>
+        response.as[CreatedUserResponse].map { body =>
           expect.all(
             response.status == Status.Created,
             body.response == "User created successfully"
@@ -143,10 +148,10 @@ class UserProfileControllerISpec(global: GlobalRead) extends IOSuite {
 
       // Second request - should fail with a duplicate user error
       secondResponse <- client.run(request).use { response =>
-        response.as[ErrorUserResponse].map { body =>
+        response.as[RegistrationErrorResponse].map { body =>
           expect.all(
             response.status == Status.BadRequest,
-            body.response == List("username already exists", "email already exists")
+            body == RegistrationErrorResponse(List("Username already exists"), List(), List("Email already exists"))
           )
         }
       }

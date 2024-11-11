@@ -3,7 +3,8 @@ package repository.users
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import models.users.*
-import models.users.database.UserLoginDetails
+import models.users.adts.{Business, Wanderer}
+import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserProfile}
 import repository.users.mocks.MockUserProfileRepository
 import weaver.SimpleIOSuite
 
@@ -22,7 +23,8 @@ object UserProfileRepositoryImplSpec extends SimpleIOSuite {
           password_hash = "hashed_password",
           email = email,
           role = Wanderer,
-          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+          updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
         ),
       first_name = "John",
       last_name = "Doe",
@@ -34,12 +36,14 @@ object UserProfileRepositoryImplSpec extends SimpleIOSuite {
           country = "UK",
           county = Some("County 1"),
           postcode = "CF3 3NJ",
-          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+          updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
         ),
       contact_number = contactNumber,
       email = email,
       role = Wanderer,
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
   // Helper method to create a mock repository with initial state
@@ -114,14 +118,14 @@ object UserProfileRepositoryImplSpec extends SimpleIOSuite {
 
   test(".findByUserId() - should return None if userId does not exist") {
     for {
-      mockRepo <- createMockRepo(Nil) // No users initially
+      mockRepo <- createMockRepo(List())
       result <- mockRepo.findByUserId("nonexistentUserId")
     } yield expect(result.isEmpty)
   }
 
   test(".updateUserRole() - should update the role if userId exists") {
     val existingUser = testUser("user1", "123456789", "user1@example.com")
-    val updatedRole = Business // Assuming Business is a valid Role
+    val updatedRole = Business
     for {
       mockRepo <- createMockRepo(List(existingUser))
       updatedUser <- mockRepo.updateUserRole("user_id_1", updatedRole)

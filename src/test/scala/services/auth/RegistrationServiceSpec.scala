@@ -3,10 +3,11 @@ package services.auth
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.{NonEmptyList, Validated}
 import cats.effect.IO
-import models.auth.UniqueUser
+import models.auth.{EmailAlreadyExists, PasswordNoSpecialCharacters, UniqueUser, UsernameAlreadyExists}
 import models.users.*
-import models.users.database.UserLoginDetails
-import models.users.requests.UserSignUpRequest
+import models.users.adts.Wanderer
+import models.users.wanderer_profile.profile.UserLoginDetails
+import models.users.wanderer_profile.requests.UserSignUpRequest
 import services.auth.constants.RegistrationServiceConstants.*
 import services.auth.mocks.RegistrationServiceMocks.*
 import weaver.SimpleIOSuite
@@ -40,7 +41,7 @@ object RegistrationServiceSpec extends SimpleIOSuite {
       _ <- service.uniqueUsernameAndEmail(requestWithDuplicateUsername)
       result <- service.uniqueUsernameAndEmail(requestWithDuplicateUsername)
     } yield {
-      expect(result == Invalid(List("username already exists")))
+      expect(result == Invalid(List(UsernameAlreadyExists)))
     }
   }
 
@@ -54,7 +55,7 @@ object RegistrationServiceSpec extends SimpleIOSuite {
       _ <- service.uniqueUsernameAndEmail(requestWithDuplicateEmail)
       result <- service.uniqueUsernameAndEmail(requestWithDuplicateEmail)
     } yield {
-      expect(result == Invalid(List("email already exists")))
+      expect(result == Invalid(List(EmailAlreadyExists)))
     }
   }
 
@@ -72,7 +73,7 @@ object RegistrationServiceSpec extends SimpleIOSuite {
     for {
       result <- service.uniqueUsernameAndEmail(requestWithMultipleConflicts)
     } yield {
-      expect(result == Invalid(List("username already exists", "email already exists")))
+      expect(result == Invalid(List(UsernameAlreadyExists, EmailAlreadyExists)))
     }
   }
 
@@ -98,13 +99,13 @@ object RegistrationServiceSpec extends SimpleIOSuite {
   test(".registerUser() - should fail when password validation fails") {
 
     val mockUserRepository = new MockUserLoginDetailsRepository()
-    val mockPasswordService = new MockPasswordService(Invalid(List("Password must contain a special character.")), "")
+    val mockPasswordService = new MockPasswordService(passwordValidationResult = Invalid(List(PasswordNoSpecialCharacters)), hashedPassword = "")
     val service = new RegistrationServiceImpl[IO](mockUserRepository, mockPasswordService)
 
     service.registerUser(validRequest).map {
       result =>
         expect(
-          result == Invalid(List("Password must contain a special character."))
+          result == Invalid(List(PasswordNoSpecialCharacters))
         )
     }
   }
@@ -130,7 +131,8 @@ object RegistrationServiceSpec extends SimpleIOSuite {
         password_hash = "hashedpassword",
         email = "existing@example.com",
         role = Wanderer,
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+        updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
     }
 
@@ -141,7 +143,7 @@ object RegistrationServiceSpec extends SimpleIOSuite {
     service.registerUser(validRequest).map {
       result =>
         expect(
-          result == Invalid(List("username already exists"))
+          result == Invalid(List(UsernameAlreadyExists))
         )
     }
   }
@@ -167,7 +169,8 @@ object RegistrationServiceSpec extends SimpleIOSuite {
         password_hash = "hashedpassword",
         email = "same_email@example.com",
         role = Wanderer,
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+        updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
     }
 
@@ -178,7 +181,7 @@ object RegistrationServiceSpec extends SimpleIOSuite {
     service.registerUser(validRequest).map {
       result =>
         expect(
-          result == Invalid(List("email already exists"))
+          result == Invalid(List(EmailAlreadyExists))
         )
     }
   }
@@ -204,7 +207,8 @@ object RegistrationServiceSpec extends SimpleIOSuite {
         password_hash = "hashedpassword",
         email = "same_email@example.com",
         role = Wanderer,
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+        updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
     }
 
@@ -215,7 +219,7 @@ object RegistrationServiceSpec extends SimpleIOSuite {
     service.registerUser(validRequest).map {
       result =>
         expect(
-          result == Invalid(List("username already exists", "email already exists"))
+          result == Invalid(List(UsernameAlreadyExists, EmailAlreadyExists))
         )
     }
   }
@@ -229,9 +233,9 @@ object RegistrationServiceSpec extends SimpleIOSuite {
     val requestWithDuplicateUsername = uniqueRequest.copy(username = existingUser.username)
 
     for {
-      result <- service.validateUnique("username", requestWithDuplicateUsername.username, userRepository.findByUsername)
+      result <- service.validateUsernameUnique(requestWithDuplicateUsername.username)
     } yield {
-      expect(result == Invalid(NonEmptyList.of("username already exists")))
+      expect(result == Invalid(NonEmptyList.of(UsernameAlreadyExists)))
     }
   }
 
@@ -244,9 +248,9 @@ object RegistrationServiceSpec extends SimpleIOSuite {
     val requestWithDuplicateUsername = uniqueRequest.copy(email = existingUser.email)
 
     for {
-      result <- service.validateUnique("email", requestWithDuplicateUsername.email, userRepository.findByEmail)
+      result <- service.validateEmailUnique(requestWithDuplicateUsername.email)
     } yield {
-      expect(result == Invalid(NonEmptyList.of("email already exists")))
+      expect(result == Invalid(NonEmptyList.of(EmailAlreadyExists)))
     }
   }
 }

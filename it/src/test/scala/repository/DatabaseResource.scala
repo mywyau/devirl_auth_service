@@ -53,13 +53,15 @@ object DatabaseResource extends GlobalResource {
         password_hash,
         email,
         role,
-        created_at
+        created_at,
+        updated_at
       ) VALUES (
         'test_user_id',
         'test_user',
         'hashed_password',
         'test@example.com',
         'Wanderer',
+        CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP
       )
     """.update.run.transact(xa)

@@ -11,7 +11,8 @@ import doobie.*
 import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
-import models.users.{Role, UserProfile}
+import models.users.adts.Role
+import models.users.wanderer_profile.profile.UserProfile
 
 import java.sql.Timestamp
 import java.time.LocalDateTime

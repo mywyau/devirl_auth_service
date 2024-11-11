@@ -9,7 +9,8 @@ CREATE TABLE user_login_details (
     password_hash TEXT NOT NULL,
     email VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL DEFAULT 'Wanderer',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 
@@ -23,7 +24,8 @@ CREATE TABLE user_address (
     country VARCHAR(255) NOT NULL,
     county VARCHAR(255) NOT NULL,
     postcode VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 DROP TABLE IF EXISTS user_contact_details;
@@ -33,7 +35,8 @@ CREATE TABLE user_contact_details (
     userId VARCHAR(255) NOT NULL,
     contact_number VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 
@@ -54,7 +57,8 @@ CREATE TABLE user_profile (
     contact_number VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL DEFAULT 'Wanderer',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create indexes to optimize queries on users table

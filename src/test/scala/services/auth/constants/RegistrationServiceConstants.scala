@@ -3,8 +3,9 @@ package services.auth.constants
 import cats.data.Validated
 import cats.effect.IO
 import models.users.*
-import models.users.database.UserLoginDetails
-import models.users.requests.UserSignUpRequest
+import models.users.adts.Wanderer
+import models.users.wanderer_profile.profile.UserLoginDetails
+import models.users.wanderer_profile.requests.UserSignUpRequest
 import repositories.users.UserProfileRepositoryAlgebra
 
 import java.time.LocalDateTime
@@ -19,7 +20,8 @@ object RegistrationServiceConstants {
       password_hash = "hashedpassword",
       email = "existing@example.com",
       role = Wanderer,
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
   }
 

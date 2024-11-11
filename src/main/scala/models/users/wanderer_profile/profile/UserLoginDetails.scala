@@ -1,8 +1,8 @@
-package models.users.database
+package models.users.wanderer_profile.profile
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
-import models.users.Role
+import models.users.adts.Role
 
 import java.time.LocalDateTime
 
@@ -13,7 +13,8 @@ case class UserLoginDetails(
                              password_hash: String,
                              email: String,
                              role: Role,
-                             created_at: LocalDateTime
+                             created_at: LocalDateTime,
+                             updated_at: LocalDateTime
                            )
 
 object UserLoginDetails {

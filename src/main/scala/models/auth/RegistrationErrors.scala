@@ -35,9 +35,9 @@ case object EmailAlreadyExists extends RegisterEmailErrors {
 sealed trait RegisterUsernameErrors extends RegistrationErrors
 
 case object UsernameAlreadyExists extends RegisterUsernameErrors {
-  override val errorMessage = "User already exists"
+  override val errorMessage = "Username already exists"
 }
 
 case object CannotCreateUser extends RegistrationErrors {
-  override val errorMessage = "User was not created"
+  override val errorMessage = "User was for some reason not created"
 }

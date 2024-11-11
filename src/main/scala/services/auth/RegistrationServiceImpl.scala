@@ -7,8 +7,8 @@ import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.auth.*
 import models.users.*
-import models.users.database.UserLoginDetails
-import models.users.requests.UserSignUpRequest
+import models.users.wanderer_profile.profile.UserLoginDetails
+import models.users.wanderer_profile.requests.UserSignUpRequest
 import repositories.users.UserLoginDetailsRepositoryAlgebra
 import services.auth.algebra.{PasswordServiceAlgebra, RegistrationServiceAlgebra}
 
@@ -21,10 +21,8 @@ class RegistrationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
   def validateUsernameUnique(value: String): F[ValidatedNel[RegistrationErrors, RegistrationValidation]] = {
     userLoginDetailsRepo.findByUsername(value).map {
       case Some(_) =>
-        println("Username")
         UsernameAlreadyExists.invalidNel
       case None =>
-        println("Oh no username")
         UniqueUser.validNel
     }
   }
@@ -33,10 +31,8 @@ class RegistrationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
   def validateEmailUnique(value: String): F[ValidatedNel[RegistrationErrors, RegistrationValidation]] = {
     userLoginDetailsRepo.findByEmail(value).map {
       case Some(_) =>
-        println("Email")
         EmailAlreadyExists.invalidNel
       case None =>
-        println("Oh no email")
         UniqueUser.validNel
     }
   }
@@ -74,7 +70,8 @@ class RegistrationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
               password_hash = hashedPassword,
               email = request.email,
               role = request.role,
-              created_at = request.created_at
+              created_at = request.created_at,
+              updated_at = request.created_at
             )
           userLoginDetailsRepo.createUserLoginDetails(newUser).map { rows =>
             if (rows > 0) Validated.valid(newUser)

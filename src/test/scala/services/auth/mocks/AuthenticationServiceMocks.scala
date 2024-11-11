@@ -2,16 +2,35 @@ package services.auth.mocks
 
 import cats.data.Validated
 import cats.effect.IO
-import models.users.{Role, UserProfile}
-import repositories.users.UserProfileRepositoryAlgebra
+import models.auth.{PasswordLengthError, RegisterPasswordErrors}
+import models.users.adts.Role
+import models.users.wanderer_profile.profile.{UserLoginDetails, UserProfile}
+import repositories.users.{UserLoginDetailsRepositoryAlgebra, UserProfileRepositoryAlgebra}
 import services.auth.algebra.PasswordServiceAlgebra
 import services.auth.constants.AuthenticationServiceConstants.*
 
 object AuthenticationServiceMocks {
 
-  class MockUserRepository(
-                            users: Map[String, UserProfile] = Map.empty
-                          ) extends UserProfileRepositoryAlgebra[IO] {
+  class MockUserLoginDetailsRepository(
+                                        userLoginDetails: Map[String, UserLoginDetails] = Map.empty
+                                      ) extends UserLoginDetailsRepositoryAlgebra[IO] {
+
+    def showAllUsers: IO[Map[String, UserLoginDetails]] = IO.pure(userLoginDetails)
+
+    override def findByUserId(userId: String): IO[Option[UserLoginDetails]] = ???
+
+    override def createUserLoginDetails(user: UserLoginDetails): IO[Int] = IO.pure(1) // Assume user creation always succeeds
+
+    override def findByUsername(username: String): IO[Option[UserLoginDetails]] = IO.pure(userLoginDetails.get(username))
+
+    override def findByEmail(email: String): IO[Option[UserLoginDetails]] = IO.pure(userLoginDetails.values.find(_.email.contains(email)))
+
+    def updateUserLoginDetails(userId: String, userLoginDetails: UserLoginDetails): IO[Option[UserLoginDetails]] = ???
+  }
+
+  class MockUserProfileRepository(
+                                   users: Map[String, UserProfile] = Map.empty
+                                 ) extends UserProfileRepositoryAlgebra[IO] {
 
     def showAllUsers: IO[Map[String, UserProfile]] = IO.pure(users)
 
@@ -31,8 +50,8 @@ object AuthenticationServiceMocks {
 
   class MockPasswordService(expectedHash: String) extends PasswordServiceAlgebra[IO] {
 
-    override def validatePassword(plainTextPassword: String): Validated[List[String], String] =
-      if (plainTextPassword.nonEmpty) Validated.valid(plainTextPassword) else Validated.invalid(List("Invalid password"))
+    override def validatePassword(plainTextPassword: String): Validated[List[RegisterPasswordErrors], String] =
+      if (plainTextPassword.nonEmpty) Validated.valid(plainTextPassword) else Validated.invalid(List(PasswordLengthError))
 
     override def hashPassword(plainTextPassword: String): IO[String] = IO.pure(expectedHash)
 

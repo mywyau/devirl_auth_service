@@ -6,7 +6,7 @@ import cats.syntax.all.*
 import dev.profunktor.redis4cats.RedisCommands
 import io.circe.parser.decode
 import io.circe.syntax.*
-import models.users.UserProfile
+import models.users.wanderer_profile.profile.UserProfile
 import pdi.jwt.exceptions.JwtExpirationException
 import pdi.jwt.{JwtAlgorithm, JwtCirce, JwtClaim}
 import services.auth.algebra.TokenServiceAlgebra

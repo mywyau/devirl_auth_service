@@ -1,4 +1,4 @@
-package models.users
+package models.users.wanderer_profile.profile
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
@@ -12,7 +12,8 @@ case class UserAddress(
                  country: String,
                  county: Option[String],
                  postcode: String,
-                 created_at: LocalDateTime
+                 created_at: LocalDateTime,
+                 updated_at: LocalDateTime
                )
 
 object UserAddress {

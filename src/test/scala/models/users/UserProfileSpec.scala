@@ -4,7 +4,8 @@ import cats.effect.IO
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
-import models.users.database.UserLoginDetails
+import models.users.adts.Wanderer
+import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserProfile}
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
@@ -21,7 +22,8 @@ object UserProfileSpec extends SimpleIOSuite {
         password_hash = "hashed_password_1",
         email = "mikey5922@gmail.com",
         role = Wanderer,
-        created_at = LocalDateTime.of(2024, 10, 10, 10, 0)
+        created_at = LocalDateTime.of(2024, 10, 10, 10, 0),
+        updated_at = LocalDateTime.of(2024, 10, 10, 10, 0)
       ),
       first_name = "michael",
       last_name = "yau",
@@ -32,12 +34,14 @@ object UserProfileSpec extends SimpleIOSuite {
         country = "UK",
         county = Some("County 1"),
         postcode = "CF3 3NJ",
-        created_at = LocalDateTime.of(2024, 10, 10, 10, 0)
+        created_at = LocalDateTime.of(2024, 10, 10, 10, 0),
+        updated_at = LocalDateTime.of(2024, 10, 10, 10, 0)
       ),
       contact_number = "07402205071",
       email = "mikey5922@gmail.com",
       role = Wanderer,
-      created_at = LocalDateTime.of(2024, 10, 10, 10, 0)
+      created_at = LocalDateTime.of(2024, 10, 10, 10, 0),
+      updated_at = LocalDateTime.of(2024, 10, 10, 10, 0)
     )
 
   test("User model encodes correctly to JSON") {
@@ -54,7 +58,8 @@ object UserProfileSpec extends SimpleIOSuite {
         |   "password_hash" : "hashed_password_1",
         |   "email": "mikey5922@gmail.com",
         |   "role": "Wanderer",
-        |   "created_at" : "2024-10-10T10:00:00"
+        |   "created_at" : "2024-10-10T10:00:00",
+        |   "updated_at" : "2024-10-10T10:00:00"
         |},
         |"first_name" : "michael",
         |"last_name" : "yau",
@@ -65,12 +70,14 @@ object UserProfileSpec extends SimpleIOSuite {
         |   "country" : "UK",
         |   "county" : "County 1",
         |   "postcode" : "CF3 3NJ",
-        |   "created_at" : "2024-10-10T10:00:00"
+        |   "created_at" : "2024-10-10T10:00:00",
+        |   "updated_at" : "2024-10-10T10:00:00"
         | },
         |"contact_number" : "07402205071",
         |"email": "mikey5922@gmail.com",
         |"role": "Wanderer",
-        |"created_at" : "2024-10-10T10:00:00"
+        |"created_at" : "2024-10-10T10:00:00",
+        |"updated_at" : "2024-10-10T10:00:00"
         |}""".stripMargin
 
     val expectedResult: Json = parse(expectedJson).getOrElse(Json.Null)

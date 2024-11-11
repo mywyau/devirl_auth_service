@@ -3,7 +3,8 @@ package services.auth.mocks
 import cats.effect.{IO, Ref}
 import cats.syntax.all.*
 import models.users.*
-import models.users.database.UserLoginDetails
+import models.users.adts.{Role, Wanderer}
+import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserProfile}
 import repositories.RefreshTokenRepositoryAlgebra
 import repositories.users.UserProfileRepositoryAlgebra
 import services.auth.algebra.TokenServiceAlgebra
@@ -60,7 +61,8 @@ class MockUserRepository extends UserProfileRepositoryAlgebra[IO] {
           password_hash = "hashed_password",
           email = "john@example.com",
           role = Wanderer,
-          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+          updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
         ),
         first_name = "John",
         last_name = "Doe",
@@ -71,12 +73,14 @@ class MockUserRepository extends UserProfileRepositoryAlgebra[IO] {
           country = "UK",
           county = Some("County 1"),
           postcode = "CF3 3NJ",
-          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+          updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
         ),
         contact_number = "07402205071",
         email = "john@example.com",
         role = Wanderer,
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+        updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
     )
 

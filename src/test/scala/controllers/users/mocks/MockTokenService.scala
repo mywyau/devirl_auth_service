@@ -2,9 +2,12 @@ package controllers.users.mocks
 
 import cats.data.Validated
 import cats.effect.IO
+import models.auth.RegistrationErrors
 import models.users.*
-import models.users.database.UserLoginDetails
-import models.users.requests.UserSignUpRequest
+import models.users.adts.Role
+import models.users.login.requests.UserLoginRequest
+import models.users.wanderer_profile.profile.{UserLoginDetails, UserProfile}
+import models.users.wanderer_profile.requests.UserSignUpRequest
 import org.http4s.*
 import services.auth.algebra.*
 import services.auth.{InvalidToken, TokenStatus}
@@ -26,10 +29,10 @@ class MockTokenService extends TokenServiceAlgebra[IO] {
 
 // Mock AuthenticationService
 case class MockAuthService(
-                            loginUserMock: UserLoginRequest => IO[Either[String, UserProfile]]
+                            loginUserMock: UserLoginRequest => IO[Either[String, UserLoginDetails]]
                           ) extends AuthenticationServiceAlgebra[IO] {
 
-  override def loginUser(request: UserLoginRequest): IO[Either[String, UserProfile]] =
+  override def loginUser(request: UserLoginRequest): IO[Either[String, UserLoginDetails]] =
     loginUserMock(request)
 
   override def authUser(token: String): IO[Option[UserProfile]] = IO(None)
@@ -43,10 +46,10 @@ case class MockAuthService(
 
 
 class MockRegistrationService(
-                               registerUserMock: UserSignUpRequest => IO[Validated[List[String], UserLoginDetails]]
+                               registerUserMock: UserSignUpRequest => IO[Validated[List[RegistrationErrors], UserLoginDetails]]
                              ) extends RegistrationServiceAlgebra[IO] {
 
 
-  override def registerUser(request: UserSignUpRequest): IO[Validated[List[String], UserLoginDetails]] =
+  override def registerUser(request: UserSignUpRequest): IO[Validated[List[RegistrationErrors], UserLoginDetails]] =
     registerUserMock(request)
 }

@@ -1,8 +1,8 @@
-package models.users.responses
+package models.users.wanderer_profile.responses
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
-import models.users.Role
+import models.users.adts.Role
 
 case class LoginResponse(
                           userId: String,

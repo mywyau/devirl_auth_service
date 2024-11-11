@@ -2,8 +2,9 @@ package services.auth.mocks
 
 import cats.data.Validated
 import cats.effect.IO
+import models.auth.RegisterPasswordErrors
 import models.users.*
-import models.users.database.UserLoginDetails
+import models.users.wanderer_profile.profile.UserLoginDetails
 import repositories.users.{UserLoginDetailsRepositoryAlgebra, UserProfileRepositoryAlgebra}
 import services.auth.algebra.PasswordServiceAlgebra
 import services.auth.constants.RegistrationServiceConstants.*
@@ -30,10 +31,10 @@ object RegistrationServiceMocks {
   }
 
   class MockPasswordService(
-                             passwordValidationResult: Validated[List[String], String],
+                             passwordValidationResult: Validated[List[RegisterPasswordErrors], String],
                              hashedPassword: String
                            ) extends PasswordServiceAlgebra[IO] {
-    override def validatePassword(plainTextPassword: String): Validated[List[String], String] = passwordValidationResult
+    override def validatePassword(plainTextPassword: String): Validated[List[RegisterPasswordErrors], String] = passwordValidationResult
 
     override def hashPassword(plainTextPassword: String): IO[String] = IO.pure(hashedPassword)
 

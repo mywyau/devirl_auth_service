@@ -1,4 +1,4 @@
-package models.users
+package models.users.adts
 
 import io.circe.{Decoder, Encoder}
 

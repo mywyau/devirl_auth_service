@@ -4,8 +4,8 @@ import cats.effect.{IO, Resource}
 import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
-import models.users.Wanderer
-import models.users.database.UserLoginDetails
+import models.users.adts.Wanderer
+import models.users.wanderer_profile.profile.UserLoginDetails
 import repositories.users.UserLoginDetailsRepositoryImpl
 import weaver.{GlobalRead, IOSuite, ResourceTag}
 
@@ -27,13 +27,14 @@ class UserLoginDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
           password_hash TEXT NOT NULL,
           email VARCHAR(255) NOT NULL,
           role VARCHAR(50) NOT NULL,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
       """.update.run.transact(transactor.xa).void *>
         sql"TRUNCATE TABLE user_login_details RESTART IDENTITY".update.run.transact(transactor.xa).void
       )
 
-  def sampleUser(id: Option[Int], userId: String, username: String, email: String) =
+  def testUserLoginDetails(id: Option[Int], userId: String, username: String, email: String) =
     UserLoginDetails(
       id = id,
       user_id = userId,
@@ -41,14 +42,15 @@ class UserLoginDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
       password_hash = "hashedpassword",
       email = email,
       role = Wanderer,
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
   private def seedTestUsers(userLoginDetailsRepo: UserLoginDetailsRepositoryImpl[IO]): IO[Unit] = {
     val users = List(
-      sampleUser(Some(1), "user_id_1", "mikey1", "mikey1@gmail.com"),
-      sampleUser(Some(2), "user_id_2", "mikey2", "mikey2@gmail.com"),
-      sampleUser(Some(3), "user_id_3", "mikey3", "mikey3@gmail.com")
+      testUserLoginDetails(Some(1), "user_id_1", "mikey1", "mikey1@gmail.com"),
+      testUserLoginDetails(Some(2), "user_id_2", "mikey2", "mikey2@gmail.com"),
+      testUserLoginDetails(Some(3), "user_id_3", "mikey3", "mikey3@gmail.com")
     )
     users.traverse(userLoginDetailsRepo.createUserLoginDetails).void
   }
@@ -79,7 +81,8 @@ class UserLoginDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
       password_hash = "hashedpassword",
       email = email,
       role = Wanderer,
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
   // Test case to verify user creation and retrieval by username
@@ -95,16 +98,16 @@ class UserLoginDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
 
   test(".findByUsername() - should return the user if username exists") { userLoginDetailsRepo =>
 
-    val user = sampleUser(Some(1), "user_id_1", "mikey1", "mikey1@gmail.com")
+    val user = testUserLoginDetails(Some(1), "user_id_1", "mikey1", "mikey1@gmail.com")
 
     for {
       userOpt <- userLoginDetailsRepo.findByUsername("mikey1")
-    } yield expect(userOpt.contains(user))
+    } yield expect(userOpt == Some(user))
   }
 
   test(".findByEmail() - should return the user if email exists") { userLoginDetailsRepo =>
 
-    val user = sampleUser(Some(1), "user_id_1", "mikey1", "mikey1@gmail.com")
+    val user = testUserLoginDetails(Some(1), "user_id_1", "mikey1", "mikey1@gmail.com")
 
     for {
       userOpt <- userLoginDetailsRepo.findByEmail("mikey1@gmail.com")
