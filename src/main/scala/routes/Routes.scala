@@ -3,7 +3,7 @@ package routes
 import cats.NonEmptyParallel
 import cats.effect.*
 import controllers.*
-import controllers.login.{LoginController, LoginControllerImpl}
+import controllers.login.LoginControllerImpl
 import controllers.registration.RegistrationControllerImpl
 import dev.profunktor.redis4cats.effect.Log
 import doobie.hikari.HikariTransactor
@@ -14,9 +14,12 @@ import repositories.business.BusinessRepository
 import repositories.users.{UserLoginDetailsRepositoryImpl, UserProfileRepositoryImpl}
 import repositories.workspaces.WorkspaceRepository
 import services.*
-import services.auth.{AuthenticationServiceImpl, RegistrationServiceImpl}
+import services.auth.AuthenticationServiceImpl
 import services.bookings.BookingServiceImpl
 import services.business.BusinessServiceImpl
+import services.login.LoginServiceImpl
+import services.password.PasswordServiceImpl
+import services.registration.RegistrationServiceImpl
 
 object Routes {
 
@@ -25,10 +28,11 @@ object Routes {
     val userRepository = new UserProfileRepositoryImpl[F](transactor)
     val userLoginDetailsRepository = new UserLoginDetailsRepositoryImpl[F](transactor)
     val passwordService = new PasswordServiceImpl[F]
+
     val registrationService = new RegistrationServiceImpl[F](userLoginDetailsRepository, passwordService)
     val authService = new AuthenticationServiceImpl[F](userLoginDetailsRepository, userRepository, passwordService)
     val wandererProfileController = new WandererProfileControllerImpl[F](authService, registrationService)
-    
+
     wandererProfileController.routes
   }
 
@@ -38,9 +42,10 @@ object Routes {
     val userRepository = new UserProfileRepositoryImpl[F](transactor)
     val userLoginDetailsRepository = new UserLoginDetailsRepositoryImpl[F](transactor)
     val passwordService = new PasswordServiceImpl[F]
+
     val registrationService = new RegistrationServiceImpl[F](userLoginDetailsRepository, passwordService)
     val authService = new AuthenticationServiceImpl[F](userLoginDetailsRepository, userRepository, passwordService)
-    val registrationController = new RegistrationControllerImpl[F](authService, registrationService)
+    val registrationController = new RegistrationControllerImpl[F](registrationService)
 
     registrationController.routes
   }
@@ -50,9 +55,9 @@ object Routes {
     val userRepository = new UserProfileRepositoryImpl[F](transactor)
     val userLoginDetailsRepository = new UserLoginDetailsRepositoryImpl[F](transactor)
     val passwordService = new PasswordServiceImpl[F]
-    val registrationService = new RegistrationServiceImpl[F](userLoginDetailsRepository, passwordService)
-    val authService = new AuthenticationServiceImpl[F](userLoginDetailsRepository, userRepository, passwordService)
-    val loginController = new LoginControllerImpl[F](authService, registrationService)
+
+    val loginService = new LoginServiceImpl[F](userLoginDetailsRepository, passwordService)
+    val loginController = new LoginControllerImpl[F](loginService)
 
     loginController.routes
   }

@@ -11,6 +11,7 @@ import models.users.wanderer_profile.requests.UserSignUpRequest
 import org.http4s.*
 import services.auth.algebra.*
 import services.auth.{InvalidToken, TokenStatus}
+import services.registration.RegistrationServiceAlgebra
 
 import java.time.Instant
 
@@ -31,9 +32,6 @@ class MockTokenService extends TokenServiceAlgebra[IO] {
 case class MockAuthService(
                             loginUserMock: UserLoginRequest => IO[Either[String, UserLoginDetails]]
                           ) extends AuthenticationServiceAlgebra[IO] {
-
-  override def loginUser(request: UserLoginRequest): IO[Either[String, UserLoginDetails]] =
-    loginUserMock(request)
 
   override def authUser(token: String): IO[Option[UserProfile]] = IO(None)
 

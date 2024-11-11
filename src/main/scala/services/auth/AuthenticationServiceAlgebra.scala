@@ -6,13 +6,13 @@ import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.users.*
 import models.users.adts.{Admin, Role, Wanderer}
-import models.users.login.requests.UserLoginRequest
 import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserProfile}
 import org.http4s.Request
 import org.http4s.server.AuthMiddleware
 import org.typelevel.ci.CIStringSyntax
 import repositories.users.{UserLoginDetailsRepositoryAlgebra, UserProfileRepositoryAlgebra}
-import services.auth.algebra.{AuthenticationServiceAlgebra, PasswordServiceAlgebra, UserAuth}
+import services.auth.algebra.{AuthenticationServiceAlgebra, UserAuth}
+import services.password.PasswordServiceAlgebra
 
 import java.time.LocalDateTime
 
@@ -88,23 +88,6 @@ class AuthenticationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
         updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
     Concurrent[F].pure(Some(user)) // Replace with actual logic
-  }
-
-  override def loginUser(request: UserLoginRequest): F[Either[String, UserLoginDetails]] = {
-    for {
-      hashed_password <- passwordService.hashPassword(request.password)
-      result: Either[String, UserLoginDetails] <-
-        userLoginDetailsRepository.findByUsername(request.username).flatMap {
-          case Some(user) if hashed_password == user.password_hash =>
-            Concurrent[F].pure(Right(user))
-          case Some(user) =>
-            Concurrent[F].pure(Left("Invalid password"))
-          case None =>
-            Concurrent[F].pure(Left("Username not found"))
-        }
-    } yield {
-      result
-    }
   }
 
   // Role-based authorization

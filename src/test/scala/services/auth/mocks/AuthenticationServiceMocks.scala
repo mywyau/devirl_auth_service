@@ -6,8 +6,8 @@ import models.auth.{PasswordLengthError, RegisterPasswordErrors}
 import models.users.adts.Role
 import models.users.wanderer_profile.profile.{UserLoginDetails, UserProfile}
 import repositories.users.{UserLoginDetailsRepositoryAlgebra, UserProfileRepositoryAlgebra}
-import services.auth.algebra.PasswordServiceAlgebra
 import services.auth.constants.AuthenticationServiceConstants.*
+import services.password.PasswordServiceAlgebra
 
 object AuthenticationServiceMocks {
 

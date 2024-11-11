@@ -1,4 +1,4 @@
-package services.auth.mocks
+package services.registration.mocks
 
 import cats.data.Validated
 import cats.effect.IO
@@ -6,8 +6,8 @@ import models.auth.RegisterPasswordErrors
 import models.users.*
 import models.users.wanderer_profile.profile.UserLoginDetails
 import repositories.users.{UserLoginDetailsRepositoryAlgebra, UserProfileRepositoryAlgebra}
-import services.auth.algebra.PasswordServiceAlgebra
 import services.auth.constants.RegistrationServiceConstants.*
+import services.password.PasswordServiceAlgebra
 
 import java.time.LocalDateTime
 

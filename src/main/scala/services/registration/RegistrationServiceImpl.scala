@@ -1,4 +1,4 @@
-package services.auth
+package services.registration
 
 import cats.data.*
 import cats.data.Validated.{Invalid, Valid}
@@ -10,7 +10,7 @@ import models.users.*
 import models.users.wanderer_profile.profile.UserLoginDetails
 import models.users.wanderer_profile.requests.UserSignUpRequest
 import repositories.users.UserLoginDetailsRepositoryAlgebra
-import services.auth.algebra.{PasswordServiceAlgebra, RegistrationServiceAlgebra}
+import services.password.PasswordServiceAlgebra
 
 
 class RegistrationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](

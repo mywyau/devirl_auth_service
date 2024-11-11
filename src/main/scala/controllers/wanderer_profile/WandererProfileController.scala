@@ -14,6 +14,7 @@ import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
 import services.auth.algebra.*
+import services.registration.RegistrationServiceAlgebra
 
 
 trait WandererProfileController[F[_]] {
