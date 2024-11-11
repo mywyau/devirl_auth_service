@@ -15,6 +15,6 @@ lazy val it = (project in file("it"))
     name := "cashew-it",
     libraryDependencies ++= AppDependencies.integrationTest,
     fork := true,
-    parallelExecution := false,
+    parallelExecution := true,
     scalaSource := baseDirectory.value / "src" / "test" / "scala"
   )

@@ -1,4 +1,3 @@
 #!/usr/bin/env bash
 
-
-sbt clearCaches clean test it/test
+sbt clearCaches clean test clean it/test

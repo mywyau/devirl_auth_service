@@ -83,7 +83,8 @@ object UserProfileSpec extends SimpleIOSuite {
     val expectedResult: Json = parse(expectedJson).getOrElse(Json.Null)
 
     for {
-      _ <- IO(println(jsonResult.toString))
+      //      _ <- IO(println(jsonResult.toString))
+      _ <- IO("")
     } yield {
       expect(jsonResult == expectedResult)
     }

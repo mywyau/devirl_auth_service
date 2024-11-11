@@ -106,7 +106,7 @@ class UserLoginDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Tran
     // Query the updated user
     val selectQuery: ConnectionIO[Option[UserLoginDetails]] =
       sql"""
-        SELECT userId, username, password_hash, email, role, created_at
+        SELECT userId, username, password_hash, email, role, created_at, updated_at
         FROM user_login_details
         WHERE userId = $userId
       """.query[UserLoginDetails].option
