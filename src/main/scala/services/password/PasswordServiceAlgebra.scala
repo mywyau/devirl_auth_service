@@ -1,4 +1,4 @@
-package services.auth.algebra
+package services.password
 
 import cats.data.Validated
 import models.auth.RegisterPasswordErrors

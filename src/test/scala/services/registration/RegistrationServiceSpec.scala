@@ -1,4 +1,4 @@
-package services.auth
+package services.registration
 
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.{NonEmptyList, Validated}
@@ -9,7 +9,7 @@ import models.users.adts.Wanderer
 import models.users.wanderer_profile.profile.UserLoginDetails
 import models.users.wanderer_profile.requests.UserSignUpRequest
 import services.auth.constants.RegistrationServiceConstants.*
-import services.auth.mocks.RegistrationServiceMocks.*
+import services.registration.mocks.RegistrationServiceMocks.*
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime

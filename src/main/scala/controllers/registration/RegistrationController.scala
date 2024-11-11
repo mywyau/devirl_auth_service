@@ -1,8 +1,7 @@
 package controllers.registration
 
-import cats.effect.unsafe.implicits.global // for debugging and IO printlns
-
 import cats.data.Validated.{Invalid, Valid}
+import cats.effect.unsafe.implicits.global
 import cats.effect.{Concurrent, IO}
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
@@ -14,22 +13,14 @@ import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
 import services.auth.algebra.*
+import services.registration.RegistrationServiceAlgebra
 
 
 trait RegistrationController[F[_]] {
   def routes: HttpRoutes[F]
 }
 
-object RegistrationController {
-  def apply[F[_] : Concurrent](
-                                authService: AuthenticationServiceAlgebra[F],
-                                registrationService: RegistrationServiceAlgebra[F]
-                              ): RegistrationController[F] =
-    new RegistrationControllerImpl[F](authService, registrationService)
-}
-
 class RegistrationControllerImpl[F[_] : Concurrent](
-                                                     authService: AuthenticationServiceAlgebra[F],
                                                      registrationService: RegistrationServiceAlgebra[F]
                                                    ) extends Http4sDsl[F] with RegistrationController[F] {
 
@@ -72,6 +63,12 @@ class RegistrationControllerImpl[F[_] : Concurrent](
           }
         }
       }
-
   }
+}
+
+object RegistrationController {
+  def apply[F[_] : Concurrent](
+                                registrationService: RegistrationServiceAlgebra[F]
+                              ): RegistrationController[F] =
+    new RegistrationControllerImpl[F](registrationService)
 }

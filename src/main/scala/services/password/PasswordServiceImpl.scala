@@ -1,11 +1,10 @@
-package services
+package services.password
 
 import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
 import models.auth.*
-import services.auth.algebra.PasswordServiceAlgebra
 
 import java.security.MessageDigest
 import java.util.Base64

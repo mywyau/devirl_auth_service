@@ -17,6 +17,7 @@ import org.http4s.circe.*
 import org.http4s.circe.CirceEntityDecoder.*
 import org.http4s.implicits.*
 import services.auth.algebra.*
+import services.registration.RegistrationServiceAlgebra
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
@@ -74,7 +75,7 @@ object RegistrationControllerSpec extends SimpleIOSuite {
   def createUserController(authService: AuthenticationServiceAlgebra[IO],
                            registrationService: RegistrationServiceAlgebra[IO]
                           ): HttpRoutes[IO] =
-    RegistrationController[IO](authService, registrationService).routes
+    RegistrationController[IO](registrationService).routes
 
   // Test case for POST /register: Success
   test("POST - /register should return 201 when user is created successfully") {

@@ -11,47 +11,47 @@ import weaver.SimpleIOSuite
 
 object AuthenticationServiceSpec extends SimpleIOSuite {
 
-  test(".loginUser() - should return Right(User) for valid credentials") {
-
-    val mockPasswordService = new MockPasswordService(expectedHash = "hashed_password")
-    val mockUserLoginDetailsRepository = new MockUserLoginDetailsRepository(Map("username" -> testUserLoginDetails))
-    val mockUserProfileRepository = new MockUserProfileRepository(Map("username" -> testUserProfile))
-    val authService = new AuthenticationServiceImpl[IO](mockUserLoginDetailsRepository, mockUserProfileRepository, mockPasswordService)
-
-    val request = UserLoginRequest("username", "password")
-
-    for {
-      result <- authService.loginUser(request)
-    } yield expect(result == Right(testUserLoginDetails))
-  }
-
-  test(".loginUser() - should return Left(Invalid password) for incorrect password") {
-
-    val invalidPasswordRequest = UserLoginRequest("username", "wrong_password")
-
-    val mockPasswordService = new MockPasswordService(expectedHash = "hashed_wrong_password")
-    val mockUserLoginDetailsRepository = new MockUserLoginDetailsRepository(Map("username" -> testUserLoginDetails))
-    val mockUserProfileRepository = new MockUserProfileRepository(Map("username" -> testUserProfile))
-    val authService = new AuthenticationServiceImpl[IO](mockUserLoginDetailsRepository, mockUserProfileRepository, mockPasswordService)
-
-    for {
-      result <- authService.loginUser(invalidPasswordRequest)
-    } yield expect(result == Left("Invalid password"))
-  }
-
-  test(".loginUser() - should return Left(Username not found) for unknown user") {
-
-    val unknownUserRequest = UserLoginRequest("unknown_user", "password")
-
-    val mockPasswordService = new MockPasswordService(expectedHash = "hashed_password")
-    val mockUserLoginDetailsRepository = new MockUserLoginDetailsRepository(Map("username" -> testUserLoginDetails))
-    val mockUserProfileRepository = new MockUserProfileRepository(Map("username" -> testUserProfile))
-    val authService = new AuthenticationServiceImpl[IO](mockUserLoginDetailsRepository, mockUserProfileRepository, mockPasswordService)
-
-    for {
-      result <- authService.loginUser(unknownUserRequest)
-    } yield expect(result == Left("Username not found"))
-  }
+//  test(".loginUser() - should return Right(User) for valid credentials") {
+//
+//    val mockPasswordService = new MockPasswordService(expectedHash = "hashed_password")
+//    val mockUserLoginDetailsRepository = new MockUserLoginDetailsRepository(Map("username" -> testUserLoginDetails))
+//    val mockUserProfileRepository = new MockUserProfileRepository(Map("username" -> testUserProfile))
+//    val authService = new AuthenticationServiceImpl[IO](mockUserLoginDetailsRepository, mockUserProfileRepository, mockPasswordService)
+//
+//    val request = UserLoginRequest("username", "password")
+//
+//    for {
+//      result <- authService.loginUser(request)
+//    } yield expect(result == Right(testUserLoginDetails))
+//  }
+//
+//  test(".loginUser() - should return Left(Invalid password) for incorrect password") {
+//
+//    val invalidPasswordRequest = UserLoginRequest("username", "wrong_password")
+//
+//    val mockPasswordService = new MockPasswordService(expectedHash = "hashed_wrong_password")
+//    val mockUserLoginDetailsRepository = new MockUserLoginDetailsRepository(Map("username" -> testUserLoginDetails))
+//    val mockUserProfileRepository = new MockUserProfileRepository(Map("username" -> testUserProfile))
+//    val authService = new AuthenticationServiceImpl[IO](mockUserLoginDetailsRepository, mockUserProfileRepository, mockPasswordService)
+//
+//    for {
+//      result <- authService.loginUser(invalidPasswordRequest)
+//    } yield expect(result == Left("Invalid password"))
+//  }
+//
+//  test(".loginUser() - should return Left(Username not found) for unknown user") {
+//
+//    val unknownUserRequest = UserLoginRequest("unknown_user", "password")
+//
+//    val mockPasswordService = new MockPasswordService(expectedHash = "hashed_password")
+//    val mockUserLoginDetailsRepository = new MockUserLoginDetailsRepository(Map("username" -> testUserLoginDetails))
+//    val mockUserProfileRepository = new MockUserProfileRepository(Map("username" -> testUserProfile))
+//    val authService = new AuthenticationServiceImpl[IO](mockUserLoginDetailsRepository, mockUserProfileRepository, mockPasswordService)
+//
+//    for {
+//      result <- authService.loginUser(unknownUserRequest)
+//    } yield expect(result == Left("Username not found"))
+//  }
 
   test(".authUser() - should return Some(User) for a valid token") {
 

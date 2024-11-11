@@ -20,9 +20,10 @@ import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
 import repositories.users.{UserLoginDetailsRepositoryImpl, UserProfileRepositoryImpl}
-import services.PasswordServiceImpl
 import services.auth.*
 import services.auth.algebra.*
+import services.password.PasswordServiceImpl
+import services.registration.RegistrationServiceImpl
 import weaver.*
 
 import java.time.{Instant, LocalDateTime}
@@ -84,7 +85,7 @@ class RegistrationControllerISpec(global: GlobalRead) extends IOSuite {
     val authService = new AuthenticationServiceImpl[IO](userLoginDetailsRepository, userProfileRepository, passwordService)
     val registrationService = new RegistrationServiceImpl[IO](userLoginDetailsRepository, passwordService)
     val tokenService = MockTokenService
-    val registrationController = RegistrationController(authService, registrationService)
+    val registrationController = RegistrationController(registrationService)
 
     Router(
       "/cashew" -> registrationController.routes
