@@ -35,7 +35,7 @@ class WandererAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
         .transact(transactor)
     findQuery
   }
-  
+
   override def createUserAddress(wandererAddress: WandererAddress): F[Int] = {
     sql"""
       INSERT INTO wanderer_address (
@@ -63,4 +63,12 @@ class WandererAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
       .transact(transactor)
   }
 
+}
+
+
+object WandererAddressRepository {
+  def apply[F[_] : Concurrent : Monad](
+                                        transactor: Transactor[F]
+                                      ): WandererAddressRepositoryImpl[F] =
+    new WandererAddressRepositoryImpl[F](transactor)
 }

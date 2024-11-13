@@ -14,9 +14,9 @@ CREATE TABLE user_login_details (
 );
 
 
-DROP TABLE IF EXISTS user_address;
+DROP TABLE IF EXISTS wanderer_address;
 
-CREATE TABLE user_address (
+CREATE TABLE wanderer_address (
     id BIGSERIAL PRIMARY KEY,
     user_id VARCHAR(255) NOT NULL,
     street VARCHAR(255) NOT NULL,

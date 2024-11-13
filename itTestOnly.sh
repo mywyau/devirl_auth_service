@@ -2,10 +2,10 @@
 
 # Function to display usage
 usage() {
-  echo "Usage: $0 [test-spec | all]"
-  echo "Example: $0 UserService     # Runs tests matching 'UserService' in their name"
-  echo "         $0 all             # Runs all tests"
-  echo "         $0                 # Runs all tests by default"
+  echo "Usage: $0 [test-spec | all] [shared-resource]"
+  echo "Example: $0 UserService controllers.ControllerSharedResource  # Runs tests matching 'UserService' using 'ControllerSharedResource'"
+  echo "         $0 all controllers.ControllerSharedResource          # Runs all tests using 'ControllerSharedResource'"
+  echo "         $0 UserService                                       # Runs tests matching 'UserService' without a shared resource"
   echo "Options:"
   echo "  -h, --help                Show this help message"
 }
@@ -16,14 +16,23 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]; then
   exit 0
 fi
 
-# Set default test spec to "all" if not provided
+# Set default values
 TESTSPEC=${1:-all}
+SHARED_RESOURCE=${2:-}
 
-# Run the tests based on the specified test spec
+# Run the tests based on the specified test spec and shared resource
 if [ "$TESTSPEC" = "all" ]; then
   echo "Running all it tests"
-  sbt clearCaches it/test
+  if [ -n "$SHARED_RESOURCE" ]; then
+    sbt "it/testOnly * $SHARED_RESOURCE"
+  else
+    sbt it/test
+  fi
 else
   echo "Running it tests matching '$TESTSPEC'"
-  sbt "clearCaches it/testOnly *$TESTSPEC*"
+  if [ -n "$SHARED_RESOURCE" ]; then
+    sbt "it/testOnly *$TESTSPEC* $SHARED_RESOURCE"
+  else
+    sbt "it/testOnly *$TESTSPEC*"
+  fi
 fi

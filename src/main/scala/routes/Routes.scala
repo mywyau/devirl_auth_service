@@ -5,13 +5,14 @@ import cats.effect.*
 import controllers.*
 import controllers.login.LoginControllerImpl
 import controllers.registration.RegistrationControllerImpl
+import controllers.wanderer_address.WandererAddressControllerImpl
 import dev.profunktor.redis4cats.effect.Log
 import doobie.hikari.HikariTransactor
 import org.http4s.HttpRoutes
 import repositories.*
 import repositories.bookings.BookingRepository
 import repositories.business.BusinessRepository
-import repositories.users.{UserLoginDetailsRepositoryImpl, UserProfileRepositoryImpl}
+import repositories.users.{UserLoginDetailsRepositoryImpl, UserProfileRepositoryImpl, WandererAddressRepositoryImpl}
 import repositories.workspaces.WorkspaceRepository
 import services.*
 import services.auth.AuthenticationServiceImpl
@@ -20,6 +21,7 @@ import services.business.BusinessServiceImpl
 import services.login.LoginServiceImpl
 import services.password.PasswordServiceImpl
 import services.registration.RegistrationServiceImpl
+import services.wanderer_address.WandererAddressServiceImpl
 
 object Routes {
 
@@ -61,6 +63,17 @@ object Routes {
 
     loginController.routes
   }
+
+  def wandererAddressRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+
+    val wandererAddressImplRepository = new WandererAddressRepositoryImpl[F](transactor)
+    val wandererAddressService = new WandererAddressServiceImpl[F](wandererAddressImplRepository)
+
+    val wandererAddressController = new WandererAddressControllerImpl[F](wandererAddressService)
+
+    wandererAddressController.routes
+  }
+
 
   def createBookingRoutes[F[_] : Concurrent : Temporal](transactor: HikariTransactor[F]): HttpRoutes[F] = {
     val bookingRepository = new BookingRepository[F](transactor)

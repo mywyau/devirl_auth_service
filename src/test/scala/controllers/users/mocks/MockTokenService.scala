@@ -43,11 +43,3 @@ case class MockAuthService(
 }
 
 
-class MockRegistrationService(
-                               registerUserMock: UserSignUpRequest => IO[Validated[List[RegistrationErrors], UserLoginDetails]]
-                             ) extends RegistrationServiceAlgebra[IO] {
-
-
-  override def registerUser(request: UserSignUpRequest): IO[Validated[List[RegistrationErrors], UserLoginDetails]] =
-    registerUserMock(request)
-}

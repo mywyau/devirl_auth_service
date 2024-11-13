@@ -25,8 +25,8 @@ TESTSPEC=${1:-all}
 # Run the tests based on the specified test spec
 if [ "$TESTSPEC" = "all" ]; then
   echo "Running all unit tests"
-  sbt clearCaches test
+  sbt test
 else
   echo "Running tests matching '$TESTSPEC'"
-  sbt "clearCaches testOnly *$TESTSPEC*"
+  sbt "testOnly *$TESTSPEC*"
 fi

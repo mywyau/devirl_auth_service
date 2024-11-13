@@ -21,10 +21,8 @@ class RegistrationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
   def validateUsernameUnique(value: String): F[ValidatedNel[RegistrationErrors, RegistrationValidation]] = {
     userLoginDetailsRepo.findByUsername(value).map {
       case Some(_) =>
-        println("bob")
         UsernameAlreadyExists.invalidNel
       case None =>
-        println("smith")
         UniqueUser.validNel
     }
   }
@@ -33,10 +31,8 @@ class RegistrationServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
   def validateEmailUnique(value: String): F[ValidatedNel[RegistrationErrors, RegistrationValidation]] = {
     userLoginDetailsRepo.findByEmail(value).map {
       case Some(_) =>
-        println("here")
         EmailAlreadyExists.invalidNel
       case None =>
-        println("there")
         UniqueUser.validNel
     }
   }

@@ -7,6 +7,7 @@ import doobie.implicits.*
 import models.users.adts.Wanderer
 import models.users.wanderer_profile.profile.UserLoginDetails
 import repositories.users.UserLoginDetailsRepositoryImpl
+import shared.TransactorResource
 import weaver.{GlobalRead, IOSuite, ResourceTag}
 
 import java.time.LocalDateTime

@@ -4,6 +4,7 @@ import cats.effect.{IO, Resource}
 import doobie.*
 import doobie.hikari.HikariTransactor
 import doobie.implicits.*
+import shared.TransactorResource
 import weaver.{GlobalResource, GlobalWrite}
 
 object DatabaseResource extends GlobalResource {
@@ -42,7 +43,6 @@ object DatabaseResource extends GlobalResource {
       }
     }
   }
-
 
   private def testInsert(xa: Transactor[IO]): IO[Unit] = {
     val insertTest =

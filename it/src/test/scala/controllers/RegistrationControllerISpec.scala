@@ -24,6 +24,7 @@ import services.auth.*
 import services.auth.algebra.*
 import services.password.PasswordServiceImpl
 import services.registration.RegistrationServiceImpl
+import shared.{HttpClientResource, TransactorResource}
 import weaver.*
 
 import java.time.{Instant, LocalDateTime}
@@ -39,6 +40,8 @@ class RegistrationControllerISpec(global: GlobalRead) extends IOSuite {
       .withPort(port"9999")
       .withHttpApp(router.orNotFound)
       .build
+
+//   sbt "it/testOnly *WandererAddressControllerISpec* cashew-it.ControllerSharedResource"
 
   // Shared resource setup: includes the server and client
   def sharedResource: Resource[IO, Res] = {

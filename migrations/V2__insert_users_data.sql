@@ -5,8 +5,8 @@ VALUES
 ('user-002', 'asmith', '$2b$10$ABCDEFGHIJKLMNOPQRSTUVWX/abcdefghijklmnopqrstuvwx', 'asmith@example.com', 'Wanderer', '2023-01-02 13:00:00', '2023-01-01 12:00:00'),
 ('user-003', 'mjones', '$2b$10$ABCDEFGHIJKLMNOPQRSTUVWX/abcdefghijklmnopqrstuvwx', 'mjones@example.com', 'Wanderer', '2023-01-03 14:00:00', '2023-01-01 12:00:00');
 
--- Insert test data into user_address
-INSERT INTO user_address (user_id, street, city, country, county, postcode, created_at, updated_at)
+-- Insert test data into wanderer_address
+INSERT INTO wanderer_address (user_id, street, city, country, county, postcode, created_at, updated_at)
 VALUES
 ('user-001', '123 Main St', 'Springfield', 'USA', 'Clark', '12345', '2023-01-01 12:05:00', '2023-01-01 12:05:00'),
 ('user-002', '456 Maple Ave', 'Riverdale', 'USA', 'Cuyahoga', '54321', '2023-01-02 13:05:00', '2023-01-01 12:05:00'),

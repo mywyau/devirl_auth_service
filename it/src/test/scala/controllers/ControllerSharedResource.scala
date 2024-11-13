@@ -6,6 +6,7 @@ import doobie.hikari.HikariTransactor
 import doobie.implicits.*
 import doobie.util.ExecutionContexts
 import org.http4s.ember.client.EmberClientBuilder
+import shared.{HttpClientResource, TransactorResource}
 import weaver.{GlobalResource, GlobalWrite}
 
 object ControllerSharedResource extends GlobalResource {
@@ -25,7 +26,6 @@ object ControllerSharedResource extends GlobalResource {
       // Store the TransactorResource and Client globally
       _ <- global.putR(TransactorResource(xa))
       _ <- global.putR(HttpClientResource(client))
-      // Optionally, you can add printSchema or testInsert calls here if needed
     } yield ()
   }
 
