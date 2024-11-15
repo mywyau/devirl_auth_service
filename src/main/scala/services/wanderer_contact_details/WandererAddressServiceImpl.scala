@@ -4,8 +4,8 @@ import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.users.*
-import models.users.contact_details.errors.{ContactDetailsErrors, ContactDetailsNotFound}
-import models.users.contact_details.service.WandererContactDetails
+import models.users.wanderer_personal_details.errors.{ContactDetailsErrors, ContactDetailsNotFound}
+import models.users.wanderer_personal_details.service.WandererContactDetails
 import repositories.users.WandererContactDetailsRepositoryAlgebra
 
 

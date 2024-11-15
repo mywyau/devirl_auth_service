@@ -1,29 +1,23 @@
 package services.wanderer_profile
 
 import cats.data.*
-import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
-import models.auth.*
 import models.users.*
-import models.users.contact_details.service.WandererContactDetails
+import models.users.wanderer_personal_details.service.WandererContactDetails
 import models.users.wanderer_address.service.WandererAddress
-import models.users.wanderer_profile.errors.{MissingLoginDetails,MissingAddress, MissingContactDetails, WandererProfileErrors}
+import models.users.wanderer_profile.errors.{MissingAddress, MissingContactDetails, MissingLoginDetails, WandererProfileErrors}
 import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, WandererUserProfile}
-import models.users.wanderer_profile.requests.UserSignUpRequest
 import repositories.users.{UserLoginDetailsRepositoryAlgebra, WandererAddressRepositoryAlgebra, WandererContactDetailsRepositoryAlgebra}
 import services.password.PasswordServiceAlgebra
-import services.wanderer_address.WandererAddressServiceAlgebra
 
-import java.time.LocalDateTime
-
-class WandererProfileServiceImpl[F[_]: Concurrent: NonEmptyParallel: Monad](
-                                                                             userLoginDetailsRepo: UserLoginDetailsRepositoryAlgebra[F],
-                                                                             wandererAddressRepo: WandererAddressRepositoryAlgebra[F],
-                                                                             wandererContactDetailsRepo: WandererContactDetailsRepositoryAlgebra[F],
-                                                                             passwordService: PasswordServiceAlgebra[F]
-                                                                           ) extends WandererProfileServiceAlgebra[F] {
+class WandererProfileServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
+                                                                                userLoginDetailsRepo: UserLoginDetailsRepositoryAlgebra[F],
+                                                                                wandererAddressRepo: WandererAddressRepositoryAlgebra[F],
+                                                                                wandererContactDetailsRepo: WandererContactDetailsRepositoryAlgebra[F],
+                                                                                passwordService: PasswordServiceAlgebra[F]
+                                                                              ) extends WandererProfileServiceAlgebra[F] {
 
   private def validateLoginDetails(loginDetails: Option[UserLoginDetails]): ValidatedNel[WandererProfileErrors, UserLoginDetails] =
     loginDetails.toValidNel(MissingLoginDetails)
@@ -63,8 +57,8 @@ class WandererProfileServiceImpl[F[_]: Concurrent: NonEmptyParallel: Monad](
         WandererUserProfile(
           userId = user_id,
           userLoginDetails = Some(loginDetails),
-          first_name = Some(""),  // or apply further validations if needed
-          last_name = Some(""),   // or apply further validations if needed
+          first_name = Some(""), // or apply further validations if needed
+          last_name = Some(""), // or apply further validations if needed
           userAddress = Some(userAddress),
           contact_number = Some(contactNumber),
           email = Some(loginDetails.email),
@@ -78,12 +72,12 @@ class WandererProfileServiceImpl[F[_]: Concurrent: NonEmptyParallel: Monad](
 
 }
 
-object WandererProfileServiceImpl {
-  def apply[F[_]: Concurrent: NonEmptyParallel: Monad](
-                                                        userLoginDetailsRepo: UserLoginDetailsRepositoryAlgebra[F],
-                                                        wandererAddressRepo: WandererAddressRepositoryAlgebra[F],
-                                                        wandererContactDetailsRepo: WandererContactDetailsRepositoryAlgebra[F],
-                                                        passwordService: PasswordServiceAlgebra[F]
-                                                      ): WandererProfileServiceAlgebra[F] =
+object WandererProfileService {
+  def apply[F[_] : Concurrent : NonEmptyParallel : Monad](
+                                                           userLoginDetailsRepo: UserLoginDetailsRepositoryAlgebra[F],
+                                                           wandererAddressRepo: WandererAddressRepositoryAlgebra[F],
+                                                           wandererContactDetailsRepo: WandererContactDetailsRepositoryAlgebra[F],
+                                                           passwordService: PasswordServiceAlgebra[F]
+                                                         ): WandererProfileServiceAlgebra[F] =
     new WandererProfileServiceImpl[F](userLoginDetailsRepo, wandererAddressRepo, wandererContactDetailsRepo, passwordService)
 }

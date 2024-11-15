@@ -28,13 +28,14 @@ CREATE TABLE wanderer_address (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-DROP TABLE IF EXISTS wanderer_contact_details;
+DROP TABLE IF EXISTS wanderer_personal_details;
 
-CREATE TABLE user_contact_details (
+CREATE TABLE wanderer_personal_details (
     id BIGSERIAL PRIMARY KEY,
     user_id VARCHAR(255) NOT NULL,
     contact_number VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL,
+    company VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

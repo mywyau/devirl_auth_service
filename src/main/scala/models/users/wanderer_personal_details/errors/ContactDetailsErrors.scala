@@ -1,4 +1,4 @@
-package models.users.contact_details.errors
+package models.users.wanderer_personal_details.errors
 
 import io.circe.{Decoder, Encoder}
 

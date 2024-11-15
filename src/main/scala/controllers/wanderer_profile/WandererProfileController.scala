@@ -8,13 +8,10 @@ import cats.implicits.*
 import io.circe.syntax.EncoderOps
 import models.users.wanderer_profile.errors.*
 import models.users.wanderer_profile.requests.UserSignUpRequest
-import models.users.wanderer_profile.responses.CreatedUserResponse
 import models.users.wanderer_profile.responses.error.{ErrorResponse, WandererProfileErrorResponse}
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
-import services.auth.algebra.*
-import services.registration.RegistrationServiceAlgebra
 import services.wanderer_profile.WandererProfileServiceAlgebra
 
 
@@ -48,11 +45,16 @@ class WandererProfileControllerImpl[F[_] : Concurrent](
             case error: WandererContactDetailsError => ErrorResponse(error.code, error.message)
           }
 
+          val otherWandererProfileError: List[ErrorResponse] = errors.collect {
+            case error: OtherWandererProfileError => ErrorResponse(error.code, error.message)
+          }
+
           val errorResponse: WandererProfileErrorResponse =
             WandererProfileErrorResponse(
               loginDetailsErrors = loginDetailsErrors,
               addressErrors = addressErrors,
-              contactDetailsErrors = contactDetailsErrors
+              contactDetailsErrors = contactDetailsErrors,
+              otherErrors = otherWandererProfileError
             )
 
           BadRequest(errorResponse.asJson)

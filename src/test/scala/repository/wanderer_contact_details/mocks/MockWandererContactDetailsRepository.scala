@@ -3,7 +3,7 @@ package repository.wanderer_contact_details.mocks
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import models.users.*
-import models.users.contact_details.service.WandererContactDetails
+import models.users.wanderer_personal_details.service.WandererContactDetails
 import repositories.users.WandererContactDetailsRepositoryAlgebra
 
 case class MockWandererContactDetailsRepository(ref: Ref[IO, List[WandererContactDetails]]) extends WandererContactDetailsRepositoryAlgebra[IO] {

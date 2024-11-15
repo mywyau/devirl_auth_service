@@ -1,4 +1,4 @@
-package models.users.contact_details.service
+package models.users.wanderer_personal_details.service
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}

@@ -7,7 +7,7 @@ import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import models.users.adts.Role
-import models.users.contact_details.service.WandererContactDetails
+import models.users.wanderer_personal_details.service.WandererContactDetails
 
 import java.sql.Timestamp
 import java.time.LocalDateTime

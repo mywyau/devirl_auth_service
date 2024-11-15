@@ -1,4 +1,4 @@
-package models.users.contact_details.responses.error
+package models.users.wanderer_personal_details.responses.error
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}

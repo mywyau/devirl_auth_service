@@ -3,9 +3,9 @@ package controllers.wanderer_contact_details
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
-import models.users.contact_details.responses.error.ContactDetailsErrorResponse
-import models.users.contact_details.service.WandererContactDetails
-import models.users.contact_details.responses.success.CreatedContactDetailsResponse
+import models.users.wanderer_personal_details.responses.error.ContactDetailsErrorResponse
+import models.users.wanderer_personal_details.service.WandererContactDetails
+import models.users.wanderer_personal_details.responses.success.CreatedContactDetailsResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl

@@ -1,8 +1,8 @@
 package services.wanderer_contact_details
 
 import models.users.*
-import models.users.contact_details.errors.ContactDetailsErrors
-import models.users.contact_details.service.WandererContactDetails
+import models.users.wanderer_personal_details.errors.ContactDetailsErrors
+import models.users.wanderer_personal_details.service.WandererContactDetails
 
 trait WandererContactDetailsServiceAlgebra[F[_]] {
 

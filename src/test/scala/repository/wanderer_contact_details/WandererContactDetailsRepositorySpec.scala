@@ -3,7 +3,7 @@ package repository.wanderer_contact_details
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import models.users.*
-import models.users.contact_details.service.WandererContactDetails
+import models.users.wanderer_personal_details.service.WandererContactDetails
 import repository.wanderer_contact_details.mocks.MockWandererContactDetailsRepository
 import weaver.SimpleIOSuite
 

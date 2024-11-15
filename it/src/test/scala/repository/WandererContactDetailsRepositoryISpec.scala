@@ -4,7 +4,7 @@ import cats.effect.{IO, Resource}
 import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
-import models.users.contact_details.service.WandererContactDetails
+import models.users.wanderer_personal_details.service.WandererContactDetails
 import repositories.users.WandererContactDetailsRepositoryImpl
 import shared.TransactorResource
 import weaver.{GlobalRead, IOSuite, ResourceTag}

@@ -5,17 +5,23 @@ sealed trait WandererProfileErrors {
   val message: String
 }
 
-case object MissingDetails extends WandererProfileErrors:
+sealed trait OtherWandererProfileError extends WandererProfileErrors
+
+case object MissingDetails extends OtherWandererProfileError:
   override val code: String = "MissingDetails"
   override val message: String = "MissingDetails"
+  
+case object UserIdNotFound extends OtherWandererProfileError:
+  override val code: String = "UserIdNotFound"
+  override val message: String = "UserIdNotFound"
 
 
-case object IncompleteProfile extends WandererProfileErrors:
+case object IncompleteProfile extends OtherWandererProfileError:
   override val code: String = "IncompleteProfile"
   override val message: String = "IncompleteProfile"
 
 
-case object OutdatedDetails extends WandererProfileErrors:
+case object OutdatedDetails extends OtherWandererProfileError:
   override val code: String = "OutdatedDetails"
   override val message: String = "OutdatedDetails"
 
