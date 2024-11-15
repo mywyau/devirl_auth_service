@@ -13,7 +13,7 @@ VALUES
 ('user-003', '789 Elm St', 'Metropolis', 'USA', 'Wayne', '67890', '2023-01-03 14:05:00', '2023-01-01 12:05:00');
 
 -- Insert test data into user_contact_details
-INSERT INTO user_contact_details (userId, contact_number, email, created_at, updated_at)
+INSERT INTO wanderer_contact_details (user_id, contact_number, email, created_at, updated_at)
 VALUES
 ('user-001', '555-1234', 'jdoe@example.com', '2023-01-01 12:10:00', '2023-01-01 12:10:00'),
 ('user-002', '555-5678', 'asmith@example.com', '2023-01-02 13:10:00', '2023-01-01 12:10:00'),

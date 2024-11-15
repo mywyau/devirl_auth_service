@@ -8,10 +8,10 @@ import doobie.util.transactor.Transactor
 import io.circe.syntax.*
 import models.users.*
 import models.users.adts.Wanderer
+import models.users.registration.responses.error.RegistrationErrorResponse
 import models.users.wanderer_profile.profile.UserProfile
 import models.users.wanderer_profile.requests.UserSignUpRequest
 import models.users.wanderer_profile.responses.CreatedUserResponse
-import models.users.wanderer_profile.responses.error.RegistrationErrorResponse
 import org.http4s.*
 import org.http4s.Method.*
 import org.http4s.circe.*
@@ -19,7 +19,7 @@ import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
-import repositories.users.{UserLoginDetailsRepositoryImpl, UserProfileRepositoryImpl}
+import repositories.users.UserLoginDetailsRepositoryImpl
 import services.auth.*
 import services.auth.algebra.*
 import services.password.PasswordServiceImpl
@@ -41,7 +41,7 @@ class RegistrationControllerISpec(global: GlobalRead) extends IOSuite {
       .withHttpApp(router.orNotFound)
       .build
 
-//   sbt "it/testOnly *WandererAddressControllerISpec* cashew-it.ControllerSharedResource"
+  //   sbt "it/testOnly *WandererAddressControllerISpec* cashew-it.ControllerSharedResource"
 
   // Shared resource setup: includes the server and client
   def sharedResource: Resource[IO, Res] = {
@@ -83,11 +83,8 @@ class RegistrationControllerISpec(global: GlobalRead) extends IOSuite {
   // Set up actual service implementations using the transactor resource
   def createController(transactor: Transactor[IO]): HttpRoutes[IO] = {
     val passwordService = new PasswordServiceImpl[IO]()
-    val userProfileRepository = new UserProfileRepositoryImpl[IO](transactor)
     val userLoginDetailsRepository = new UserLoginDetailsRepositoryImpl[IO](transactor)
-    val authService = new AuthenticationServiceImpl[IO](userLoginDetailsRepository, userProfileRepository, passwordService)
     val registrationService = new RegistrationServiceImpl[IO](userLoginDetailsRepository, passwordService)
-    val tokenService = MockTokenService
     val registrationController = RegistrationController(registrationService)
 
     Router(

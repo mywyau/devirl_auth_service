@@ -1,4 +1,4 @@
-package models.users.wanderer_profile.profile
+package models.users.registration.profile
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}

@@ -3,7 +3,7 @@ package services.auth
 import cats.effect.IO
 import models.users.adts.{Admin, Wanderer}
 import models.users.login.requests.UserLoginRequest
-import models.users.wanderer_profile.profile.UserProfile
+import models.users.wanderer_profile.profile.WandererUserProfile
 import services.auth.algebra.UserAuth
 import services.auth.constants.AuthenticationServiceConstants.*
 import services.auth.mocks.AuthenticationServiceMocks.*

@@ -7,7 +7,7 @@ import models.users.wanderer_profile.profile.{UserLoginDetails, UserProfile}
 
 
 trait AuthenticationServiceAlgebra[F[_]] {
-  
+
   def authUser(token: String): F[Option[UserProfile]]
 
   def authorize(userAuth: UserAuth[F], requiredRole: Role): F[Either[String, UserAuth[F]]]

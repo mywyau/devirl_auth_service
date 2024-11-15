@@ -4,7 +4,7 @@ import cats.data.Validated
 import cats.effect.IO
 import models.auth.{PasswordLengthError, RegisterPasswordErrors}
 import models.users.adts.Role
-import models.users.wanderer_profile.profile.{UserLoginDetails, UserProfile}
+import models.users.wanderer_profile.profile.{UserLoginDetails, WandererUserProfile}
 import repositories.users.{UserLoginDetailsRepositoryAlgebra, UserProfileRepositoryAlgebra}
 import services.auth.constants.AuthenticationServiceConstants.*
 import services.password.PasswordServiceAlgebra

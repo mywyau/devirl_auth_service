@@ -5,17 +5,17 @@ import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
 import models.users.adts.Wanderer
-import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserProfile}
+import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, WandererUserProfile}
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
 
-object UserProfileSpec extends SimpleIOSuite {
+object WandererUserProfileSpec extends SimpleIOSuite {
 
-  val sample_user1: UserProfile =
-    UserProfile(
+  val sample_user1: WandererUserProfile =
+    WandererUserProfile(
       userId = "user_id_1",
-      UserLoginDetails(
+      userLoginDetails = Some(UserLoginDetails(
         id = Some(1),
         user_id = "user_id_1",
         username = "mikey5922",
@@ -24,10 +24,10 @@ object UserProfileSpec extends SimpleIOSuite {
         role = Wanderer,
         created_at = LocalDateTime.of(2024, 10, 10, 10, 0),
         updated_at = LocalDateTime.of(2024, 10, 10, 10, 0)
-      ),
-      first_name = "michael",
-      last_name = "yau",
-      UserAddress(
+      )),
+      first_name = Some("michael"),
+      last_name = Some("yau"),
+      userAddress = Some(UserAddress(
         userId = "user_id_1",
         street = "fake street 1",
         city = "fake city 1",
@@ -36,10 +36,10 @@ object UserProfileSpec extends SimpleIOSuite {
         postcode = "CF3 3NJ",
         created_at = LocalDateTime.of(2024, 10, 10, 10, 0),
         updated_at = LocalDateTime.of(2024, 10, 10, 10, 0)
-      ),
-      contact_number = "07402205071",
-      email = "mikey5922@gmail.com",
-      role = Wanderer,
+      )),
+      contact_number = Some("07402205071"),
+      email = Some("mikey5922@gmail.com"),
+      role = Some(Wanderer),
       created_at = LocalDateTime.of(2024, 10, 10, 10, 0),
       updated_at = LocalDateTime.of(2024, 10, 10, 10, 0)
     )

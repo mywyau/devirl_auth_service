@@ -8,7 +8,7 @@ import io.circe.syntax.EncoderOps
 import models.auth.{RegisterEmailErrors, RegisterPasswordErrors, RegisterUsernameErrors}
 import models.users.wanderer_profile.requests.UserSignUpRequest
 import models.users.wanderer_profile.responses.CreatedUserResponse
-import models.users.wanderer_profile.responses.error.RegistrationErrorResponse
+import models.users.registration.responses.error.RegistrationErrorResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
@@ -36,17 +36,16 @@ class RegistrationControllerImpl[F[_] : Concurrent](
           case Valid(user) =>
             Created(CreatedUserResponse("User created successfully").asJson)
           case Invalid(errors) => {
-
-            val passwordErrors =
-              errors.collect {
-                case e: RegisterPasswordErrors => e.errorMessage
-              }
-
             val usernameErrors =
               errors.collect {
                 case e: RegisterUsernameErrors => e.errorMessage
               }
 
+            val passwordErrors =
+              errors.collect {
+                case e: RegisterPasswordErrors => e.errorMessage
+              }
+            
             val emailErrors =
               errors.collect {
                 case e: RegisterEmailErrors => e.errorMessage

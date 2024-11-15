@@ -43,7 +43,7 @@ object Main extends IOApp {
                                                                                        transactor: HikariTransactor[F]
                                                                                      ): Resource[F, HttpRoutes[F]] = {
     for {
-      authRoutes <- Resource.pure(createAuthRoutes(transactor))
+      wandererProfileRoutes <- Resource.pure(wandererProfileRoutes(transactor))
       registrationRoutes <- Resource.pure(registrationRoutes(transactor))
       loginRoutes <- Resource.pure(loginRoutes(transactor))
       wandererAddressRoutes <- Resource.pure(wandererAddressRoutes(transactor))
@@ -54,7 +54,7 @@ object Main extends IOApp {
       // Combine all routes under the `/cashew` prefix
       combinedRoutes = Router(
         "/cashew" -> (
-          authRoutes <+> registrationRoutes <+> loginRoutes <+> wandererAddressRoutes <+>
+          wandererProfileRoutes <+> registrationRoutes <+> loginRoutes <+> wandererAddressRoutes <+>
             bookingRoutes <+> businessRoutes <+> workspaceRoutes
           )
       )
