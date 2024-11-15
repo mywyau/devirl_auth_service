@@ -13,7 +13,7 @@ import org.http4s.HttpRoutes
 import repositories.*
 import repositories.bookings.BookingRepository
 import repositories.business.BusinessRepository
-import repositories.users.{UserLoginDetailsRepositoryImpl, WandererAddressRepositoryImpl, WandererContactDetailsRepositoryImpl}
+import repositories.users.{UserLoginDetailsRepositoryImpl, WandererAddressRepositoryImpl, WandererPersonalDetailsRepositoryImpl}
 import repositories.workspaces.WorkspaceRepository
 import services.*
 import services.auth.AuthenticationServiceImpl
@@ -28,13 +28,13 @@ import services.wanderer_profile.WandererProfileServiceImpl
 object Routes {
 
   def wandererProfileRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F]): HttpRoutes[F] = {
-    
+
     val userLoginDetailsRepo = new UserLoginDetailsRepositoryImpl[F](transactor)
     val wandererAddressRepo = new WandererAddressRepositoryImpl[F](transactor)
-    val wandererContactDetailsrepo = new WandererContactDetailsRepositoryImpl[F](transactor)
+    val wandererPersonalDetailsRepo = new WandererPersonalDetailsRepositoryImpl[F](transactor)
     val passwordService = new PasswordServiceImpl[F]
 
-    val wandererProfileService = new WandererProfileServiceImpl[F](userLoginDetailsRepo, wandererAddressRepo, wandererContactDetailsrepo, passwordService)
+    val wandererProfileService = new WandererProfileServiceImpl[F](userLoginDetailsRepo, wandererAddressRepo, wandererPersonalDetailsRepo, passwordService)
 
     val wandererProfileController = new WandererProfileControllerImpl[F](wandererProfileService)
 

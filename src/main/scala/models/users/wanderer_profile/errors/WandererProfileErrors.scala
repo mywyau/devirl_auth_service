@@ -39,9 +39,9 @@ case object MissingAddress extends WandererAddressError:
   override val message: String = "MissingAddress"
 
 
-sealed trait WandererContactDetailsError extends WandererProfileErrors
+sealed trait WandererPersonalDetailsError extends WandererProfileErrors
 
-case object MissingContactDetails extends WandererContactDetailsError:
+case object MissingPersonalDetails extends WandererPersonalDetailsError:
   override val code: String = "MissingContactDetails"
   override val message: String = "MissingContactDetails"
 

@@ -2,46 +2,46 @@ package models.users.wanderer_personal_details.errors
 
 import io.circe.{Decoder, Encoder}
 
-sealed trait ContactDetailsErrors {
+sealed trait PersonalDetailsErrors {
   val code: String
   val errorMessage: String
 }
 
-case object ContactDetailsNotFound extends ContactDetailsErrors:
+case object PersonalDetailsNotFound extends PersonalDetailsErrors:
   override val code: String = this.toString
   override val errorMessage: String = "Address was not found"
 
-case object PhoneNumberNotFound extends ContactDetailsErrors:
+case object PhoneNumberNotFound extends PersonalDetailsErrors:
   override val code: String = this.toString
   override val errorMessage: String = "Street was not found"
 
-case object EmailNotFound extends ContactDetailsErrors:
+case object EmailNotFound extends PersonalDetailsErrors:
   override val code: String = this.toString
   override val errorMessage: String = "Country was not found"
 
 
-object ContactDetailsErrors {
+object PersonalDetailsErrors {
 
-  def fromString(str: String): ContactDetailsErrors =
+  def fromString(str: String): PersonalDetailsErrors =
     str match {
-      case "ContactDetailsNotFound" => ContactDetailsNotFound
+      case "PersonalDetailsNotFound" => PersonalDetailsNotFound
       case "PhoneNumberNotFound" => PhoneNumberNotFound
       case "EmailNotFound" => EmailNotFound
-      case _ => throw new Exception(s"Unknown ContactDetailsErrors: $str")
+      case _ => throw new Exception(s"Unknown PersonalDetailsErrors: $str")
     }
 
-  implicit val contactDetailsErrorsEncoder: Encoder[ContactDetailsErrors] =
+  implicit val contactDetailsErrorsEncoder: Encoder[PersonalDetailsErrors] =
     Encoder.encodeString.contramap {
-      case ContactDetailsNotFound => "ContactDetailsNotFound"
+      case PersonalDetailsNotFound => "PersonalDetailsNotFound"
       case PhoneNumberNotFound => "PhoneNumberNotFound"
       case EmailNotFound => "EmailNotFound"
     }
 
-  implicit val contactDetailsErrorsDecoder: Decoder[ContactDetailsErrors] =
+  implicit val contactDetailsErrorsDecoder: Decoder[PersonalDetailsErrors] =
     Decoder.decodeString.emap {
-      case "ContactDetailsNotFound" => Right(ContactDetailsNotFound)
+      case "PersonalDetailsNotFound" => Right(PersonalDetailsNotFound)
       case "PhoneNumberNotFound" => Right(PhoneNumberNotFound)
       case "EmailNotFound" => Right(EmailNotFound)
-      case other => Left(s"Invalid ContactDetailsErrors Error: $other")
+      case other => Left(s"Invalid PersonalDetailsErrors Error: $other")
     }
 }

@@ -38,6 +38,7 @@ object WandererUserProfileControllerConstants {
       ),
       contact_number = Some("07402205071"),
       email = Some("user_id_1@gmail.com"),
+      company = Some("apple"),
       role = Some(Wanderer),
       created_at = LocalDateTime.of(2024, 10, 5, 15, 0),
       updated_at = LocalDateTime.of(2024, 10, 5, 15, 0)

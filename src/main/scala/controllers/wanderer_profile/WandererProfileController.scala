@@ -42,7 +42,7 @@ class WandererProfileControllerImpl[F[_] : Concurrent](
           }
 
           val contactDetailsErrors: List[ErrorResponse] = errors.collect {
-            case error: WandererContactDetailsError => ErrorResponse(error.code, error.message)
+            case error: WandererPersonalDetailsError => ErrorResponse(error.code, error.message)
           }
 
           val otherWandererProfileError: List[ErrorResponse] = errors.collect {

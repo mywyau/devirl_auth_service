@@ -71,25 +71,28 @@ object WandererProfileSqlFragments {
       """
   }
 
-  val resetWandererContactDetailsTable = sql"TRUNCATE TABLE wanderer_contact_details RESTART IDENTITY"
+  val resetWandererPersonalDetailsTable = sql"TRUNCATE TABLE wanderer_personal_details RESTART IDENTITY"
 
-  val createWandererContactDetailsTable: fragment.Fragment = {
+  val createWandererPersonalDetailsTable: fragment.Fragment = {
     sql"""
-      CREATE TABLE IF NOT EXISTS wanderer_contact_details (
+      CREATE TABLE IF NOT EXISTS wanderer_personal_details (
           id BIGSERIAL PRIMARY KEY,
           user_id VARCHAR(255) NOT NULL,
+          first_name VARCHAR(255) NOT NULL,
+          last_name VARCHAR(255) NOT NULL,
           contact_number VARCHAR(100) NOT NULL,
           email VARCHAR(255) NOT NULL,
+          company VARCHAR(255) NOT NULL,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     """
   }
 
-  val insertWandererContactDetailsData: fragment.Fragment = {
+  val insertWandererPersonalDetailsData: fragment.Fragment = {
     sql"""
-      INSERT INTO wanderer_contact_details (user_id, contact_number, email, created_at, updated_at)
-      VALUES('fake_user_id_1', '0123456789', 'fake_user_1@example.com', '2025-01-01 00:00:00', '2025-01-01 00:00:00');
+      INSERT INTO wanderer_personal_details (user_id, first_name, last_name, contact_number, email, company, created_at, updated_at)
+      VALUES('fake_user_id_1', 'bob', 'smith', '0123456789', 'fake_user_1@example.com', 'apple', '2025-01-01 00:00:00', '2025-01-01 00:00:00');
     """
   }
 }

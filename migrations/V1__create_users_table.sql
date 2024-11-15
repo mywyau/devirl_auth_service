@@ -33,6 +33,8 @@ DROP TABLE IF EXISTS wanderer_personal_details;
 CREATE TABLE wanderer_personal_details (
     id BIGSERIAL PRIMARY KEY,
     user_id VARCHAR(255) NOT NULL,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
     contact_number VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL,
     company VARCHAR(255) NOT NULL,

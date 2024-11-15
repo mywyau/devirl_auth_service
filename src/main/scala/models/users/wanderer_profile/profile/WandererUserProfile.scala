@@ -14,6 +14,7 @@ case class WandererUserProfile(
                                 userAddress: Option[UserAddress],
                                 contact_number: Option[String],
                                 email: Option[String],
+                                company: Option[String],
                                 role: Option[Role],
                                 created_at: LocalDateTime,
                                 updated_at: LocalDateTime

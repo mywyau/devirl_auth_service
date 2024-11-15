@@ -39,6 +39,7 @@ object WandererUserProfileSpec extends SimpleIOSuite {
       )),
       contact_number = Some("07402205071"),
       email = Some("mikey5922@gmail.com"),
+      company = Some("apple"),
       role = Some(Wanderer),
       created_at = LocalDateTime.of(2024, 10, 10, 10, 0),
       updated_at = LocalDateTime.of(2024, 10, 10, 10, 0)
@@ -75,6 +76,7 @@ object WandererUserProfileSpec extends SimpleIOSuite {
         | },
         |"contact_number" : "07402205071",
         |"email": "mikey5922@gmail.com",
+        |"company": "apple",
         |"role": "Wanderer",
         |"created_at" : "2024-10-10T10:00:00",
         |"updated_at" : "2024-10-10T10:00:00"

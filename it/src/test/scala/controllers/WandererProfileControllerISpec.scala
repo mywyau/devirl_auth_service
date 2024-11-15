@@ -8,7 +8,7 @@ import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import models.users.*
 import models.users.adts.Wanderer
-import models.users.wanderer_profile.errors.{MissingAddress, MissingContactDetails, MissingLoginDetails}
+import models.users.wanderer_profile.errors.{MissingAddress, MissingPersonalDetails, MissingLoginDetails}
 import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, WandererUserProfile}
 import models.users.wanderer_profile.responses.error.{ErrorResponse, WandererProfileErrorResponse}
 import org.http4s.*
@@ -17,7 +17,7 @@ import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
-import repositories.users.{UserLoginDetailsRepositoryImpl, WandererAddressRepository, WandererContactDetailsRepository}
+import repositories.users.{UserLoginDetailsRepositoryImpl, WandererAddressRepository, WandererPersonalDetailsRepository}
 import services.password.PasswordServiceImpl
 import services.wanderer_profile.WandererProfileService
 import shared.{HttpClientResource, TransactorResource}
@@ -44,9 +44,9 @@ class WandererProfileControllerISpec(global: GlobalRead) extends IOSuite {
         createWandererAddressTable.update.run.transact(transactor.xa).void *>
           resetWandererAddressTable.update.run.transact(transactor.xa).void *>
           insertWandererAddressData.update.run.transact(transactor.xa).void *>
-          createWandererContactDetailsTable.update.run.transact(transactor.xa).void *>
-          resetWandererContactDetailsTable.update.run.transact(transactor.xa).void *>
-          insertWandererContactDetailsData.update.run.transact(transactor.xa).void *>
+          createWandererPersonalDetailsTable.update.run.transact(transactor.xa).void *>
+          resetWandererPersonalDetailsTable.update.run.transact(transactor.xa).void *>
+          insertWandererPersonalDetailsData.update.run.transact(transactor.xa).void *>
           createWandererLoginDetailsTable.update.run.transact(transactor.xa).void *>
           resetWandererLoginDetailsTable.update.run.transact(transactor.xa).void *>
           insertWandererLoginDetailsTable.update.run.transact(transactor.xa).void
@@ -61,7 +61,7 @@ class WandererProfileControllerISpec(global: GlobalRead) extends IOSuite {
 
     val userLoginDetailsRepository = new UserLoginDetailsRepositoryImpl(transactor)
     val wandererAddressRepository = WandererAddressRepository(transactor)
-    val wandererContactDetailsRepository = WandererContactDetailsRepository(transactor)
+    val wandererPersonalDetailsRepository = WandererPersonalDetailsRepository(transactor)
 
     val passwordService = new PasswordServiceImpl
 
@@ -69,7 +69,7 @@ class WandererProfileControllerISpec(global: GlobalRead) extends IOSuite {
       WandererProfileService(
         userLoginDetailsRepo = userLoginDetailsRepository,
         wandererAddressRepo = wandererAddressRepository,
-        wandererContactDetailsRepo = wandererContactDetailsRepository,
+        wandererPersonalDetailsRepo = wandererPersonalDetailsRepository,
         passwordService = passwordService
       )
 
@@ -80,7 +80,7 @@ class WandererProfileControllerISpec(global: GlobalRead) extends IOSuite {
     )
   }
 
-  test("GET - /cashew/wanderer/user/profile/fake_user_id_1 - should find the user address associated with the user") { (transactorResource, log) =>
+  test("GET - /cashew/wanderer/user/profile/fake_user_id_1 - should generate the user profile associated with the user") { (transactorResource, log) =>
 
     val transactor = transactorResource._1.xa
     val client = transactorResource._2.client
@@ -102,12 +102,12 @@ class WandererProfileControllerISpec(global: GlobalRead) extends IOSuite {
             updated_at = LocalDateTime.of(2023, 1, 1, 12, 0, 0)
           )
         ),
-        first_name = Some("Michael"),
-        last_name = Some("Yau"),
+        first_name = Some("bob"),
+        last_name = Some("smith"),
         userAddress = Some(
           UserAddress(
-            userId = "fake_username",
-            street = "Example Street",
+            userId = "fake_user_id_1",
+            street = "123 Example Street",
             city = "Sample City",
             country = "United Kingdom",
             county = Some("South Glamorgan"),
@@ -118,6 +118,7 @@ class WandererProfileControllerISpec(global: GlobalRead) extends IOSuite {
         ),
         contact_number = Some("0123456789"),
         email = Some("fake_user_1@example.com"),
+        company = Some("apple"),
         role = Some(Wanderer),
         created_at = LocalDateTime.of(2023, 1, 1, 12, 0, 0),
         updated_at = LocalDateTime.of(2023, 1, 1, 12, 0, 0)
@@ -148,7 +149,7 @@ class WandererProfileControllerISpec(global: GlobalRead) extends IOSuite {
             WandererProfileErrorResponse(
               List(ErrorResponse(MissingLoginDetails.code, MissingLoginDetails.message)),
               List(ErrorResponse(MissingAddress.code, MissingAddress.message)),
-              List(ErrorResponse(MissingContactDetails.code, MissingContactDetails.message)),
+              List(ErrorResponse(MissingPersonalDetails.code, MissingPersonalDetails.message)),
               List()
             )
         )
