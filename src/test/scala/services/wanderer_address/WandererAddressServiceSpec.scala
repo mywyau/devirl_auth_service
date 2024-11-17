@@ -33,6 +33,8 @@ object WandererAddressServiceSpec extends SimpleIOSuite {
     override def createUserAddress(user: WandererAddress): IO[Int] = IO.pure(1) // Assume user creation always succeeds
 
     override def findByUserId(user_id: String): IO[Option[WandererAddress]] = IO.pure(existingWandererAddress.get(user_id))
+
+    override def updateAddressDynamic(userId: String, street: Option[String], city: Option[String], country: Option[String], county: Option[String], postcode: Option[String]): IO[Option[WandererAddress]] = ???
   }
 
 

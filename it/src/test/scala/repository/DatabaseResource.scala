@@ -20,7 +20,7 @@ object DatabaseResource extends GlobalResource {
         connectEC = ce // Connect execution context (for managing connection pool)
       )
       _ <- global.putR(TransactorResource(xa)) // Store repository.TransactorResource in global context
-      //      _ <- Resource.eval(printSchema(xa)) // Print the schema
+      _ <- Resource.eval(printSchema(xa)) // Print the schema
       //      _ <- Resource.eval(testInsert(xa)) // Print the schema
     } yield ()
   }

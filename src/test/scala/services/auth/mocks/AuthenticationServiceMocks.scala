@@ -26,6 +26,8 @@ object AuthenticationServiceMocks {
     override def findByEmail(email: String): IO[Option[UserLoginDetails]] = IO.pure(userLoginDetails.values.find(_.email.contains(email)))
 
     def updateUserLoginDetails(userId: String, userLoginDetails: UserLoginDetails): IO[Option[UserLoginDetails]] = ???
+    
+    override def updateUserLoginDetailsDynamic(userId: String, username: Option[String], passwordHash: Option[String], email: Option[String], role: Option[Role]): IO[Option[UserLoginDetails]] = ???
   }
 
   class MockUserProfileRepository(

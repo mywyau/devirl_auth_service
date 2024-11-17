@@ -23,11 +23,11 @@ object AuthenticationServiceConstants {
   val testUserAddress: UserAddress =
     UserAddress(
       userId = "user_id_1",
-      street = "fake street 1",
-      city = "fake city 1",
-      country = "UK",
+      street = Some("fake street 1"),
+      city = Some("fake city 1"),
+      country = Some("UK"),
       county = Some("County 1"),
-      postcode = "CF3 3NJ",
+      postcode = Some("CF3 3NJ"),
       created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )

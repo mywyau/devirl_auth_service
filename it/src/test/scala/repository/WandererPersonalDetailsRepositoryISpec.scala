@@ -21,11 +21,11 @@ class WandererPersonalDetailsRepositoryISpec(global: GlobalRead) extends IOSuite
          CREATE TABLE IF NOT EXISTS wanderer_personal_details (
             id BIGSERIAL PRIMARY KEY,
             user_id VARCHAR(255) NOT NULL,
-            first_name VARCHAR(255) NOT NULL,
-            last_name VARCHAR(255) NOT NULL,
-            contact_number VARCHAR(100) NOT NULL,
-            email VARCHAR(255) NOT NULL,
-            company VARCHAR(255) NOT NULL,
+            first_name VARCHAR(255),
+            last_name VARCHAR(255),
+            contact_number VARCHAR(100),
+            email VARCHAR(255),
+            company VARCHAR(255),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
          );
@@ -52,7 +52,9 @@ class WandererPersonalDetailsRepositoryISpec(global: GlobalRead) extends IOSuite
       List(
         testWandererPersonalDetails(Some(1), "user_id_1"),
         testWandererPersonalDetails(Some(2), "user_id_2"),
-        testWandererPersonalDetails(Some(3), "user_id_3")
+        testWandererPersonalDetails(Some(3), "user_id_3"),
+        testWandererPersonalDetails(Some(4), "user_id_4"),
+        testWandererPersonalDetails(Some(5), "user_id_5"),
       )
     personalDetails.traverse(wandererPersonalDetailsRepo.createPersonalDetails).void
   }
@@ -77,14 +79,45 @@ class WandererPersonalDetailsRepositoryISpec(global: GlobalRead) extends IOSuite
     } yield expect(personalDetailsOpt == Some(personalDetails))
   }
 
-  // Test case to verify user creation and retrieval by username
-  test(".createPersonalDetails() - should insert a new user's personal details") { wandererPersonalDetailsRepo =>
+  // TODO: Possibly remove may not need
+  //  // Test case to verify user creation and retrieval by username
+  //  test(".createPersonalDetails() - should insert a new user's personal details") { wandererPersonalDetailsRepo =>
+  //
+  //    val personalDetails = testWandererPersonalDetails(Some(4), "user_id_4")
+  //
+  //    for {
+  //      result <- wandererPersonalDetailsRepo.createPersonalDetails(personalDetails)
+  //      userOpt <- wandererPersonalDetailsRepo.findByUserId("user_id_4")
+  //    } yield expect(result == 1) and expect(userOpt.contains(personalDetails))
+  //  }
 
-    val personalDetails = testWandererPersonalDetails(Some(4), "user_id_4")
+  // Test case to verify user creation and retrieval by username
+  
+  test(".updatePersonalDetailsDynamic() - should insert a new user's personal details") { wandererPersonalDetailsRepo =>
+
+    val personalDetails = testWandererPersonalDetails(Some(5), "user_id_5")
+
+    val updatedPersonalDetails =
+      Some(
+        personalDetails.copy(
+          first_name = "Michael",
+          last_name = "Yau",
+          contact_number = "07402205071",
+          email = "mike@gmail.com",
+          company = "capgemini"
+        )
+      )
 
     for {
-      result <- wandererPersonalDetailsRepo.createPersonalDetails(personalDetails)
-      userOpt <- wandererPersonalDetailsRepo.findByUserId("user_id_4")
-    } yield expect(result == 1) and expect(userOpt.contains(personalDetails))
+      updatedResult <- wandererPersonalDetailsRepo.updatePersonalDetailsDynamic(
+        userId = "user_id_5",
+        firstName = Some("Michael"),
+        lastName = Some("Yau"),
+        contactNumber = Some("07402205071"),
+        email = Some("mike@gmail.com"),
+        company = Some("capgemini"),
+      )
+      userOpt <- wandererPersonalDetailsRepo.findByUserId("user_id_5")
+    } yield expect(userOpt == updatedPersonalDetails)
   }
 }

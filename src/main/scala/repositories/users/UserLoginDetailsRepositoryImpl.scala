@@ -2,10 +2,6 @@ package repositories.users
 
 import cats.Monad
 import cats.effect.Concurrent
-import cats.syntax.applicative.*
-import cats.syntax.flatMap.*
-import cats.syntax.functor.*
-import cats.syntax.option.*
 import doobie.*
 import doobie.implicits.*
 import doobie.implicits.javasql.*
@@ -13,6 +9,7 @@ import doobie.util.meta.Meta
 import models.users.*
 import models.users.adts.Role
 import models.users.wanderer_profile.profile.UserLoginDetails
+import cats.syntax.all.*
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -29,6 +26,14 @@ trait UserLoginDetailsRepositoryAlgebra[F[_]] {
   def findByEmail(email: String): F[Option[UserLoginDetails]]
 
   def updateUserLoginDetails(userId: String, userLoginDetails: UserLoginDetails): F[Option[UserLoginDetails]]
+
+  def updateUserLoginDetailsDynamic(
+                                     userId: String,
+                                     username: Option[String],
+                                     passwordHash: Option[String],
+                                     email: Option[String],
+                                     role: Option[Role]
+                                   ): F[Option[UserLoginDetails]]
 }
 
 class UserLoginDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends UserLoginDetailsRepositoryAlgebra[F] {
@@ -106,9 +111,9 @@ class UserLoginDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Tran
     // Query the updated user
     val selectQuery: ConnectionIO[Option[UserLoginDetails]] =
       sql"""
-        SELECT userId, username, password_hash, email, role, created_at, updated_at
+        SELECT user_id, username, password_hash, email, role, created_at, updated_at
         FROM user_login_details
-        WHERE userId = $userId
+        WHERE user_id = $userId
       """.query[UserLoginDetails].option
 
     // Combine update and select logic
@@ -124,5 +129,52 @@ class UserLoginDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Tran
       case None => Concurrent[F].pure(None)
     }
   }
+
+  override def updateUserLoginDetailsDynamic(
+                                              user_id: String,
+                                              username: Option[String],
+                                              passwordHash: Option[String],
+                                              email: Option[String],
+                                              role: Option[Role]
+                                            ): F[Option[UserLoginDetails]] = {
+
+    // Dynamically build the update query
+    val updates = List(
+      username.map(u => fr"username = $u"),
+      passwordHash.map(ph => fr"password_hash = $ph"),
+      email.map(e => fr"email = $e"),
+      role.map(r => fr"role = ${r.toString}")
+    ).flatten
+
+    // Only execute if there are fields to update
+    val updateQuery: Option[ConnectionIO[Int]] =
+      if (updates.nonEmpty) {
+        (fr"UPDATE user_login_details SET" ++ updates.intercalate(fr",") ++
+          fr"WHERE user_id = $user_id").update.run.some
+      } else None
+
+    // Query the updated user
+    val selectQuery: ConnectionIO[Option[UserLoginDetails]] =
+      sql"""
+        SELECT id, user_id, username, password_hash, email, role, created_at, updated_at
+        FROM user_login_details
+        WHERE user_id = $user_id
+      """.query[UserLoginDetails].option
+
+    // Combine update and select logic
+    val result: ConnectionIO[Option[UserLoginDetails]] = updateQuery match {
+      case Some(query) =>
+        for {
+          rowsAffected <- query
+          updatedUser <- if (rowsAffected > 0) selectQuery else none[UserLoginDetails].pure[ConnectionIO]
+        } yield updatedUser
+      case None =>
+        selectQuery // If no updates, just fetch the existing user
+    }
+
+    // Transact and return the result
+    result.transact(transactor)
+  }
+
 
 }

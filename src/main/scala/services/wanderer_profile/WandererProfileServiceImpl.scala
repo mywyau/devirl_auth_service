@@ -5,10 +5,11 @@ import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.users.*
-import models.users.wanderer_personal_details.service.WandererPersonalDetails
 import models.users.wanderer_address.service.WandererAddress
-import models.users.wanderer_profile.errors.{MissingAddress, MissingPersonalDetails, MissingLoginDetails, WandererProfileErrors}
-import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, WandererUserProfile}
+import models.users.wanderer_personal_details.service.WandererPersonalDetails
+import models.users.wanderer_profile.errors.{MissingAddress, MissingLoginDetails, MissingPersonalDetails, WandererProfileErrors}
+import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserPersonalDetails, WandererUserProfile}
+import models.users.wanderer_profile.requests.*
 import repositories.users.{UserLoginDetailsRepositoryAlgebra, WandererAddressRepositoryAlgebra, WandererPersonalDetailsRepositoryAlgebra}
 import services.password.PasswordServiceAlgebra
 
@@ -27,20 +28,32 @@ class WandererProfileServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
       .map(details =>
         UserAddress(
           userId = details.user_id,
-          street = details.street,
-          city = details.city,
-          country = details.country,
+          street = Some(details.street),
+          city = Some(details.city),
+          country = Some(details.country),
           county = details.county,
-          postcode = details.postcode,
+          postcode = Some(details.postcode),
           created_at = details.created_at,
           updated_at = details.updated_at
         )
       )
       .toValidNel(MissingAddress)
 
-  private def validatePersonalDetails(personalDetails: Option[WandererPersonalDetails]): ValidatedNel[WandererProfileErrors, WandererPersonalDetails] =
+  private def validatePersonalDetails(personalDetails: Option[WandererPersonalDetails]): ValidatedNel[WandererProfileErrors, UserPersonalDetails] =
     personalDetails
-      .toValidNel(MissingPersonalDetails)
+      .map(
+        details =>
+          UserPersonalDetails(
+            user_id = details.user_id,
+            first_name = Some(details.first_name),
+            last_name = Some(details.last_name),
+            contact_number = Some(details.contact_number),
+            email = Some(details.email),
+            company = Some(details.company),
+            created_at = details.created_at,
+            updated_at = details.updated_at
+          )
+      ).toValidNel(MissingPersonalDetails)
 
   override def createProfile(user_id: String): F[ValidatedNel[WandererProfileErrors, WandererUserProfile]] = {
     for {
@@ -56,12 +69,8 @@ class WandererProfileServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
         WandererUserProfile(
           userId = user_id,
           userLoginDetails = Some(loginDetails),
-          first_name = Some(personalDetails.first_name), 
-          last_name = Some(personalDetails.last_name),
+          userPersonalDetails = Some(personalDetails),
           userAddress = Some(userAddress),
-          contact_number = Some(personalDetails.contact_number),
-          email = Some(loginDetails.email),
-          company = Some(personalDetails.company),
           role = Some(loginDetails.role),
           created_at = loginDetails.created_at,
           updated_at = loginDetails.updated_at
@@ -70,7 +79,43 @@ class WandererProfileServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
     }
   }
 
+  override def updateProfile(
+                              userId: String,
+                              loginDetailsUpdate: Option[UpdateLoginDetails],
+                              addressUpdate: Option[UpdateAddress],
+                              personalDetailsUpdate: Option[UpdatePersonalDetails]
+                            ): F[Option[WandererUserProfile]] = {
+
+    val updateLoginDetails =
+      loginDetailsUpdate match {
+        case Some(UpdateLoginDetails(username, passwordHash, email, role)) =>
+          userLoginDetailsRepo.updateUserLoginDetailsDynamic(userId, username, passwordHash, email, role)
+        case None => Monad[F].pure(None)
+      }
+
+    val updateAddress =
+      addressUpdate match {
+        case Some(UpdateAddress(street, city, country, county, postcode)) =>
+          wandererAddressRepo.updateAddressDynamic(userId, street, city, country, county, postcode)
+        case None => Monad[F].pure(None)
+      }
+
+    val updatePersonalDetails =
+      personalDetailsUpdate match {
+        case Some(UpdatePersonalDetails(contactNumber, firstName, lastName, email, company)) =>
+          wandererPersonalDetailsRepo.updatePersonalDetailsDynamic(userId, contactNumber, firstName, lastName, email, company)
+        case None => Monad[F].pure(None)
+      }
+
+    for {
+      _ <- updateLoginDetails
+      _ <- updateAddress
+      _ <- updatePersonalDetails
+      updatedProfile <- createProfile(userId).map(_.toOption)
+    } yield updatedProfile
+  }
 }
+
 
 object WandererProfileService {
   def apply[F[_] : Concurrent : NonEmptyParallel : Monad](

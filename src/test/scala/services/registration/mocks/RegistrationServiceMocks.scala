@@ -4,18 +4,16 @@ import cats.data.Validated
 import cats.effect.IO
 import models.auth.RegisterPasswordErrors
 import models.users.*
+import models.users.adts.Role
 import models.users.wanderer_profile.profile.UserLoginDetails
-import repositories.users.{UserLoginDetailsRepositoryAlgebra, UserProfileRepositoryAlgebra}
-import services.auth.constants.RegistrationServiceConstants.*
+import repositories.users.UserLoginDetailsRepositoryAlgebra
 import services.password.PasswordServiceAlgebra
-
-import java.time.LocalDateTime
 
 object RegistrationServiceMocks {
 
   class MockUserLoginDetailsRepository(
-                            existingUserLoginDetails: Map[String, UserLoginDetails] = Map.empty
-                          ) extends UserLoginDetailsRepositoryAlgebra[IO] {
+                                        existingUserLoginDetails: Map[String, UserLoginDetails] = Map.empty
+                                      ) extends UserLoginDetailsRepositoryAlgebra[IO] {
 
     def showAllUsers: IO[Map[String, UserLoginDetails]] = IO.pure(existingUserLoginDetails)
 
@@ -24,10 +22,12 @@ object RegistrationServiceMocks {
     override def findByUserId(userId: String): IO[Option[UserLoginDetails]] = IO.pure(existingUserLoginDetails.get(userId))
 
     override def findByUsername(username: String): IO[Option[UserLoginDetails]] = IO.pure(existingUserLoginDetails.get(username))
-    
+
     override def findByEmail(email: String): IO[Option[UserLoginDetails]] = IO.pure(existingUserLoginDetails.values.find(_.email.contains(email)))
-    
+
     override def updateUserLoginDetails(userId: String, userLoginDetails: UserLoginDetails): IO[Option[UserLoginDetails]] = ???
+    
+    override def updateUserLoginDetailsDynamic(userId: String, username: Option[String], passwordHash: Option[String], email: Option[String], role: Option[Role]): IO[Option[UserLoginDetails]] = ???
   }
 
   class MockPasswordService(

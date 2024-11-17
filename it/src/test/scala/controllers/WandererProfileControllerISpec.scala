@@ -6,14 +6,17 @@ import controllers.fragments.WandererProfileSqlFragments.*
 import controllers.wanderer_profile.WandererProfileController
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
+import io.circe.syntax.*
 import models.users.*
-import models.users.adts.Wanderer
-import models.users.wanderer_profile.errors.{MissingAddress, MissingPersonalDetails, MissingLoginDetails}
-import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, WandererUserProfile}
+import models.users.adts.*
+import models.users.wanderer_profile.errors.{MissingAddress, MissingLoginDetails, MissingPersonalDetails}
+import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserPersonalDetails, WandererUserProfile}
+import models.users.wanderer_profile.requests.*
 import models.users.wanderer_profile.responses.error.{ErrorResponse, WandererProfileErrorResponse}
 import org.http4s.*
 import org.http4s.Method.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
+import org.http4s.circe.jsonEncoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
@@ -102,23 +105,31 @@ class WandererProfileControllerISpec(global: GlobalRead) extends IOSuite {
             updated_at = LocalDateTime.of(2023, 1, 1, 12, 0, 0)
           )
         ),
-        first_name = Some("bob"),
-        last_name = Some("smith"),
+        userPersonalDetails =
+          Some(
+            UserPersonalDetails(
+              user_id = "fake_user_id_1",
+              first_name = Some("bob"),
+              last_name = Some("smith"),
+              contact_number = Some("0123456789"),
+              email = Some("fake_user_1@example.com"),
+              company = Some("apple"),
+              created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+              updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+            )
+          ),
         userAddress = Some(
           UserAddress(
             userId = "fake_user_id_1",
-            street = "123 Example Street",
-            city = "Sample City",
-            country = "United Kingdom",
+            street = Some("123 Example Street"),
+            city = Some("Sample City"),
+            country = Some("United Kingdom"),
             county = Some("South Glamorgan"),
-            postcode = "CF5 3NJ",
+            postcode = Some("CF5 3NJ"),
             created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
             updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
           )
         ),
-        contact_number = Some("0123456789"),
-        email = Some("fake_user_1@example.com"),
-        company = Some("apple"),
         role = Some(Wanderer),
         created_at = LocalDateTime.of(2023, 1, 1, 12, 0, 0),
         updated_at = LocalDateTime.of(2023, 1, 1, 12, 0, 0)
@@ -156,5 +167,60 @@ class WandererProfileControllerISpec(global: GlobalRead) extends IOSuite {
       }
     }
   }
+
+  test("PUT - /cashew/wanderer/user/profile/fake_user_id_1 - should update the user profile successfully") { (transactorResource, client) =>
+
+    val transactor = transactorResource._1.xa
+    val client = transactorResource._2.client
+
+    val updateRequest =
+      UpdateProfileRequest(
+        loginDetails =
+          Some(UpdateLoginDetails(
+            username = Some("updated_username"),
+            passwordHash = Some("new_hashed_password"),
+            email = Some("updated_email@example.com"),
+            role = Some(Admin)
+          )),
+        address =
+          Some(UpdateAddress(
+            street = Some("456 Updated Street"),
+            city = Some("Updated City"),
+            country = Some("Updated Country"),
+            county = Some("Updated County"),
+            postcode = Some("UPDATED123")
+          )),
+        personalDetails =
+          Some(UpdatePersonalDetails(
+            firstName = Some("Updated John"),
+            lastName = Some("Updated Doe"),
+            contactNumber = Some("9876543210"),
+            email = Some("updated.john@example.com"),
+            company = Some("Updated Corp")
+          ))
+      )
+
+//    println(updateRequest.asJson.noSpaces) // Print the serialized JSON to ensure it's correct
+
+    val request =
+      Request[IO](
+        method = Method.PUT,
+        uri = uri"http://127.0.0.1:9999/cashew/wanderer/user/profile/fake_user_id_1"
+      ).withEntity(updateRequest.asJson)
+
+    client.run(request).use { response =>
+//      println(response.status)
+      response.as[WandererUserProfile].map { body =>
+        expect.all(
+          response.status == Status.Ok,
+          body.userLoginDetails.exists(_.username == "updated_username"),
+          body.userLoginDetails.exists(_.email == "updated_email@example.com"),
+          body.userAddress.exists(_.street.contains("456 Updated Street")),
+          body.userPersonalDetails.exists(_.contact_number.contains("9876543210"))
+        )
+      }
+    }
+  }
+
 
 }

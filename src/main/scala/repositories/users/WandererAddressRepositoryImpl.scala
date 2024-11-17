@@ -2,6 +2,7 @@ package repositories.users
 
 import cats.Monad
 import cats.effect.Concurrent
+import cats.syntax.all.*
 import doobie.*
 import doobie.implicits.*
 import doobie.implicits.javasql.*
@@ -18,6 +19,15 @@ trait WandererAddressRepositoryAlgebra[F[_]] {
   def createUserAddress(user: WandererAddress): F[Int]
 
   def findByUserId(userId: String): F[Option[WandererAddress]]
+
+  def updateAddressDynamic(
+                            userId: String,
+                            street: Option[String],
+                            city: Option[String],
+                            country: Option[String],
+                            county: Option[String],
+                            postcode: Option[String]
+                          ): F[Option[WandererAddress]]
 }
 
 class WandererAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends WandererAddressRepositoryAlgebra[F] {
@@ -61,6 +71,50 @@ class WandererAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
     """.update
       .run
       .transact(transactor)
+  }
+
+  override def updateAddressDynamic(
+                                     userId: String,
+                                     street: Option[String],
+                                     city: Option[String],
+                                     country: Option[String],
+                                     county: Option[String],
+                                     postcode: Option[String]
+                                   ): F[Option[WandererAddress]] = {
+
+    // Dynamically build the update query
+    val updates = List(
+      street.map(s => fr"street = $s"),
+      city.map(c => fr"city = $c"),
+      country.map(c => fr"country = $c"),
+      county.map(c => fr"county = $c"),
+      postcode.map(p => fr"postcode = $p")
+    ).flatten
+
+    val updateQuery: Option[ConnectionIO[Int]] =
+      if (updates.nonEmpty) {
+        (fr"UPDATE wanderer_address SET" ++ updates.intercalate(fr",") ++
+          fr"WHERE user_id = $userId").update.run.some
+      } else None
+
+    val selectQuery: ConnectionIO[Option[WandererAddress]] =
+      sql"""
+          SELECT id, user_id, street, city, country, county, postcode, created_at, updated_at
+          FROM wanderer_address
+          WHERE user_id = $userId
+        """.query[WandererAddress].option
+
+    val result: ConnectionIO[Option[WandererAddress]] = updateQuery match {
+      case Some(query) =>
+        for {
+          rowsAffected <- query
+          updatedAddress <- if (rowsAffected > 0) selectQuery else none[WandererAddress].pure[ConnectionIO]
+        } yield updatedAddress
+      case None =>
+        selectQuery // If no updates, return the existing address
+    }
+
+    result.transact(transactor)
   }
 
 }

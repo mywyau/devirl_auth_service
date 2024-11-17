@@ -44,11 +44,11 @@ class WandererAddressControllerISpec(global: GlobalRead) extends IOSuite {
           CREATE TABLE IF NOT EXISTS wanderer_address (
              id BIGSERIAL PRIMARY KEY,
              user_id VARCHAR(255) NOT NULL,
-             street VARCHAR(255) NOT NULL,
-             city VARCHAR(255) NOT NULL,
-             country VARCHAR(255) NOT NULL,
-             county VARCHAR(255) NOT NULL,
-             postcode VARCHAR(255) NOT NULL,
+             street VARCHAR(255),
+             city VARCHAR(255),
+             country VARCHAR(255),
+             county VARCHAR(255),
+             postcode VARCHAR(255),
              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
           );
@@ -96,7 +96,7 @@ class WandererAddressControllerISpec(global: GlobalRead) extends IOSuite {
     )
   }
 
-  test("POST - /cashew/wanderer/address/details/fake_user_id_1 - should find the user address associated with the user") { (transactorResource, log) =>
+  test("GET - /cashew/wanderer/address/details/fake_user_id_1 - should find the user address associated with the user") { (transactorResource, log) =>
 
     val transactor = transactorResource._1.xa
     val client = transactorResource._2.client
@@ -124,7 +124,7 @@ class WandererAddressControllerISpec(global: GlobalRead) extends IOSuite {
     }
   }
 
-  test("POST - /cashew/wanderer/address/details/fake_user_id_2 - attempting to find user address for an unknown user should return an WandererAddressErrorResponse") { (transactorResource, client) =>
+  test("GET - /cashew/wanderer/address/details/fake_user_id_2 - attempting to find user address for an unknown user should return an WandererAddressErrorResponse") { (transactorResource, client) =>
 
     val transactor = transactorResource._1.xa
     val client = transactorResource._2.client

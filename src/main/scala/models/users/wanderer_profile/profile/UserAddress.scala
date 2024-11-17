@@ -7,11 +7,11 @@ import java.time.LocalDateTime
 
 case class UserAddress(
                         userId: String,
-                        street: String,
-                        city: String,
-                        country: String,
+                        street: Option[String],
+                        city: Option[String],
+                        country: Option[String],
                         county: Option[String],
-                        postcode: String,
+                        postcode: Option[String],
                         created_at: LocalDateTime,
                         updated_at: LocalDateTime
                       )

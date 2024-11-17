@@ -1,4 +1,4 @@
-package models
+package models.bookings
 
 import cats.effect.IO
 import io.circe.Encoder

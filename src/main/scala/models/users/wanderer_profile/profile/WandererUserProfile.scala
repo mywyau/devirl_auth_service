@@ -9,12 +9,8 @@ import java.time.LocalDateTime
 case class WandererUserProfile(
                                 userId: String,
                                 userLoginDetails: Option[UserLoginDetails],
-                                first_name: Option[String],
-                                last_name: Option[String],
+                                userPersonalDetails: Option[UserPersonalDetails],
                                 userAddress: Option[UserAddress],
-                                contact_number: Option[String],
-                                email: Option[String],
-                                company: Option[String],
                                 role: Option[Role],
                                 created_at: LocalDateTime,
                                 updated_at: LocalDateTime

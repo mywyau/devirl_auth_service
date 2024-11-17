@@ -63,6 +63,7 @@ object Main extends IOApp {
       corsRoutes = CORS.policy
         .withAllowOriginAll
         .withAllowCredentials(false)
+        .withAllowHeadersAll
         .withMaxAge(1.day)
         .apply(combinedRoutes)
 
@@ -91,7 +92,7 @@ object Main extends IOApp {
       .withHost(ipv4"0.0.0.0")
       .withPort(port"8080")
       .withHttpApp(httpRoutes.orNotFound)
-      .withHttpWebSocketApp(wsBuilder => webSocketRoutes(wsBuilder).orNotFound)
+//      .withHttpWebSocketApp(wsBuilder => webSocketRoutes(wsBuilder).orNotFound)
       .build
       .void
   }

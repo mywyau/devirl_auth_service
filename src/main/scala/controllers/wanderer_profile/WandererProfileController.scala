@@ -1,16 +1,16 @@
 package controllers.wanderer_profile
 
-//import cats.effect.unsafe.implicits.global // for debugging and IO printlns
-
+import cats.effect.unsafe.implicits.global
 import cats.data.Validated.{Invalid, Valid}
-import cats.effect.Concurrent
+import cats.effect.{Concurrent, IO}
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
 import models.users.wanderer_profile.errors.*
-import models.users.wanderer_profile.requests.UserSignUpRequest
+import models.users.wanderer_profile.requests.{UpdateProfileRequest, UserSignUpRequest}
 import models.users.wanderer_profile.responses.error.{ErrorResponse, WandererProfileErrorResponse}
 import org.http4s.*
 import org.http4s.circe.*
+import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
 import org.http4s.dsl.Http4sDsl
 import services.wanderer_profile.WandererProfileServiceAlgebra
 
@@ -24,6 +24,7 @@ class WandererProfileControllerImpl[F[_] : Concurrent](
                                                       ) extends Http4sDsl[F] with WandererProfileController[F] {
 
   implicit val userSignUpRequestDecoder: EntityDecoder[F, UserSignUpRequest] = jsonOf[F, UserSignUpRequest]
+  implicit val updateProfileRequestDecoder: EntityDecoder[F, UpdateProfileRequest] = jsonOf[F, UpdateProfileRequest]
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
@@ -58,6 +59,29 @@ class WandererProfileControllerImpl[F[_] : Concurrent](
             )
 
           BadRequest(errorResponse.asJson)
+      }
+
+
+    case req@PUT -> Root / "wanderer" / "user" / "profile" / userId =>
+      IO(println(s"Received a PUT /wanderer/user/profile/$userId request")).unsafeRunSync() // Print immediately
+      req.decode[UpdateProfileRequest] { request =>
+        IO(println(s"Received UserSignUpRequest: $request")).unsafeRunSync() // Log incoming payload
+        for {
+          updatedProfile <-
+            wandererProfileService.updateProfile(
+              userId = userId,
+              loginDetailsUpdate = request.loginDetails,
+              addressUpdate = request.address,
+              personalDetailsUpdate = request.personalDetails
+            )
+          response <-
+            updatedProfile match {
+              case Some(profile) => Ok(profile) // Return updated profile
+              case None => NotFound("User not found")
+            }
+        } yield response
+      }.handleErrorWith {
+        case _: io.circe.Error => BadRequest("Invalid JSON payload")
       }
   }
 }

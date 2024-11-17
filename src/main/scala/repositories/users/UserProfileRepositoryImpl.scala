@@ -110,11 +110,11 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
             userAddress =
               UserAddress(
                 userId = user.userId,
-                street = user.street,
-                city = user.city,
-                country = user.country,
+                street = Some(user.street),
+                city = Some(user.city),
+                country = Some(user.country),
                 county = user.county,
-                postcode = user.postcode,
+                postcode = Some(user.postcode),
                 created_at = user.created_at,
                 updated_at = user.updated_at
               ),
@@ -159,11 +159,11 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
             userAddress =
               UserAddress(
                 userId = user.userId,
-                street = user.street,
-                city = user.city,
-                country = user.country,
+                street = Some(user.street),
+                city = Some(user.city),
+                country = Some(user.country),
                 county = user.county,
-                postcode = user.postcode,
+                postcode = Some(user.postcode),
                 created_at = user.created_at,
                 updated_at = user.updated_at
               ),
@@ -207,11 +207,11 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
           userAddress =
             UserAddress(
               userId = user.userId,
-              street = user.street,
-              city = user.city,
-              country = user.country,
+              street = Some(user.street),
+              city = Some(user.city),
+              country = Some(user.country),
               county = user.county,
-              postcode = user.postcode,
+              postcode = Some(user.postcode),
               created_at = user.created_at,
               updated_at = user.updated_at
             ),
@@ -255,11 +255,11 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
           userAddress =
             UserAddress(
               userId = user.userId,
-              street = user.street,
-              city = user.city,
-              country = user.country,
+              street = Some(user.street),
+              city = Some(user.city),
+              country = Some(user.country),
               county = user.county,
-              postcode = user.postcode,
+              postcode = Some(user.postcode),
               created_at = user.created_at,
               updated_at = user.updated_at
             ),
@@ -315,11 +315,11 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
           userAddress =
             UserAddress(
               userId = userSql.userId,
-              street = userSql.street,
-              city = userSql.city,
-              country = userSql.country,
+              street = Some(userSql.street),
+              city = Some(userSql.city),
+              country = Some(userSql.country),
               county = userSql.county,
-              postcode = userSql.postcode,
+              postcode = Some(userSql.postcode),
               created_at = userSql.created_at,
               updated_at = userSql.updated_at
             ),
