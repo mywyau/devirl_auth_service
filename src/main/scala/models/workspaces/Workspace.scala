@@ -7,18 +7,18 @@ import java.time.LocalDateTime
 
 case class Workspace(
                       id: Option[Int],
-                      business_id: String,
-                      workspace_id: String,
+                      businessId: String,
+                      workspaceId: String,
                       name: String,
                       description: String,
                       address: String,
                       city: String,
                       country: String,
                       postcode: String,
-                      price_per_day: BigDecimal,
+                      pricePerDay: BigDecimal,
                       latitude: BigDecimal,
                       longitude: BigDecimal,
-                      created_at: LocalDateTime
+                      createdAt: LocalDateTime
                     )
 
 object Workspace {

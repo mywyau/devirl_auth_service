@@ -2,7 +2,6 @@ package controllers.users.mocks
 
 import cats.data.Validated
 import cats.effect.IO
-import models.auth.RegistrationErrors
 import models.users.*
 import models.users.adts.Role
 import models.users.login.requests.UserLoginRequest

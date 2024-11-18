@@ -3,7 +3,7 @@ package controllers.bookings
 import cats.effect.{Concurrent, IO}
 import controllers.{BookingController, BookingControllerImpl}
 import io.circe.syntax.*
-import models.Booking
+import models.bookings.Booking
 import models.bookings.*
 import models.bookings.errors.ValidationError
 import models.bookings.responses.{CreatedBookingResponse, DeleteBookingResponse, UpdatedBookingResponse}
@@ -27,15 +27,15 @@ class MockBookingService extends BookingServiceAlgebra[IO] {
   val sampleBooking_1: Booking =
     Booking(
       id = Some(1),
-      booking_id = "booking_1",
-      booking_name = "Sample Booking 1",
-      user_id = 1,
-      workspace_id = 1,
-      booking_date = LocalDate.of(2024, 10, 10),
-      start_time = LocalDateTime.of(2024, 10, 10, 9, 0),
-      end_time = LocalDateTime.of(2024, 10, 10, 12, 0),
+      bookingId = "booking_1",
+      bookingName = "Sample Booking 1",
+      userId = 1,
+      workspaceId = 1,
+      bookingDate = LocalDate.of(2024, 10, 10),
+      startTime = LocalDateTime.of(2024, 10, 10, 9, 0),
+      endTime = LocalDateTime.of(2024, 10, 10, 12, 0),
       status = Confirmed,
-      created_at = LocalDateTime.of(2024, 10, 5, 15, 0)
+      createdAt = LocalDateTime.of(2024, 10, 5, 15, 0)
     )
 
   override def findBookingById(bookingId: String): IO[Either[ValidationError, Booking]] =
@@ -81,15 +81,15 @@ object BookingControllerSpec extends SimpleIOSuite {
     val newBooking =
       Booking(
         id = None, // New bookings don't have an ID yet
-        booking_id = "booking_new",
-        booking_name = "New Booking",
-        user_id = 2,
-        workspace_id = 1,
-        booking_date = LocalDate.of(2024, 12, 1),
-        start_time = LocalDateTime.of(2024, 12, 1, 10, 0),
-        end_time = LocalDateTime.of(2024, 12, 1, 12, 0),
+        bookingId = "booking_new",
+        bookingName = "New Booking",
+        userId = 2,
+        workspaceId = 1,
+        bookingDate = LocalDate.of(2024, 12, 1),
+        startTime = LocalDateTime.of(2024, 12, 1, 10, 0),
+        endTime = LocalDateTime.of(2024, 12, 1, 12, 0),
         status = Confirmed,
-        created_at = LocalDateTime.of(2024, 11, 25, 15, 0)
+        createdAt = LocalDateTime.of(2024, 11, 25, 15, 0)
       )
 
     // Create a POST request with the booking as JSON
@@ -119,15 +119,15 @@ object BookingControllerSpec extends SimpleIOSuite {
     // Sample booking to be sent in POST request
     val updatedBooking = Booking(
       id = None, // New bookings don't have an ID yet
-      booking_id = "booking_updated",
-      booking_name = "Updated Booking",
-      user_id = 1,
-      workspace_id = 1,
-      booking_date = LocalDate.of(2024, 12, 1),
-      start_time = LocalDateTime.of(2024, 12, 1, 13, 0),
-      end_time = LocalDateTime.of(2024, 12, 1, 15, 0),
+      bookingId = "booking_updated",
+      bookingName = "Updated Booking",
+      userId = 1,
+      workspaceId = 1,
+      bookingDate = LocalDate.of(2024, 12, 1),
+      startTime = LocalDateTime.of(2024, 12, 1, 13, 0),
+      endTime = LocalDateTime.of(2024, 12, 1, 15, 0),
       status = Confirmed,
-      created_at = LocalDateTime.of(2024, 11, 25, 15, 0)
+      createdAt = LocalDateTime.of(2024, 11, 25, 15, 0)
     )
 
     // Create a POST request with the booking as JSON

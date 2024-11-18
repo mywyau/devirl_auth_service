@@ -3,7 +3,7 @@ package controllers
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.*
-import models.Booking
+import models.bookings.Booking
 import models.bookings.errors.*
 import models.bookings.responses.{CreatedBookingResponse, DeleteBookingResponse, ErrorBookingResponse, UpdatedBookingResponse}
 import org.http4s.*

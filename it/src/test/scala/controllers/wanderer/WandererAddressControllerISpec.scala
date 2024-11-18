@@ -1,4 +1,4 @@
-package controllers
+package controllers.wanderer
 
 import cats.effect.*
 import com.comcast.ip4s.{ipv4, port}
@@ -23,9 +23,6 @@ import weaver.*
 import java.time.LocalDateTime
 
 class WandererAddressControllerISpec(global: GlobalRead) extends IOSuite {
-
-  //  sbt "it/testOnly *WandererAddressControllerISpec* controllers.ControllerSharedResource"
-
   type Res = (TransactorResource, HttpClientResource)
 
   def createServer[F[_] : Async](router: HttpRoutes[F]): Resource[F, Server] =
@@ -77,7 +74,6 @@ class WandererAddressControllerISpec(global: GlobalRead) extends IOSuite {
               )
           """.update.run.transact(transactor.xa).void
       )
-      //      _ <- Resource.eval(sql"DELETE FROM wanderer_address".update.run.transact(transactor.xa).void)
       client <- global.getOrFailR[HttpClientResource]()
       routes = createController(transactor.xa)
       server <- createServer(routes)
@@ -110,14 +106,14 @@ class WandererAddressControllerISpec(global: GlobalRead) extends IOSuite {
           body ==
             WandererAddress(
               id = Some(1),
-              user_id = "fake_user_id_1",
-              street = "123 Example Street",
-              city = "Sample City",
-              country = "United Kingdom",
+              userId = "fake_user_id_1",
+              street = Some("123 Example Street"),
+              city = Some("Sample City"),
+              country = Some("United Kingdom"),
               county = Some("South Glamorgan"),
-              postcode = "CF5 3NJ",
-              created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-              updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+              postcode = Some("CF5 3NJ"),
+              createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+              updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
             )
         )
       }

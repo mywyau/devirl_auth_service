@@ -36,17 +36,17 @@ class WandererAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
           .update.run.transact(transactor.xa).void
     )
 
-  def testWandererAddress(id: Option[Int], user_id: String) =
+  def testWandererAddress(id: Option[Int], userId: String) =
     WandererAddress(
       id = id,
-      user_id = user_id,
-      street = "fake street 1",
-      city = "fake city 1",
-      country = "UK",
+      userId = userId,
+      street = Some("fake street 1"),
+      city = Some("fake city 1"),
+      country = Some("UK"),
       county = Some("County 1"),
-      postcode = "CF3 3NJ",
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      postcode = Some("CF3 3NJ"),
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
   private def seedTestAddresses(wandererAddressRepo: WandererAddressRepositoryImpl[IO]): IO[Unit] = {
@@ -98,11 +98,11 @@ class WandererAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
     val updatedWandererAddress =
       Some(
         wandererAddress.copy(
-          street = "New Street",
-          city = "New City",
-          country = "New Country",
+          street = Some("New Street"),
+          city = Some("New City"),
+          country = Some("New Country"),
           county = Some("New County"),
-          postcode = "New postcode"
+          postcode = Some("New postcode")
         )
       )
 

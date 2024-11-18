@@ -1,13 +1,13 @@
 package repositories.bookings
 
 import cats.effect.Concurrent
-import cats.implicits._
-import doobie._
-import doobie.implicits._
-import doobie.implicits.javasql._
+import cats.implicits.*
+import doobie.*
+import doobie.implicits.*
+import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
-import models._
-import models.bookings.BookingStatus
+import models.*
+import models.bookings.{Booking, BookingStatus}
 
 import java.sql.{Date, Timestamp}
 import java.time.{LocalDate, LocalDateTime}
@@ -65,7 +65,7 @@ class BookingRepository[F[_] : Concurrent](transactor: Transactor[F]) extends Bo
   def setBooking(booking: Booking): F[Int] = {
     sql"""
       INSERT INTO bookings (booking_id, booking_name, user_id, workspace_id, booking_date, start_time, end_time, status, created_at)
-      VALUES (${booking.booking_id}, ${booking.booking_name}, ${booking.user_id}, ${booking.workspace_id}, ${booking.booking_date}, ${booking.start_time}, ${booking.end_time}, ${booking.status}, ${booking.created_at})
+      VALUES (${booking.bookingId}, ${booking.bookingName}, ${booking.userId}, ${booking.workspaceId}, ${booking.bookingDate}, ${booking.startTime}, ${booking.endTime}, ${booking.status}, ${booking.createdAt})
     """.update
       .run
       .transact(transactor)
@@ -75,12 +75,12 @@ class BookingRepository[F[_] : Concurrent](transactor: Transactor[F]) extends Bo
   def updateBooking(bookingId: String, updatedBooking: Booking): F[Int] = {
     sql"""
       UPDATE bookings
-      SET booking_name = ${updatedBooking.booking_name},
-          user_id = ${updatedBooking.user_id},
-          workspace_id = ${updatedBooking.workspace_id},
-          booking_date = ${updatedBooking.booking_date},
-          start_time = ${updatedBooking.start_time},
-          end_time = ${updatedBooking.end_time},
+      SET booking_name = ${updatedBooking.bookingName},
+          user_id = ${updatedBooking.userId},
+          workspace_id = ${updatedBooking.workspaceId},
+          booking_date = ${updatedBooking.bookingDate},
+          start_time = ${updatedBooking.startTime},
+          end_time = ${updatedBooking.endTime},
           status = ${updatedBooking.status}
       WHERE booking_id = $bookingId
   """.update
@@ -99,12 +99,12 @@ class BookingRepository[F[_] : Concurrent](transactor: Transactor[F]) extends Bo
   def doesOverlap(booking: Booking): F[Boolean] = {
     sql"""
     SELECT COUNT(*) FROM bookings
-    WHERE workspace_id = ${booking.workspace_id}
-      AND booking_date = ${booking.booking_date}
+    WHERE workspace_id = ${booking.workspaceId}
+      AND booking_date = ${booking.bookingDate}
       AND (
-        (start_time::TIME, end_time::TIME)
+        (startTime::TIME, end_time::TIME)
         OVERLAPS
-        (${booking.start_time}::TIME, ${booking.end_time}::TIME)
+        (${booking.startTime}::TIME, ${booking.endTime}::TIME)
       )
   """.query[Int].unique.transact(transactor).map(_ > 0)
   }
@@ -117,7 +117,7 @@ class BookingRepository[F[_] : Concurrent](transactor: Transactor[F]) extends Bo
       } else {
         sql"""
         INSERT INTO bookings (booking_id, booking_name, user_id, workspace_id, booking_date, start_time, end_time, status, created_at)
-        VALUES (${booking.booking_id}, ${booking.booking_name}, ${booking.user_id}, ${booking.workspace_id}, ${booking.booking_date}, ${booking.start_time}, ${booking.end_time}, ${booking.status}, ${booking.created_at})
+        VALUES (${booking.bookingId}, ${booking.bookingName}, ${booking.userId}, ${booking.workspaceId}, ${booking.bookingDate}, ${booking.startTime}, ${booking.endTime}, ${booking.status}, ${booking.createdAt})
       """.update.run.transact(transactor).map(Right(_))
       }
     }

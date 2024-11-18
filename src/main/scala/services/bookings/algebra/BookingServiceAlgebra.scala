@@ -1,6 +1,6 @@
 package services.bookings.algebra
 
-import models.Booking
+import models.bookings.Booking
 import models.bookings.errors.*
 
 

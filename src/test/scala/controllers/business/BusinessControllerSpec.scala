@@ -51,11 +51,11 @@ object BusinessControllerSpec extends SimpleIOSuite {
     val newBusiness =
       Business(
         id = Some(2),
-        business_id = "business_2",
-        business_name = "New Business 2",
-        contact_number = "02920362341",
-        contact_email = "new_business@gmail.com",
-        created_at = LocalDateTime.of(2024, 10, 5, 15, 0)
+        businessId = "business_2",
+        businessName = "New Business 2",
+        contactNumber = "02920362341",
+        contactEmail = "new_business@gmail.com",
+        createdAt = LocalDateTime.of(2024, 10, 5, 15, 0)
       )
 
     // Create a POST request with the business as JSON
@@ -86,11 +86,11 @@ object BusinessControllerSpec extends SimpleIOSuite {
     val updatedBusiness =
       Business(
         id = Some(1),
-        business_id = "business_1",
-        business_name = "Updated Business",
-        contact_number = "07402209999",
-        contact_email = "updated_business@gmail.com",
-        created_at = LocalDateTime.of(2024, 10, 5, 15, 0)
+        businessId = "business_1",
+        businessName = "Updated Business",
+        contactNumber = "07402209999",
+        contactEmail = "updated_business@gmail.com",
+        createdAt = LocalDateTime.of(2024, 10, 5, 15, 0)
       )
 
     // Create a POST request with the business as JSON

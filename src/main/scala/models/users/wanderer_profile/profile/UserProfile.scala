@@ -9,14 +9,14 @@ import java.time.LocalDateTime
 case class UserProfile(
                         userId: String,
                         userLoginDetails: UserLoginDetails,
-                        first_name: String,
-                        last_name: String,
+                        firstName: String,
+                        lastName: String,
                         userAddress: UserAddress,
-                        contact_number: String,
+                        contactNumber: String,
                         email: String,
                         role: Role,
-                        created_at: LocalDateTime,
-                        updated_at: LocalDateTime
+                        createdAt: LocalDateTime,
+                        updatedAt: LocalDateTime
                       )
 
 object UserProfile {

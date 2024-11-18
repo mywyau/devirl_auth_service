@@ -3,9 +3,11 @@ package services.registration
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.{NonEmptyList, Validated}
 import cats.effect.IO
-import models.auth.{EmailAlreadyExists, PasswordNoSpecialCharacters, UniqueUser, UsernameAlreadyExists}
+import cats.effect.kernel.Ref
 import models.users.*
 import models.users.adts.Wanderer
+import models.users.registration.*
+import models.users.wanderer_personal_details.service.WandererPersonalDetails
 import models.users.wanderer_profile.profile.UserLoginDetails
 import models.users.wanderer_profile.requests.UserSignUpRequest
 import services.auth.constants.RegistrationServiceConstants.*
@@ -16,11 +18,16 @@ import java.time.LocalDateTime
 
 object RegistrationServiceSpec extends SimpleIOSuite {
 
+  // def createMockWandererPersonalDetailsRepo(initialUsers: List[WandererPersonalDetails]): IO[MockWandererPersonalDetailsRepository] =
+  //   Ref.of[IO, List[WandererPersonalDetails]](initialUsers).map(MockWandererPersonalDetailsRepository.apply)
+
   test(".uniqueUsernameAndEmail() - should pass when all fields are unique") {
 
-    val userRepository = new MockUserLoginDetailsRepository() // No users in the database
+    val mockUserRepository = new MockUserLoginDetailsRepository() 
+    val mockWandererAddressRepo = new MockWandererAddressRepository()
+    val mockWandererPersonalDetailsRepository = new MockWandererPersonalDetailsRepository()
     val mockPasswordService = new MockPasswordService(Valid(uniqueRequest.password), "hashedPassword")
-    val service = new RegistrationServiceImpl[IO](userRepository, mockPasswordService) // No password service needed for this test
+    val service = new RegistrationServiceImpl[IO](mockUserRepository,mockWandererAddressRepo, mockWandererPersonalDetailsRepository,  mockPasswordService)
 
     for {
       result <- service.uniqueUsernameAndEmail(uniqueRequest)
@@ -31,10 +38,12 @@ object RegistrationServiceSpec extends SimpleIOSuite {
 
   test(".uniqueUsernameAndEmail() - should fail when username already exists") {
 
-    val userRepository = new MockUserLoginDetailsRepository(Map("existinguser" -> existingUser))
+    val mockUserRepository = new MockUserLoginDetailsRepository(Map("existinguser" -> existingUser))
+    val mockWandererAddressRepo = new MockWandererAddressRepository()
+    val mockWandererPersonalDetailsRepository = new MockWandererPersonalDetailsRepository()
     val mockPasswordService = new MockPasswordService(Valid(uniqueRequest.password), "hashedPassword")
-
-    val service = new RegistrationServiceImpl[IO](userRepository, mockPasswordService)
+    val service = new RegistrationServiceImpl[IO](mockUserRepository, mockWandererAddressRepo, mockWandererPersonalDetailsRepository, mockPasswordService)
+    
     val requestWithDuplicateUsername = uniqueRequest.copy(username = existingUser.username)
 
     for {
@@ -46,9 +55,14 @@ object RegistrationServiceSpec extends SimpleIOSuite {
   }
 
   test(".uniqueUsernameAndEmail() - should fail when email already exists") {
-    val userRepository = new MockUserLoginDetailsRepository(Map("existinguser" -> existingUser))
+    
+    val mockUserRepository = new MockUserLoginDetailsRepository(Map("existinguser" -> existingUser))
+    val mockWandererAddressRepo = new MockWandererAddressRepository()
+    val mockWandererPersonalDetailsRepository = new MockWandererPersonalDetailsRepository()
     val mockPasswordService = new MockPasswordService(Valid(uniqueRequest.password), "hashedPassword")
-    val service = new RegistrationServiceImpl[IO](userRepository, mockPasswordService)
+    
+    val service = new RegistrationServiceImpl[IO](mockUserRepository, mockWandererAddressRepo, mockWandererPersonalDetailsRepository, mockPasswordService)
+
 
     val requestWithDuplicateEmail = uniqueRequest.copy(email = existingUser.email)
     for {
@@ -60,10 +74,13 @@ object RegistrationServiceSpec extends SimpleIOSuite {
   }
 
   test(".uniqueUser() - should fail when multiple fields are not unique") {
-    val userRepository = new MockUserLoginDetailsRepository(Map("existinguser" -> existingUser))
+    
+    val mockUserRepository = new MockUserLoginDetailsRepository(Map("existinguser" -> existingUser))
+    val mockWandererAddressRepo = new MockWandererAddressRepository()
+    val mockWandererPersonalDetailsRepository = new MockWandererPersonalDetailsRepository()
     val mockPasswordService = new MockPasswordService(Valid(uniqueRequest.password), "hashedPassword")
-    val service = new RegistrationServiceImpl[IO](userRepository, mockPasswordService)
-
+    val service = new RegistrationServiceImpl[IO](mockUserRepository, mockWandererAddressRepo, mockWandererPersonalDetailsRepository, mockPasswordService)
+    
     val requestWithMultipleConflicts =
       uniqueRequest.copy(
         username = existingUser.username,
@@ -79,16 +96,18 @@ object RegistrationServiceSpec extends SimpleIOSuite {
 
   test(".registerUser() - should succeed with valid input") {
 
-    val userRepository = new MockUserLoginDetailsRepository()
-    val passwordService = new MockPasswordService(Valid(validRequest.password), "hashedPassword")
-    val service = new RegistrationServiceImpl[IO](userRepository, passwordService)
+    val mockUserRepository = new MockUserLoginDetailsRepository()
+    val mockWandererAddressRepo = new MockWandererAddressRepository()
+    val mockWandererPersonalDetailsRepository = new MockWandererPersonalDetailsRepository()
+    val mockPasswordService = new MockPasswordService(Valid(uniqueRequest.password), "hashedPassword")
+    val service = new RegistrationServiceImpl[IO](mockUserRepository, mockWandererAddressRepo, mockWandererPersonalDetailsRepository, mockPasswordService)
 
 
     service.registerUser(validRequest).map {
       case Valid(user) =>
         expect.all(
           user.username == "newuser",
-          user.password_hash == "hashedPassword",
+          user.passwordHash == "hashedPassword",
           user.email == "newuser@example.com"
         )
       case Invalid(listOfErrors) => failure(s"$listOfErrors")
@@ -99,9 +118,11 @@ object RegistrationServiceSpec extends SimpleIOSuite {
   test(".registerUser() - should fail when password validation fails") {
 
     val mockUserRepository = new MockUserLoginDetailsRepository()
+    val mockWandererAddressRepo = new MockWandererAddressRepository()
+    val mockWandererPersonalDetailsRepository = new MockWandererPersonalDetailsRepository()
     val mockPasswordService = new MockPasswordService(passwordValidationResult = Invalid(List(PasswordNoSpecialCharacters)), hashedPassword = "")
-    val service = new RegistrationServiceImpl[IO](mockUserRepository, mockPasswordService)
-
+    val service = new RegistrationServiceImpl[IO](mockUserRepository, mockWandererAddressRepo, mockWandererPersonalDetailsRepository, mockPasswordService)
+    
     service.registerUser(validRequest).map {
       result =>
         expect(
@@ -114,31 +135,33 @@ object RegistrationServiceSpec extends SimpleIOSuite {
 
     val validRequest: UserSignUpRequest = {
       UserSignUpRequest(
-        user_id = "user_id_1",
+        userId = "user_id_1",
         username = "existinguser",
         password = "ValidPass123!",
         email = "newuser@example.com",
         role = Wanderer,
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
     }
 
     val existingUser: UserLoginDetails = {
       UserLoginDetails(
         id = Some(2),
-        user_id = "user_id_2",
+        userId = "user_id_2",
         username = "existinguser",
-        password_hash = "hashedpassword",
+        passwordHash = "hashedpassword",
         email = "existing@example.com",
         role = Wanderer,
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-        updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
     }
-
+    
     val mockUserRepository = new MockUserLoginDetailsRepository(Map("existinguser" -> existingUser))
+    val mockWandererAddressRepo = new MockWandererAddressRepository()
+    val mockWandererPersonalDetailsRepository = new MockWandererPersonalDetailsRepository()
     val mockPasswordService = new MockPasswordService(Valid(validRequest.password), "hashedPassword")
-    val service = new RegistrationServiceImpl[IO](mockUserRepository, mockPasswordService)
+    val service = new RegistrationServiceImpl[IO](mockUserRepository, mockWandererAddressRepo, mockWandererPersonalDetailsRepository, mockPasswordService)
 
     service.registerUser(validRequest).map {
       result =>
@@ -152,31 +175,33 @@ object RegistrationServiceSpec extends SimpleIOSuite {
 
     val validRequest: UserSignUpRequest = {
       UserSignUpRequest(
-        user_id = "user_id_1",
+        userId = "user_id_1",
         username = "newuser",
         password = "ValidPass123!",
         email = "same_email@example.com",
         role = Wanderer,
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
     }
 
     val existingUser: UserLoginDetails = {
       UserLoginDetails(
         id = Some(2),
-        user_id = "user_id_2",
+        userId = "user_id_2",
         username = "existinguser",
-        password_hash = "hashedpassword",
+        passwordHash = "hashedpassword",
         email = "same_email@example.com",
         role = Wanderer,
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-        updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
     }
 
     val mockUserRepository = new MockUserLoginDetailsRepository(Map("existinguser" -> existingUser))
+    val mockWandererAddressRepo = new MockWandererAddressRepository()
+    val mockWandererPersonalDetailsRepository = new MockWandererPersonalDetailsRepository()
     val mockPasswordService = new MockPasswordService(Valid(validRequest.password), "hashedPassword")
-    val service = new RegistrationServiceImpl[IO](mockUserRepository, mockPasswordService)
+    val service = new RegistrationServiceImpl[IO](mockUserRepository, mockWandererAddressRepo, mockWandererPersonalDetailsRepository, mockPasswordService)
 
     service.registerUser(validRequest).map {
       result =>
@@ -190,31 +215,33 @@ object RegistrationServiceSpec extends SimpleIOSuite {
 
     val validRequest: UserSignUpRequest = {
       UserSignUpRequest(
-        user_id = "user_id_1",
+        userId = "user_id_1",
         username = "same_user_name",
         password = "ValidPass123!",
         email = "same_email@example.com",
         role = Wanderer,
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
     }
 
     val existingUser: UserLoginDetails = {
       UserLoginDetails(
         id = Some(2),
-        user_id = "user_id_2",
+        userId = "user_id_2",
         username = "same_user_name",
-        password_hash = "hashedpassword",
+        passwordHash = "hashedpassword",
         email = "same_email@example.com",
         role = Wanderer,
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-        updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
     }
 
     val mockUserRepository = new MockUserLoginDetailsRepository(Map("same_user_name" -> existingUser))
+    val mockWandererAddressRepo = new MockWandererAddressRepository()
+    val mockWandererPersonalDetailsRepository = new MockWandererPersonalDetailsRepository()
     val mockPasswordService = new MockPasswordService(Valid(validRequest.password), "hashedPassword")
-    val service = new RegistrationServiceImpl[IO](mockUserRepository, mockPasswordService)
+    val service = new RegistrationServiceImpl[IO](mockUserRepository, mockWandererAddressRepo, mockWandererPersonalDetailsRepository, mockPasswordService)
 
     service.registerUser(validRequest).map {
       result =>
@@ -226,10 +253,12 @@ object RegistrationServiceSpec extends SimpleIOSuite {
 
   test(".validateUnique() - should return username already exists error") {
 
-    val userRepository = new MockUserLoginDetailsRepository(Map("existinguser" -> existingUser))
-    val mockPasswordService = new MockPasswordService(Valid(uniqueRequest.password), "hashedPassword")
-
-    val service = new RegistrationServiceImpl[IO](userRepository, mockPasswordService)
+    val mockUserRepository = new MockUserLoginDetailsRepository(Map("existinguser" -> existingUser))
+    val mockWandererAddressRepo = new MockWandererAddressRepository()
+    val mockWandererPersonalDetailsRepository = new MockWandererPersonalDetailsRepository()
+    val mockPasswordService = new MockPasswordService(Valid(validRequest.password), "hashedPassword")
+    val service = new RegistrationServiceImpl[IO](mockUserRepository, mockWandererAddressRepo, mockWandererPersonalDetailsRepository, mockPasswordService)
+    
     val requestWithDuplicateUsername = uniqueRequest.copy(username = existingUser.username)
 
     for {
@@ -241,10 +270,12 @@ object RegistrationServiceSpec extends SimpleIOSuite {
 
   test(".validateUnique() - should return email already exists error") {
 
-    val userRepository = new MockUserLoginDetailsRepository(Map("existinguser" -> existingUser))
+    val mockUserRepository = new MockUserLoginDetailsRepository(Map("existinguser" -> existingUser))
+    val mockWandererAddressRepo = new MockWandererAddressRepository()
+    val mockWandererPersonalDetailsRepository = new MockWandererPersonalDetailsRepository()
     val mockPasswordService = new MockPasswordService(Valid(uniqueRequest.password), "hashedPassword")
-
-    val service = new RegistrationServiceImpl[IO](userRepository, mockPasswordService)
+    val service = new RegistrationServiceImpl[IO](mockUserRepository, mockWandererAddressRepo, mockWandererPersonalDetailsRepository, mockPasswordService)
+    
     val requestWithDuplicateUsername = uniqueRequest.copy(email = existingUser.email)
 
     for {

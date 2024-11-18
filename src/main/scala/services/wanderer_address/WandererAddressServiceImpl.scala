@@ -13,8 +13,8 @@ class WandererAddressServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
                                                                                 wandererAddressRepo: WandererAddressRepositoryAlgebra[F]
                                                                               ) extends WandererAddressServiceAlgebra[F] {
 
-  override def getAddressDetailsByUserId(user_id: String): F[Either[WandererAddressErrors, WandererAddress]] = {
-    wandererAddressRepo.findByUserId(user_id).flatMap {
+  override def getAddressDetailsByUserId(userId: String): F[Either[WandererAddressErrors, WandererAddress]] = {
+    wandererAddressRepo.findByUserId(userId).flatMap {
       case Some(user) =>
         Concurrent[F].pure(Right(user))
       case None =>

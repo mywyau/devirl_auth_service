@@ -1,4 +1,4 @@
-package models.auth
+package models.users.registration
 
 sealed trait RegistrationValidation
 

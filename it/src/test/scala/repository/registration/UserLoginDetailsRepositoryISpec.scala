@@ -1,4 +1,4 @@
-package repository
+package repository.registration
 
 import cats.effect.{IO, Resource}
 import cats.implicits.*
@@ -12,15 +12,13 @@ import weaver.{GlobalRead, IOSuite, ResourceTag}
 
 import java.time.LocalDateTime
 
-// Define test suite using ResourceSuite to share the Transactor[IO] within this file
 class UserLoginDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
 
   type Res = UserLoginDetailsRepositoryImpl[IO] // needed for the shared resource, set the type of 'Res' here to be used in tests
 
-  // Initializes the database schema
   private def initializeSchema(transactor: TransactorResource): Resource[IO, Unit] =
     Resource.eval(
-        sql"""
+      sql"""
         CREATE TABLE IF NOT EXISTS user_login_details (
           id BIGSERIAL PRIMARY KEY,
           user_id VARCHAR(255) NOT NULL,
@@ -33,18 +31,18 @@ class UserLoginDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
         )
       """.update.run.transact(transactor.xa).void *>
         sql"TRUNCATE TABLE user_login_details RESTART IDENTITY".update.run.transact(transactor.xa).void
-      )
+    )
 
   def testUserLoginDetails(id: Option[Int], userId: String, username: String, email: String) =
     UserLoginDetails(
       id = id,
-      user_id = userId,
+      userId = userId,
       username = username,
-      password_hash = "hashedpassword",
+      passwordHash = "hashedpassword",
       email = email,
       role = Wanderer,
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
   private def seedTestUsers(userLoginDetailsRepo: UserLoginDetailsRepositoryImpl[IO]): IO[Unit] = {
@@ -56,7 +54,6 @@ class UserLoginDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
     users.traverse(userLoginDetailsRepo.createUserLoginDetails).void
   }
 
-  // Return the wrapped Transactor resource
   def sharedResource: Resource[IO, UserLoginDetailsRepositoryImpl[IO]] = {
     val setup = for {
       transactor <- global.getOrFailR[TransactorResource]()
@@ -69,24 +66,24 @@ class UserLoginDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
   }
 
 
-  def sampleUser(id: Option[Int],
-                 userId: String,
-                 username: String,
-                 contactNumber: String,
-                 email: String
+  def sampleUser(
+                  id: Option[Int],
+                  userId: String,
+                  username: String,
+                  contactNumber: String,
+                  email: String
                 ) =
     UserLoginDetails(
       id = id,
-      user_id = userId,
+      userId = userId,
       username = username,
-      password_hash = "hashedpassword",
+      passwordHash = "hashedpassword",
       email = email,
       role = Wanderer,
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
-  // Test case to verify user creation and retrieval by username
   test(".createUser() - should insert a new user") { userLoginDetailsRepo =>
 
     val user = sampleUser(Some(4), userId = "user_id_4", username = "mikey4", contactNumber = "07402205071", email = "mikey4@gmail.com")

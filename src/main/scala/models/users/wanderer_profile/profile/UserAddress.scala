@@ -12,8 +12,8 @@ case class UserAddress(
                         country: Option[String],
                         county: Option[String],
                         postcode: Option[String],
-                        created_at: LocalDateTime,
-                        updated_at: LocalDateTime
+                        createdAt: LocalDateTime,
+                        updatedAt: LocalDateTime
                       )
 
 object UserAddress {

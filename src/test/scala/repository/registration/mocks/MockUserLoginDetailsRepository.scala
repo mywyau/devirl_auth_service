@@ -13,8 +13,8 @@ class MockUserLoginDetailsRepository(ref: Ref[IO, Map[String, UserLoginDetails]]
 
   override def createUserLoginDetails(user: UserLoginDetails): IO[Int] =
     ref.modify { users =>
-      if (users.contains(user.user_id)) users -> 0 // User already exists
-      else users.updated(user.user_id, user) -> 1
+      if (users.contains(user.userId)) users -> 0 // User already exists
+      else users.updated(user.userId, user) -> 1
     }
 
   override def findByUserId(userId: String): IO[Option[UserLoginDetails]] =
@@ -46,7 +46,7 @@ class MockUserLoginDetailsRepository(ref: Ref[IO, Map[String, UserLoginDetails]]
         case Some(existingUser) =>
           val updatedUser = existingUser.copy(
             username = username.getOrElse(existingUser.username),
-            password_hash = passwordHash.getOrElse(existingUser.password_hash),
+            passwordHash = passwordHash.getOrElse(existingUser.passwordHash),
             email = email.getOrElse(existingUser.email),
             role = role.getOrElse(existingUser.role)
           )

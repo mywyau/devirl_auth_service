@@ -18,20 +18,20 @@ class MockBusinessRepository extends BusinessRepositoryAlgebra[IO] {
     repository.business = initial
     repository
   }
-  
-  override def getAllBusiness: IO[List[Business]] = 
+
+  override def getAllBusiness: IO[List[Business]] =
     IO.pure(business.values.toList)
-  
-  override def findBusinessById(businessId: String): IO[Option[Business]] = 
+
+  override def findBusinessById(businessId: String): IO[Option[Business]] =
     IO.pure(business.get(businessId))
-  
+
   override def findBusinessByName(businessName: String): IO[Option[Business]] = {
-    IO.pure(business.values.find(_.business_name == businessName))
+    IO.pure(business.values.find(_.businessName == businessName))
   }
 
   // Set a new business
   override def setBusiness(newBusiness: Business): IO[Int] = {
-    business += (newBusiness.business_id -> newBusiness)
+    business += (newBusiness.businessId -> newBusiness)
     IO.pure(1)
   }
 
@@ -64,21 +64,21 @@ object BusinessServiceSpec extends SimpleIOSuite {
   val sampleBusiness_1: Business =
     Business(
       id = Some(1),
-      business_id = "business_1",
-      business_name = "Sample Business 1",
-      contact_number = "07402205071",
-      contact_email = "business_1@gmail.com",
-      created_at = LocalDateTime.of(2024, 10, 5, 15, 0)
+      businessId = "business_1",
+      businessName = "Sample Business 1",
+      contactNumber = "07402205071",
+      contactEmail = "business_1@gmail.com",
+      createdAt = LocalDateTime.of(2024, 10, 5, 15, 0)
     )
 
   val sampleBusiness_2: Business =
     Business(
       id = Some(1),
-      business_id = "business_2",
-      business_name = "Sample Business 2",
-      contact_number = "02920362341",
-      contact_email = "business_2@gmail.com",
-      created_at = LocalDateTime.of(2024, 10, 5, 15, 0)
+      businessId = "business_2",
+      businessName = "Sample Business 2",
+      contactNumber = "02920362341",
+      contactEmail = "business_2@gmail.com",
+      createdAt = LocalDateTime.of(2024, 10, 5, 15, 0)
     )
   // Test case for creating a business
   test("create a new business successfully") {
@@ -112,7 +112,7 @@ object BusinessServiceSpec extends SimpleIOSuite {
   test("update a business") {
     val mockRepository = freshRepository
     val businessService = new BusinessServiceImpl[IO](mockRepository)
-    val updatedBusiness = sampleBusiness_1.copy(business_name = "Updated Business")
+    val updatedBusiness = sampleBusiness_1.copy(businessName = "Updated Business")
     for {
       _ <- mockRepository.setBusiness(sampleBusiness_1)
       result <- businessService.updateBusiness("business_1", updatedBusiness)

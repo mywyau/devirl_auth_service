@@ -5,10 +5,10 @@ import cats.effect.unsafe.implicits.global
 import cats.effect.{Concurrent, IO}
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
-import models.auth.{RegisterEmailErrors, RegisterPasswordErrors, RegisterUsernameErrors}
+import models.users.registration.*
+import models.users.registration.responses.error.RegistrationErrorResponse
 import models.users.wanderer_profile.requests.UserSignUpRequest
 import models.users.wanderer_profile.responses.CreatedUserResponse
-import models.users.registration.responses.error.RegistrationErrorResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
@@ -45,7 +45,7 @@ class RegistrationControllerImpl[F[_] : Concurrent](
               errors.collect {
                 case e: RegisterPasswordErrors => e.errorMessage
               }
-            
+
             val emailErrors =
               errors.collect {
                 case e: RegisterEmailErrors => e.errorMessage

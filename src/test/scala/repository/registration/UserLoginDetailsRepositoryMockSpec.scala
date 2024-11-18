@@ -20,13 +20,13 @@ object UserLoginDetailsRepositoryMockSpec extends SimpleIOSuite {
   def testUserLoginDetails(userId: String, username: String, email: String): UserLoginDetails =
     UserLoginDetails(
       id = None,
-      user_id = userId,
+      userId = userId,
       username = username,
-      password_hash = "hashed_password",
+      passwordHash = "hashed_password",
       email = email,
       role = Wanderer,
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
   test(".createUserLoginDetails - should successfully insert a user") {
@@ -85,7 +85,7 @@ object UserLoginDetailsRepositoryMockSpec extends SimpleIOSuite {
     } yield expect(updated.nonEmpty) and expect(
       fetchedUser.exists { user =>
         user.username == "partial_username" &&
-          user.password_hash == "hashed_password" &&
+          user.passwordHash == "hashed_password" &&
           user.email == "user4@example.com"
       }
     )

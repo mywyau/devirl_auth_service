@@ -7,11 +7,11 @@ import java.time.LocalDateTime
 
 case class Business(
                      id: Option[Int],
-                     business_id: String,
-                     business_name: String,
-                     contact_number: String,
-                     contact_email: String,
-                     created_at: LocalDateTime
+                     businessId: String,
+                     businessName: String,
+                     contactNumber: String,
+                     contactEmail: String,
+                     createdAt: LocalDateTime
                    )
 
 object Business {

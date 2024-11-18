@@ -27,14 +27,14 @@ class WandererProfileServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
     address
       .map(details =>
         UserAddress(
-          userId = details.user_id,
-          street = Some(details.street),
-          city = Some(details.city),
-          country = Some(details.country),
+          userId = details.userId,
+          street = details.street,
+          city = details.city,
+          country = details.country,
           county = details.county,
-          postcode = Some(details.postcode),
-          created_at = details.created_at,
-          updated_at = details.updated_at
+          postcode = details.postcode,
+          createdAt = details.createdAt,
+          updatedAt = details.updatedAt
         )
       )
       .toValidNel(MissingAddress)
@@ -44,22 +44,22 @@ class WandererProfileServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
       .map(
         details =>
           UserPersonalDetails(
-            user_id = details.user_id,
-            first_name = Some(details.first_name),
-            last_name = Some(details.last_name),
-            contact_number = Some(details.contact_number),
-            email = Some(details.email),
-            company = Some(details.company),
-            created_at = details.created_at,
-            updated_at = details.updated_at
+            userId = details.userId,
+            firstName = details.firstName,
+            lastName = details.lastName,
+            contactNumber = details.contactNumber,
+            email = details.email,
+            company = details.company,
+            createdAt = details.createdAt,
+            updatedAt = details.updatedAt
           )
       ).toValidNel(MissingPersonalDetails)
 
-  override def createProfile(user_id: String): F[ValidatedNel[WandererProfileErrors, WandererUserProfile]] = {
+  override def createProfile(userId: String): F[ValidatedNel[WandererProfileErrors, WandererUserProfile]] = {
     for {
-      loginDetailsOpt <- userLoginDetailsRepo.findByUserId(user_id)
-      addressOpt <- wandererAddressRepo.findByUserId(user_id)
-      personalDetailsOpt <- wandererPersonalDetailsRepo.findByUserId(user_id)
+      loginDetailsOpt <- userLoginDetailsRepo.findByUserId(userId)
+      addressOpt <- wandererAddressRepo.findByUserId(userId)
+      personalDetailsOpt <- wandererPersonalDetailsRepo.findByUserId(userId)
     } yield {
       (
         validateLoginDetails(loginDetailsOpt),
@@ -67,13 +67,13 @@ class WandererProfileServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
         validatePersonalDetails(personalDetailsOpt)
       ).mapN { (loginDetails, userAddress, personalDetails) =>
         WandererUserProfile(
-          userId = user_id,
+          userId = userId,
           userLoginDetails = Some(loginDetails),
           userPersonalDetails = Some(personalDetails),
           userAddress = Some(userAddress),
           role = Some(loginDetails.role),
-          created_at = loginDetails.created_at,
-          updated_at = loginDetails.updated_at
+          createdAt = loginDetails.createdAt,
+          updatedAt = loginDetails.updatedAt
         )
       }
     }

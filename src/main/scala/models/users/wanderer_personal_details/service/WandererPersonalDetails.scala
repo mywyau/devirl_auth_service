@@ -8,14 +8,14 @@ import java.time.LocalDateTime
 
 case class WandererPersonalDetails(
                                     id: Option[Int],
-                                    user_id: String,
-                                    first_name: String,
-                                    last_name: String,
-                                    contact_number: String,
-                                    email: String,
-                                    company: String,
-                                    created_at: LocalDateTime,
-                                    updated_at: LocalDateTime
+                                    userId: String,
+                                    firstName: Option[String],
+                                    lastName: Option[String],
+                                    contactNumber: Option[String],
+                                    email: Option[String],
+                                    company: Option[String],
+                                    createdAt: LocalDateTime,
+                                    updatedAt: LocalDateTime
                                   )
 
 object WandererPersonalDetails {

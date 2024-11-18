@@ -62,7 +62,7 @@ class BusinessRepository[F[_] : Concurrent](transactor: Transactor[F]) extends B
   def setBusiness(business: Business): F[Int] = {
     sql"""
       INSERT INTO business (business_id, business_name, contact_number, contact_email, created_at)
-      VALUES (${business.business_id}, ${business.business_name}, ${business.contact_number}, ${business.contact_email}, ${business.created_at})
+      VALUES (${business.businessId}, ${business.businessName}, ${business.contactNumber}, ${business.contactEmail}, ${business.createdAt})
     """.update
       .run
       .transact(transactor)
@@ -72,10 +72,10 @@ class BusinessRepository[F[_] : Concurrent](transactor: Transactor[F]) extends B
   def updateBusiness(businessId: String, updatedBusiness: Business): F[Int] = {
     sql"""
       UPDATE business
-      SET business_name = ${updatedBusiness.business_name},
-          contact_number = ${updatedBusiness.contact_number},
-          contact_email = ${updatedBusiness.contact_email},
-          created_at = ${updatedBusiness.created_at},
+      SET business_name = ${updatedBusiness.businessName},
+          contact_number = ${updatedBusiness.contactNumber},
+          contact_email = ${updatedBusiness.contactEmail},
+          createdAt = ${updatedBusiness.createdAt},
       WHERE business_id = $businessId
   """.update
       .run

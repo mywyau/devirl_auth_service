@@ -23,7 +23,7 @@ class MockWorkspaceRepository extends WorkspaceRepositoryAlgebra[IO] {
   }
 
   override def setWorkspace(newWorkspace: Workspace): IO[Int] = {
-    workspace += (newWorkspace.workspace_id -> newWorkspace)
+    workspace += (newWorkspace.workspaceId -> newWorkspace)
     IO.pure(1)
   }
 

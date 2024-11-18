@@ -45,7 +45,7 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
   override def createUserProfile(user: UserProfile): F[Int] = {
     sql"""
       INSERT INTO user_profile (
-        userId,
+        user_id,
         username,
         password_hash,
         first_name,
@@ -63,18 +63,18 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
       VALUES (
               ${user.userId},
               ${user.userLoginDetails.username},
-              ${user.userLoginDetails.password_hash},
-              ${user.first_name},
-              ${user.last_name},
+              ${user.userLoginDetails.passwordHash},
+              ${user.firstName},
+              ${user.lastName},
               ${user.userAddress.street},
               ${user.userAddress.city},
               ${user.userAddress.country},
               ${user.userAddress.county},
               ${user.userAddress.postcode},
-              ${user.contact_number},
+              ${user.contactNumber},
               ${user.email},
               ${user.role.toString},
-              ${user.created_at}
+              ${user.createdAt}
       )""".update
       .run
       .transact(transactor)
@@ -97,16 +97,16 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
             userLoginDetails =
               UserLoginDetails(
                 id = Some(user.id),
-                user_id = user.userId,
+                userId = user.userId,
                 username = user.username,
-                password_hash = user.password_hash,
+                passwordHash = user.passwordHash,
                 email = user.email,
                 role = user.role,
-                created_at = user.created_at,
-                updated_at = user.updated_at
+                createdAt = user.createdAt,
+                updatedAt = user.updatedAt
               ),
-            first_name = user.first_name,
-            last_name = user.last_name,
+            firstName = user.firstName,
+            lastName = user.lastName,
             userAddress =
               UserAddress(
                 userId = user.userId,
@@ -115,14 +115,14 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
                 country = Some(user.country),
                 county = user.county,
                 postcode = Some(user.postcode),
-                created_at = user.created_at,
-                updated_at = user.updated_at
+                createdAt = user.createdAt,
+                updatedAt = user.updatedAt
               ),
-            contact_number = user.contact_number,
+            contactNumber = user.contactNumber,
             email = user.email,
             role = user.role,
-            created_at = user.created_at,
-            updated_at = user.updated_at
+            createdAt = user.createdAt,
+            updatedAt = user.updatedAt
           ))
       case None =>
         None
@@ -146,16 +146,16 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
             userLoginDetails =
               UserLoginDetails(
                 id = Some(user.id),
-                user_id = user.userId,
+                userId = user.userId,
                 username = user.username,
-                password_hash = user.password_hash,
+                passwordHash = user.passwordHash,
                 email = user.email,
                 role = user.role,
-                created_at = user.created_at,
-                updated_at = user.updated_at
+                createdAt = user.createdAt,
+                updatedAt = user.updatedAt
               ),
-            first_name = user.first_name,
-            last_name = user.last_name,
+            firstName = user.firstName,
+            lastName = user.lastName,
             userAddress =
               UserAddress(
                 userId = user.userId,
@@ -164,14 +164,14 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
                 country = Some(user.country),
                 county = user.county,
                 postcode = Some(user.postcode),
-                created_at = user.created_at,
-                updated_at = user.updated_at
+                createdAt = user.createdAt,
+                updatedAt = user.updatedAt
               ),
-            contact_number = user.contact_number,
+            contactNumber = user.contactNumber,
             email = user.email,
             role = user.role,
-            created_at = user.created_at,
-            updated_at = user.updated_at
+            createdAt = user.createdAt,
+            updatedAt = user.updatedAt
           ))
       case None =>
         None
@@ -194,16 +194,16 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
           userLoginDetails =
             UserLoginDetails(
               id = Some(user.id),
-              user_id = user.userId,
+              userId = user.userId,
               username = user.username,
-              password_hash = user.password_hash,
+              passwordHash = user.passwordHash,
               email = user.email,
               role = user.role,
-              created_at = user.created_at,
-              updated_at = user.updated_at
+              createdAt = user.createdAt,
+              updatedAt = user.updatedAt
             ),
-          first_name = user.first_name,
-          last_name = user.last_name,
+          firstName = user.firstName,
+          lastName = user.lastName,
           userAddress =
             UserAddress(
               userId = user.userId,
@@ -212,14 +212,14 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
               country = Some(user.country),
               county = user.county,
               postcode = Some(user.postcode),
-              created_at = user.created_at,
-              updated_at = user.updated_at
+              createdAt = user.createdAt,
+              updatedAt = user.updatedAt
             ),
-          contact_number = user.contact_number,
+          contactNumber = user.contactNumber,
           email = user.email,
           role = user.role,
-          created_at = user.created_at,
-          updated_at = user.updated_at
+          createdAt = user.createdAt,
+          updatedAt = user.updatedAt
         ))
       case None =>
         None
@@ -242,16 +242,16 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
           userLoginDetails =
             UserLoginDetails(
               id = Some(user.id),
-              user_id = user.userId,
+              userId = user.userId,
               username = user.username,
-              password_hash = user.password_hash,
+              passwordHash = user.passwordHash,
               email = user.email,
               role = user.role,
-              created_at = user.created_at,
-              updated_at = user.updated_at
+              createdAt = user.createdAt,
+              updatedAt = user.updatedAt
             ),
-          first_name = user.first_name,
-          last_name = user.last_name,
+          firstName = user.firstName,
+          lastName = user.lastName,
           userAddress =
             UserAddress(
               userId = user.userId,
@@ -260,14 +260,14 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
               country = Some(user.country),
               county = user.county,
               postcode = Some(user.postcode),
-              created_at = user.created_at,
-              updated_at = user.updated_at
+              createdAt = user.createdAt,
+              updatedAt = user.updatedAt
             ),
-          contact_number = user.contact_number,
+          contactNumber = user.contactNumber,
           email = user.email,
           role = user.role,
-          created_at = user.created_at,
-          updated_at = user.updated_at
+          createdAt = user.createdAt,
+          updatedAt = user.updatedAt
         ))
       case None =>
         None
@@ -302,16 +302,16 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
           userLoginDetails =
             UserLoginDetails(
               id = Some(userSql.id),
-              user_id = userSql.userId,
+              userId = userSql.userId,
               username = userSql.username,
-              password_hash = userSql.password_hash,
+              passwordHash = userSql.passwordHash,
               email = userSql.email,
               role = userSql.role,
-              created_at = userSql.created_at,
-              updated_at = userSql.updated_at
+              createdAt = userSql.createdAt,
+              updatedAt = userSql.updatedAt
             ),
-          first_name = userSql.first_name,
-          last_name = userSql.last_name,
+          firstName = userSql.firstName,
+          lastName = userSql.lastName,
           userAddress =
             UserAddress(
               userId = userSql.userId,
@@ -320,14 +320,14 @@ class UserProfileRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
               country = Some(userSql.country),
               county = userSql.county,
               postcode = Some(userSql.postcode),
-              created_at = userSql.created_at,
-              updated_at = userSql.updated_at
+              createdAt = userSql.createdAt,
+              updatedAt = userSql.updatedAt
             ),
-          contact_number = userSql.contact_number,
+          contactNumber = userSql.contactNumber,
           email = userSql.email,
           role = userSql.role,
-          created_at = userSql.created_at,
-          updated_at = userSql.updated_at
+          createdAt = userSql.createdAt,
+          updatedAt = userSql.updatedAt
         )
       }
 

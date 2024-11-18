@@ -14,7 +14,7 @@ case class MockWandererAddressRepository(ref: Ref[IO, List[WandererAddress]]) ex
     ref.modify(addresses => (wandererAddress :: addresses, 1))
 
   override def findByUserId(userId: String): IO[Option[WandererAddress]] =
-    ref.get.map(_.find(_.user_id == userId))
+    ref.get.map(_.find(_.userId == userId))
 
   override def updateAddressDynamic(
                                      userId: String,
@@ -25,23 +25,26 @@ case class MockWandererAddressRepository(ref: Ref[IO, List[WandererAddress]]) ex
                                      postcode: Option[String]
                                    ): IO[Option[WandererAddress]] =
     ref.modify { addresses =>
-      addresses.find(_.user_id == userId) match {
+      addresses.find(_.userId == userId) match {
         case Some(existingAddress) =>
           val updatedAddress =
             existingAddress.copy(
-              street = street.getOrElse(existingAddress.street),
-              city = city.getOrElse(existingAddress.city),
-              country = country.getOrElse(existingAddress.country),
-              county = county.orElse(existingAddress.county),
-              postcode = postcode.getOrElse(existingAddress.postcode),
-              updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0) //TODO: Update timestamp to reflect the change and possibly test
+              street = street,
+              city = city,
+              country = country,
+              county = county,
+              postcode = postcode,
+              updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0) //TODO: Update timestamp to reflect the change and possibly test
             )
           (addresses.map {
-            case addr if addr.user_id == userId => updatedAddress
+            case addr if addr.userId == userId => updatedAddress
             case addr => addr
           }, Some(updatedAddress))
         case None =>
           (addresses, None) // No address found for the given userId
       }
     }
+
+  override def createRegistrationWandererAddress(userId: String): IO[Int] =
+    IO.pure(1)
 }

@@ -1,4 +1,4 @@
-package models.users.wanderer_address
+package models.users.wanderer
 
 import cats.effect.IO
 import io.circe.*
@@ -14,14 +14,14 @@ object WanderAddressSpec extends SimpleIOSuite {
   val sample_address: WandererAddress =
     WandererAddress(
       id = Some(1),
-      user_id = "user_id_1",
-      street = "fake street 1",
-      city = "fake city 1",
-      country = "UK",
+      userId = "user_id_1",
+      street = Some("fake street 1"),
+      city = Some("fake city 1"),
+      country = Some("UK"),
       county = Some("County 1"),
-      postcode = "CF3 3NJ",
-      created_at = LocalDateTime.of(2024, 10, 10, 10, 0),
-      updated_at = LocalDateTime.of(2024, 10, 10, 10, 0)
+      postcode = Some("CF3 3NJ"),
+      createdAt = LocalDateTime.of(2024, 10, 10, 10, 0),
+      updatedAt = LocalDateTime.of(2024, 10, 10, 10, 0)
     )
 
   test("WandererAddress model encodes correctly to JSON") {
@@ -31,14 +31,14 @@ object WanderAddressSpec extends SimpleIOSuite {
     val expectedJson =
       """{
         |   "id" : 1,
-        |   "user_id" : "user_id_1",
+        |   "userId" : "user_id_1",
         |   "street" : "fake street 1",
         |   "city" : "fake city 1",
         |   "country" : "UK",
         |   "county" : "County 1",
         |   "postcode" : "CF3 3NJ",
-        |   "created_at" : "2024-10-10T10:00:00",
-        |   "updated_at" : "2024-10-10T10:00:00"
+        |   "createdAt" : "2024-10-10T10:00:00",
+        |   "updatedAt" : "2024-10-10T10:00:00"
         |}""".stripMargin
 
     val expectedResult: Json = parse(expectedJson).getOrElse(Json.Null)

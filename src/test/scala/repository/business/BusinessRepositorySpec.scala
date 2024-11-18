@@ -12,21 +12,21 @@ object BusinessRepositorySpec extends SimpleIOSuite {
   val sampleBusiness_1: Business =
     Business(
       id = Some(1),
-      business_id = "business_1",
-      business_name = "Sample Business 1",
-      contact_number = "07402205071",
-      contact_email = "business_1@gmail.com",
-      created_at = LocalDateTime.of(2024, 10, 5, 15, 0)
+      businessId = "business_1",
+      businessName = "Sample Business 1",
+      contactNumber = "07402205071",
+      contactEmail = "business_1@gmail.com",
+      createdAt = LocalDateTime.of(2024, 10, 5, 15, 0)
     )
 
   val sampleBusiness_2: Business =
     Business(
       id = Some(1),
-      business_id = "business_2",
-      business_name = "Sample Business 2",
-      contact_number = "02920362341",
-      contact_email = "business_2@gmail.com",
-      created_at = LocalDateTime.of(2024, 10, 5, 15, 0)
+      businessId = "business_2",
+      businessName = "Sample Business 2",
+      contactNumber = "02920362341",
+      contactEmail = "business_2@gmail.com",
+      createdAt = LocalDateTime.of(2024, 10, 5, 15, 0)
     )
 
   // Test case for creating a business
@@ -51,7 +51,7 @@ object BusinessRepositorySpec extends SimpleIOSuite {
 
   test(".updateBusiness() - update a business") {
     val mockRepository = freshRepository
-    val updatedBusiness = sampleBusiness_1.copy(business_name = "Updated Business")
+    val updatedBusiness = sampleBusiness_1.copy(businessName = "Updated Business")
     for {
       _ <- mockRepository.setBusiness(sampleBusiness_1)
       _ <- mockRepository.setBusiness(sampleBusiness_2)

@@ -50,18 +50,18 @@ object WorkspaceControllerSpec extends SimpleIOSuite {
     val newWorkspace =
       Workspace(
         id = Some(1),
-        business_id = "BUS123456",
-        workspace_id = "WORK12346",
+        businessId = "BUS123456",
+        workspaceId = "WORK12346",
         name = "Desk 2",
         description = "A modern coworking space with all amenities for tech startups.",
         address = "123 Main Street",
         city = "New York",
         country = "USA",
         postcode = "10001",
-        price_per_day = BigDecimal(75.00),
+        pricePerDay = BigDecimal(75.00),
         latitude = BigDecimal(40.7128),
         longitude = BigDecimal(-74.0060),
-        created_at = LocalDateTime.of(2024, 10, 10, 10, 0)
+        createdAt = LocalDateTime.of(2024, 10, 10, 10, 0)
       )
 
     // Create a POST request with the workspace as JSON
@@ -92,18 +92,18 @@ object WorkspaceControllerSpec extends SimpleIOSuite {
     val updatedWorkspace =
       Workspace(
         id = Some(1),
-        business_id = "BUS123456",
-        workspace_id = "WORK12345",
+        businessId = "BUS123456",
+        workspaceId = "WORK12345",
         name = "Desk 1",
         description = "Updated the description for desk 1",
         address = "123 Main Street",
         city = "New York",
         country = "USA",
         postcode = "10001",
-        price_per_day = BigDecimal(75.00),
+        pricePerDay = BigDecimal(75.00),
         latitude = BigDecimal(40.7128),
         longitude = BigDecimal(-74.0060),
-        created_at = LocalDateTime.of(2024, 10, 10, 10, 0)
+        createdAt = LocalDateTime.of(2024, 10, 10, 10, 0)
       )
 
     // Create a PUT request with the workspace as JSON

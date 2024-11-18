@@ -12,8 +12,8 @@ case class WandererUserProfile(
                                 userPersonalDetails: Option[UserPersonalDetails],
                                 userAddress: Option[UserAddress],
                                 role: Option[Role],
-                                created_at: LocalDateTime,
-                                updated_at: LocalDateTime
+                                createdAt: LocalDateTime,
+                                updatedAt: LocalDateTime
                               )
 
 object WandererUserProfile {

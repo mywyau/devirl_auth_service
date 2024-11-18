@@ -8,7 +8,7 @@ import models.users.wanderer_profile.requests.*
 
 trait WandererProfileServiceAlgebra[F[_]] {
 
-  def createProfile(user_id: String): F[ValidatedNel[WandererProfileErrors, WandererUserProfile]]
+  def createProfile(userId: String): F[ValidatedNel[WandererProfileErrors, WandererUserProfile]]
 
   def updateProfile(
                      userId: String,

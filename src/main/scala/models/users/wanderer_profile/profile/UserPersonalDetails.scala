@@ -6,14 +6,14 @@ import io.circe.{Decoder, Encoder}
 import java.time.LocalDateTime
 
 case class UserPersonalDetails(
-                                user_id: String,
-                                first_name: Option[String],
-                                last_name: Option[String],
-                                contact_number: Option[String],
+                                userId: String,
+                                firstName: Option[String],
+                                lastName: Option[String],
+                                contactNumber: Option[String],
                                 email: Option[String],
                                 company: Option[String],
-                                created_at: LocalDateTime,
-                                updated_at: LocalDateTime
+                                createdAt: LocalDateTime,
+                                updatedAt: LocalDateTime
                               )
 
 object UserPersonalDetails {

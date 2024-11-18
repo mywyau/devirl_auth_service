@@ -5,9 +5,10 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.effect.{Concurrent, IO}
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
+import models.responses.ErrorResponse
 import models.users.wanderer_profile.errors.*
 import models.users.wanderer_profile.requests.{UpdateProfileRequest, UserSignUpRequest}
-import models.users.wanderer_profile.responses.error.{ErrorResponse, WandererProfileErrorResponse}
+import models.users.wanderer_profile.responses.error.WandererProfileErrorResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
@@ -28,8 +29,8 @@ class WandererProfileControllerImpl[F[_] : Concurrent](
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
-    case GET -> Root / "wanderer" / "user" / "profile" / user_id =>
-      wandererProfileService.createProfile(user_id).flatMap {
+    case GET -> Root / "wanderer" / "user" / "profile" / userId =>
+      wandererProfileService.createProfile(userId).flatMap {
         case Valid(userProfile) =>
           Ok(userProfile.asJson)
         case Invalid(errors) =>
@@ -65,7 +66,7 @@ class WandererProfileControllerImpl[F[_] : Concurrent](
     case req@PUT -> Root / "wanderer" / "user" / "profile" / userId =>
       IO(println(s"Received a PUT /wanderer/user/profile/$userId request")).unsafeRunSync() // Print immediately
       req.decode[UpdateProfileRequest] { request =>
-        IO(println(s"Received UserSignUpRequest: $request")).unsafeRunSync() // Log incoming payload
+        IO(println(s"Received UpdateProfileRequest: $request")).unsafeRunSync() // Log incoming payload
         for {
           updatedProfile <-
             wandererProfileService.updateProfile(

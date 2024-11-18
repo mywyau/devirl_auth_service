@@ -23,12 +23,12 @@ class MockBusinessRepository extends BusinessRepositoryAlgebra[IO] {
 
   // Find business by name (This is corrected to search through the values)
   override def findBusinessByName(businessName: String): IO[Option[Business]] = {
-    IO.pure(business.values.find(_.business_name == businessName))
+    IO.pure(business.values.find(_.businessName == businessName))
   }
 
   // Set a new business
   override def setBusiness(newBusiness: Business): IO[Int] = {
-    business += (newBusiness.business_id -> newBusiness)
+    business += (newBusiness.businessId -> newBusiness)
     IO.pure(1)
   }
 

@@ -12,8 +12,8 @@ import services.wanderer_profile.WandererProfileServiceAlgebra
 class MockWandererProfileService(userProfileData: Map[String, WandererUserProfile])
   extends WandererProfileServiceAlgebra[IO] {
 
-  override def createProfile(user_id: String): IO[ValidatedNel[WandererProfileErrors, WandererUserProfile]] = {
-    userProfileData.get(user_id) match {
+  override def createProfile(userId: String): IO[ValidatedNel[WandererProfileErrors, WandererUserProfile]] = {
+    userProfileData.get(userId) match {
       case Some(profile) => IO.pure(Valid(profile))
       case None => IO.pure(Invalid(NonEmptyList.of(UserIdNotFound)))
     }
@@ -30,7 +30,7 @@ class MockWandererProfileService(userProfileData: Map[String, WandererUserProfil
         userLoginDetails = loginDetailsUpdate.flatMap { ld =>
           profile.userLoginDetails.map(_.copy(
             username = ld.username.getOrElse(profile.userLoginDetails.get.username),
-            password_hash = ld.passwordHash.getOrElse(profile.userLoginDetails.get.password_hash),
+            passwordHash = ld.passwordHash.getOrElse(profile.userLoginDetails.get.passwordHash),
             email = ld.email.getOrElse(profile.userLoginDetails.get.email)
           ))
         }.orElse(profile.userLoginDetails),
@@ -45,9 +45,9 @@ class MockWandererProfileService(userProfileData: Map[String, WandererUserProfil
         }.orElse(profile.userAddress),
         userPersonalDetails = personalDetailsUpdate.flatMap { pd =>
           profile.userPersonalDetails.map(_.copy(
-            first_name = pd.firstName.orElse(profile.userPersonalDetails.flatMap(_.first_name)),
-            last_name = pd.lastName.orElse(profile.userPersonalDetails.flatMap(_.last_name)),
-            contact_number = pd.contactNumber.orElse(profile.userPersonalDetails.flatMap(_.contact_number)),
+            firstName = pd.firstName.orElse(profile.userPersonalDetails.flatMap(_.firstName)),
+            lastName = pd.lastName.orElse(profile.userPersonalDetails.flatMap(_.lastName)),
+            contactNumber = pd.contactNumber.orElse(profile.userPersonalDetails.flatMap(_.contactNumber)),
             email = pd.email.orElse(profile.userPersonalDetails.flatMap(_.email)),
             company = pd.company.orElse(profile.userPersonalDetails.flatMap(_.company))
           ))

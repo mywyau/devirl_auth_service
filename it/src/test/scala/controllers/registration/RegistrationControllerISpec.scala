@@ -1,15 +1,13 @@
-package controllers
+package controllers.registration
 
 import cats.effect.*
 import com.comcast.ip4s.{ipv4, port}
-import controllers.registration.RegistrationController
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.syntax.*
 import models.users.*
 import models.users.adts.Wanderer
 import models.users.registration.responses.error.RegistrationErrorResponse
-import models.users.wanderer_profile.profile.UserProfile
 import models.users.wanderer_profile.requests.UserSignUpRequest
 import models.users.wanderer_profile.responses.CreatedUserResponse
 import org.http4s.*
@@ -19,15 +17,13 @@ import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
-import repositories.users.UserLoginDetailsRepositoryImpl
-import services.auth.*
-import services.auth.algebra.*
+import repositories.users.{UserLoginDetailsRepositoryImpl, WandererAddressRepositoryImpl, WandererPersonalDetailsRepositoryImpl}
 import services.password.PasswordServiceImpl
 import services.registration.RegistrationServiceImpl
 import shared.{HttpClientResource, TransactorResource}
 import weaver.*
 
-import java.time.{Instant, LocalDateTime}
+import java.time.LocalDateTime
 
 class RegistrationControllerISpec(global: GlobalRead) extends IOSuite {
 
@@ -41,9 +37,19 @@ class RegistrationControllerISpec(global: GlobalRead) extends IOSuite {
       .withHttpApp(router.orNotFound)
       .build
 
-  //   sbt "it/testOnly *WandererAddressControllerISpec* cashew-it.ControllerSharedResource"
+  def createController(transactor: Transactor[IO]): HttpRoutes[IO] = {
+    val passwordService = new PasswordServiceImpl[IO]()
+    val userLoginDetailsRepo = new UserLoginDetailsRepositoryImpl[IO](transactor)
+    val wandererAddressRepo = new WandererAddressRepositoryImpl[IO](transactor)
+    val wandererPersonalDetailsRepo = new WandererPersonalDetailsRepositoryImpl[IO](transactor)
+    val registrationService = new RegistrationServiceImpl[IO](userLoginDetailsRepo, wandererAddressRepo, wandererPersonalDetailsRepo, passwordService)
+    val registrationController = RegistrationController(registrationService)
 
-  // Shared resource setup: includes the server and client
+    Router(
+      "/cashew" -> registrationController.routes
+    )
+  }
+
   def sharedResource: Resource[IO, Res] = {
     for {
       transactor <- global.getOrFailR[TransactorResource]()
@@ -61,36 +67,16 @@ class RegistrationControllerISpec(global: GlobalRead) extends IOSuite {
           )
         """.update.run.transact(transactor.xa).void
       )
-      _ <- Resource.eval(sql"DELETE FROM user_login_details".update.run.transact(transactor.xa).void)
+      _ <- Resource.eval(
+        sql"TRUNCATE TABLE user_login_details RESTART IDENTITY"
+          .update.run.transact(transactor.xa).void
+      )
       client <- global.getOrFailR[HttpClientResource]()
       routes = createController(transactor.xa)
       server <- createServer(routes)
     } yield (transactor, client)
   }
 
-  object MockTokenService extends TokenServiceAlgebra[IO] {
-
-    override def invalidateToken(token: String): IO[Boolean] = IO.pure(token == "valid_token")
-
-    override def refreshAccessToken(token: String): IO[Option[String]] =
-      IO.pure(if (token == "refresh_token") Some("new_token") else None)
-
-    override def createToken(user: UserProfile, expiration: Instant): IO[String] = IO.pure("mock_token")
-
-    override def validateToken(token: String): IO[Either[TokenStatus, String]] = IO.pure(Right("user_id"))
-  }
-
-  // Set up actual service implementations using the transactor resource
-  def createController(transactor: Transactor[IO]): HttpRoutes[IO] = {
-    val passwordService = new PasswordServiceImpl[IO]()
-    val userLoginDetailsRepository = new UserLoginDetailsRepositoryImpl[IO](transactor)
-    val registrationService = new RegistrationServiceImpl[IO](userLoginDetailsRepository, passwordService)
-    val registrationController = RegistrationController(registrationService)
-
-    Router(
-      "/cashew" -> registrationController.routes
-    )
-  }
 
   test("POST - /cashew/register should create a new user") { (transactorResource, log) =>
 
@@ -99,12 +85,12 @@ class RegistrationControllerISpec(global: GlobalRead) extends IOSuite {
 
     val signupRequest =
       UserSignUpRequest(
-        user_id = "user_id",
+        userId = "user_id",
         username = "newuser",
         password = "ValidPass123@",
         email = "newuser@example.com",
         role = Wanderer,
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       ).asJson
 
     val request = Request[IO](POST, uri"http://127.0.0.1:9999/cashew/register").withEntity(signupRequest)
@@ -126,12 +112,12 @@ class RegistrationControllerISpec(global: GlobalRead) extends IOSuite {
 
     val signupRequest =
       UserSignUpRequest(
-        user_id = "user_1337",
+        userId = "user_1337",
         username = "newuser_1337",
         password = "ValidPass123@",
         email = "newuser_1337@example.com",
         role = Wanderer,
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       ).asJson
 
     val request = Request[IO](POST, uri"http://127.0.0.1:9999/cashew/register").withEntity(signupRequest)

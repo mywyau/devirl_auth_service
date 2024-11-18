@@ -1,7 +1,7 @@
 package repository.bookings
 
-import models._
-import models.bookings.Confirmed
+import models.*
+import models.bookings.{Booking, Confirmed}
 import weaver.SimpleIOSuite
 
 import java.time.{LocalDate, LocalDateTime}
@@ -9,34 +9,33 @@ import java.time.{LocalDate, LocalDateTime}
 object BookingRepositorySpec extends SimpleIOSuite {
 
   def freshRepository = new MockBookingRepository
-
-  // Sample booking data
+  
   val sampleBooking_1: Booking =
     Booking(
       id = Some(1),
-      booking_id = "booking_1",
-      booking_name = "Sample Booking 1",
-      user_id = 1,
-      workspace_id = 1,
-      booking_date = LocalDate.of(2024, 10, 10),
-      start_time = LocalDateTime.of(2024, 10, 10, 9, 0),
-      end_time = LocalDateTime.of(2024, 10, 10, 12, 0),
+      bookingId = "booking_1",
+      bookingName = "Sample Booking 1",
+      userId = 1,
+      workspaceId = 1,
+      bookingDate = LocalDate.of(2024, 10, 10),
+      startTime = LocalDateTime.of(2024, 10, 10, 9, 0),
+      endTime = LocalDateTime.of(2024, 10, 10, 12, 0),
       status = Confirmed,
-      created_at = LocalDateTime.of(2024, 10, 5, 15, 0)
+      createdAt = LocalDateTime.of(2024, 10, 5, 15, 0)
     )
 
   val sampleBooking_2: Booking =
     Booking(
       id = Some(2),
-      booking_id = "booking_2",
-      booking_name = "Sample Booking 2",
-      user_id = 2,
-      workspace_id = 1,
-      booking_date = LocalDate.of(2024, 10, 10),
-      start_time = LocalDateTime.of(2024, 10, 10, 13, 0),
-      end_time = LocalDateTime.of(2024, 10, 10, 15, 0),
+      bookingId = "booking_2",
+      bookingName = "Sample Booking 2",
+      userId = 2,
+      workspaceId = 1,
+      bookingDate = LocalDate.of(2024, 10, 10),
+      startTime = LocalDateTime.of(2024, 10, 10, 13, 0),
+      endTime = LocalDateTime.of(2024, 10, 10, 15, 0),
       status = Confirmed,
-      created_at = LocalDateTime.of(2024, 10, 5, 16, 0)
+      createdAt = LocalDateTime.of(2024, 10, 5, 16, 0)
     )
 
   // Test case for creating a booking
@@ -61,7 +60,7 @@ object BookingRepositorySpec extends SimpleIOSuite {
 
   test(".updateBooking() - update a booking") {
     val mockRepository = freshRepository
-    val updatedBooking = sampleBooking_1.copy(booking_name = "Updated Booking")
+    val updatedBooking = sampleBooking_1.copy(bookingName = "Updated Booking")
     for {
       _ <- mockRepository.setBooking(sampleBooking_1)
       _ <- mockRepository.setBooking(sampleBooking_2)

@@ -20,18 +20,18 @@ class MockWorkspaceService extends WorkspaceServiceAlgebra[IO] {
   val sample_workspace1: Workspace =
     Workspace(
       id = Some(1),
-      business_id = "BUS123456",
-      workspace_id = "WORK12345",
+      businessId = "BUS123456",
+      workspaceId = "WORK12345",
       name = "Desk 1",
       description = "A modern coworking space with all amenities for tech startups.",
       address = "123 Main Street",
       city = "New York",
       country = "USA",
       postcode = "10001",
-      price_per_day = BigDecimal(75.00),
+      pricePerDay = BigDecimal(75.00),
       latitude = BigDecimal(40.7128),
       longitude = BigDecimal(-74.0060),
-      created_at = LocalDateTime.of(2024, 10, 10, 10, 0)
+      createdAt = LocalDateTime.of(2024, 10, 10, 10, 0)
     )
 
   override def findWorkspaceById(workspaceId: String): IO[Either[WorkspaceValidationError, Workspace]] =

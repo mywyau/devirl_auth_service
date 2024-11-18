@@ -1,19 +1,15 @@
-package models.auth
+package models.users.login
 
 sealed trait PasswordValidationError {
   val message: String
 }
 
 case object UsernameExistsError extends PasswordValidationError {
-
   val message = "Username already exists"
-
 }
 
 case object ContactNumberExistsError extends PasswordValidationError {
-
   val message = "Contact number already exists"
-
 }
 
 case object EmailExistsError extends PasswordValidationError {

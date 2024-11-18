@@ -4,20 +4,21 @@ import cats.effect.IO
 import controllers.users.wanderer_profile.constants.WandererUserProfileControllerConstants.sampleWandererUserProfile1
 import controllers.users.wanderer_profile.mocks.MockWandererProfileService
 import controllers.wanderer_profile.WandererProfileController
+import models.responses.ErrorResponse
 import models.users.*
 import models.users.adts.Admin
 import models.users.wanderer_profile.errors.UserIdNotFound
 import models.users.wanderer_profile.profile.WandererUserProfile
 import models.users.wanderer_profile.requests.{UpdateAddress, UpdateLoginDetails, UpdatePersonalDetails, UpdateProfileRequest}
-import models.users.wanderer_profile.responses.error.{ErrorResponse, WandererProfileErrorResponse}
+import models.users.wanderer_profile.responses.error.WandererProfileErrorResponse
 import org.http4s.*
 import org.http4s.Status.{BadRequest, Ok}
 import org.http4s.circe.*
+import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
 import org.http4s.circe.CirceEntityDecoder.*
 import org.http4s.implicits.*
 import services.wanderer_profile.WandererProfileServiceAlgebra
 import weaver.SimpleIOSuite
-import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
 
 object WandererProfileControllerSpec extends SimpleIOSuite {
 
@@ -62,29 +63,29 @@ object WandererProfileControllerSpec extends SimpleIOSuite {
 
   test("PUT - /wanderer/user/profile/user_id_1 - should return 200 when the user profile is updated successfully") {
 
-    val updateRequest = 
+    val updateRequest =
       UpdateProfileRequest(
-      loginDetails = Some(UpdateLoginDetails(
-        username = Some("updated_username"),
-        passwordHash = Some("new_hashed_password"),
-        email = Some("updated_email@example.com"),
-        role = Some(Admin)
-      )),
-      address = Some(UpdateAddress(
-        street = Some("456 Updated Street"),
-        city = Some("Updated City"),
-        country = Some("Updated Country"),
-        county = Some("Updated County"),
-        postcode = Some("UPDATED123")
-      )),
-      personalDetails = Some(UpdatePersonalDetails(
-        contactNumber = Some("9876543210"),
-        firstName = Some("Updated John"),
-        lastName = Some("Updated Doe"),
-        email = Some("updated.john@example.com"),
-        company = Some("Updated Corp")
-      ))
-    )
+        loginDetails = Some(UpdateLoginDetails(
+          username = Some("updated_username"),
+          passwordHash = Some("new_hashed_password"),
+          email = Some("updated_email@example.com"),
+          role = Some(Admin)
+        )),
+        address = Some(UpdateAddress(
+          street = Some("456 Updated Street"),
+          city = Some("Updated City"),
+          country = Some("Updated Country"),
+          county = Some("Updated County"),
+          postcode = Some("UPDATED123")
+        )),
+        personalDetails = Some(UpdatePersonalDetails(
+          contactNumber = Some("9876543210"),
+          firstName = Some("Updated John"),
+          lastName = Some("Updated Doe"),
+          email = Some("updated.john@example.com"),
+          company = Some("Updated Corp")
+        ))
+      )
 
     val mockWandererUserProfileService = new MockWandererProfileService(Map("user_id_1" -> sampleWandererUserProfile1))
 
@@ -99,7 +100,7 @@ object WandererProfileControllerSpec extends SimpleIOSuite {
       response.status == Ok,
       body.userLoginDetails.exists(_.username == "updated_username"),
       body.userAddress.exists(_.street.contains("456 Updated Street")),
-      body.userPersonalDetails.exists(_.contact_number.contains("9876543210"))
+      body.userPersonalDetails.exists(_.contactNumber.contains("9876543210"))
     )
   }
 

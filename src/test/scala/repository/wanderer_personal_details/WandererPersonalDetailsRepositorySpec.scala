@@ -10,17 +10,17 @@ import java.time.LocalDateTime
 
 object WandererPersonalDetailsRepositorySpec extends SimpleIOSuite {
 
-  def testPersonalDetails(id: Option[Int], user_id: String): WandererPersonalDetails =
+  def testPersonalDetails(id: Option[Int], userId: String): WandererPersonalDetails =
     WandererPersonalDetails(
       id = id,
-      user_id = user_id,
-      first_name = "bob",
-      last_name = "smith",
-      contact_number = "0123456789",
-      email = "user_1@gmail.com",
-      company = "apple",
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      userId = userId,
+      firstName = Some("bob"),
+      lastName = Some("smith"),
+      contactNumber = Some("0123456789"),
+      email = Some("user_1@gmail.com"),
+      company = Some("apple"),
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
   def createMockRepo(initialUsers: List[WandererPersonalDetails]): IO[MockWandererPersonalDetailsRepository] =
@@ -57,6 +57,7 @@ object WandererPersonalDetailsRepositorySpec extends SimpleIOSuite {
   }
 
   test(".updatePersonalDetailsDynamic - should update all fields for an existing user") {
+
     val existingDetails = testPersonalDetails(Some(3), "user_id_3")
 
     for {
@@ -71,15 +72,16 @@ object WandererPersonalDetailsRepositorySpec extends SimpleIOSuite {
       )
       fetchedDetails <- mockRepo.findByUserId("user_id_3")
     } yield expect(updated.nonEmpty) and expect(
-      fetchedDetails.contains(
-        existingDetails.copy(
-          contact_number = "9876543210",
-          first_name = "John",
-          last_name = "Doe",
-          email = "updated.john@example.com",
-          company = "Updated Corp"
+      fetchedDetails ==
+        Some(
+          existingDetails.copy(
+            contactNumber = Some("9876543210"),
+            firstName = Some("John"),
+            lastName = Some("Doe"),
+            email = Some("updated.john@example.com"),
+            company = Some("Updated Corp")
+          )
         )
-      )
     )
   }
 
@@ -100,8 +102,11 @@ object WandererPersonalDetailsRepositorySpec extends SimpleIOSuite {
     } yield expect(updated.nonEmpty) and expect(
       fetchedDetails.contains(
         existingDetails.copy(
-          first_name = "Updated Bob",
-          email = "partial.bob@example.com"
+          firstName = Some("Updated Bob"),
+          contactNumber = None,
+          lastName = None,
+          email = Some("partial.bob@example.com"),
+          company = None
         )
       )
     )
@@ -121,7 +126,26 @@ object WandererPersonalDetailsRepositorySpec extends SimpleIOSuite {
         company = None
       )
       fetchedDetails <- mockRepo.findByUserId("user_id_5")
-    } yield expect(updated.contains(existingDetails)) and expect(fetchedDetails.contains(existingDetails))
+    } yield expect.all(
+      updated.contains(
+        existingDetails.copy(
+          firstName = None,
+          lastName = None,
+          contactNumber = None,
+          email = None,
+          company = None
+        )
+      ),
+      fetchedDetails.contains(
+        existingDetails.copy(
+          firstName = None,
+          lastName = None,
+          contactNumber = None,
+          email = None,
+          company = None
+        )
+      )
+    )
   }
 
   test(".updatePersonalDetailsDynamic - should return None if user_id does not exist") {

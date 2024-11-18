@@ -11,7 +11,7 @@ case class UserProfileSqlModel(
                                     id: Int,
                                     userId: String,
                                     username: String,
-                                    password_hash: String,
+                                    passwordHash: String,
                                     first_name: String,
                                     last_name: String,
                                     street: String,
@@ -22,7 +22,7 @@ case class UserProfileSqlModel(
                                     contact_number: String,
                                     email: String,
                                     role: Role,
-                                    created_at: LocalDateTime,
+                                    createdAt: LocalDateTime,
                                     updated_at: LocalDateTime
                                   )
 

@@ -1,4 +1,4 @@
-package models.users
+package models.users.wanderer
 
 import cats.effect.IO
 import io.circe.*
@@ -18,25 +18,25 @@ object WandererUserProfileSpec extends SimpleIOSuite {
       userLoginDetails =
         Some(UserLoginDetails(
           id = Some(1),
-          user_id = "user_id_1",
+          userId = "user_id_1",
           username = "mikey5922",
-          password_hash = "hashed_password_1",
+          passwordHash = "hashed_password_1",
           email = "mikey5922@gmail.com",
           role = Wanderer,
-          created_at = LocalDateTime.of(2024, 10, 10, 10, 0),
-          updated_at = LocalDateTime.of(2024, 10, 10, 10, 0)
+          createdAt = LocalDateTime.of(2024, 10, 10, 10, 0),
+          updatedAt = LocalDateTime.of(2024, 10, 10, 10, 0)
         )),
       userPersonalDetails =
         Some(
           UserPersonalDetails(
-            user_id = "user_id_1",
-            first_name = Some("michael"),
-            last_name = Some("yau"),
-            contact_number = Some("0123456789"),
+            userId = "user_id_1",
+            firstName = Some("michael"),
+            lastName = Some("yau"),
+            contactNumber = Some("0123456789"),
             email = Some("mikey@gmail.com"),
             company = Some("Meta"),
-            created_at = LocalDateTime.of(2024, 10, 10, 10, 0),
-            updated_at = LocalDateTime.of(2024, 10, 10, 10, 0)
+            createdAt = LocalDateTime.of(2024, 10, 10, 10, 0),
+            updatedAt = LocalDateTime.of(2024, 10, 10, 10, 0)
           )
         ),
       userAddress =
@@ -47,12 +47,12 @@ object WandererUserProfileSpec extends SimpleIOSuite {
           country = Some("UK"),
           county = Some("County 1"),
           postcode = Some("CF3 3NJ"),
-          created_at = LocalDateTime.of(2024, 10, 10, 10, 0),
-          updated_at = LocalDateTime.of(2024, 10, 10, 10, 0)
+          createdAt = LocalDateTime.of(2024, 10, 10, 10, 0),
+          updatedAt = LocalDateTime.of(2024, 10, 10, 10, 0)
         )),
       role = Some(Wanderer),
-      created_at = LocalDateTime.of(2024, 10, 10, 10, 0),
-      updated_at = LocalDateTime.of(2024, 10, 10, 10, 0)
+      createdAt = LocalDateTime.of(2024, 10, 10, 10, 0),
+      updatedAt = LocalDateTime.of(2024, 10, 10, 10, 0)
     )
 
   test("User model encodes correctly to JSON") {
@@ -65,23 +65,23 @@ object WandererUserProfileSpec extends SimpleIOSuite {
         |  "userId" : "user_id_1",
         |  "userLoginDetails" : {
         |    "id" : 1,
-        |    "user_id" : "user_id_1",
+        |    "userId" : "user_id_1",
         |    "username" : "mikey5922",
-        |    "password_hash" : "hashed_password_1",
+        |    "passwordHash" : "hashed_password_1",
         |    "email" : "mikey5922@gmail.com",
         |    "role" : "Wanderer",
-        |    "created_at" : "2024-10-10T10:00:00",
-        |    "updated_at" : "2024-10-10T10:00:00"
+        |    "createdAt" : "2024-10-10T10:00:00",
+        |    "updatedAt" : "2024-10-10T10:00:00"
         |  },
         |  "userPersonalDetails" : {
-        |    "user_id" : "user_id_1",
-        |    "first_name" : "michael",
-        |    "last_name" : "yau",
-        |    "contact_number" : "0123456789",
+        |    "userId" : "user_id_1",
+        |    "firstName" : "michael",
+        |    "lastName" : "yau",
+        |    "contactNumber" : "0123456789",
         |    "email" : "mikey@gmail.com",
         |    "company" : "Meta",
-        |    "created_at" : "2024-10-10T10:00:00",
-        |    "updated_at" : "2024-10-10T10:00:00"
+        |    "createdAt" : "2024-10-10T10:00:00",
+        |    "updatedAt" : "2024-10-10T10:00:00"
         |  },
         |  "userAddress" : {
         |    "userId" : "user_id_1",
@@ -90,19 +90,19 @@ object WandererUserProfileSpec extends SimpleIOSuite {
         |    "country" : "UK",
         |    "county" : "County 1",
         |    "postcode" : "CF3 3NJ",
-        |    "created_at" : "2024-10-10T10:00:00",
-        |    "updated_at" : "2024-10-10T10:00:00"
+        |    "createdAt" : "2024-10-10T10:00:00",
+        |    "updatedAt" : "2024-10-10T10:00:00"
         |  },
         |  "role" : "Wanderer",
-        |  "created_at" : "2024-10-10T10:00:00",
-        |  "updated_at" : "2024-10-10T10:00:00"
+        |  "createdAt" : "2024-10-10T10:00:00",
+        |  "updatedAt" : "2024-10-10T10:00:00"
         |}
         """.stripMargin
 
     val expectedResult: Json = parse(expectedJson).getOrElse(Json.Null)
 
     for {
-//      _ <- IO(println(jsonResult.toString))
+      //      _ <- IO(println(jsonResult.toString))
       _ <- IO("")
     } yield {
       expect(jsonResult == expectedResult)

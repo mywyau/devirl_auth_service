@@ -45,8 +45,11 @@ object Routes {
   def registrationRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F]): HttpRoutes[F] = {
 
     val userLoginDetailsRepository = new UserLoginDetailsRepositoryImpl[F](transactor)
+    val wandererAddressRepo = new WandererAddressRepositoryImpl[F](transactor)
+    val wandererPersonalDetailsRepo = new WandererPersonalDetailsRepositoryImpl[F](transactor)
+    
     val passwordService = new PasswordServiceImpl[F]
-    val registrationService = new RegistrationServiceImpl[F](userLoginDetailsRepository, passwordService)
+    val registrationService = new RegistrationServiceImpl[F](userLoginDetailsRepository, wandererAddressRepo, wandererPersonalDetailsRepo, passwordService)
     val registrationController = new RegistrationControllerImpl[F](registrationService)
 
     registrationController.routes

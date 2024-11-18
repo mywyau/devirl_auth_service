@@ -2,9 +2,6 @@ package models.users.login.requests
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
-import models.users.adts.Role
-
-import java.time.LocalDateTime
 
 case class UserLoginRequest(
                              username: String,

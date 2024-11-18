@@ -9,13 +9,13 @@ object WandererAddressControllerConstants {
   val sampleWandererAddress1: WandererAddress =
     WandererAddress(
       id = Some(1),
-      user_id = "user_1",
-      street = "1 Canton Street",
-      city = "Cardiff",
-      country = "United Kingdom",
+      userId = "user_1",
+      street = Some("1 Canton Street"),
+      city = Some("Cardiff"),
+      country = Some("United Kingdom"),
       county = Some("South Glamorgan"),
-      postcode = "CF3 5DE",
-      created_at = LocalDateTime.of(2024, 10, 5, 15, 0),
-      updated_at = LocalDateTime.of(2024, 10, 5, 15, 0)
+      postcode = Some("CF3 5DE"),
+      createdAt = LocalDateTime.of(2024, 10, 5, 15, 0),
+      updatedAt = LocalDateTime.of(2024, 10, 5, 15, 0)
     )
 }

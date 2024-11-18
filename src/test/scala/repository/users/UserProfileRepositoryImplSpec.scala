@@ -18,16 +18,16 @@ object UserProfileRepositoryImplSpec extends SimpleIOSuite {
       userLoginDetails =
         UserLoginDetails(
           id = Some(1),
-          user_id = "user_id_1",
+          userId = "user_id_1",
           username = username,
-          password_hash = "hashed_password",
+          passwordHash = "hashed_password",
           email = email,
           role = Wanderer,
-          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-          updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+          createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+          updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
         ),
-      first_name = "John",
-      last_name = "Doe",
+      firstName = "John",
+      lastName = "Doe",
       userAddress =
         UserAddress(
           userId = "user_id_1",
@@ -36,14 +36,14 @@ object UserProfileRepositoryImplSpec extends SimpleIOSuite {
           country = Some("UK"),
           county = Some("County 1"),
           postcode = Some("CF3 3NJ"),
-          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-          updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+          createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+          updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
         ),
-      contact_number = contactNumber,
+      contactNumber = contactNumber,
       email = email,
       role = Wanderer,
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
   // Helper method to create a mock repository with initial state

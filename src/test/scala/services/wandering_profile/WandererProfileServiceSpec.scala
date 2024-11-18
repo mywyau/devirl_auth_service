@@ -5,9 +5,9 @@ import cats.data.{Validated, ValidatedNel}
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import cats.implicits.*
-import models.auth.RegisterPasswordErrors
 import models.users.*
 import models.users.adts.*
+import models.users.registration.RegisterPasswordErrors
 import models.users.wanderer_address.service.WandererAddress
 import models.users.wanderer_personal_details.service.WandererPersonalDetails
 import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserPersonalDetails, WandererUserProfile}
@@ -37,12 +37,13 @@ object WandererProfileServiceSpec extends SimpleIOSuite {
       dataRef.modify { data =>
         data.get(userId) match {
           case Some(details) =>
-            val updated = details.copy(
-              username = username.getOrElse(details.username),
-              password_hash = passwordHash.getOrElse(details.password_hash),
-              email = email.getOrElse(details.email),
-              role = role.getOrElse(details.role)
-            )
+            val updated =
+              details.copy(
+                username = username.getOrElse(details.username),
+                passwordHash = passwordHash.getOrElse(details.passwordHash),
+                email = email.getOrElse(details.email),
+                role = role.getOrElse(details.role)
+              )
             (data + (userId -> updated), Some(updated))
           case None => (data, None)
         }
@@ -75,18 +76,22 @@ object WandererProfileServiceSpec extends SimpleIOSuite {
         data.get(userId) match {
           case Some(address) =>
             val updated = address.copy(
-              street = street.getOrElse(address.street),
-              city = city.getOrElse(address.city),
-              country = country.getOrElse(address.country),
-              county = county.orElse(address.county),
-              postcode = postcode.getOrElse(address.postcode)
+              street = street,
+              city = city,
+              country = country,
+              county = county,
+              postcode = postcode
             )
             (data + (userId -> updated), Some(updated))
           case None => (data, None)
         }
       }
 
-    override def createUserAddress(user: WandererAddress): IO[Int] = ???
+    override def createUserAddress(user: WandererAddress): IO[Int] =
+      IO.pure(1)
+
+    override def createRegistrationWandererAddress(userId: String): IO[Int] =
+      IO.pure(1)
   }
 
   class MockWandererPersonalDetailsRepository(initialData: Map[String, WandererPersonalDetails]) extends WandererPersonalDetailsRepositoryAlgebra[IO] {
@@ -107,18 +112,22 @@ object WandererProfileServiceSpec extends SimpleIOSuite {
         data.get(userId) match {
           case Some(details) =>
             val updated = details.copy(
-              contact_number = contactNumber.getOrElse(details.contact_number),
-              first_name = firstName.getOrElse(details.first_name),
-              last_name = lastName.getOrElse(details.last_name),
-              email = email.getOrElse(details.email),
-              company = company.getOrElse(details.company)
+              contactNumber = contactNumber,
+              firstName = firstName,
+              lastName = lastName,
+              email = email,
+              company = company
             )
             (data + (userId -> updated), Some(updated))
           case None => (data, None)
         }
       }
 
-    override def createPersonalDetails(wandererPersonalDetails: WandererPersonalDetails): IO[Int] = ???
+    override def createPersonalDetails(wandererPersonalDetails: WandererPersonalDetails): IO[Int] =
+      IO.pure(1)
+
+    override def createRegistrationPersonalDetails(userId: String): IO[Int] =
+      IO.pure(1)
   }
 
   class MockPasswordService extends PasswordServiceAlgebra[IO] {
@@ -135,37 +144,37 @@ object WandererProfileServiceSpec extends SimpleIOSuite {
 
     val mockLoginDetails = UserLoginDetails(
       id = Some(1),
-      user_id = userId,
+      userId = userId,
       username = "username",
-      password_hash = "hashed_password",
+      passwordHash = "hashed_password",
       email = "user1@example.com",
       role = Wanderer,
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
     val mockAddress = WandererAddress(
       id = Some(1),
-      user_id = userId,
-      street = "123 Main St",
-      city = "Sample City",
-      country = "Sample Country",
+      userId = userId,
+      street = Some("123 Main St"),
+      city = Some("Sample City"),
+      country = Some("Sample Country"),
       county = Some("County"),
-      postcode = "12345",
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      postcode = Some("12345"),
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
     val mockPersonalDetails = WandererPersonalDetails(
       id = Some(1),
-      user_id = userId,
-      first_name = "John",
-      last_name = "Doe",
-      contact_number = "1234567890",
-      email = "john.doe@example.com",
-      company = "Sample Company",
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      userId = userId,
+      firstName = Some("John"),
+      lastName = Some("Doe"),
+      contactNumber = Some("1234567890"),
+      email = Some("john.doe@example.com"),
+      company = Some("Sample Company"),
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
     val mockLoginRepo = new MockUserLoginDetailsRepository(Map(userId -> mockLoginDetails))
@@ -183,14 +192,14 @@ object WandererProfileServiceSpec extends SimpleIOSuite {
         userLoginDetails = Some(mockLoginDetails),
         userPersonalDetails = Some(
           UserPersonalDetails(
-            user_id = userId,
-            first_name = Some("John"),
-            last_name = Some("Doe"),
-            contact_number = Some("1234567890"),
+            userId = userId,
+            firstName = Some("John"),
+            lastName = Some("Doe"),
+            contactNumber = Some("1234567890"),
             email = Some("john.doe@example.com"),
             company = Some("Sample Company"),
-            created_at = mockPersonalDetails.created_at,
-            updated_at = mockPersonalDetails.updated_at
+            createdAt = mockPersonalDetails.createdAt,
+            updatedAt = mockPersonalDetails.updatedAt
           )
         ),
         userAddress = Some(
@@ -201,13 +210,13 @@ object WandererProfileServiceSpec extends SimpleIOSuite {
             country = Some("Sample Country"),
             county = Some("County"),
             postcode = Some("12345"),
-            created_at = mockAddress.created_at,
-            updated_at = mockAddress.updated_at
+            createdAt = mockAddress.createdAt,
+            updatedAt = mockAddress.updatedAt
           )
         ),
         role = Some(Wanderer),
-        created_at = mockLoginDetails.created_at,
-        updated_at = mockLoginDetails.updated_at
+        createdAt = mockLoginDetails.createdAt,
+        updatedAt = mockLoginDetails.updatedAt
       )
     ))
   }
@@ -219,37 +228,37 @@ object WandererProfileServiceSpec extends SimpleIOSuite {
     val mockLoginDetails =
       UserLoginDetails(
         id = Some(1),
-        user_id = userId,
+        userId = userId,
         username = "old_username",
-        password_hash = "old_hashed_password",
+        passwordHash = "old_hashed_password",
         email = "old_email@example.com",
         role = Wanderer,
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-        updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
 
     val mockAddress = WandererAddress(
       id = Some(1),
-      user_id = userId,
-      street = "123 Old St",
-      city = "Old City",
-      country = "Old Country",
+      userId = userId,
+      street = Some("123 Old St"),
+      city = Some("Old City"),
+      country = Some("Old Country"),
       county = Some("Old County"),
-      postcode = "OLD123",
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      postcode = Some("OLD123"),
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
     val mockPersonalDetails = WandererPersonalDetails(
       id = Some(1),
-      user_id = userId,
-      first_name = "Old John",
-      last_name = "Old Doe",
-      contact_number = "0000000000",
-      email = "old.john@example.com",
-      company = "Old Corp",
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      userId = userId,
+      firstName = Some("Old John"),
+      lastName = Some("Old Doe"),
+      contactNumber = Some("0000000000"),
+      email = Some("old.john@example.com"),
+      company = Some("Old Corp"),
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
 
@@ -294,20 +303,20 @@ object WandererProfileServiceSpec extends SimpleIOSuite {
         country = Some("Old Country"),
         county = Some("Old County"),
         postcode = Some("OLD123"),
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-        updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
 
     val personalDetails =
       UserPersonalDetails(
-        user_id = userId,
-        first_name = Some("Old John"),
-        last_name = Some("Old Doe"),
-        contact_number = Some("0000000000"),
+        userId = userId,
+        firstName = Some("Old John"),
+        lastName = Some("Old Doe"),
+        contactNumber = Some("0000000000"),
         email = Some("old.john@example.com"),
         company = Some("Old Corp"),
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-        updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
 
 
@@ -324,7 +333,7 @@ object WandererProfileServiceSpec extends SimpleIOSuite {
         userLoginDetails = Some(
           mockLoginDetails.copy(
             username = "new_username",
-            password_hash = "new_hashed_password",
+            passwordHash = "new_hashed_password",
             email = "new_email@example.com",
             role = Admin
           )
@@ -342,16 +351,16 @@ object WandererProfileServiceSpec extends SimpleIOSuite {
         userPersonalDetails =
           Some(
             personalDetails.copy(
-              first_name = Some("New John"),
-              last_name = Some("New Doe"),
-              contact_number = Some("1234567890"),
+              firstName = Some("New John"),
+              lastName = Some("New Doe"),
+              contactNumber = Some("1234567890"),
               email = Some("new.john@example.com"),
               company = Some("New Corp")
             )
           ),
         role = Some(Admin),
-        created_at = mockLoginDetails.created_at,
-        updated_at = mockLoginDetails.updated_at
+        createdAt = mockLoginDetails.createdAt,
+        updatedAt = mockLoginDetails.updatedAt
       )
     ))
   }

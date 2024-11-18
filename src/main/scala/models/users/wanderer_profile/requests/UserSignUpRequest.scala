@@ -7,12 +7,12 @@ import models.users.adts.Role
 import java.time.LocalDateTime
 
 case class UserSignUpRequest(
-                              user_id: String,
+                              userId: String,
                               username: String,
                               password: String,
                               email: String,
                               role: Role,
-                              created_at: LocalDateTime
+                              createdAt: LocalDateTime
                             )
 
 object UserSignUpRequest {

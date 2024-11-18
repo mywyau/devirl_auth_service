@@ -2,8 +2,8 @@ package services.auth.mocks
 
 import cats.data.Validated
 import cats.effect.IO
-import models.auth.{PasswordLengthError, RegisterPasswordErrors}
 import models.users.adts.Role
+import models.users.registration.*
 import models.users.wanderer_profile.profile.{UserLoginDetails, UserProfile}
 import repositories.users.{UserLoginDetailsRepositoryAlgebra, UserProfileRepositoryAlgebra}
 import services.auth.constants.AuthenticationServiceConstants.*
@@ -38,7 +38,7 @@ object AuthenticationServiceMocks {
 
     override def findByUsername(username: String): IO[Option[UserProfile]] = IO.pure(users.get(username))
 
-    override def findByContactNumber(contactNumber: String): IO[Option[UserProfile]] = IO.pure(users.values.find(_.contact_number.contains(contactNumber)))
+    override def findByContactNumber(contactNumber: String): IO[Option[UserProfile]] = IO.pure(users.values.find(_.contactNumber.contains(contactNumber)))
 
     override def findByEmail(email: String): IO[Option[UserProfile]] = IO.pure(users.values.find(_.email.contains(email)))
 

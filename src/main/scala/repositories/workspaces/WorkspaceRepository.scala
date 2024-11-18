@@ -82,15 +82,15 @@ class WorkspaceRepository[F[_]: Concurrent](transactor: Transactor[F]) extends W
         longitude
       )
       VALUES (
-        ${workspace.business_id},
-        ${workspace.workspace_id},
+        ${workspace.businessId},
+        ${workspace.workspaceId},
         ${workspace.name},
         ${workspace.description},
         ${workspace.address},
         ${workspace.city},
         ${workspace.country},
         ${workspace.postcode},
-        ${workspace.price_per_day},
+        ${workspace.pricePerDay},
         ${workspace.latitude},
         ${workspace.longitude}
       )
@@ -103,14 +103,14 @@ class WorkspaceRepository[F[_]: Concurrent](transactor: Transactor[F]) extends W
   def updateWorkspace(workspaceId: String, updatedWorkspace: Workspace): F[Int] =
     sql"""
       UPDATE workspaces
-      SET workspace_id = ${updatedWorkspace.workspace_id},
+      SET workspace_id = ${updatedWorkspace.workspaceId},
           name = ${updatedWorkspace.name},
           description = ${updatedWorkspace.description},
           address = ${updatedWorkspace.address},
           city = ${updatedWorkspace.city},
           country = ${updatedWorkspace.country},
           postcode = ${updatedWorkspace.postcode},
-          price_per_day = ${updatedWorkspace.price_per_day},
+          price_per_day = ${updatedWorkspace.pricePerDay},
           latitude = ${updatedWorkspace.latitude},
           longitude = ${updatedWorkspace.longitude}
       WHERE workspace_id = $workspaceId

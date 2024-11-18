@@ -2,8 +2,8 @@ package services.bookings
 
 import cats.effect.IO
 import models.*
-import models.bookings.Confirmed
 import models.bookings.errors.BookingNotFound
+import models.bookings.{Booking, Confirmed}
 import repositories.bookings.BookingRepositoryAlgebra
 import weaver.SimpleIOSuite
 
@@ -26,7 +26,7 @@ class MockBookingRepository extends BookingRepositoryAlgebra[IO] {
     IO.pure(bookings.get(bookingId))
 
   override def setBooking(booking: Booking): IO[Int] = {
-    bookings += (booking.booking_id -> booking)
+    bookings += (booking.bookingId -> booking)
     IO.pure(1)
   }
 
@@ -58,18 +58,19 @@ object BookingServiceSpec extends SimpleIOSuite {
   def freshRepository = new MockBookingRepository
 
   // Sample booking data
-  val sampleBooking: Booking = Booking(
-    id = Some(1),
-    booking_id = "booking_1",
-    booking_name = "Sample Booking",
-    user_id = 1,
-    workspace_id = 1,
-    booking_date = LocalDate.of(2024, 10, 10),
-    start_time = LocalDateTime.of(2024, 10, 10, 9, 0),
-    end_time = LocalDateTime.of(2024, 10, 10, 12, 0),
-    status = Confirmed,
-    created_at = LocalDateTime.now()
-  )
+  val sampleBooking: Booking =
+    Booking(
+      id = Some(1),
+      bookingId = "booking_1",
+      bookingName = "Sample Booking",
+      userId = 1,
+      workspaceId = 1,
+      bookingDate = LocalDate.of(2024, 10, 10),
+      startTime = LocalDateTime.of(2024, 10, 10, 9, 0),
+      endTime = LocalDateTime.of(2024, 10, 10, 12, 0),
+      status = Confirmed,
+      createdAt = LocalDateTime.now()
+    )
 
   // Test case for creating a booking
   test("create a new booking successfully") {
@@ -103,7 +104,7 @@ object BookingServiceSpec extends SimpleIOSuite {
   test("update a booking") {
     val mockRepository = freshRepository
     val bookingService = new BookingServiceImpl[IO](mockRepository)
-    val updatedBooking = sampleBooking.copy(booking_name = "Updated Booking")
+    val updatedBooking = sampleBooking.copy(bookingName = "Updated Booking")
     for {
       _ <- mockRepository.setBooking(sampleBooking)
       result <- bookingService.updateBooking("booking_1", updatedBooking)

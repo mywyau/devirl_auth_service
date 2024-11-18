@@ -1,4 +1,4 @@
-package controllers
+package controllers.wanderer
 
 import cats.effect.*
 import com.comcast.ip4s.{ipv4, port}
@@ -7,12 +7,13 @@ import controllers.wanderer_profile.WandererProfileController
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.syntax.*
+import models.responses.ErrorResponse
 import models.users.*
 import models.users.adts.*
 import models.users.wanderer_profile.errors.{MissingAddress, MissingLoginDetails, MissingPersonalDetails}
 import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserPersonalDetails, WandererUserProfile}
 import models.users.wanderer_profile.requests.*
-import models.users.wanderer_profile.responses.error.{ErrorResponse, WandererProfileErrorResponse}
+import models.users.wanderer_profile.responses.error.WandererProfileErrorResponse
 import org.http4s.*
 import org.http4s.Method.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
@@ -96,26 +97,26 @@ class WandererProfileControllerISpec(global: GlobalRead) extends IOSuite {
         userLoginDetails = Some(
           UserLoginDetails(
             id = Some(1),
-            user_id = "fake_user_id_1",
+            userId = "fake_user_id_1",
             username = "fake_username",
-            password_hash = "hashed_password",
+            passwordHash = "hashed_password",
             email = "fake_user_1@example.com",
             role = Wanderer,
-            created_at = LocalDateTime.of(2023, 1, 1, 12, 0, 0),
-            updated_at = LocalDateTime.of(2023, 1, 1, 12, 0, 0)
+            createdAt = LocalDateTime.of(2023, 1, 1, 12, 0, 0),
+            updatedAt = LocalDateTime.of(2023, 1, 1, 12, 0, 0)
           )
         ),
         userPersonalDetails =
           Some(
             UserPersonalDetails(
-              user_id = "fake_user_id_1",
-              first_name = Some("bob"),
-              last_name = Some("smith"),
-              contact_number = Some("0123456789"),
+              userId = "fake_user_id_1",
+              firstName = Some("bob"),
+              lastName = Some("smith"),
+              contactNumber = Some("0123456789"),
               email = Some("fake_user_1@example.com"),
               company = Some("apple"),
-              created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-              updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+              createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+              updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
             )
           ),
         userAddress = Some(
@@ -126,13 +127,13 @@ class WandererProfileControllerISpec(global: GlobalRead) extends IOSuite {
             country = Some("United Kingdom"),
             county = Some("South Glamorgan"),
             postcode = Some("CF5 3NJ"),
-            created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-            updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+            createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+            updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
           )
         ),
         role = Some(Wanderer),
-        created_at = LocalDateTime.of(2023, 1, 1, 12, 0, 0),
-        updated_at = LocalDateTime.of(2023, 1, 1, 12, 0, 0)
+        createdAt = LocalDateTime.of(2023, 1, 1, 12, 0, 0),
+        updatedAt = LocalDateTime.of(2023, 1, 1, 12, 0, 0)
       )
 
     client.run(request).use { response =>
@@ -200,8 +201,6 @@ class WandererProfileControllerISpec(global: GlobalRead) extends IOSuite {
           ))
       )
 
-//    println(updateRequest.asJson.noSpaces) // Print the serialized JSON to ensure it's correct
-
     val request =
       Request[IO](
         method = Method.PUT,
@@ -209,14 +208,13 @@ class WandererProfileControllerISpec(global: GlobalRead) extends IOSuite {
       ).withEntity(updateRequest.asJson)
 
     client.run(request).use { response =>
-//      println(response.status)
       response.as[WandererUserProfile].map { body =>
         expect.all(
           response.status == Status.Ok,
           body.userLoginDetails.exists(_.username == "updated_username"),
           body.userLoginDetails.exists(_.email == "updated_email@example.com"),
           body.userAddress.exists(_.street.contains("456 Updated Street")),
-          body.userPersonalDetails.exists(_.contact_number.contains("9876543210"))
+          body.userPersonalDetails.exists(_.contactNumber.contains("9876543210"))
         )
       }
     }

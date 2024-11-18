@@ -20,7 +20,7 @@ case class MockUserProfileRepository(ref: Ref[IO, List[UserProfile]]) extends Us
     ref.get.map(_.find(_.userLoginDetails.username == username)) // Simulate finding the user by username
 
   override def findByContactNumber(contactNumber: String): IO[Option[UserProfile]] =
-    ref.get.map(_.find(_.contact_number.contains(contactNumber))) // Simulate finding the user by contact number
+    ref.get.map(_.find(_.contactNumber.contains(contactNumber))) // Simulate finding the user by contact number
 
   override def findByEmail(email: String): IO[Option[UserProfile]] =
     ref.get.map(_.find(_.email.contains(email))) // Simulate finding the user by email

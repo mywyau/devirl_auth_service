@@ -4,7 +4,7 @@ import cats.effect.IO
 import io.circe._
 import io.circe.parser._
 import io.circe.syntax._
-import models.Booking
+import models.bookings.Booking
 import weaver.SimpleIOSuite
 
 import java.time.{LocalDate, LocalDateTime}
@@ -14,15 +14,15 @@ object BookingSpec extends SimpleIOSuite {
   val sampleBooking_1: Booking =
     Booking(
       id = Some(1),
-      booking_id = "booking_1",
-      booking_name = "Sample Booking 1",
-      user_id = 1,
-      workspace_id = 1,
-      booking_date = LocalDate.of(2024, 10, 10),
-      start_time = LocalDateTime.of(2024, 10, 10, 9, 0),
-      end_time = LocalDateTime.of(2024, 10, 10, 12, 0),
+      bookingId = "booking_1",
+      bookingName = "Sample Booking 1",
+      userId = 1,
+      workspaceId = 1,
+      bookingDate = LocalDate.of(2024, 10, 10),
+      startTime = LocalDateTime.of(2024, 10, 10, 9, 0),
+      endTime = LocalDateTime.of(2024, 10, 10, 12, 0),
       status = Confirmed,
-      created_at = LocalDateTime.of(2024, 10, 5, 15, 0)
+      createdAt = LocalDateTime.of(2024, 10, 5, 15, 0)
     )
 
   // Test for encoding BookingStatus to JSON
@@ -33,15 +33,15 @@ object BookingSpec extends SimpleIOSuite {
     val expectedJson =
       """{
         |"id":1,
-        |"booking_id":"booking_1",
-        |"booking_name":"Sample Booking 1",
-        |"user_id":1,
-        |"workspace_id":1,
-        |"booking_date":"2024-10-10",
-        |"start_time":"2024-10-10T09:00:00",
-        |"end_time":"2024-10-10T12:00:00",
+        |"bookingId":"booking_1",
+        |"bookingName":"Sample Booking 1",
+        |"userId":1,
+        |"workspaceId":1,
+        |"bookingDate":"2024-10-10",
+        |"startTime":"2024-10-10T09:00:00",
+        |"endTime":"2024-10-10T12:00:00",
         |"status":"Confirmed",
-        |"created_at":"2024-10-05T15:00:00"
+        |"createdAt":"2024-10-05T15:00:00"
         |}""".stripMargin
 
     val expectedResult: Json = parse(expectedJson).getOrElse(Json.Null)

@@ -4,7 +4,7 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.data.{EitherT, ValidatedNel}
 import cats.effect.Concurrent
 import cats.implicits.*
-import models.Booking
+import models.bookings.Booking
 import models.bookings.errors.*
 import repositories.bookings.BookingRepositoryAlgebra
 import services.bookings.algebra.BookingServiceAlgebra
@@ -51,7 +51,7 @@ class BookingServiceImpl[F[_] : Concurrent](repository: BookingRepositoryAlgebra
 
   // Create booking with validations (including time range and overlap check)
   def createBooking(booking: Booking): F[Either[ValidationError, Int]] = {
-    val validation = validateTimeRange(booking.start_time, booking.end_time)
+    val validation = validateTimeRange(booking.startTime, booking.endTime)
 
     validation match {
       case Valid(_) =>
@@ -70,7 +70,7 @@ class BookingServiceImpl[F[_] : Concurrent](repository: BookingRepositoryAlgebra
 
   // Update booking with validation (ensures booking exists before updating)
   def updateBooking(bookingId: String, updatedBooking: Booking): F[Either[ValidationError, Int]] = {
-    val validation = validateTimeRange(updatedBooking.start_time, updatedBooking.end_time)
+    val validation = validateTimeRange(updatedBooking.startTime, updatedBooking.endTime)
 
     validation match {
       case Valid(_) =>

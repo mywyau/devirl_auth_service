@@ -15,35 +15,35 @@ object RegistrationServiceConstants {
   val existingUser: UserLoginDetails = {
     UserLoginDetails(
       id = Some(1),
-      user_id = "user_id_1",
+      userId = "user_id_1",
       username = "existinguser",
-      password_hash = "hashedpassword",
+      passwordHash = "hashedpassword",
       email = "existing@example.com",
       role = Wanderer,
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
   }
 
   val validRequest: UserSignUpRequest = {
     UserSignUpRequest(
-      user_id = "user_id_2",
+      userId = "user_id_2",
       username = "newuser",
       password = "ValidPass123!",
       email = "newuser@example.com",
       role = Wanderer,
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
   }
 
   val uniqueRequest: UserSignUpRequest = {
     UserSignUpRequest(
-      user_id = "user_id_3",
+      userId = "user_id_3",
       username = "newuser",
       password = "ValidPass123!",
       email = "newuser@example.com",
       role = Wanderer,
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
   }
 

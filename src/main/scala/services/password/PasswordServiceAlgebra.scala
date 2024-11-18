@@ -1,7 +1,7 @@
 package services.password
 
 import cats.data.Validated
-import models.auth.RegisterPasswordErrors
+import models.users.registration.RegisterPasswordErrors
 
 trait PasswordServiceAlgebra[F[_]] {
 

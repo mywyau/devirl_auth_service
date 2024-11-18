@@ -6,6 +6,7 @@ import doobie.*
 import doobie.implicits.*
 import models.users.wanderer_personal_details.service.WandererPersonalDetails
 import repositories.users.WandererPersonalDetailsRepositoryImpl
+import repository.fragments.WandererPersonalDetailsRepositoryFragments.{createWandererPersonalDetailsTable, resetWandererPersonalDetailsTable}
 import shared.TransactorResource
 import weaver.{GlobalRead, IOSuite, ResourceTag}
 
@@ -17,34 +18,21 @@ class WandererPersonalDetailsRepositoryISpec(global: GlobalRead) extends IOSuite
 
   private def initializeSchema(transactor: TransactorResource): Resource[IO, Unit] =
     Resource.eval(
-      sql"""
-         CREATE TABLE IF NOT EXISTS wanderer_personal_details (
-            id BIGSERIAL PRIMARY KEY,
-            user_id VARCHAR(255) NOT NULL,
-            first_name VARCHAR(255),
-            last_name VARCHAR(255),
-            contact_number VARCHAR(100),
-            email VARCHAR(255),
-            company VARCHAR(255),
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-         );
-      """.update.run.transact(transactor.xa).void *>
-        sql"TRUNCATE TABLE wanderer_personal_details RESTART IDENTITY"
-          .update.run.transact(transactor.xa).void
+      createWandererPersonalDetailsTable.update.run.transact(transactor.xa).void *>
+        resetWandererPersonalDetailsTable.update.run.transact(transactor.xa).void
     )
 
-  def testWandererPersonalDetails(id: Option[Int], user_id: String): WandererPersonalDetails =
+  def testWandererPersonalDetails(id: Option[Int], userId: String): WandererPersonalDetails =
     WandererPersonalDetails(
       id = id,
-      user_id = user_id,
-      first_name = "bob",
-      last_name = "smith",
-      contact_number = "0123456789",
-      email = "user_1@gmail.com",
-      company = "apple",
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      userId = userId,
+      firstName = Some("bob"),
+      lastName = Some("smith"),
+      contactNumber = Some("0123456789"),
+      email = Some("user_1@gmail.com"),
+      company = Some("apple"),
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
   private def seedTestPersonalDetails(wandererPersonalDetailsRepo: WandererPersonalDetailsRepositoryImpl[IO]): IO[Unit] = {
@@ -65,6 +53,7 @@ class WandererPersonalDetailsRepositoryISpec(global: GlobalRead) extends IOSuite
       wandererPersonalDetailsRepo = new WandererPersonalDetailsRepositoryImpl[IO](transactor.xa)
       createSchemaIfNotPresent <- initializeSchema(transactor)
       seedTable <- Resource.eval(seedTestPersonalDetails(wandererPersonalDetailsRepo))
+      seedTableOnlyUserId <- Resource.eval(wandererPersonalDetailsRepo.createRegistrationPersonalDetails("user_id_6"))
     } yield wandererPersonalDetailsRepo
 
     setup
@@ -92,7 +81,7 @@ class WandererPersonalDetailsRepositoryISpec(global: GlobalRead) extends IOSuite
   //  }
 
   // Test case to verify user creation and retrieval by username
-  
+
   test(".updatePersonalDetailsDynamic() - should insert a new user's personal details") { wandererPersonalDetailsRepo =>
 
     val personalDetails = testWandererPersonalDetails(Some(5), "user_id_5")
@@ -100,14 +89,13 @@ class WandererPersonalDetailsRepositoryISpec(global: GlobalRead) extends IOSuite
     val updatedPersonalDetails =
       Some(
         personalDetails.copy(
-          first_name = "Michael",
-          last_name = "Yau",
-          contact_number = "07402205071",
-          email = "mike@gmail.com",
-          company = "capgemini"
+          firstName = Some("Michael"),
+          lastName = Some("Yau"),
+          contactNumber = Some("07402205071"),
+          email = Some("mike@gmail.com"),
+          company = Some("capgemini")
         )
       )
-
     for {
       updatedResult <- wandererPersonalDetailsRepo.updatePersonalDetailsDynamic(
         userId = "user_id_5",

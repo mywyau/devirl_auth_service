@@ -56,13 +56,13 @@ class UserLoginDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Tran
         updated_at
       )
       VALUES (
-              ${user.user_id},
+              ${user.userId},
               ${user.username},
-              ${user.password_hash},
+              ${user.passwordHash},
               ${user.email},
               ${user.role.toString},
-              ${user.created_at},
-              ${user.updated_at}
+              ${user.createdAt},
+              ${user.updatedAt}
       )""".update
       .run
       .transact(transactor)
@@ -102,10 +102,10 @@ class UserLoginDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Tran
       sql"""
         UPDATE user_login_details
         SET username = ${userLoginDetails.username},
-            password_hash = ${userLoginDetails.password_hash},
+            passwordHash = ${userLoginDetails.passwordHash},
             email = ${userLoginDetails.email},
             role = ${userLoginDetails.role}
-        WHERE userId = $userId
+        WHERE user_id = $userId
       """.update.run
 
     // Query the updated user
@@ -131,7 +131,7 @@ class UserLoginDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Tran
   }
 
   override def updateUserLoginDetailsDynamic(
-                                              user_id: String,
+                                              userId: String,
                                               username: Option[String],
                                               passwordHash: Option[String],
                                               email: Option[String],
@@ -150,7 +150,7 @@ class UserLoginDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Tran
     val updateQuery: Option[ConnectionIO[Int]] =
       if (updates.nonEmpty) {
         (fr"UPDATE user_login_details SET" ++ updates.intercalate(fr",") ++
-          fr"WHERE user_id = $user_id").update.run.some
+          fr"WHERE user_id = $userId").update.run.some
       } else None
 
     // Query the updated user
@@ -158,7 +158,7 @@ class UserLoginDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Tran
       sql"""
         SELECT id, user_id, username, password_hash, email, role, created_at, updated_at
         FROM user_login_details
-        WHERE user_id = $user_id
+        WHERE user_id = $userId
       """.query[UserLoginDetails].option
 
     // Combine update and select logic

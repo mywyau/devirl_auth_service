@@ -5,12 +5,12 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.effect.IO
 import controllers.users.mocks.*
 import io.circe.syntax.*
-import models.auth.UsernameAlreadyExists
 import models.users.*
 import models.users.adts.Wanderer
+import models.users.registration.UsernameAlreadyExists
+import models.users.registration.responses.error.RegistrationErrorResponse
 import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserProfile}
 import models.users.wanderer_profile.requests.UserSignUpRequest
-import models.users.registration.responses.error.RegistrationErrorResponse
 import org.http4s.*
 import org.http4s.Status.{BadRequest, Created}
 import org.http4s.circe.*
@@ -27,13 +27,13 @@ object RegistrationControllerSpec extends SimpleIOSuite {
   def testUserLoginDetails(username: String): UserLoginDetails = {
     UserLoginDetails(
       id = Some(1),
-      user_id = "user_id_1",
+      userId = "user_id_1",
       username = username,
-      password_hash = "hashed_password",
+      passwordHash = "hashed_password",
       email = "john.doe@example.com",
       role = Wanderer,
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
   }
 
@@ -43,16 +43,16 @@ object RegistrationControllerSpec extends SimpleIOSuite {
       userId = "user_id_1",
       UserLoginDetails(
         id = Some(1),
-        user_id = "user_id_1",
+        userId = "user_id_1",
         username = username,
-        password_hash = "hashed_password",
+        passwordHash = "hashed_password",
         email = "john.doe@example.com",
         role = Wanderer,
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-        updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       ),
-      first_name = "John",
-      last_name = "Doe",
+      firstName = "John",
+      lastName = "Doe",
       UserAddress(
         userId = "user_id_1",
         street = Some("fake street 1"),
@@ -60,14 +60,14 @@ object RegistrationControllerSpec extends SimpleIOSuite {
         country = Some("UK"),
         county = Some("County 1"),
         postcode = Some("CF3 3NJ"),
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-        updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       ),
-      contact_number = "123456789",
+      contactNumber = "123456789",
       email = "john.doe@example.com",
       role = Wanderer,
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
   }
 
@@ -81,25 +81,25 @@ object RegistrationControllerSpec extends SimpleIOSuite {
   test("POST - /register should return 201 when user is created successfully") {
     val signUpRequest =
       UserSignUpRequest(
-        user_id = "user_id_2",
+        userId = "user_id_2",
         username = "newuser",
         password = "password123",
         role = Wanderer,
         email = "jane.doe@example.com",
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
 
     val validRegisterUserMockResult: IO[Valid[UserLoginDetails]] =
       IO.pure(Valid(
         UserLoginDetails(
           id = Some(1),
-          user_id = "user_id_1",
+          userId = "user_id_1",
           username = "test_user",
-          password_hash = "hashed_password",
+          passwordHash = "hashed_password",
           email = "john.doe@example.com",
           role = Wanderer,
-          created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-          updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+          createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+          updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
         )
       ))
 
@@ -126,12 +126,12 @@ object RegistrationControllerSpec extends SimpleIOSuite {
 
     val signUpRequest =
       UserSignUpRequest(
-        user_id = "user_id_1",
+        userId = "user_id_1",
         username = "existinguser",
         password = "password123",
         email = "jane.doe@example.com",
         role = Wanderer,
-        created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
 
     val validRegisterUserMockResult =
@@ -154,7 +154,7 @@ object RegistrationControllerSpec extends SimpleIOSuite {
       body <- response.as[RegistrationErrorResponse]
     } yield expect.all(
       response.status == BadRequest,
-      body == RegistrationErrorResponse(List("Username already exists"),List(),List())
+      body == RegistrationErrorResponse(List("Username already exists"), List(), List())
     )
   }
 }

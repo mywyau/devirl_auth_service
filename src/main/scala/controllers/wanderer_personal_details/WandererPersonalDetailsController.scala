@@ -3,8 +3,7 @@ package controllers.wanderer_personal_details
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
-import models.users.wanderer_personal_details.responses.error.PersonalDetailsErrorResponse
-import models.users.wanderer_personal_details.responses.success.CreatedPersonalDetailsResponse
+import models.responses.ErrorResponse
 import models.users.wanderer_personal_details.service.WandererPersonalDetails
 import org.http4s.*
 import org.http4s.circe.*
@@ -27,7 +26,7 @@ class WandererPersonalDetailsControllerImpl[F[_] : Concurrent](
         case Right(address) =>
           Ok(address.asJson)
         case Left(error) =>
-          val errorResponse = PersonalDetailsErrorResponse(error.code, error.errorMessage)
+          val errorResponse = ErrorResponse(error.code, error.errorMessage)
           BadRequest(errorResponse.asJson)
       }
   }

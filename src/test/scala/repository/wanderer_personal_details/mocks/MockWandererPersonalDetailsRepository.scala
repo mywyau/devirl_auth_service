@@ -11,7 +11,7 @@ case class MockWandererPersonalDetailsRepository(ref: Ref[IO, List[WandererPerso
   extends WandererPersonalDetailsRepositoryAlgebra[IO] {
 
   override def findByUserId(userId: String): IO[Option[WandererPersonalDetails]] =
-    ref.get.map(_.find(_.user_id == userId))
+    ref.get.map(_.find(_.userId == userId))
 
   override def createPersonalDetails(wandererPersonalDetails: WandererPersonalDetails): IO[Int] =
     ref.modify(details => (wandererPersonalDetails :: details, 1))
@@ -25,18 +25,22 @@ case class MockWandererPersonalDetailsRepository(ref: Ref[IO, List[WandererPerso
                                              company: Option[String]
                                            ): IO[Option[WandererPersonalDetails]] =
     ref.modify { details =>
-      details.find(_.user_id == userId) match {
+      details.find(_.userId == userId) match {
         case Some(existing) =>
-          val updated = existing.copy(
-            contact_number = contactNumber.getOrElse(existing.contact_number),
-            first_name = firstName.getOrElse(existing.first_name),
-            last_name = lastName.getOrElse(existing.last_name),
-            email = email.getOrElse(existing.email),
-            company = company.getOrElse(existing.company),
-            updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-          )
-          (details.map(d => if (d.user_id == userId) updated else d), Some(updated))
+          val updated =
+            existing.copy(
+              contactNumber = contactNumber,
+              firstName = firstName,
+              lastName = lastName,
+              email = email,
+              company = company,
+              updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+            )
+          (details.map(d => if (d.userId == userId) updated else d), Some(updated))
         case None => (details, None)
       }
     }
+
+  override def createRegistrationPersonalDetails(userId: String): IO[Int] =
+    IO.pure(1)
 }

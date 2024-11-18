@@ -8,13 +8,13 @@ import java.time.LocalDateTime
 
 case class UserLoginDetails(
                              id: Option[Int],
-                             user_id: String,
+                             userId: String,
                              username: String,
-                             password_hash: String,
+                             passwordHash: String,
                              email: String,
                              role: Role,
-                             created_at: LocalDateTime,
-                             updated_at: LocalDateTime
+                             createdAt: LocalDateTime,
+                             updatedAt: LocalDateTime
                            )
 
 object UserLoginDetails {

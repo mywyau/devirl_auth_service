@@ -12,7 +12,7 @@ case class UserAddress(
                         country: String,
                         county: Option[String],
                         postcode: String,
-                        created_at: LocalDateTime,
+                        createdAt: LocalDateTime,
                         updated_at: LocalDateTime
                       )
 

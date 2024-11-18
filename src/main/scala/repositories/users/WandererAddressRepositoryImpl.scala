@@ -16,6 +16,8 @@ import java.time.LocalDateTime
 
 trait WandererAddressRepositoryAlgebra[F[_]] {
 
+  def createRegistrationWandererAddress(userId: String): F[Int]
+
   def createUserAddress(user: WandererAddress): F[Int]
 
   def findByUserId(userId: String): F[Option[WandererAddress]]
@@ -46,6 +48,19 @@ class WandererAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
     findQuery
   }
 
+  override def createRegistrationWandererAddress(userId: String): F[Int] = {
+    sql"""
+      INSERT INTO wanderer_address (
+        user_id
+      )
+      VALUES (
+        $userId
+        )
+    """.update
+      .run
+      .transact(transactor)
+  }
+
   override def createUserAddress(wandererAddress: WandererAddress): F[Int] = {
     sql"""
       INSERT INTO wanderer_address (
@@ -59,14 +74,14 @@ class WandererAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
         updated_at
       )
       VALUES (
-        ${wandererAddress.user_id},
+        ${wandererAddress.userId},
         ${wandererAddress.street},
         ${wandererAddress.city},
         ${wandererAddress.country},
         ${wandererAddress.county},
         ${wandererAddress.postcode},
-        ${wandererAddress.created_at},
-        ${wandererAddress.updated_at}
+        ${wandererAddress.createdAt},
+        ${wandererAddress.updatedAt}
         )
     """.update
       .run

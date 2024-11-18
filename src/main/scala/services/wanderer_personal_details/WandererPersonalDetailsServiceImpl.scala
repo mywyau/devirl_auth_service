@@ -13,8 +13,8 @@ class WandererPersonalDetailsServiceImpl[F[_] : Concurrent : NonEmptyParallel : 
                                                                                        wandererPersonalDetailsRepo: WandererPersonalDetailsRepositoryAlgebra[F]
                                                                                      ) extends WandererPersonalDetailsServiceAlgebra[F] {
 
-  override def getPersonalDetailsByUserId(user_id: String): F[Either[PersonalDetailsErrors, WandererPersonalDetails]] = {
-    wandererPersonalDetailsRepo.findByUserId(user_id).flatMap {
+  override def getPersonalDetailsByUserId(userId: String): F[Either[PersonalDetailsErrors, WandererPersonalDetails]] = {
+    wandererPersonalDetailsRepo.findByUserId(userId).flatMap {
       case Some(user) =>
         Concurrent[F].pure(Right(user))
       case None =>

@@ -138,7 +138,7 @@ http GET http://localhost:8080/api/bookings/booking_1
 ### POST Request - bookings
 
 ```
-http POST http://localhost:8080/api/bookings booking_id="booking_7" booking_name="Meeting with Mary" user_id:=5 workspace_id:=1 booking_date="2024-10-21" start_time="2024-10-21T09:00:00" end_time="2024-10-21T12:00:00" status="Confirmed" created_at="2024-10-15T17:04:38"
+http POST http://localhost:8080/api/bookings booking_id="booking_7" booking_name="Meeting with Mary" userId:=5 workspaceId:=1 booking_date="2024-10-21" start_time="2024-10-21T09:00:00" end_time="2024-10-21T12:00:00" status="Confirmed" created_at="2024-10-15T17:04:38"
 ```
 
 ```

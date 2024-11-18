@@ -4,7 +4,7 @@ import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
-import models.auth.*
+import models.users.registration.*
 
 import java.security.MessageDigest
 import java.util.Base64

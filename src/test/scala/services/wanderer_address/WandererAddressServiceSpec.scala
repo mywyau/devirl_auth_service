@@ -11,17 +11,17 @@ import java.time.LocalDateTime
 
 object WandererAddressServiceSpec extends SimpleIOSuite {
 
-  def testAddress(id: Option[Int], user_id: String): WandererAddress =
+  def testAddress(id: Option[Int], userId: String): WandererAddress =
     WandererAddress(
       id = Some(1),
-      user_id = user_id,
-      street = "fake street 1",
-      city = "fake city 1",
-      country = "UK",
+      userId = userId,
+      street = Some("fake street 1"),
+      city = Some("fake city 1"),
+      country = Some("UK"),
       county = Some("County 1"),
-      postcode = "CF3 3NJ",
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      postcode = Some("CF3 3NJ"),
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
   class MockWandererAddressRepository(
@@ -32,9 +32,12 @@ object WandererAddressServiceSpec extends SimpleIOSuite {
 
     override def createUserAddress(user: WandererAddress): IO[Int] = IO.pure(1) // Assume user creation always succeeds
 
-    override def findByUserId(user_id: String): IO[Option[WandererAddress]] = IO.pure(existingWandererAddress.get(user_id))
+    override def findByUserId(userId: String): IO[Option[WandererAddress]] = IO.pure(existingWandererAddress.get(userId))
 
     override def updateAddressDynamic(userId: String, street: Option[String], city: Option[String], country: Option[String], county: Option[String], postcode: Option[String]): IO[Option[WandererAddress]] = ???
+
+    override def createRegistrationWandererAddress(userId: String): IO[Int] =
+      IO.pure(1)
   }
 
 

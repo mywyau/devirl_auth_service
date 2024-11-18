@@ -10,17 +10,17 @@ import java.time.LocalDateTime
 
 object WandererAddressRepositorySpec extends SimpleIOSuite {
 
-  def testAddress(id: Option[Int], user_id: String): WandererAddress =
+  def testAddress(id: Option[Int], userId: String): WandererAddress =
     WandererAddress(
       id = id,
-      user_id = user_id,
-      street = "fake street 1",
-      city = "fake city 1",
-      country = "UK",
+      userId = userId,
+      street = Some("fake street 1"),
+      city = Some("fake city 1"),
+      country = Some("UK"),
       county = Some("County 1"),
-      postcode = "CF3 3NJ",
-      created_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updated_at = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      postcode = Some("CF3 3NJ"),
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
   // Helper method to create a mock repository with initial state
@@ -73,17 +73,18 @@ object WandererAddressRepositorySpec extends SimpleIOSuite {
     } yield expect(updated.nonEmpty) and expect(
       updatedAddress.contains(
         originalAddress.copy(
-          street = "new street",
-          city = "new city",
-          country = "new country",
+          street = Some("new street"),
+          city = Some("new city"),
+          country = Some("new country"),
           county = Some("new county"),
-          postcode = "NEW123"
+          postcode = Some("NEW123")
         )
       )
     )
   }
 
   test(".updateAddressDynamic() - should partially update fields for an existing address") {
+
     val originalAddress = testAddress(Some(4), "user_id_4")
 
     for {
@@ -100,8 +101,11 @@ object WandererAddressRepositorySpec extends SimpleIOSuite {
     } yield expect(updated.nonEmpty) and expect(
       updatedAddress.contains(
         originalAddress.copy(
-          city = "updated city",
-          postcode = "UPD456"
+          street = None,
+          city = Some("updated city"),
+          country = None,
+          county = None,
+          postcode = Some("UPD456")
         )
       )
     )
@@ -109,7 +113,7 @@ object WandererAddressRepositorySpec extends SimpleIOSuite {
 
   test(".updateAddressDynamic() - should return None if user_id does not exist") {
     for {
-      mockRepo <- createMockRepo(Nil) // No addresses initially
+      mockRepo <- createMockRepo(Nil)
       result <- mockRepo.updateAddressDynamic(
         userId = "nonexistent_user_id",
         street = Some("some street"),
@@ -135,6 +139,26 @@ object WandererAddressRepositorySpec extends SimpleIOSuite {
         postcode = None
       )
       updatedAddress <- mockRepo.findByUserId("user_id_5")
-    } yield expect(updated.contains(originalAddress)) and expect(updatedAddress.contains(originalAddress))
+    } yield
+      expect.all(
+        updated == Some(
+          originalAddress.copy(
+            street = None,
+            city = None,
+            country = None,
+            county = None,
+            postcode = None
+          )
+        ),
+        updatedAddress == Some(
+          originalAddress.copy(
+            street = None,
+            city = None,
+            country = None,
+            county = None,
+            postcode = None
+          )
+        )
+      )
   }
 }

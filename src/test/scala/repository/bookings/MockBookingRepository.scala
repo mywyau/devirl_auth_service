@@ -2,6 +2,7 @@ package repository.bookings
 
 import cats.effect.IO
 import models.*
+import models.bookings.Booking
 import repositories.bookings.BookingRepositoryAlgebra
 
 class MockBookingRepository extends BookingRepositoryAlgebra[IO] {
@@ -22,7 +23,7 @@ class MockBookingRepository extends BookingRepositoryAlgebra[IO] {
   }
 
   override def setBooking(booking: Booking): IO[Int] = {
-    bookings += (booking.booking_id -> booking)
+    bookings += (booking.bookingId -> booking)
     IO.pure(1)
   }
 

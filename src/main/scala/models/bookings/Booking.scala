@@ -1,4 +1,4 @@
-package models
+package models.bookings
 
 import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder}
@@ -8,15 +8,15 @@ import java.time.{LocalDate, LocalDateTime}
 
 case class Booking(
                     id: Option[Int],
-                    booking_id: String,
-                    booking_name: String,
-                    user_id: Int,
-                    workspace_id: Int,
-                    booking_date: LocalDate,
-                    start_time: LocalDateTime,
-                    end_time: LocalDateTime,
+                    bookingId: String,
+                    bookingName: String,
+                    userId: Int,
+                    workspaceId: Int,
+                    bookingDate: LocalDate,
+                    startTime: LocalDateTime,
+                    endTime: LocalDateTime,
                     status: BookingStatus,
-                    created_at: LocalDateTime
+                    createdAt: LocalDateTime
                   )
 
 object Booking {
