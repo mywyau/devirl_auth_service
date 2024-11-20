@@ -102,8 +102,10 @@ class WandererProfileServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
 
     val updatePersonalDetails =
       personalDetailsUpdate match {
-        case Some(UpdatePersonalDetails(contactNumber, firstName, lastName, email, company)) =>
-          wandererPersonalDetailsRepo.updatePersonalDetailsDynamic(userId, contactNumber, firstName, lastName, email, company)
+        case Some(UpdatePersonalDetails(firstName, lastName, contactNumber, email, company)) =>
+          wandererPersonalDetailsRepo.updatePersonalDetailsDynamic(
+            userId = userId, firstName = firstName, lastName = lastName, contactNumber = contactNumber, email = email, company = company
+          )
         case None => Monad[F].pure(None)
       }
 

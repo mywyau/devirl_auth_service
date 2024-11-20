@@ -8,7 +8,6 @@ import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import models.users.adts.Role
-import models.users.wanderer_personal_details.repository.WandererPersonalDetailsUpdate
 import models.users.wanderer_personal_details.service.WandererPersonalDetails
 
 import java.sql.Timestamp
@@ -25,9 +24,9 @@ trait WandererPersonalDetailsRepositoryAlgebra[F[_]] {
 
   def updatePersonalDetailsDynamic(
                                     userId: String,
-                                    contactNumber: Option[String],
                                     firstName: Option[String],
                                     lastName: Option[String],
+                                    contactNumber: Option[String],
                                     email: Option[String],
                                     company: Option[String]
                                   ): F[Option[WandererPersonalDetails]]
@@ -65,18 +64,18 @@ class WandererPersonalDetailsRepositoryImpl[F[_] : Concurrent : Monad](transacto
     sql"""
         INSERT INTO wanderer_personal_details (
           user_id,
-          contact_number,
           first_name,
           last_name,
+          contact_number,
           email,
           company,
           created_at,
           updated_at
         ) VALUES (
           ${wandererPersonalDetails.userId},
-          ${wandererPersonalDetails.contactNumber},
           ${wandererPersonalDetails.firstName},
           ${wandererPersonalDetails.lastName},
+          ${wandererPersonalDetails.contactNumber},
           ${wandererPersonalDetails.email},
           ${wandererPersonalDetails.company},
           ${wandererPersonalDetails.createdAt},
@@ -87,20 +86,21 @@ class WandererPersonalDetailsRepositoryImpl[F[_] : Concurrent : Monad](transacto
       .transact(transactor)
   }
 
+
   override def updatePersonalDetailsDynamic(
                                              userId: String,
-                                             contactNumber: Option[String],
                                              firstName: Option[String],
                                              lastName: Option[String],
+                                             contactNumber: Option[String],
                                              email: Option[String],
                                              company: Option[String]
                                            ): F[Option[WandererPersonalDetails]] = {
 
     // Dynamically build the update query
     val updates = List(
-      contactNumber.map(cn => fr"contact_number = $cn"),
       firstName.map(fn => fr"first_name = $fn"),
       lastName.map(ln => fr"last_name = $ln"),
+      contactNumber.map(cn => fr"contact_number = $cn"),
       email.map(e => fr"email = $e"),
       company.map(c => fr"company = $c")
     ).flatten

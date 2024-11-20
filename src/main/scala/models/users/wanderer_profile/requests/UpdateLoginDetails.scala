@@ -32,9 +32,9 @@ object UpdateAddress {
 
 
 case class UpdatePersonalDetails(
-                                  contactNumber: Option[String],
                                   firstName: Option[String],
                                   lastName: Option[String],
+                                  contactNumber: Option[String],
                                   email: Option[String],
                                   company: Option[String]
                                 )

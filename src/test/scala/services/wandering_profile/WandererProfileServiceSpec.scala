@@ -94,7 +94,9 @@ object WandererProfileServiceSpec extends SimpleIOSuite {
       IO.pure(1)
   }
 
-  class MockWandererPersonalDetailsRepository(initialData: Map[String, WandererPersonalDetails]) extends WandererPersonalDetailsRepositoryAlgebra[IO] {
+  class MockWandererPersonalDetailsRepository(initialData: Map[String, WandererPersonalDetails])
+    extends WandererPersonalDetailsRepositoryAlgebra[IO] {
+
     private val dataRef: Ref[IO, Map[String, WandererPersonalDetails]] = Ref.unsafe(initialData)
 
     override def findByUserId(userId: String): IO[Option[WandererPersonalDetails]] =
@@ -102,9 +104,9 @@ object WandererProfileServiceSpec extends SimpleIOSuite {
 
     override def updatePersonalDetailsDynamic(
                                                userId: String,
-                                               contactNumber: Option[String],
                                                firstName: Option[String],
                                                lastName: Option[String],
+                                               contactNumber: Option[String],
                                                email: Option[String],
                                                company: Option[String]
                                              ): IO[Option[WandererPersonalDetails]] =
@@ -112,23 +114,25 @@ object WandererProfileServiceSpec extends SimpleIOSuite {
         data.get(userId) match {
           case Some(details) =>
             val updated = details.copy(
-              contactNumber = contactNumber,
-              firstName = firstName,
-              lastName = lastName,
-              email = email,
-              company = company
+              firstName = firstName.orElse(details.firstName),
+              lastName = lastName.orElse(details.lastName),
+              contactNumber = contactNumber.orElse(details.contactNumber),
+              email = email.orElse(details.email),
+              company = company.orElse(details.company)
             )
+            println(s"Updating userId=$userId: $details -> $updated")
             (data + (userId -> updated), Some(updated))
-          case None => (data, None)
+          case None =>
+            println(s"No details found for userId=$userId")
+            (data, None)
         }
       }
 
-    override def createPersonalDetails(wandererPersonalDetails: WandererPersonalDetails): IO[Int] =
-      IO.pure(1)
+    override def createPersonalDetails(wandererPersonalDetails: WandererPersonalDetails): IO[Int] = IO.pure(1)
 
-    override def createRegistrationPersonalDetails(userId: String): IO[Int] =
-      IO.pure(1)
+    override def createRegistrationPersonalDetails(userId: String): IO[Int] = IO.pure(1)
   }
+
 
   class MockPasswordService extends PasswordServiceAlgebra[IO] {
 
@@ -142,16 +146,17 @@ object WandererProfileServiceSpec extends SimpleIOSuite {
   test("createProfile - should return a complete profile for an existing user") {
     val userId = "user_id_1"
 
-    val mockLoginDetails = UserLoginDetails(
-      id = Some(1),
-      userId = userId,
-      username = "username",
-      passwordHash = "hashed_password",
-      email = "user1@example.com",
-      role = Wanderer,
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-    )
+    val mockLoginDetails =
+      UserLoginDetails(
+        id = Some(1),
+        userId = userId,
+        username = "username",
+        passwordHash = "hashed_password",
+        email = "user1@example.com",
+        role = Wanderer,
+        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      )
 
     val mockAddress = WandererAddress(
       id = Some(1),
@@ -249,17 +254,18 @@ object WandererProfileServiceSpec extends SimpleIOSuite {
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
-    val mockPersonalDetails = WandererPersonalDetails(
-      id = Some(1),
-      userId = userId,
-      firstName = Some("Old John"),
-      lastName = Some("Old Doe"),
-      contactNumber = Some("0000000000"),
-      email = Some("old.john@example.com"),
-      company = Some("Old Corp"),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-    )
+    val mockPersonalDetails =
+      WandererPersonalDetails(
+        id = Some(1),
+        userId = userId,
+        firstName = Some("Old John"),
+        lastName = Some("Old Doe"),
+        contactNumber = Some("0000000000"),
+        email = Some("old.john@example.com"),
+        company = Some("Old Corp"),
+        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      )
 
 
     val mockLoginRepo = new MockUserLoginDetailsRepository(Map(userId -> mockLoginDetails))
@@ -288,9 +294,9 @@ object WandererProfileServiceSpec extends SimpleIOSuite {
 
     val updatePersonalDetails =
       UpdatePersonalDetails(
-        contactNumber = Some("1234567890"),
         firstName = Some("New John"),
         lastName = Some("New Doe"),
+        contactNumber = Some("1234567890"),
         email = Some("new.john@example.com"),
         company = Some("New Corp")
       )

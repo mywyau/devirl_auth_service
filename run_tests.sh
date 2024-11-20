@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-sbt test it/test
+sbt clean test it/test
