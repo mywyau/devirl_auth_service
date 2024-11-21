@@ -4,7 +4,7 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
-import models.responses.ErrorResponse
+import models.responses.{CreatedResponse, ErrorResponse}
 import models.users.login.adts.{LoginPasswordError, LoginUsernameError}
 import models.users.login.errors.LoginErrorResponse
 import models.users.login.requests.UserLoginRequest

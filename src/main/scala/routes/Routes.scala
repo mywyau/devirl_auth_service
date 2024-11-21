@@ -16,7 +16,6 @@ import repositories.business.BusinessRepository
 import repositories.users.{UserLoginDetailsRepositoryImpl, WandererAddressRepositoryImpl, WandererPersonalDetailsRepositoryImpl}
 import repositories.workspaces.WorkspaceRepository
 import services.*
-import services.auth.AuthenticationServiceImpl
 import services.bookings.BookingServiceImpl
 import services.business.BusinessServiceImpl
 import services.login.LoginServiceImpl
@@ -47,7 +46,7 @@ object Routes {
     val userLoginDetailsRepository = new UserLoginDetailsRepositoryImpl[F](transactor)
     val wandererAddressRepo = new WandererAddressRepositoryImpl[F](transactor)
     val wandererPersonalDetailsRepo = new WandererPersonalDetailsRepositoryImpl[F](transactor)
-    
+
     val passwordService = new PasswordServiceImpl[F]
     val registrationService = new RegistrationServiceImpl[F](userLoginDetailsRepository, wandererAddressRepo, wandererPersonalDetailsRepo, passwordService)
     val registrationController = new RegistrationControllerImpl[F](registrationService)

@@ -7,7 +7,7 @@ import controllers.fragments.LoginControllerFragments.{createUserLoginDetailsTab
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.syntax.*
-import models.responses.ErrorResponse
+import models.responses.CreatedResponse
 import models.users.*
 import models.users.login.adts.{LoginPasswordIncorrect, UsernameNotFound}
 import models.users.login.errors.LoginErrorResponse
@@ -121,7 +121,7 @@ class LoginControllerISpec(global: GlobalRead) extends IOSuite {
       response.as[LoginErrorResponse].map { body =>
         expect.all(
           response.status == Status.BadRequest,
-          body.usernameErrors == List(ErrorResponse(UsernameNotFound.code, UsernameNotFound.message)),
+          body.usernameErrors == List(CreatedResponse(UsernameNotFound.code, UsernameNotFound.message)),
           body.passwordErrors == List()
         )
       }
@@ -148,7 +148,7 @@ class LoginControllerISpec(global: GlobalRead) extends IOSuite {
         expect.all(
           response.status == Status.BadRequest,
           body.usernameErrors == List(),
-          body.passwordErrors == List(ErrorResponse(LoginPasswordIncorrect.code, LoginPasswordIncorrect.message))
+          body.passwordErrors == List(CreatedResponse(LoginPasswordIncorrect.code, LoginPasswordIncorrect.message))
         )
       }
     }

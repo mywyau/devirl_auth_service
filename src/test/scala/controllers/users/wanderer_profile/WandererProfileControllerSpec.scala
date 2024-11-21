@@ -4,7 +4,7 @@ import cats.effect.IO
 import controllers.users.wanderer_profile.constants.WandererUserProfileControllerConstants.sampleWandererUserProfile1
 import controllers.users.wanderer_profile.mocks.MockWandererProfileService
 import controllers.wanderer_profile.WandererProfileController
-import models.responses.ErrorResponse
+import models.responses.CreatedResponse
 import models.users.*
 import models.users.adts.Admin
 import models.users.wanderer_profile.errors.UserIdNotFound
@@ -56,7 +56,7 @@ object WandererProfileControllerSpec extends SimpleIOSuite {
           loginDetailsErrors = List(),
           addressErrors = List(),
           contactDetailsErrors = List(),
-          otherErrors = List(ErrorResponse(UserIdNotFound.code, UserIdNotFound.message))
+          otherErrors = List(CreatedResponse(UserIdNotFound.code, UserIdNotFound.message))
         )
     )
   }

@@ -1,7 +1,7 @@
 package controllers.wanderer_profile
 
-import cats.effect.unsafe.implicits.global
 import cats.data.Validated.{Invalid, Valid}
+import cats.effect.unsafe.implicits.global
 import cats.effect.{Concurrent, IO}
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
@@ -64,9 +64,7 @@ class WandererProfileControllerImpl[F[_] : Concurrent](
 
 
     case req@PUT -> Root / "wanderer" / "user" / "profile" / userId =>
-      IO(println(s"Received a PUT /wanderer/user/profile/$userId request")).unsafeRunSync() // Print immediately
       req.decode[UpdateProfileRequest] { request =>
-        IO(println(s"Received UpdateProfileRequest: $request")).unsafeRunSync() // Log incoming payload
         for {
           updatedProfile <-
             wandererProfileService.updateProfile(

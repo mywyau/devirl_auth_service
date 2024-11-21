@@ -7,7 +7,7 @@ import controllers.wanderer_profile.WandererProfileController
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.syntax.*
-import models.responses.ErrorResponse
+import models.responses.CreatedResponse
 import models.users.*
 import models.users.adts.*
 import models.users.wanderer_profile.errors.{MissingAddress, MissingLoginDetails, MissingPersonalDetails}
@@ -159,9 +159,9 @@ class WandererProfileControllerISpec(global: GlobalRead) extends IOSuite {
           response.status == Status.BadRequest,
           body ==
             WandererProfileErrorResponse(
-              List(ErrorResponse(MissingLoginDetails.code, MissingLoginDetails.message)),
-              List(ErrorResponse(MissingAddress.code, MissingAddress.message)),
-              List(ErrorResponse(MissingPersonalDetails.code, MissingPersonalDetails.message)),
+              List(CreatedResponse(MissingLoginDetails.code, MissingLoginDetails.message)),
+              List(CreatedResponse(MissingAddress.code, MissingAddress.message)),
+              List(CreatedResponse(MissingPersonalDetails.code, MissingPersonalDetails.message)),
               List()
             )
         )

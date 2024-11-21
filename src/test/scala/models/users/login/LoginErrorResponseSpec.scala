@@ -4,7 +4,7 @@ import cats.effect.IO
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
-import models.responses.ErrorResponse
+import models.responses.CreatedResponse
 import models.users.login.adts.{LoginPasswordIncorrect, UsernameNotFound}
 import models.users.login.errors.LoginErrorResponse
 import weaver.SimpleIOSuite
@@ -13,8 +13,8 @@ object LoginErrorResponseSpec extends SimpleIOSuite {
 
   val sampleLoginErrorResponse: LoginErrorResponse =
     LoginErrorResponse(
-      usernameErrors = List(ErrorResponse(UsernameNotFound.code, UsernameNotFound.message)),
-      passwordErrors = List(ErrorResponse(LoginPasswordIncorrect.code, LoginPasswordIncorrect.message))
+      usernameErrors = List(CreatedResponse(UsernameNotFound.code, UsernameNotFound.message)),
+      passwordErrors = List(CreatedResponse(LoginPasswordIncorrect.code, LoginPasswordIncorrect.message))
     )
 
   test("LoginErrorResponse - model encodes correctly to JSON") {

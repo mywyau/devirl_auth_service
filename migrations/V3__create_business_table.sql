@@ -1,14 +1,46 @@
-CREATE TABLE business (
+CREATE TABLE business_details (
     id BIGSERIAL PRIMARY KEY,                             -- Primary key with auto-increment, better scalability with BIGSERIAL
     business_id VARCHAR(255) NOT NULL UNIQUE,
     business_name VARCHAR(255) NOT NULL,
+    business_type VARCHAR(255) NOT NULL,
+    business_industry VARCHAR(255) NOT NULL,
+    primary_contact VARCHAR(255) NOT NULL,
     contact_email VARCHAR(255) NOT NULL,
     contact_phone VARCHAR(20) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE business_address (
+    id BIGSERIAL PRIMARY KEY,
+    user_id VARCHAR(255),
+    street VARCHAR(255),
+    city VARCHAR(255),
+    country VARCHAR(255),
+    county VARCHAR(255),
+    postcode VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE business_desks {
+    id SERIAL PRIMARY KEY,                         -- Unique ID for each workspace
+    business_id VARCHAR(255),
+    workspace_id VARCHAR(255),
+    title VARCHAR(255),
+    description TEXT,
+    desk_type VARCHAR(100),
+    price_per_hour DECIMAL(10, 2) CHECK (price_per_day >= 0),  -- Price per day (non-negative)
+    price_per_day DECIMAL(10, 2) CHECK (price_per_day >= 0),  -- Price per day (non-negative)
+    rules TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+}
+
+
 CREATE TABLE facilities (
     id SERIAL PRIMARY KEY,
+    business_id VARCHAR(100) NOT NULL UNIQUE -- Example: "Wi-Fi", "Parking", "Projector"
     name VARCHAR(100) NOT NULL UNIQUE -- Example: "Wi-Fi", "Parking", "Projector"
 );
 
@@ -23,7 +55,7 @@ DROP TABLE IF EXISTS workspaces;
 -- Create the workspaces table
 CREATE TABLE workspaces (
     id SERIAL PRIMARY KEY,                         -- Unique ID for each workspace
-    business_id VARCHAR(255) NOT NULL REFERENCES business(business_id) ON DELETE CASCADE,  -- Foreign key to users table (business owners)
+    business_id VARCHAR(255) NOT NULL,  -- Foreign key to users table (business owners)
     workspace_id VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,                    -- Name of the workspace
     description TEXT,                              -- Description of the workspace
@@ -31,6 +63,7 @@ CREATE TABLE workspaces (
     city VARCHAR(255) NOT NULL,                    -- City where the workspace is located
     country VARCHAR(100) NOT NULL,                 -- Country where the workspace is located
     postcode VARCHAR(20),                          -- Postcode (optional)
+    price_per_hour DECIMAL(10, 2) NOT NULL CHECK (price_per_day >= 0),  -- Price per day (non-negative)
     price_per_day DECIMAL(10, 2) NOT NULL CHECK (price_per_day >= 0),  -- Price per day (non-negative)
     latitude DECIMAL(9, 6) NOT NULL,               -- Latitude for the workspace location
     longitude DECIMAL(9, 6) NOT NULL,              -- Longitude for the workspace location
