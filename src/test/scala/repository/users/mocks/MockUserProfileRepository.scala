@@ -6,7 +6,7 @@ import cats.effect.kernel.Ref
 import models.users.*
 import models.users.adts.Role
 import models.users.wanderer_profile.profile.UserProfile
-import repositories.users.UserProfileRepositoryAlgebra
+import repositories.user_profile.UserProfileRepositoryAlgebra
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime

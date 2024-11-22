@@ -24,15 +24,15 @@ SHARED_RESOURCE=${2:-}
 if [ "$TESTSPEC" = "all" ]; then
   echo "Running all it tests"
   if [ -n "$SHARED_RESOURCE" ]; then
-    sbt "it/testOnly * $SHARED_RESOURCE"
+    sbt clean "it/testOnly * $SHARED_RESOURCE"
   else
-    sbt it/test
+    sbt clean it/test
   fi
 else
   echo "Running it tests matching '$TESTSPEC'"
   if [ -n "$SHARED_RESOURCE" ]; then
-    sbt "it/testOnly *$TESTSPEC* $SHARED_RESOURCE"
+    sbt clean "it/testOnly *$TESTSPEC* $SHARED_RESOURCE"
   else
-    sbt "it/testOnly *$TESTSPEC*"
+    sbt clean "it/testOnly *$TESTSPEC*"
   fi
 fi

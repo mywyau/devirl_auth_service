@@ -1,7 +1,7 @@
 package services.password
 
 import cats.effect.IO
-import services.password.PasswordServiceImpl
+import services.authentication.password.PasswordServiceImpl
 import weaver.{Expectations, SimpleIOSuite}
 
 object PasswordServiceSpec extends SimpleIOSuite {

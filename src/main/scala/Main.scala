@@ -47,15 +47,11 @@ object Main extends IOApp {
       registrationRoutes <- Resource.pure(registrationRoutes(transactor))
       loginRoutes <- Resource.pure(loginRoutes(transactor))
       wandererAddressRoutes <- Resource.pure(wandererAddressRoutes(transactor))
-      bookingRoutes <- Resource.pure(createBookingRoutes(transactor))
-      businessRoutes <- Resource.pure(createBusinessRoutes(transactor))
-      workspaceRoutes <- Resource.pure(createWorkspaceRoutes(transactor))
 
       // Combine all routes under the `/cashew` prefix
       combinedRoutes = Router(
         "/cashew" -> (
-          wandererProfileRoutes <+> registrationRoutes <+> loginRoutes <+> wandererAddressRoutes <+>
-            bookingRoutes <+> businessRoutes <+> workspaceRoutes
+          wandererProfileRoutes <+> registrationRoutes <+> loginRoutes <+> wandererAddressRoutes
           )
       )
 
@@ -92,7 +88,7 @@ object Main extends IOApp {
       .withHost(ipv4"0.0.0.0")
       .withPort(port"8080")
       .withHttpApp(httpRoutes.orNotFound)
-//      .withHttpWebSocketApp(wsBuilder => webSocketRoutes(wsBuilder).orNotFound)
+      //      .withHttpWebSocketApp(wsBuilder => webSocketRoutes(wsBuilder).orNotFound)
       .build
       .void
   }
@@ -113,5 +109,5 @@ object Main extends IOApp {
       }
     }.use(_ => IO.never).as(ExitCode.Success)
   }
-  
+
 }

@@ -11,16 +11,14 @@ import models.users.wanderer_personal_details.service.WandererPersonalDetails
 import models.users.wanderer_profile.profile.UserLoginDetails
 import models.users.wanderer_profile.requests.UserSignUpRequest
 import services.auth.constants.RegistrationServiceConstants.*
+import services.authentication.registration.RegistrationServiceImpl
 import services.registration.mocks.RegistrationServiceMocks.*
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
 
 object RegistrationServiceSpec extends SimpleIOSuite {
-
-  // def createMockWandererPersonalDetailsRepo(initialUsers: List[WandererPersonalDetails]): IO[MockWandererPersonalDetailsRepository] =
-  //   Ref.of[IO, List[WandererPersonalDetails]](initialUsers).map(MockWandererPersonalDetailsRepository.apply)
-
+  
   test(".uniqueUsernameAndEmail() - should pass when all fields are unique") {
 
     val mockUserRepository = new MockUserLoginDetailsRepository() 

@@ -4,11 +4,10 @@ import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
 import models.responses.ErrorResponse
-import models.users.wanderer_profile.responses.CreatedUserResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
-import services.business_address.BusinessAddressServiceAlgebra
+import services.business.business_address.BusinessAddressServiceAlgebra
 
 
 trait BusinessAddressControllerAlgebra[F[_]] {

@@ -3,7 +3,7 @@ package repository.wanderer_personal_details.mocks
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import models.users.wanderer_personal_details.service.WandererPersonalDetails
-import repositories.users.WandererPersonalDetailsRepositoryAlgebra
+import repositories.user_profile.WandererPersonalDetailsRepositoryAlgebra
 
 import java.time.LocalDateTime
 

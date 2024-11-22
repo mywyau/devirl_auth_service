@@ -5,7 +5,7 @@ import cats.effect.IO
 import models.users.registration.RegistrationErrors
 import models.users.wanderer_profile.profile.UserLoginDetails
 import models.users.wanderer_profile.requests.UserSignUpRequest
-import services.registration.RegistrationServiceAlgebra
+import services.authentication.registration.RegistrationServiceAlgebra
 
 class MockRegistrationService(
                                registerUserMock: UserSignUpRequest => IO[Validated[List[RegistrationErrors], UserLoginDetails]]

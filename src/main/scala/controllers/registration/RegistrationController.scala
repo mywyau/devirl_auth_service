@@ -12,8 +12,7 @@ import models.users.wanderer_profile.responses.CreatedUserResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
-import services.auth.algebra.*
-import services.registration.RegistrationServiceAlgebra
+import services.authentication.registration.RegistrationServiceAlgebra
 
 
 trait RegistrationController[F[_]] {
@@ -29,9 +28,7 @@ class RegistrationControllerImpl[F[_] : Concurrent](
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
     case req@POST -> Root / "register" =>
-      IO(println("Received a POST /register request")).unsafeRunSync() // Print immediately
       req.decode[UserSignUpRequest] { request =>
-        IO(println(s"Received UserSignUpRequest: $request")).unsafeRunSync() // Log incoming payload
         registrationService.registerUser(request).flatMap {
           case Valid(user) =>
             Created(CreatedUserResponse("User created successfully").asJson)

@@ -6,7 +6,7 @@ import doobie.*
 import doobie.implicits.*
 import models.users.adts.Wanderer
 import models.users.wanderer_profile.profile.UserLoginDetails
-import repositories.users.UserLoginDetailsRepositoryImpl
+import repositories.user_profile.UserLoginDetailsRepositoryImpl
 import shared.TransactorResource
 import weaver.{GlobalRead, IOSuite, ResourceTag}
 

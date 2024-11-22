@@ -15,7 +15,7 @@ import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
-import repositories.users.WandererAddressRepository
+import repositories.user_profile.WandererAddressRepository
 import services.wanderer_address.WandererAddressService
 import shared.{HttpClientResource, TransactorResource}
 import weaver.*

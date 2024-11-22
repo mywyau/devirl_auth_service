@@ -6,7 +6,7 @@ import cats.{Monad, NonEmptyParallel}
 import models.users.*
 import models.users.wanderer_personal_details.errors.{PersonalDetailsErrors, PersonalDetailsNotFound}
 import models.users.wanderer_personal_details.service.WandererPersonalDetails
-import repositories.users.WandererPersonalDetailsRepositoryAlgebra
+import repositories.user_profile.WandererPersonalDetailsRepositoryAlgebra
 
 
 class WandererPersonalDetailsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](

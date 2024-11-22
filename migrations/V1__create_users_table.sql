@@ -63,7 +63,3 @@ CREATE TABLE user_profile (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
--- Create indexes to optimize queries on users table
---CREATE INDEX idx_email ON users (email);
---CREATE INDEX idx_role ON users (role);

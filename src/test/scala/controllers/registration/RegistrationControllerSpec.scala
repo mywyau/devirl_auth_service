@@ -3,7 +3,6 @@ package controllers.registration
 import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import cats.effect.IO
-import controllers.users.mocks.*
 import io.circe.syntax.*
 import models.users.*
 import models.users.adts.Wanderer
@@ -16,8 +15,7 @@ import org.http4s.Status.{BadRequest, Created}
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityDecoder.*
 import org.http4s.implicits.*
-import services.auth.algebra.*
-import services.registration.RegistrationServiceAlgebra
+import services.authentication.registration.RegistrationServiceAlgebra
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
@@ -37,7 +35,6 @@ object RegistrationControllerSpec extends SimpleIOSuite {
     )
   }
 
-  // Helper to create a test user
   def testUserProfile(username: String): UserProfile = {
     UserProfile(
       userId = "user_id_1",
@@ -71,13 +68,11 @@ object RegistrationControllerSpec extends SimpleIOSuite {
     )
   }
 
-  // Create UserController instance
-  def createUserController(authService: AuthenticationServiceAlgebra[IO],
+  def createRegistrationController(
                            registrationService: RegistrationServiceAlgebra[IO]
                           ): HttpRoutes[IO] =
     RegistrationController[IO](registrationService).routes
 
-  // Test case for POST /register: Success
   test("POST - /register should return 201 when user is created successfully") {
     val signUpRequest =
       UserSignUpRequest(
@@ -105,13 +100,7 @@ object RegistrationControllerSpec extends SimpleIOSuite {
 
     val mockRegistrationService = new MockRegistrationService(_ => validRegisterUserMockResult)
 
-    val mockAuthService = MockAuthService(
-      loginUserMock = _ => IO.pure(Right(testUserLoginDetails("newuser")))
-    )
-
-    val mockTokenService = new MockTokenService
-
-    val controller = createUserController(mockAuthService, mockRegistrationService)
+    val controller = createRegistrationController(registrationService = mockRegistrationService)
 
     val request = Request[IO](Method.POST, uri"/register")
       .withEntity(signUpRequest.asJson)
@@ -121,7 +110,6 @@ object RegistrationControllerSpec extends SimpleIOSuite {
     } yield expect(response.status == Created)
   }
 
-  // Test case for POST /register: Validation Failure
   test("POST - /register should return 400 when validation fails") {
 
     val signUpRequest =
@@ -138,14 +126,8 @@ object RegistrationControllerSpec extends SimpleIOSuite {
       IO.pure(Invalid(List(UsernameAlreadyExists)))
 
     val mockRegistrationService = new MockRegistrationService(_ => validRegisterUserMockResult)
-
-    val mockAuthService =
-      MockAuthService(
-        loginUserMock = _ => IO.pure(Right(testUserLoginDetails("existinguser")))
-      )
-
-    val mockTokenService = new MockTokenService
-    val controller = createUserController(mockAuthService, mockRegistrationService)
+    
+    val controller = createRegistrationController(mockRegistrationService)
 
     val request = Request[IO](Method.POST, uri"/register").withEntity(signUpRequest.asJson)
 

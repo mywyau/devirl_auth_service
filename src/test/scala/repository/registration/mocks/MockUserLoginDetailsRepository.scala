@@ -4,7 +4,7 @@ import cats.effect.IO
 import cats.effect.kernel.Ref
 import models.users.adts.{Role, Wanderer}
 import models.users.wanderer_profile.profile.UserLoginDetails
-import repositories.users.UserLoginDetailsRepositoryAlgebra
+import repositories.user_profile.UserLoginDetailsRepositoryAlgebra
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime

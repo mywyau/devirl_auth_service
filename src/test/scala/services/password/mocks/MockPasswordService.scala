@@ -5,9 +5,9 @@ import cats.effect.IO
 import models.users.adts.Role
 import models.users.registration.*
 import models.users.wanderer_profile.profile.{UserLoginDetails, WandererUserProfile}
-import repositories.users.{UserLoginDetailsRepositoryAlgebra, UserProfileRepositoryAlgebra}
+import repositories.user_profile.{UserLoginDetailsRepositoryAlgebra, UserProfileRepositoryAlgebra}
 import services.auth.constants.AuthenticationServiceConstants.*
-import services.password.PasswordServiceAlgebra
+import services.authentication.password.PasswordServiceAlgebra
 
 class MockPasswordService(expectedHash: String) extends PasswordServiceAlgebra[IO] {
 

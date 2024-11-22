@@ -7,7 +7,7 @@ import controllers.wanderer_profile.WandererProfileController
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.syntax.*
-import models.responses.CreatedResponse
+import models.responses.ErrorResponse
 import models.users.*
 import models.users.adts.*
 import models.users.wanderer_profile.errors.{MissingAddress, MissingLoginDetails, MissingPersonalDetails}
@@ -21,8 +21,8 @@ import org.http4s.circe.jsonEncoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
-import repositories.users.{UserLoginDetailsRepositoryImpl, WandererAddressRepository, WandererPersonalDetailsRepository}
-import services.password.PasswordServiceImpl
+import repositories.user_profile.{UserLoginDetailsRepositoryImpl, WandererAddressRepository, WandererPersonalDetailsRepository}
+import services.authentication.password.PasswordServiceImpl
 import services.wanderer_profile.WandererProfileService
 import shared.{HttpClientResource, TransactorResource}
 import weaver.*
@@ -159,9 +159,9 @@ class WandererProfileControllerISpec(global: GlobalRead) extends IOSuite {
           response.status == Status.BadRequest,
           body ==
             WandererProfileErrorResponse(
-              List(CreatedResponse(MissingLoginDetails.code, MissingLoginDetails.message)),
-              List(CreatedResponse(MissingAddress.code, MissingAddress.message)),
-              List(CreatedResponse(MissingPersonalDetails.code, MissingPersonalDetails.message)),
+              List(ErrorResponse(MissingLoginDetails.code, MissingLoginDetails.message)),
+              List(ErrorResponse(MissingAddress.code, MissingAddress.message)),
+              List(ErrorResponse(MissingPersonalDetails.code, MissingPersonalDetails.message)),
               List()
             )
         )
@@ -219,6 +219,4 @@ class WandererProfileControllerISpec(global: GlobalRead) extends IOSuite {
       }
     }
   }
-
-
 }

@@ -17,9 +17,9 @@ import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
-import repositories.users.{UserLoginDetailsRepositoryImpl, WandererAddressRepositoryImpl, WandererPersonalDetailsRepositoryImpl}
-import services.password.PasswordServiceImpl
-import services.registration.RegistrationServiceImpl
+import repositories.user_profile.{UserLoginDetailsRepositoryImpl, WandererAddressRepositoryImpl, WandererPersonalDetailsRepositoryImpl}
+import services.authentication.password.PasswordServiceImpl
+import services.authentication.registration.RegistrationServiceImpl
 import shared.{HttpClientResource, TransactorResource}
 import weaver.*
 

@@ -7,7 +7,7 @@ import controllers.fragments.LoginControllerFragments.{createUserLoginDetailsTab
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.syntax.*
-import models.responses.CreatedResponse
+import models.responses.ErrorResponse
 import models.users.*
 import models.users.login.adts.{LoginPasswordIncorrect, UsernameNotFound}
 import models.users.login.errors.LoginErrorResponse
@@ -21,9 +21,9 @@ import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
-import repositories.users.UserLoginDetailsRepositoryImpl
-import services.login.LoginServiceImpl
-import services.password.PasswordServiceAlgebra
+import repositories.user_profile.UserLoginDetailsRepositoryImpl
+import services.authentication.login.LoginServiceImpl
+import services.authentication.password.PasswordServiceAlgebra
 import shared.{HttpClientResource, TransactorResource}
 import weaver.*
 
@@ -121,7 +121,7 @@ class LoginControllerISpec(global: GlobalRead) extends IOSuite {
       response.as[LoginErrorResponse].map { body =>
         expect.all(
           response.status == Status.BadRequest,
-          body.usernameErrors == List(CreatedResponse(UsernameNotFound.code, UsernameNotFound.message)),
+          body.usernameErrors == List(ErrorResponse(UsernameNotFound.code, UsernameNotFound.message)),
           body.passwordErrors == List()
         )
       }
@@ -148,7 +148,7 @@ class LoginControllerISpec(global: GlobalRead) extends IOSuite {
         expect.all(
           response.status == Status.BadRequest,
           body.usernameErrors == List(),
-          body.passwordErrors == List(CreatedResponse(LoginPasswordIncorrect.code, LoginPasswordIncorrect.message))
+          body.passwordErrors == List(ErrorResponse(LoginPasswordIncorrect.code, LoginPasswordIncorrect.message))
         )
       }
     }

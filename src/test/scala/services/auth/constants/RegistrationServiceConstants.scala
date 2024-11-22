@@ -6,7 +6,7 @@ import models.users.*
 import models.users.adts.Wanderer
 import models.users.wanderer_profile.profile.UserLoginDetails
 import models.users.wanderer_profile.requests.UserSignUpRequest
-import repositories.users.UserProfileRepositoryAlgebra
+import repositories.user_profile.UserProfileRepositoryAlgebra
 
 import java.time.LocalDateTime
 

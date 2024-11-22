@@ -1,64 +1,65 @@
-INSERT INTO business (business_id, business_name, contact_email, contact_phone, created_at) VALUES
-    ('BUS123456', 'Tech Innovations Inc.', 'info@techinnovations.com', '123-456-7890', '2024-10-10 10:30:00'),
-    ('BUS123457', 'Health & Wellness Co.', 'contact@healthwellness.com', '098-765-4321', '2024-10-11 09:45:00'),
-    ('BUS123458', 'Urban Spaces LLC', 'support@urbanspaces.com', '111-222-3333', '2024-10-12 11:15:00'),
-    ('BUS123459', 'Creative Solutions', 'hello@creativesolutions.com', '444-555-6666', '2024-10-13 14:20:00'),
-    ('BUS123460', 'Skyline Ventures', 'sales@skylineventures.com', '777-888-9999', '2024-10-14 16:00:00');
-
--- Insert data into the facilities table
-INSERT INTO facilities (name) VALUES
-    ('Wi-Fi'),
-    ('Parking'),
-    ('Projector'),
-    ('Air Conditioning'),
-    ('Whiteboard'),
-    ('Printing/Scanning Services'),
-    ('Lockable Storage'),
-    ('Soundproof Phone Booth');
-
-
--- Insert data into the amenities table
-INSERT INTO amenities (name) VALUES
-    ('Coffee Machine'),
-    ('Kitchenette'),
-    ('Lounge Area'),
-    ('Snacks'),
-    ('Filtered Water'),
-    ('Standing Desks'),
-    ('Gym/Fitness Area'),
-    ('Game Area'),
-    ('Childcare Facility'),
-    ('Yoga/Meditation Room');
-
--- Insert initial workspaces
-INSERT INTO workspaces (business_id, workspace_id, name, description, address, city, country, postcode, price_per_day, latitude, longitude)
+INSERT INTO business_address (user_id, street, city, country, county, postcode, created_at, updated_at)
 VALUES
-('BUS123456', 'WORK123456', 'Downtown Office', 'A modern office in the city center', '123 Main St', 'New York', 'USA', '10001', 50.00, 40.7128, -74.0060),
-('BUS123457', 'WORK123457', 'Uptown Workspace', 'Spacious shared workspace with amenities', '456 Elm St', 'New York', 'USA', '10002', 30.00, 40.7306, -73.9352),
-('BUS123458', 'WORK123458', 'London Workspace', 'Spacious shared workspace with amenities', 'Canary Wharf', 'London', 'United Kingdom', 'NW1 4NP', 30.00, 40.7306, -73.9352),
-('BUS123459', 'WORK123459', 'New York Workspace', 'Spacious shared workspace with amenities', '456 Elm St', 'New York', 'USA', '10002', 30.00, 40.7306, -73.9352),
-('BUS123460', 'WORK123460', 'Cardiff Workspace', 'Spacious shared workspace with amenities', '456 Cardiff Bay', 'Cardiff', 'United Kingdom', 'CF3 3NJ', 30.00, 40.7306, -73.9352);
+('business-user-001', '123 Main St', 'Springfield', 'USA', 'Clark', '12345', '2023-01-01 12:05:00', '2023-01-01 12:05:00'),
+('business-user-002', '456 Maple Ave', 'Riverdale', 'USA', 'Cuyahoga', '54321', '2023-01-02 13:05:00', '2023-01-01 12:05:00'),
+('business-user-003', '789 Elm St', 'Metropolis', 'USA', 'Wayne', '67890', '2023-01-03 14:05:00', '2023-01-01 12:05:00');
 
 
--- Insert data into the workspace_facilities table
--- Assuming workspace IDs are already created, linking facilities to these workspaces.
-INSERT INTO workspace_facilities (workspace_id, facility_id) VALUES
-    (1, 1),  -- Workspace 1 has Wi-Fi
-    (1, 4),  -- Workspace 1 has Air Conditioning
-    (1, 6),  -- Workspace 1 has Printing/Scanning Services
+-- Insert test data for the desk_listings table
+INSERT INTO desk_listings (
+    business_id,
+    workspace_id,
+    title,
+    description,
+    desk_type,
+    quantity,
+    price_per_hour,
+    price_per_day,
+    features,
+    availability,
+    rules,
+    created_at,
+    updated_at
+)
+VALUES
+-- Desk 1: Private Desk
+('biz001', 'ws001', 'Private Desk', 'A quiet private desk for focused work.', 'PrivateDesk',
+ 5, 15.50, 80.00,
+ ARRAY['Wi-Fi', 'Power Outlets', 'Monitor'],
+ '{"days": ["Monday", "Tuesday", "Wednesday"], "startTime": "2023-01-01 12:05:00", "endTime": "2023-01-01 13:05:00"}',
+ 'No loud conversations. Keep the desk clean.',
+ CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 
-    (2, 1),  -- Workspace 2 has Wi-Fi
-    (2, 2),  -- Workspace 2 has Parking
-    (2, 5),  -- Workspace 2 has Whiteboard
+-- Desk 2: Hot Desk
+('biz002', 'ws002', 'Hot Desk', 'A shared hot desk in a collaborative workspace.', 'HotDesk',
+ 10, 10.00, 50.00,
+ ARRAY['Wi-Fi', 'Coffee', 'Desk Lamp'],
+ '{"days": ["Thursday", "Friday"], "startTime": "2023-01-01 12:05:00", "endTime": "2023-01-01 13:05:00"}',
+ 'First come, first served. Clean up after use.',
+ CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 
-    (3, 1),  -- Workspace 3 has Wi-Fi
-    (3, 3),  -- Workspace 3 has Projector
-    (3, 8),  -- Workspace 3 has Soundproof Phone Booth
+-- Desk 3: Executive Desk
+('biz003', 'ws003', 'Executive Desk', 'A luxurious executive desk with premium amenities.', 'ExecutiveDesk',
+ 1, 50.00, 250.00,
+ ARRAY['Wi-Fi', 'Power Outlets', 'Monitor', 'Coffee'],
+ '{"days": ["Monday", "Tuesday"], "startTime": "2023-01-01 12:05:00", "endTime": "2023-01-01 13:05:00"}',
+ 'Reserved for executives. Maintain decorum.',
+ CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 
-    (4, 2),  -- Workspace 4 has Parking
-    (4, 6),  -- Workspace 4 has Printing/Scanning Services
+-- Desk 4: Standing Desk
+('biz004', 'ws004', 'Standing Desk', 'An ergonomic standing desk with adjustable height.', 'StandingDesk',
+ 3, 12.00, 60.00,
+ ARRAY['Wi-Fi', 'Adjustable Height', 'Monitor'],
+ '{"days": ["Wednesday", "Thursday", "Friday"], "startTime": "2023-01-01 12:05:00", "endTime": "2023-01-01 13:05:00"}',
+ 'Do not move the desk without permission.',
+ CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 
-    (5, 1),  -- Workspace 5 has Wi-Fi
-    (5, 7);  -- Workspace 5 has Lockable Storage
+-- Desk 5: Outdoor Desk
+('biz005', 'ws005', 'Outdoor Desk', 'A desk located outdoors for a natural working environment.', 'OutdoorDesk',
+ 2, 20.00, 100.00,
+ ARRAY['Wi-Fi', 'Shade Umbrella', 'Power Outlets'],
+ '{"days": ["Saturday", "Sunday"], "startTime": "2023-01-01 12:05:00", "endTime": "2023-01-01 13:05:00"}',
+ 'Protect devices from weather conditions.',
+ CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 

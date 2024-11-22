@@ -9,8 +9,8 @@ import models.users.registration.RegisterPasswordErrors
 import models.users.wanderer_address.service.WandererAddress
 import models.users.wanderer_personal_details.service.WandererPersonalDetails
 import models.users.wanderer_profile.profile.UserLoginDetails
-import repositories.users.{UserLoginDetailsRepositoryAlgebra, WandererAddressRepositoryAlgebra, WandererPersonalDetailsRepositoryAlgebra}
-import services.password.PasswordServiceAlgebra
+import repositories.user_profile.{UserLoginDetailsRepositoryAlgebra, WandererAddressRepositoryAlgebra, WandererPersonalDetailsRepositoryAlgebra}
+import services.authentication.password.PasswordServiceAlgebra
 
 import java.time.LocalDateTime
 

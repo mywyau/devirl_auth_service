@@ -6,7 +6,7 @@ import cats.{Monad, NonEmptyParallel}
 import models.users.*
 import models.users.wanderer_address.errors.{AddressNotFound, WandererAddressErrors}
 import models.users.wanderer_address.service.WandererAddress
-import repositories.users.WandererAddressRepositoryAlgebra
+import repositories.user_profile.WandererAddressRepositoryAlgebra
 
 
 class WandererAddressServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](

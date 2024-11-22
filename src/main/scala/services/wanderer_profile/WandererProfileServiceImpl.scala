@@ -10,8 +10,9 @@ import models.users.wanderer_personal_details.service.WandererPersonalDetails
 import models.users.wanderer_profile.errors.{MissingAddress, MissingLoginDetails, MissingPersonalDetails, WandererProfileErrors}
 import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserPersonalDetails, WandererUserProfile}
 import models.users.wanderer_profile.requests.*
-import repositories.users.{UserLoginDetailsRepositoryAlgebra, WandererAddressRepositoryAlgebra, WandererPersonalDetailsRepositoryAlgebra}
-import services.password.PasswordServiceAlgebra
+import repositories.user_profile.{UserLoginDetailsRepositoryAlgebra, WandererAddressRepositoryAlgebra, WandererPersonalDetailsRepositoryAlgebra}
+import services.authentication.password.PasswordServiceAlgebra
+
 
 class WandererProfileServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
                                                                                 userLoginDetailsRepo: UserLoginDetailsRepositoryAlgebra[F],

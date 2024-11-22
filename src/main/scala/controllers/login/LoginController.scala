@@ -12,7 +12,7 @@ import models.users.login.responses.LoginResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
-import services.login.LoginServiceAlgebra
+import services.authentication.login.LoginServiceAlgebra
 
 
 trait LoginController[F[_]] {

@@ -11,36 +11,16 @@ import dev.profunktor.redis4cats.effect.Log
 import doobie.hikari.HikariTransactor
 import org.http4s.HttpRoutes
 import repositories.*
-import repositories.bookings.BookingRepository
-import repositories.business.BusinessRepository
-import repositories.users.{UserLoginDetailsRepositoryImpl, WandererAddressRepositoryImpl, WandererPersonalDetailsRepositoryImpl}
-import repositories.workspaces.WorkspaceRepository
+import repositories.user_profile.{UserLoginDetailsRepositoryImpl, WandererAddressRepositoryImpl, WandererPersonalDetailsRepositoryImpl}
 import services.*
-import services.bookings.BookingServiceImpl
-import services.business.BusinessServiceImpl
-import services.login.LoginServiceImpl
-import services.password.PasswordServiceImpl
-import services.registration.RegistrationServiceImpl
+import services.authentication.login.LoginServiceImpl
+import services.authentication.password.PasswordServiceImpl
+import services.authentication.registration.RegistrationServiceImpl
 import services.wanderer_address.WandererAddressServiceImpl
 import services.wanderer_profile.WandererProfileServiceImpl
 
 object Routes {
-
-  def wandererProfileRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F]): HttpRoutes[F] = {
-
-    val userLoginDetailsRepo = new UserLoginDetailsRepositoryImpl[F](transactor)
-    val wandererAddressRepo = new WandererAddressRepositoryImpl[F](transactor)
-    val wandererPersonalDetailsRepo = new WandererPersonalDetailsRepositoryImpl[F](transactor)
-    val passwordService = new PasswordServiceImpl[F]
-
-    val wandererProfileService = new WandererProfileServiceImpl[F](userLoginDetailsRepo, wandererAddressRepo, wandererPersonalDetailsRepo, passwordService)
-
-    val wandererProfileController = new WandererProfileControllerImpl[F](wandererProfileService)
-
-    wandererProfileController.routes
-  }
-
-
+  
   def registrationRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F]): HttpRoutes[F] = {
 
     val userLoginDetailsRepository = new UserLoginDetailsRepositoryImpl[F](transactor)
@@ -76,28 +56,17 @@ object Routes {
     wandererAddressController.routes
   }
 
+  def wandererProfileRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F]): HttpRoutes[F] = {
 
-  def createBookingRoutes[F[_] : Concurrent : Temporal](transactor: HikariTransactor[F]): HttpRoutes[F] = {
-    val bookingRepository = new BookingRepository[F](transactor)
-    val bookingService = new BookingServiceImpl[F](bookingRepository)
-    val bookingController = new BookingControllerImpl[F](bookingService)
+    val userLoginDetailsRepo = new UserLoginDetailsRepositoryImpl[F](transactor)
+    val wandererAddressRepo = new WandererAddressRepositoryImpl[F](transactor)
+    val wandererPersonalDetailsRepo = new WandererPersonalDetailsRepositoryImpl[F](transactor)
+    val passwordService = new PasswordServiceImpl[F]
 
-    bookingController.routes
-  }
+    val wandererProfileService = new WandererProfileServiceImpl[F](userLoginDetailsRepo, wandererAddressRepo, wandererPersonalDetailsRepo, passwordService)
 
-  def createBusinessRoutes[F[_] : Concurrent : Temporal](transactor: HikariTransactor[F]): HttpRoutes[F] = {
-    val businessRepository = new BusinessRepository[F](transactor)
-    val businessService = new BusinessServiceImpl[F](businessRepository)
-    val businessController = new BusinessControllerImpl[F](businessService)
+    val wandererProfileController = new WandererProfileControllerImpl[F](wandererProfileService)
 
-    businessController.routes
-  }
-
-  def createWorkspaceRoutes[F[_] : Concurrent : Temporal](transactor: HikariTransactor[F]): HttpRoutes[F] = {
-    val workspaceRepository = new WorkspaceRepository[F](transactor)
-    val workspaceService = new WorkspaceServiceImpl[F](workspaceRepository)
-    val workspaceController = new WorkspaceControllerImpl[F](workspaceService)
-
-    workspaceController.routes
+    wandererProfileController.routes
   }
 }
