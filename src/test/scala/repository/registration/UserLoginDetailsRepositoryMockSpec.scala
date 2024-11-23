@@ -3,7 +3,7 @@ package repository.registration
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import models.users.adts.Wanderer
-import models.users.wanderer_profile.profile.UserLoginDetails
+import models.wanderer.wanderer_profile.profile.UserLoginDetails
 import repository.registration.mocks.MockUserLoginDetailsRepository
 import weaver.SimpleIOSuite
 

@@ -11,13 +11,12 @@ import io.circe.syntax.*
 import models.business.adts.DeskType
 import models.business.desk_listing.requests.DeskListingRequest
 import models.business.desk_listing.service.DeskListing
-import org.postgresql.util.PGobject
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
 
-trait BusinessDeskRepositoryAlgebra[F[_]] {
+trait DeskListingRepositoryAlgebra[F[_]] {
 
   def createDeskToRent(user: DeskListingRequest): F[Int]
 
@@ -38,36 +37,36 @@ trait BusinessDeskRepositoryAlgebra[F[_]] {
                 ): F[Option[DeskListing]]
 }
 
-class BusinessDeskRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends BusinessDeskRepositoryAlgebra[F] {
+class DeskListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends DeskListingRepositoryAlgebra[F] {
 
   implicit val localDateTimeMeta: Meta[LocalDateTime] = Meta[Timestamp].imap(_.toLocalDateTime)(Timestamp.valueOf)
 
   implicit val deskTypeMeta: Meta[DeskType] = Meta[String].imap(DeskType.fromString)(_.toString)
 
-//  implicit val stringListMeta: Meta[List[String]] =
-//    Meta.Advanced.other[PGobject]("text[]").imap(
-//      pgObj => Option(pgObj.getValue).map(_.stripPrefix("{").stripSuffix("}").split(",").toList.map(_.replace("\"", ""))).getOrElse(Nil)
-//    )(
-//      list => {
-//        val pgObj = new PGobject()
-//        pgObj.setType("text[]")
-//        pgObj.setValue(list.map("\"" + _ + "\"").mkString("{", ",", "}"))
-//        pgObj
-//      }
-//    )
+  //  implicit val stringListMeta: Meta[List[String]] =
+  //    Meta.Advanced.other[PGobject]("text[]").imap(
+  //      pgObj => Option(pgObj.getValue).map(_.stripPrefix("{").stripSuffix("}").split(",").toList.map(_.replace("\"", ""))).getOrElse(Nil)
+  //    )(
+  //      list => {
+  //        val pgObj = new PGobject()
+  //        pgObj.setType("text[]")
+  //        pgObj.setValue(list.map("\"" + _ + "\"").mkString("{", ",", "}"))
+  //        pgObj
+  //      }
+  //    )
 
-//  implicit val stringArrayMeta: Meta[List[String]] =
-//    Meta.Advanced.array[String]("text", _.toList, _.toArray)
+  //  implicit val stringArrayMeta: Meta[List[String]] =
+  //    Meta.Advanced.array[String]("text", _.toList, _.toArray)
 
   override def findByUserId(business_id: String): F[Option[DeskListing]] = {
     sql"SELECT * FROM desk_listings WHERE business_id = $business_id"
-      .query[DeskListing] // Ensure implicit Read[BusinessDesk] is available
+      .query[DeskListing] // Ensure implicit Read[DeskListing] is available
       .option
       .transact(transactor)
   }
 
 
-  override def createDeskToRent(businessDesk: DeskListingRequest): F[Int] = {
+  override def createDeskToRent(deskListing: DeskListingRequest): F[Int] = {
     sql"""
          INSERT INTO desk_listings (
            business_id,
@@ -84,19 +83,19 @@ class BusinessDeskRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transact
            created_at,
            updated_at
          ) VALUES (
-         ${businessDesk.business_id},
-         ${businessDesk.workspace_id},
-         ${businessDesk.title},
-         ${businessDesk.description},
-         ${businessDesk.desk_type},
-         ${businessDesk.quantity},
-         ${businessDesk.price_per_hour},
-         ${businessDesk.price_per_day},
-         ${businessDesk.features},
-         ${businessDesk.availability.asJson.noSpaces}::jsonb,
-         ${businessDesk.rules},
-         ${businessDesk.created_at},
-         ${businessDesk.updated_at}
+         ${deskListing.business_id},
+         ${deskListing.workspace_id},
+         ${deskListing.title},
+         ${deskListing.description},
+         ${deskListing.desk_type},
+         ${deskListing.quantity},
+         ${deskListing.price_per_hour},
+         ${deskListing.price_per_day},
+         ${deskListing.features},
+         ${deskListing.availability.asJson.noSpaces}::jsonb,
+         ${deskListing.rules},
+         ${deskListing.created_at},
+         ${deskListing.updated_at}
          )
        """
       .update
@@ -130,7 +129,7 @@ class BusinessDeskRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transact
   //                           rules: Option[String],
   //                           created_at: LocalDateTime,
   //                           updated_at: LocalDateTime
-  //                         ): F[Option[BusinessDesk]] = {
+  //                         ): F[Option[DeskListing]] = {
   //
   //    // Dynamically build the update query
   //    val updates = List(
@@ -152,18 +151,18 @@ class BusinessDeskRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transact
   //          fr"WHERE user_id = $userId").update.run.some
   //      } else None
   //
-  //    val selectQuery: ConnectionIO[Option[BusinessDesk]] =
+  //    val selectQuery: ConnectionIO[Option[DeskListing]] =
   //      sql"""
   //            SELECT id, user_id, street, city, country, county, postcode, created_at, updated_at
   //            FROM business_desk
   //            WHERE user_id = $userId
-  //          """.query[BusinessDesk].option
+  //          """.query[DeskListing].option
   //
-  //    val result: ConnectionIO[Option[BusinessDesk]] = updateQuery match {
+  //    val result: ConnectionIO[Option[DeskListing]] = updateQuery match {
   //      case Some(query) =>
   //        for {
   //          rowsAffected <- query
-  //          updatedDesk <- if (rowsAffected > 0) selectQuery else none[BusinessDesk].pure[ConnectionIO]
+  //          updatedDesk <- if (rowsAffected > 0) selectQuery else none[DeskListing].pure[ConnectionIO]
   //        } yield updatedDesk
   //      case None =>
   //        selectQuery // If no updates, return the existing Desk
@@ -175,9 +174,9 @@ class BusinessDeskRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transact
 }
 
 
-object BusinessDeskRepository {
+object DeskListingRepository {
   def apply[F[_] : Concurrent : Monad](
                                         transactor: Transactor[F]
-                                      ): BusinessDeskRepositoryImpl[F] =
-    new BusinessDeskRepositoryImpl[F](transactor)
+                                      ): DeskListingRepositoryImpl[F] =
+    new DeskListingRepositoryImpl[F](transactor)
 }

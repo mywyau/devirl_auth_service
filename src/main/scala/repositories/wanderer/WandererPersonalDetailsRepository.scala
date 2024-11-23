@@ -1,4 +1,4 @@
-package repositories.user_profile
+package repositories.wanderer
 
 import cats.Monad
 import cats.effect.Concurrent
@@ -8,7 +8,7 @@ import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import models.users.adts.Role
-import models.users.wanderer_personal_details.service.WandererPersonalDetails
+import models.wanderer.wanderer_personal_details.service.WandererPersonalDetails
 
 import java.sql.Timestamp
 import java.time.LocalDateTime

@@ -7,9 +7,9 @@ import cats.effect.kernel.Ref
 import models.users.*
 import models.users.adts.Wanderer
 import models.users.registration.*
-import models.users.wanderer_personal_details.service.WandererPersonalDetails
-import models.users.wanderer_profile.profile.UserLoginDetails
-import models.users.wanderer_profile.requests.UserSignUpRequest
+import models.wanderer.wanderer_personal_details.service.WandererPersonalDetails
+import models.wanderer.wanderer_profile.profile.UserLoginDetails
+import models.wanderer.wanderer_profile.requests.UserSignUpRequest
 import services.auth.constants.RegistrationServiceConstants.*
 import services.authentication.registration.RegistrationServiceImpl
 import services.registration.mocks.RegistrationServiceMocks.*

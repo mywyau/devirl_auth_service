@@ -8,8 +8,8 @@ import models.users.*
 import models.users.adts.Wanderer
 import models.users.registration.UsernameAlreadyExists
 import models.users.registration.responses.error.RegistrationErrorResponse
-import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserProfile}
-import models.users.wanderer_profile.requests.UserSignUpRequest
+import models.wanderer.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserProfile}
+import models.wanderer.wanderer_profile.requests.UserSignUpRequest
 import org.http4s.*
 import org.http4s.Status.{BadRequest, Created}
 import org.http4s.circe.*

@@ -4,9 +4,9 @@ import cats.effect.IO
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
+import models.authentication.login.adts.{LoginPasswordIncorrect, UsernameNotFound}
+import models.authentication.login.errors.LoginErrorResponse
 import models.responses.ErrorResponse
-import models.users.login.adts.{LoginPasswordIncorrect, UsernameNotFound}
-import models.users.login.errors.LoginErrorResponse
 import weaver.SimpleIOSuite
 
 object LoginErrorResponseSpec extends SimpleIOSuite {

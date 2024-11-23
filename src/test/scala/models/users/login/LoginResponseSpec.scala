@@ -4,8 +4,8 @@ import cats.effect.IO
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
+import models.authentication.login.responses.LoginResponse
 import models.users.adts.Wanderer
-import models.users.login.responses.LoginResponse
 import weaver.SimpleIOSuite
 
 object LoginResponseSpec extends SimpleIOSuite {

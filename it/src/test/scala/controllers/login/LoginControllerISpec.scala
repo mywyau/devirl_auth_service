@@ -7,12 +7,12 @@ import controllers.fragments.LoginControllerFragments.{createUserLoginDetailsTab
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.syntax.*
+import models.authentication.login.adts.{LoginPasswordIncorrect, UsernameNotFound}
+import models.authentication.login.errors.LoginErrorResponse
+import models.authentication.login.requests.UserLoginRequest
+import models.authentication.login.responses.LoginResponse
 import models.responses.ErrorResponse
 import models.users.*
-import models.users.login.adts.{LoginPasswordIncorrect, UsernameNotFound}
-import models.users.login.errors.LoginErrorResponse
-import models.users.login.requests.UserLoginRequest
-import models.users.login.responses.LoginResponse
 import models.users.registration.RegisterPasswordErrors
 import org.http4s.*
 import org.http4s.Method.*

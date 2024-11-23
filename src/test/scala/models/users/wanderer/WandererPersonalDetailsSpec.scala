@@ -4,7 +4,7 @@ import cats.effect.IO
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
-import models.users.wanderer_personal_details.service.WandererPersonalDetails
+import models.wanderer.wanderer_personal_details.service.WandererPersonalDetails
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime

@@ -2,7 +2,7 @@ package services.auth.constants
 
 import models.users.*
 import models.users.adts.{Admin, Wanderer}
-import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserProfile}
+import models.wanderer.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserProfile}
 
 import java.time.LocalDateTime
 

@@ -1,7 +1,7 @@
 package controllers.users.wanderer_profile.constants
 
 import models.users.adts.Wanderer
-import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserPersonalDetails, WandererUserProfile}
+import models.wanderer.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserPersonalDetails, WandererUserProfile}
 
 import java.time.LocalDateTime
 

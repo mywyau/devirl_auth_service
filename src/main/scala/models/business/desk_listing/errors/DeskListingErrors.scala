@@ -2,37 +2,37 @@ package models.business.desk_listing.errors
 
 import io.circe.{Decoder, Encoder}
 
-sealed trait BusinessDeskErrors {
+sealed trait DeskListingErrors {
   val code: String
   val errorMessage: String
 }
 
-case object BusinessDeskNotFound extends BusinessDeskErrors:
+case object DeskListingNotFound extends DeskListingErrors:
   override val code: String = this.toString
   override val errorMessage: String = "address was not found"
 
-case object BusinessEmptyStringField extends BusinessDeskErrors:
+case object BusinessEmptyStringField extends DeskListingErrors:
   override val code: String = this.toString
   override val errorMessage: String = "empty field is invalid"
 
-case object BusinessInvalidFormat extends BusinessDeskErrors:
+case object BusinessInvalidFormat extends DeskListingErrors:
   override val code: String = this.toString
   override val errorMessage: String = "invalid format for field input it may contain special characters or breaks formatting validation"
 
-case object BusinessUserNotFound extends BusinessDeskErrors:
+case object BusinessUserNotFound extends DeskListingErrors:
   override val code: String = this.toString
   override val errorMessage: String = "user was not found"
 
-case object DatabaseError extends BusinessDeskErrors:
+case object DatabaseError extends DeskListingErrors:
     override val code: String = this.toString
     override val errorMessage: String = "DatabaseError"
 
 
-object BusinessDeskErrors {
+object DeskListingErrors {
 
-  def fromString(str: String): BusinessDeskErrors =
+  def fromString(str: String): DeskListingErrors =
     str match {
-      case "BusinessDeskNotFound" => BusinessDeskNotFound
+      case "DeskListingNotFound" => DeskListingNotFound
       case "BusinessUserNotFound" => BusinessUserNotFound
       case "BusinessEmptyStringField" => BusinessEmptyStringField
       case "BusinessInvalidFormat" => BusinessInvalidFormat
@@ -40,18 +40,18 @@ object BusinessDeskErrors {
       case _ => throw new Exception(s"Unknown Address Error: $str")
     }
 
-  implicit val wandererAddressErrorsEncoder: Encoder[BusinessDeskErrors] =
+  implicit val wandererAddressErrorsEncoder: Encoder[DeskListingErrors] =
     Encoder.encodeString.contramap {
-      case BusinessDeskNotFound => "BusinessDeskNotFound"
+      case DeskListingNotFound => "DeskListingNotFound"
       case BusinessUserNotFound => "BusinessUserNotFound"
       case BusinessEmptyStringField => "BusinessEmptyStringField"
       case BusinessInvalidFormat => "BusinessInvalidFormat"
       case DatabaseError => "DatabaseError"
     }
 
-  implicit val wandererAddressErrorsDecoder: Decoder[BusinessDeskErrors] =
+  implicit val wandererAddressErrorsDecoder: Decoder[DeskListingErrors] =
     Decoder.decodeString.emap {
-      case "BusinessDeskNotFound" => Right(BusinessDeskNotFound)
+      case "DeskListingNotFound" => Right(DeskListingNotFound)
       case "BusinessUserNotFound" => Right(BusinessUserNotFound)
       case "BusinessEmptyStringField" => Right(BusinessEmptyStringField)
       case "BusinessInvalidFormat" => Right(BusinessInvalidFormat)

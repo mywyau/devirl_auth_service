@@ -3,6 +3,7 @@ package routes
 import cats.NonEmptyParallel
 import cats.effect.*
 import controllers.*
+import controllers.desk_listing.DeskListingControllerImpl
 import controllers.login.LoginControllerImpl
 import controllers.registration.RegistrationControllerImpl
 import controllers.wanderer_address.WandererAddressControllerImpl
@@ -11,16 +12,19 @@ import dev.profunktor.redis4cats.effect.Log
 import doobie.hikari.HikariTransactor
 import org.http4s.HttpRoutes
 import repositories.*
-import repositories.user_profile.{UserLoginDetailsRepositoryImpl, WandererAddressRepositoryImpl, WandererPersonalDetailsRepositoryImpl}
+import repositories.business.DeskListingRepositoryImpl
+import repositories.user_profile.{UserLoginDetailsRepositoryImpl, WandererAddressRepositoryImpl}
+import repositories.wanderer.WandererPersonalDetailsRepositoryImpl
 import services.*
 import services.authentication.login.LoginServiceImpl
 import services.authentication.password.PasswordServiceImpl
 import services.authentication.registration.RegistrationServiceImpl
+import services.business.desk_listing.DeskListingServiceImpl
 import services.wanderer_address.WandererAddressServiceImpl
 import services.wanderer_profile.WandererProfileServiceImpl
 
 object Routes {
-  
+
   def registrationRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F]): HttpRoutes[F] = {
 
     val userLoginDetailsRepository = new UserLoginDetailsRepositoryImpl[F](transactor)
@@ -44,6 +48,16 @@ object Routes {
     val loginController = new LoginControllerImpl[F](loginService)
 
     loginController.routes
+  }
+
+  def deskListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+
+    val deskListingRepo = new DeskListingRepositoryImpl[F](transactor)
+
+    val deskListingService = new DeskListingServiceImpl[F](deskListingRepo)
+    val deskListingController = new DeskListingControllerImpl[F](deskListingService)
+
+    deskListingController.routes
   }
 
   def wandererAddressRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F]): HttpRoutes[F] = {

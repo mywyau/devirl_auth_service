@@ -3,7 +3,7 @@ package services.wanderer_address.validation
 import cats.data.Validated
 import cats.effect.Concurrent
 import cats.implicits.*
-import models.users.wanderer_address.errors.*
+import models.wanderer.wanderer_address.errors.*
 
 class WandererAddressValidationServiceImpl[F[_] : Concurrent] extends WandererAddressValidationServiceAlgebra[F] {
 

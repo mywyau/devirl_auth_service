@@ -4,8 +4,8 @@ import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.users.*
-import models.users.wanderer_address.errors.{AddressNotFound, WandererAddressErrors}
-import models.users.wanderer_address.service.WandererAddress
+import models.wanderer.wanderer_address.errors.{AddressNotFound, WandererAddressErrors}
+import models.wanderer.wanderer_address.service.WandererAddress
 import repositories.user_profile.WandererAddressRepositoryAlgebra
 
 

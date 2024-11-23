@@ -8,8 +8,8 @@ import io.circe.syntax.*
 import models.users.*
 import models.users.adts.Wanderer
 import models.users.registration.responses.error.RegistrationErrorResponse
-import models.users.wanderer_profile.requests.UserSignUpRequest
-import models.users.wanderer_profile.responses.CreatedUserResponse
+import models.wanderer.wanderer_profile.requests.UserSignUpRequest
+import models.wanderer.wanderer_profile.responses.CreatedUserResponse
 import org.http4s.*
 import org.http4s.Method.*
 import org.http4s.circe.*
@@ -17,7 +17,8 @@ import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
-import repositories.user_profile.{UserLoginDetailsRepositoryImpl, WandererAddressRepositoryImpl, WandererPersonalDetailsRepositoryImpl}
+import repositories.user_profile.{UserLoginDetailsRepositoryImpl, WandererAddressRepositoryImpl}
+import repositories.wanderer.WandererPersonalDetailsRepositoryImpl
 import services.authentication.password.PasswordServiceImpl
 import services.authentication.registration.RegistrationServiceImpl
 import shared.{HttpClientResource, TransactorResource}

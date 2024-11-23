@@ -7,8 +7,8 @@ import cats.implicits.*
 import io.circe.syntax.EncoderOps
 import models.users.registration.*
 import models.users.registration.responses.error.RegistrationErrorResponse
-import models.users.wanderer_profile.requests.UserSignUpRequest
-import models.users.wanderer_profile.responses.CreatedUserResponse
+import models.wanderer.wanderer_profile.requests.UserSignUpRequest
+import models.wanderer.wanderer_profile.responses.CreatedUserResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl

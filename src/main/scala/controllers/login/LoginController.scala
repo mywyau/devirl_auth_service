@@ -4,11 +4,11 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
+import models.authentication.login.adts.{LoginPasswordError, LoginUsernameError}
+import models.authentication.login.errors.LoginErrorResponse
+import models.authentication.login.requests.UserLoginRequest
+import models.authentication.login.responses.LoginResponse
 import models.responses.{CreatedResponse, ErrorResponse}
-import models.users.login.adts.{LoginPasswordError, LoginUsernameError}
-import models.users.login.errors.LoginErrorResponse
-import models.users.login.requests.UserLoginRequest
-import models.users.login.responses.LoginResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
@@ -26,8 +26,7 @@ class LoginControllerImpl[F[_] : Concurrent](
   implicit val userLoginDecoder: EntityDecoder[F, UserLoginRequest] = jsonOf[F, UserLoginRequest]
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
-
-    // Login an existing user
+    
     case req@POST -> Root / "login" =>
       req.decode[UserLoginRequest] { request =>
         loginService.loginUser(request).flatMap {

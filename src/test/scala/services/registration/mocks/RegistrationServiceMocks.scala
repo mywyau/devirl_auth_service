@@ -6,10 +6,11 @@ import cats.effect.kernel.Ref
 import models.users.*
 import models.users.adts.Role
 import models.users.registration.RegisterPasswordErrors
-import models.users.wanderer_address.service.WandererAddress
-import models.users.wanderer_personal_details.service.WandererPersonalDetails
-import models.users.wanderer_profile.profile.UserLoginDetails
-import repositories.user_profile.{UserLoginDetailsRepositoryAlgebra, WandererAddressRepositoryAlgebra, WandererPersonalDetailsRepositoryAlgebra}
+import models.wanderer.wanderer_address.service.WandererAddress
+import models.wanderer.wanderer_personal_details.service.WandererPersonalDetails
+import models.wanderer.wanderer_profile.profile.UserLoginDetails
+import repositories.user_profile.{UserLoginDetailsRepositoryAlgebra, WandererAddressRepositoryAlgebra}
+import repositories.wanderer.WandererPersonalDetailsRepositoryAlgebra
 import services.authentication.password.PasswordServiceAlgebra
 
 import java.time.LocalDateTime

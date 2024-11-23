@@ -10,10 +10,10 @@ import io.circe.syntax.*
 import models.responses.ErrorResponse
 import models.users.*
 import models.users.adts.*
-import models.users.wanderer_profile.errors.{MissingAddress, MissingLoginDetails, MissingPersonalDetails}
-import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserPersonalDetails, WandererUserProfile}
-import models.users.wanderer_profile.requests.*
-import models.users.wanderer_profile.responses.error.WandererProfileErrorResponse
+import models.wanderer.wanderer_profile.errors.{MissingAddress, MissingLoginDetails, MissingPersonalDetails}
+import models.wanderer.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserPersonalDetails, WandererUserProfile}
+import models.wanderer.wanderer_profile.requests.*
+import models.wanderer.wanderer_profile.responses.error.WandererProfileErrorResponse
 import org.http4s.*
 import org.http4s.Method.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
@@ -21,7 +21,8 @@ import org.http4s.circe.jsonEncoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
-import repositories.user_profile.{UserLoginDetailsRepositoryImpl, WandererAddressRepository, WandererPersonalDetailsRepository}
+import repositories.user_profile.{UserLoginDetailsRepositoryImpl, WandererAddressRepository}
+import repositories.wanderer.WandererPersonalDetailsRepository
 import services.authentication.password.PasswordServiceImpl
 import services.wanderer_profile.WandererProfileService
 import shared.{HttpClientResource, TransactorResource}

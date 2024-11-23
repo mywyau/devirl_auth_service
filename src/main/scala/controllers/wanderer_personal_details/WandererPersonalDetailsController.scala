@@ -4,7 +4,7 @@ import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
 import models.responses.ErrorResponse
-import models.users.wanderer_personal_details.service.WandererPersonalDetails
+import models.wanderer.wanderer_personal_details.service.WandererPersonalDetails
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl

@@ -6,9 +6,9 @@ import cats.effect.{Concurrent, IO}
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
 import models.responses.ErrorResponse
-import models.users.wanderer_profile.errors.*
-import models.users.wanderer_profile.requests.{UpdateProfileRequest, UserSignUpRequest}
-import models.users.wanderer_profile.responses.error.WandererProfileErrorResponse
+import models.wanderer.wanderer_profile.errors.*
+import models.wanderer.wanderer_profile.requests.{UpdateProfileRequest, UserSignUpRequest}
+import models.wanderer.wanderer_profile.responses.error.WandererProfileErrorResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.circeEntityEncoder

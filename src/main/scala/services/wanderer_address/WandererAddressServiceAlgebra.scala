@@ -1,8 +1,8 @@
 package services.wanderer_address
 
 import models.users.*
-import models.users.wanderer_address.errors.WandererAddressErrors
-import models.users.wanderer_address.service.WandererAddress
+import models.wanderer.wanderer_address.errors.WandererAddressErrors
+import models.wanderer.wanderer_address.service.WandererAddress
 
 trait WandererAddressServiceAlgebra[F[_]] {
 

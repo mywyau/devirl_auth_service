@@ -4,9 +4,9 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.data.{NonEmptyList, ValidatedNel}
 import cats.effect.IO
 import models.users.*
-import models.users.wanderer_profile.errors.{UserIdNotFound, WandererProfileErrors}
-import models.users.wanderer_profile.profile.WandererUserProfile
-import models.users.wanderer_profile.requests.{UpdateAddress, UpdateLoginDetails, UpdatePersonalDetails}
+import models.wanderer.wanderer_profile.errors.{UserIdNotFound, WandererProfileErrors}
+import models.wanderer.wanderer_profile.profile.WandererUserProfile
+import models.wanderer.wanderer_profile.requests.{UpdateAddress, UpdateLoginDetails, UpdatePersonalDetails}
 import services.wanderer_profile.WandererProfileServiceAlgebra
 
 class MockWandererProfileService(userProfileData: Map[String, WandererUserProfile])

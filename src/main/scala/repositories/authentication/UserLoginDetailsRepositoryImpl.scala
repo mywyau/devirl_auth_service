@@ -8,7 +8,7 @@ import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import models.users.*
 import models.users.adts.Role
-import models.users.wanderer_profile.profile.UserLoginDetails
+import models.wanderer.wanderer_profile.profile.UserLoginDetails
 import cats.syntax.all.*
 
 import java.sql.Timestamp

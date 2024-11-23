@@ -3,8 +3,8 @@ package controllers.registration
 import cats.data.Validated
 import cats.effect.IO
 import models.users.registration.RegistrationErrors
-import models.users.wanderer_profile.profile.UserLoginDetails
-import models.users.wanderer_profile.requests.UserSignUpRequest
+import models.wanderer.wanderer_profile.profile.UserLoginDetails
+import models.wanderer.wanderer_profile.requests.UserSignUpRequest
 import services.authentication.registration.RegistrationServiceAlgebra
 
 class MockRegistrationService(

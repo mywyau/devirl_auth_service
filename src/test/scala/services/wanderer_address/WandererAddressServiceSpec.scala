@@ -2,8 +2,8 @@ package services.wanderer_address
 
 import cats.effect.IO
 import models.users.*
-import models.users.wanderer_address.errors.AddressNotFound
-import models.users.wanderer_address.service.WandererAddress
+import models.wanderer.wanderer_address.errors.AddressNotFound
+import models.wanderer.wanderer_address.service.WandererAddress
 import repositories.user_profile.WandererAddressRepositoryAlgebra
 import weaver.SimpleIOSuite
 

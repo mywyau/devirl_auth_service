@@ -8,7 +8,8 @@ import models.business.adts.PrivateDesk
 import models.business.desk_listing.Availability
 import models.business.desk_listing.requests.DeskListingRequest
 import models.business.desk_listing.service.DeskListing
-import repositories.business.BusinessDeskRepositoryImpl
+import repositories.business.DeskListingRepositoryImpl
+import repository.fragments.DeskListingRepoFragments.{createDeskListingsTable, resetDeskListingsTable}
 import shared.TransactorResource
 import weaver.{GlobalRead, IOSuite, ResourceTag}
 
@@ -16,36 +17,17 @@ import java.time.LocalDateTime
 
 class DeskListingRepositoryISpec(global: GlobalRead) extends IOSuite {
 
-  type Res = BusinessDeskRepositoryImpl[IO]
+  type Res = DeskListingRepositoryImpl[IO]
 
   private def initializeSchema(transactor: TransactorResource): Resource[IO, Unit] =
     Resource.eval(
-      sql"""
-        CREATE TABLE IF NOT EXISTS desk_listings (
-            id SERIAL PRIMARY KEY,
-            business_id VARCHAR(255),
-            workspace_id VARCHAR(255),
-            title VARCHAR(50),
-            description TEXT,
-            desk_type VARCHAR(100),
-            quantity INT NOT NULL CHECK (quantity >= 0),
-            price_per_hour DECIMAL(10, 2) CHECK (price_per_day >= 0),
-            price_per_day DECIMAL(10, 2) CHECK (price_per_day >= 0),
-            features TEXT[],
-            availability JSONB,
-            rules TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-      """.update.run.transact(transactor.xa).void *>
-        sql"TRUNCATE TABLE desk_listings RESTART IDENTITY"
-          .update.run.transact(transactor.xa).void
+      createDeskListingsTable.update.run.transact(transactor.xa).void *>
+        resetDeskListingsTable.update.run.transact(transactor.xa).void
     )
 
 
   def testDeskListing(id: Option[Int], businessId: String) = {
 
-    // Sample Availability Case Class
     val availability =
       Availability(
         days = List("Monday", "Tuesday", "Wednesday"),
@@ -58,7 +40,7 @@ class DeskListingRepositoryISpec(global: GlobalRead) extends IOSuite {
       workspace_id = "workspace_id_1",
       title = "Quiet Private Desk",
       description = Some("A quiet, private desk for focused work."),
-      desk_type = "PrivateDesk",
+      desk_type = PrivateDesk,
       quantity = 5,
       price_per_hour = 15.50,
       price_per_day = 80.00,
@@ -70,7 +52,7 @@ class DeskListingRepositoryISpec(global: GlobalRead) extends IOSuite {
     )
   }
 
-  private def seedTestAddresses(businessDeskRepo: BusinessDeskRepositoryImpl[IO]): IO[Unit] = {
+  private def seedTestAddresses(businessDeskRepo: DeskListingRepositoryImpl[IO]): IO[Unit] = {
     val users = List(
       testDeskListing(Some(1), "business_id_1"),
       testDeskListing(Some(2), "business_id_2"),
@@ -81,10 +63,10 @@ class DeskListingRepositoryISpec(global: GlobalRead) extends IOSuite {
     users.traverse(businessDeskRepo.createDeskToRent).void
   }
 
-  def sharedResource: Resource[IO, BusinessDeskRepositoryImpl[IO]] = {
+  def sharedResource: Resource[IO, DeskListingRepositoryImpl[IO]] = {
     val setup = for {
       transactor <- global.getOrFailR[TransactorResource]()
-      businessDeskRepo = new BusinessDeskRepositoryImpl[IO](transactor.xa)
+      businessDeskRepo = new DeskListingRepositoryImpl[IO](transactor.xa)
       createSchemaIfNotPresent <- initializeSchema(transactor)
       seedTable <- Resource.eval(seedTestAddresses(businessDeskRepo))
     } yield businessDeskRepo

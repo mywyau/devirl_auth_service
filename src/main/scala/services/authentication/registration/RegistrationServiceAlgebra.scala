@@ -4,8 +4,8 @@ import cats.data.*
 import models.authentication.*
 import models.users.*
 import models.users.registration.RegistrationErrors
-import models.users.wanderer_profile.profile.UserLoginDetails
-import models.users.wanderer_profile.requests.UserSignUpRequest
+import models.wanderer.wanderer_profile.profile.UserLoginDetails
+import models.wanderer.wanderer_profile.requests.UserSignUpRequest
 
 trait RegistrationServiceAlgebra[F[_]] {
 

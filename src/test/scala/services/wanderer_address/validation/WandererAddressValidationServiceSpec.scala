@@ -3,7 +3,7 @@ package services.wanderer_address.validation
 import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import cats.effect.IO
-import models.users.wanderer_address.errors.*
+import models.wanderer.wanderer_address.errors.*
 import weaver.SimpleIOSuite
 
 object WandererAddressValidationServiceSpec extends SimpleIOSuite {

@@ -4,9 +4,9 @@ import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.users.*
-import models.users.wanderer_personal_details.errors.{PersonalDetailsErrors, PersonalDetailsNotFound}
-import models.users.wanderer_personal_details.service.WandererPersonalDetails
-import repositories.user_profile.WandererPersonalDetailsRepositoryAlgebra
+import models.wanderer.wanderer_personal_details.errors.{PersonalDetailsErrors, PersonalDetailsNotFound}
+import models.wanderer.wanderer_personal_details.service.WandererPersonalDetails
+import repositories.wanderer.WandererPersonalDetailsRepositoryAlgebra
 
 
 class WandererPersonalDetailsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](

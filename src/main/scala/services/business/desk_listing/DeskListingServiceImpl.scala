@@ -6,24 +6,24 @@ import cats.{Monad, NonEmptyParallel}
 import models.business.desk_listing.errors.*
 import models.business.desk_listing.requests.DeskListingRequest
 import models.business.desk_listing.service.DeskListing
-import repositories.business.BusinessDeskRepositoryAlgebra
+import repositories.business.DeskListingRepositoryAlgebra
 
 
-class BusinessDeskServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
-                                                                             businessDeskRepo: BusinessDeskRepositoryAlgebra[F]
+class DeskListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
+                                                                             deskListingRepo: DeskListingRepositoryAlgebra[F]
                                                                            ) extends DeskListingServiceAlgebra[F] {
 
-  override def findByUserId(userId: String): F[Either[BusinessDeskErrors, DeskListing]] = {
-    businessDeskRepo.findByUserId(userId).flatMap {
+  override def findByUserId(userId: String): F[Either[DeskListingErrors, DeskListing]] = {
+    deskListingRepo.findByUserId(userId).flatMap {
       case Some(user) =>
         Concurrent[F].pure(Right(user))
       case None =>
-        Concurrent[F].pure(Left(BusinessDeskNotFound))
+        Concurrent[F].pure(Left(DeskListingNotFound))
     }
   }
 
-  override def createDesk(businessDesk: DeskListingRequest): F[Either[BusinessDeskErrors, Int]] = {
-    businessDeskRepo.createDeskToRent(businessDesk).attempt.flatMap {
+  override def createDesk(deskListing: DeskListingRequest): F[Either[DeskListingErrors, Int]] = {
+    deskListingRepo.createDeskToRent(deskListing).attempt.flatMap {
       case Right(id) =>
         if (id > 0) {
           Concurrent[F].pure(Right(id))
@@ -37,11 +37,11 @@ class BusinessDeskServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
 
 }
 
-object BusinessDeskService {
+object DeskListingService {
 
   def apply[F[_] : Concurrent : NonEmptyParallel](
-                                                   businessDeskRepo: BusinessDeskRepositoryAlgebra[F]
-                                                 ): BusinessDeskServiceImpl[F] =
-    new BusinessDeskServiceImpl[F](businessDeskRepo)
+                                                   deskListingRepo: DeskListingRepositoryAlgebra[F]
+                                                 ): DeskListingServiceImpl[F] =
+    new DeskListingServiceImpl[F](deskListingRepo)
 }
 

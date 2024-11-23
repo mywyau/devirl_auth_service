@@ -1,7 +1,7 @@
 package services.wanderer_address.validation
 
 import cats.data.Validated
-import models.users.wanderer_address.errors.WandererAddressErrors
+import models.wanderer.wanderer_address.errors.WandererAddressErrors
 
 trait WandererAddressValidationServiceAlgebra[F[_]] {
 

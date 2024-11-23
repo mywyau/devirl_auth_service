@@ -5,8 +5,8 @@ import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
 import models.users.adts.Wanderer
-import models.users.wanderer_address.service.WandererAddress
-import models.users.wanderer_profile.profile.UserLoginDetails
+import models.wanderer.wanderer_address.service.WandererAddress
+import models.wanderer.wanderer_profile.profile.UserLoginDetails
 import repositories.user_profile.WandererAddressRepositoryImpl
 import shared.TransactorResource
 import weaver.{GlobalRead, IOSuite, ResourceTag}

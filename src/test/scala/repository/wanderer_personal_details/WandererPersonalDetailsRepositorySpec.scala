@@ -2,7 +2,7 @@ package repository.wanderer_personal_details
 
 import cats.effect.IO
 import cats.effect.kernel.Ref
-import models.users.wanderer_personal_details.service.WandererPersonalDetails
+import models.wanderer.wanderer_personal_details.service.WandererPersonalDetails
 import repository.wanderer_personal_details.mocks.MockWandererPersonalDetailsRepository
 import weaver.SimpleIOSuite
 

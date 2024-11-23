@@ -1,6 +1,6 @@
 package controllers.users.wanderer_address.constants
 
-import models.users.wanderer_address.service.WandererAddress
+import models.wanderer.wanderer_address.service.WandererAddress
 
 import java.time.LocalDateTime
 

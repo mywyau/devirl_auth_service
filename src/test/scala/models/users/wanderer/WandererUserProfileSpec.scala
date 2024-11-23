@@ -5,7 +5,7 @@ import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
 import models.users.adts.Wanderer
-import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserPersonalDetails, WandererUserProfile}
+import models.wanderer.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserPersonalDetails, WandererUserProfile}
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime

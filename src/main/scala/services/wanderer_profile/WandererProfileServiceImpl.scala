@@ -5,12 +5,13 @@ import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.users.*
-import models.users.wanderer_address.service.WandererAddress
-import models.users.wanderer_personal_details.service.WandererPersonalDetails
-import models.users.wanderer_profile.errors.{MissingAddress, MissingLoginDetails, MissingPersonalDetails, WandererProfileErrors}
-import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserPersonalDetails, WandererUserProfile}
-import models.users.wanderer_profile.requests.*
-import repositories.user_profile.{UserLoginDetailsRepositoryAlgebra, WandererAddressRepositoryAlgebra, WandererPersonalDetailsRepositoryAlgebra}
+import models.wanderer.wanderer_address.service.WandererAddress
+import models.wanderer.wanderer_personal_details.service.WandererPersonalDetails
+import models.wanderer.wanderer_profile.errors.{MissingAddress, MissingLoginDetails, MissingPersonalDetails, WandererProfileErrors}
+import models.wanderer.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserPersonalDetails, WandererUserProfile}
+import models.wanderer.wanderer_profile.requests.*
+import repositories.user_profile.{UserLoginDetailsRepositoryAlgebra, WandererAddressRepositoryAlgebra}
+import repositories.wanderer.{WandererPersonalDetailsRepositoryAlgebra}
 import services.authentication.password.PasswordServiceAlgebra
 
 

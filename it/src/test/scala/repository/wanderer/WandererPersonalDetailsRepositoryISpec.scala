@@ -4,8 +4,8 @@ import cats.effect.{IO, Resource}
 import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
-import models.users.wanderer_personal_details.service.WandererPersonalDetails
-import repositories.user_profile.WandererPersonalDetailsRepositoryImpl
+import models.wanderer.wanderer_personal_details.service.WandererPersonalDetails
+import repositories.wanderer.WandererPersonalDetailsRepositoryImpl
 import repository.fragments.WandererPersonalDetailsRepositoryFragments.{createWandererPersonalDetailsTable, resetWandererPersonalDetailsTable}
 import shared.TransactorResource
 import weaver.{GlobalRead, IOSuite, ResourceTag}

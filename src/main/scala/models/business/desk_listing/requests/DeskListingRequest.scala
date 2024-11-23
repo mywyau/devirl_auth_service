@@ -2,6 +2,7 @@ package models.business.desk_listing.requests
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder, Json}
+import models.business.adts.DeskType
 import models.business.desk_listing.Availability
 
 import java.time.LocalDateTime
@@ -11,7 +12,7 @@ case class DeskListingRequest(
                                 workspace_id: String,
                                 title: String,
                                 description: Option[String],
-                                desk_type: String,
+                                desk_type: DeskType,
                                 quantity: Int,
                                 price_per_hour: BigDecimal,
                                 price_per_day: BigDecimal,

@@ -3,9 +3,9 @@ package controllers.wanderer_address
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
-import models.users.wanderer_address.responses.error.WandererAddressErrorResponse
-import models.users.wanderer_address.service.WandererAddress
-import models.users.wanderer_profile.responses.CreatedUserResponse
+import models.wanderer.wanderer_address.responses.error.WandererAddressErrorResponse
+import models.wanderer.wanderer_address.service.WandererAddress
+import models.wanderer.wanderer_profile.responses.CreatedUserResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl

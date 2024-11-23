@@ -4,7 +4,7 @@ import cats.effect.IO
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
-import models.users.login.requests.UserLoginRequest
+import models.authentication.login.requests.UserLoginRequest
 import weaver.SimpleIOSuite
 
 object UserLoginRequestSpec extends SimpleIOSuite {

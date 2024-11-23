@@ -5,7 +5,7 @@ import cats.effect.IO
 import cats.effect.kernel.Ref
 import models.users.*
 import models.users.adts.Role
-import models.users.wanderer_profile.profile.UserProfile
+import models.wanderer.wanderer_profile.profile.UserProfile
 import repositories.user_profile.UserProfileRepositoryAlgebra
 import weaver.SimpleIOSuite
 

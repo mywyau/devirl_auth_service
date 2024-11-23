@@ -7,9 +7,10 @@ import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.users.*
 import models.users.registration.*
-import models.users.wanderer_profile.profile.UserLoginDetails
-import models.users.wanderer_profile.requests.UserSignUpRequest
-import repositories.user_profile.{UserLoginDetailsRepositoryAlgebra, WandererAddressRepositoryAlgebra, WandererPersonalDetailsRepositoryAlgebra}
+import models.wanderer.wanderer_profile.profile.UserLoginDetails
+import models.wanderer.wanderer_profile.requests.UserSignUpRequest
+import repositories.user_profile.{UserLoginDetailsRepositoryAlgebra, WandererAddressRepositoryAlgebra}
+import repositories.wanderer.{WandererPersonalDetailsRepositoryAlgebra}
 import services.authentication.password.PasswordServiceAlgebra
 
 

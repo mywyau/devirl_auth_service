@@ -5,10 +5,10 @@ import cats.data.{NonEmptyList, ValidatedNel}
 import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
+import models.authentication.login.adts.{LoginError, LoginPasswordIncorrect, UsernameNotFound}
+import models.authentication.login.requests.UserLoginRequest
 import models.users.*
-import models.users.login.adts.*
-import models.users.login.requests.UserLoginRequest
-import models.users.wanderer_profile.profile.UserLoginDetails
+import models.wanderer.wanderer_profile.profile.UserLoginDetails
 import repositories.user_profile.UserLoginDetailsRepositoryAlgebra
 import services.authentication.password.PasswordServiceAlgebra
 

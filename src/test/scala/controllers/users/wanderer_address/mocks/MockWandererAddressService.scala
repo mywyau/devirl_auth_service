@@ -2,8 +2,8 @@ package controllers.users.wanderer_address.mocks
 
 import cats.effect.IO
 import models.users.*
-import models.users.wanderer_address.errors.{UserNotFound, WandererAddressErrors}
-import models.users.wanderer_address.service.WandererAddress
+import models.wanderer.wanderer_address.errors.{UserNotFound, WandererAddressErrors}
+import models.wanderer.wanderer_address.service.WandererAddress
 import services.wanderer_address.WandererAddressServiceAlgebra
 
 class MockWandererAddressService(userAddressData: Map[String, WandererAddress])

@@ -4,8 +4,8 @@ import cats.data.Validated
 import cats.effect.IO
 import models.users.*
 import models.users.adts.Wanderer
-import models.users.wanderer_profile.profile.UserLoginDetails
-import models.users.wanderer_profile.requests.UserSignUpRequest
+import models.wanderer.wanderer_profile.profile.UserLoginDetails
+import models.wanderer.wanderer_profile.requests.UserSignUpRequest
 import repositories.user_profile.UserProfileRepositoryAlgebra
 
 import java.time.LocalDateTime

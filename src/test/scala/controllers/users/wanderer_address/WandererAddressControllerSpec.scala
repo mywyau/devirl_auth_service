@@ -5,8 +5,8 @@ import controllers.users.wanderer_address.constants.WandererAddressControllerCon
 import controllers.users.wanderer_address.mocks.MockWandererAddressService
 import controllers.wanderer_address.WandererAddressController
 import models.users.*
-import models.users.wanderer_address.errors.UserNotFound
-import models.users.wanderer_address.responses.error.WandererAddressErrorResponse
+import models.wanderer.wanderer_address.errors.UserNotFound
+import models.wanderer.wanderer_address.responses.error.WandererAddressErrorResponse
 import org.http4s.*
 import org.http4s.Status.{BadRequest, Ok}
 import org.http4s.circe.*

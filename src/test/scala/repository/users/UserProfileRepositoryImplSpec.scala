@@ -4,7 +4,7 @@ import cats.effect.IO
 import cats.effect.kernel.Ref
 import models.users.*
 import models.users.adts.{Business, Wanderer}
-import models.users.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserProfile}
+import models.wanderer.wanderer_profile.profile.{UserAddress, UserLoginDetails, UserProfile}
 import repository.users.mocks.MockUserProfileRepository
 import weaver.SimpleIOSuite
 

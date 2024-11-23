@@ -7,10 +7,10 @@ import controllers.wanderer_profile.WandererProfileController
 import models.responses.ErrorResponse
 import models.users.*
 import models.users.adts.Admin
-import models.users.wanderer_profile.errors.UserIdNotFound
-import models.users.wanderer_profile.profile.WandererUserProfile
-import models.users.wanderer_profile.requests.{UpdateAddress, UpdateLoginDetails, UpdatePersonalDetails, UpdateProfileRequest}
-import models.users.wanderer_profile.responses.error.WandererProfileErrorResponse
+import models.wanderer.wanderer_profile.errors.UserIdNotFound
+import models.wanderer.wanderer_profile.profile.WandererUserProfile
+import models.wanderer.wanderer_profile.requests.{UpdateAddress, UpdateLoginDetails, UpdatePersonalDetails, UpdateProfileRequest}
+import models.wanderer.wanderer_profile.responses.error.WandererProfileErrorResponse
 import org.http4s.*
 import org.http4s.Status.{BadRequest, Ok}
 import org.http4s.circe.*

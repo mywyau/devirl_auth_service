@@ -3,7 +3,7 @@ package repository.wanderer_address.mocks
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import models.users.*
-import models.users.wanderer_address.service.WandererAddress
+import models.wanderer.wanderer_address.service.WandererAddress
 import repositories.user_profile.WandererAddressRepositoryAlgebra
 
 import java.time.LocalDateTime

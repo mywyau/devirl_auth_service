@@ -6,9 +6,9 @@ import controllers.wanderer_address.WandererAddressController
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import models.users.*
-import models.users.wanderer_address.errors.AddressNotFound
-import models.users.wanderer_address.responses.error.WandererAddressErrorResponse
-import models.users.wanderer_address.service.WandererAddress
+import models.wanderer.wanderer_address.errors.AddressNotFound
+import models.wanderer.wanderer_address.responses.error.WandererAddressErrorResponse
+import models.wanderer.wanderer_address.service.WandererAddress
 import org.http4s.*
 import org.http4s.Method.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
