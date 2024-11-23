@@ -106,7 +106,7 @@ class LoginControllerISpec(global: GlobalRead) extends IOSuite {
     }
   }
 
-  test("POST /register/cashew - attempting to login with invalid username should throw a BadRequest - LoginErrorResponse") { (transactorResource, client) =>
+  test("POST - /cashew/login - attempting to login with invalid username should throw a BadRequest - LoginErrorResponse") { (transactorResource, client) =>
 
     val transactor = transactorResource._1.xa
     val client = transactorResource._2.client
@@ -132,7 +132,7 @@ class LoginControllerISpec(global: GlobalRead) extends IOSuite {
     }
   }
 
-  test("POST /register/cashew - attempting to login with invalid password should throw a BadRequest - LoginErrorResponse") { (transactorResource, client) =>
+  test("POST - /cashew/login - attempting to login with invalid password should throw a BadRequest - LoginErrorResponse") { (transactorResource, client) =>
 
     val transactor = transactorResource._1.xa
     val client = transactorResource._2.client
