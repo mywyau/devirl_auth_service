@@ -1,8 +1,7 @@
 package controllers.registration
 
 import cats.data.Validated.{Invalid, Valid}
-import cats.effect.unsafe.implicits.global
-import cats.effect.{Concurrent, IO}
+import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
 import models.users.registration.*
@@ -12,6 +11,7 @@ import models.wanderer.wanderer_profile.responses.CreatedUserResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
+import org.typelevel.log4cats.Logger
 import services.authentication.registration.RegistrationServiceAlgebra
 
 
@@ -21,50 +21,53 @@ trait RegistrationController[F[_]] {
 
 class RegistrationControllerImpl[F[_] : Concurrent](
                                                      registrationService: RegistrationServiceAlgebra[F]
-                                                   ) extends Http4sDsl[F] with RegistrationController[F] {
+                                                   )(implicit logger: Logger[F])
+  extends Http4sDsl[F] with RegistrationController[F] {
 
   implicit val userSignUpRequestDecoder: EntityDecoder[F, UserSignUpRequest] = jsonOf[F, UserSignUpRequest]
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
     case req@POST -> Root / "register" =>
-      req.decode[UserSignUpRequest] { request =>
-        registrationService.registerUser(request).flatMap {
-          case Valid(user) =>
-            Created(CreatedUserResponse("User created successfully").asJson)
-          case Invalid(errors) => {
-            val usernameErrors =
-              errors.collect {
-                case e: RegisterUsernameErrors => e.errorMessage
-              }
+      logger.info(s"[RegistrationControllerImpl] POST - Someone is attempting to register a user account") *>
+        req.decode[UserSignUpRequest] { request =>
+          registrationService.registerUser(request).flatMap {
+            case Valid(user) =>
+              logger.info(s"[RegistrationControllerImpl] POST - User account creation is successful") *>
+              Created(CreatedUserResponse("User created successfully").asJson)
+            case Invalid(errors) => {
+              val usernameErrors =
+                errors.collect {
+                  case e: RegisterUsernameErrors => e.errorMessage
+                }
 
-            val passwordErrors =
-              errors.collect {
-                case e: RegisterPasswordErrors => e.errorMessage
-              }
+              val passwordErrors =
+                errors.collect {
+                  case e: RegisterPasswordErrors => e.errorMessage
+                }
 
-            val emailErrors =
-              errors.collect {
-                case e: RegisterEmailErrors => e.errorMessage
-              }
+              val emailErrors =
+                errors.collect {
+                  case e: RegisterEmailErrors => e.errorMessage
+                }
 
-            val errorResponse =
-              RegistrationErrorResponse(
-                usernameErrors = usernameErrors,
-                passwordErrors = passwordErrors,
-                emailErrors = emailErrors
-              )
+              val errorResponse =
+                RegistrationErrorResponse(
+                  usernameErrors = usernameErrors,
+                  passwordErrors = passwordErrors,
+                  emailErrors = emailErrors
+                )
 
-            BadRequest(errorResponse.asJson)
+              BadRequest(errorResponse.asJson)
+            }
           }
         }
-      }
   }
 }
 
 object RegistrationController {
   def apply[F[_] : Concurrent](
                                 registrationService: RegistrationServiceAlgebra[F]
-                              ): RegistrationController[F] =
+                              )(implicit logger: Logger[F]): RegistrationController[F] =
     new RegistrationControllerImpl[F](registrationService)
 }

@@ -17,10 +17,16 @@ import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
 import org.http4s.circe.CirceEntityDecoder.*
 import org.http4s.implicits.*
+import org.typelevel.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.SelfAwareStructuredLogger
 import services.wanderer_profile.WandererProfileServiceAlgebra
 import weaver.SimpleIOSuite
 
+
+
 object WandererProfileControllerSpec extends SimpleIOSuite {
+
+  implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
 
   def createWandererProfileController(wandererAddressService: WandererProfileServiceAlgebra[IO]): HttpRoutes[IO] =
     WandererProfileController[IO](wandererAddressService).routes

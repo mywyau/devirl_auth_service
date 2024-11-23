@@ -15,12 +15,16 @@ import org.http4s.Status.{BadRequest, Created}
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityDecoder.*
 import org.http4s.implicits.*
+import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import services.authentication.registration.RegistrationServiceAlgebra
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
 
 object RegistrationControllerSpec extends SimpleIOSuite {
+
+  implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
 
   def testUserLoginDetails(username: String): UserLoginDetails = {
     UserLoginDetails(

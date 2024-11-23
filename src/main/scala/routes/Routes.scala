@@ -11,6 +11,7 @@ import controllers.wanderer_profile.WandererProfileControllerImpl
 import dev.profunktor.redis4cats.effect.Log
 import doobie.hikari.HikariTransactor
 import org.http4s.HttpRoutes
+import org.typelevel.log4cats.Logger
 import repositories.*
 import repositories.business.DeskListingRepositoryImpl
 import repositories.user_profile.{UserLoginDetailsRepositoryImpl, WandererAddressRepositoryImpl}
@@ -25,7 +26,7 @@ import services.wanderer_profile.WandererProfileServiceImpl
 
 object Routes {
 
-  def registrationRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+  def registrationRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F])(implicit logger: Logger[F]): HttpRoutes[F] = {
 
     val userLoginDetailsRepository = new UserLoginDetailsRepositoryImpl[F](transactor)
     val wandererAddressRepo = new WandererAddressRepositoryImpl[F](transactor)
@@ -38,7 +39,7 @@ object Routes {
     registrationController.routes
   }
 
-  def loginRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+  def loginRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F])(implicit logger: Logger[F]): HttpRoutes[F] = {
 
     val userLoginDetailsRepository = new UserLoginDetailsRepositoryImpl[F](transactor)
 
@@ -50,7 +51,7 @@ object Routes {
     loginController.routes
   }
 
-  def deskListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+  def deskListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F])(implicit logger: Logger[F]): HttpRoutes[F] = {
 
     val deskListingRepo = new DeskListingRepositoryImpl[F](transactor)
 
@@ -60,7 +61,7 @@ object Routes {
     deskListingController.routes
   }
 
-  def wandererAddressRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+  def wandererAddressRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F])(implicit logger: Logger[F]): HttpRoutes[F] = {
 
     val wandererAddressImplRepository = new WandererAddressRepositoryImpl[F](transactor)
     val wandererAddressService = new WandererAddressServiceImpl[F](wandererAddressImplRepository)
@@ -70,7 +71,7 @@ object Routes {
     wandererAddressController.routes
   }
 
-  def wandererProfileRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+  def wandererProfileRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F])(implicit logger: Logger[F]): HttpRoutes[F] = {
 
     val userLoginDetailsRepo = new UserLoginDetailsRepositoryImpl[F](transactor)
     val wandererAddressRepo = new WandererAddressRepositoryImpl[F](transactor)

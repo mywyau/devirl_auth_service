@@ -17,6 +17,8 @@ object AppDependencies {
 
   // Compile dependencies
   val compile: Seq[ModuleID] = Seq(
+    "org.typelevel" %% "log4cats-slf4j" % "2.6.0",
+    "ch.qos.logback" % "logback-classic" % "1.5.6",        // Logback as the SLF4J backend
     "org.typelevel" %% "cats-core" % catsCoreVersion,
     "org.typelevel" %% "cats-effect" % catsEffectVersion,
     "org.http4s" %% "http4s-dsl" % http4sVersion,

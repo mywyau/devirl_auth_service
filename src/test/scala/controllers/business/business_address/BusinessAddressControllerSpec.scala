@@ -11,10 +11,14 @@ import org.http4s.Status.{BadRequest, Ok}
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityDecoder.*
 import org.http4s.implicits.*
+import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import services.business.business_address.BusinessAddressServiceAlgebra
 import weaver.SimpleIOSuite
 
 object BusinessAddressControllerSpec extends SimpleIOSuite {
+
+  implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
 
   def createUserController(businessAddressService: BusinessAddressServiceAlgebra[IO]): HttpRoutes[IO] =
     BusinessAddressController[IO](businessAddressService).routes

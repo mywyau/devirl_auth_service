@@ -18,6 +18,8 @@ import org.http4s.circe.jsonEncoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
+import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import repositories.business.DeskListingRepositoryImpl
 import services.business.desk_listing.DeskListingServiceImpl
 import shared.{HttpClientResource, TransactorResource}
@@ -26,6 +28,8 @@ import weaver.*
 import java.time.LocalDateTime
 
 class DeskListingControllerISpec(global: GlobalRead) extends IOSuite {
+
+  implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
 
   type Res = (TransactorResource, HttpClientResource)
 

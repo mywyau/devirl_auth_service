@@ -21,6 +21,8 @@ import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
+import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import repositories.user_profile.UserLoginDetailsRepositoryImpl
 import services.authentication.login.LoginServiceImpl
 import services.authentication.password.PasswordServiceAlgebra
@@ -28,6 +30,8 @@ import shared.{HttpClientResource, TransactorResource}
 import weaver.*
 
 class LoginControllerISpec(global: GlobalRead) extends IOSuite {
+
+  implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
 
   type Res = (TransactorResource, HttpClientResource)
 
