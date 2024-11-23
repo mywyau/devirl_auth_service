@@ -13,7 +13,6 @@ object ControllerSharedResource extends GlobalResource {
 
   def sharedResources(global: GlobalWrite): Resource[IO, Unit] = {
     for {
-      // Create the database transactor
       ce <- ExecutionContexts.fixedThreadPool(4)
       xa <- HikariTransactor.newHikariTransactor[IO](
         driverClassName = "org.postgresql.Driver",
@@ -23,7 +22,6 @@ object ControllerSharedResource extends GlobalResource {
         connectEC = ce
       )
       client <- EmberClientBuilder.default[IO].build
-      // Store the TransactorResource and Client globally
       _ <- global.putR(TransactorResource(xa))
       _ <- global.putR(HttpClientResource(client))
     } yield ()

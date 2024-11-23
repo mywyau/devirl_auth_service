@@ -8,7 +8,6 @@ import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import models.business.business_address.service.BusinessAddress
-import models.users.adts.Role
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -36,9 +35,7 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
 
   implicit val localDateTimeMeta: Meta[LocalDateTime] =
     Meta[Timestamp].imap(_.toLocalDateTime)(Timestamp.valueOf)
-
-  implicit val roleMeta: Meta[Role] = Meta[String].imap(Role.fromString)(_.toString)
-
+  
   override def findByUserId(userId: String): F[Option[BusinessAddress]] = {
     val findQuery: F[Option[BusinessAddress]] =
       sql"SELECT * FROM business_address WHERE user_id = $userId"

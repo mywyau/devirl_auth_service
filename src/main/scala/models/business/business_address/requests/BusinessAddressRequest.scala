@@ -2,8 +2,6 @@ package models.business.business_address.requests
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
-import models.users.adts.Role
-
 import java.time.LocalDateTime
 
 case class BusinessAddressRequest(

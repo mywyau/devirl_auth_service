@@ -19,7 +19,6 @@ import org.http4s.server.websocket.WebSocketBuilder2
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import routes.Routes.*
-import websockets.{Desk, DeskBookingServiceImpl}
 
 import scala.concurrent.duration.DurationInt
 
@@ -43,16 +42,12 @@ object Main extends IOApp {
                                                                                        transactor: HikariTransactor[F]
                                                                                      ): Resource[F, HttpRoutes[F]] = {
     for {
-      registrationRoutes <- Resource.pure(registrationRoutes(transactor))
-      loginRoutes <- Resource.pure(loginRoutes(transactor))
       deskListingRoutes <- Resource.pure(deskListingRoutes(transactor))
-      wandererAddressRoutes <- Resource.pure(wandererAddressRoutes(transactor))
-      wandererProfileRoutes <- Resource.pure(wandererProfileRoutes(transactor))
-      
+
       // Combine all routes under the `/cashew` prefix
       combinedRoutes = Router(
         "/cashew" -> (
-          wandererProfileRoutes <+> registrationRoutes <+> deskListingRoutes <+> loginRoutes <+> wandererAddressRoutes
+          deskListingRoutes
           )
       )
 
@@ -69,44 +64,23 @@ object Main extends IOApp {
     } yield throttledRoutes
   }
 
-  //  def createWebSocketRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log]: WebSocketBuilder2[F] => HttpRoutes[F] = {
-  //    val deskBookingService = new DeskBookingServiceImpl[F]
-  //    builder => deskBookingService.deskAvailabilityWebSocket(builder)
-  //  }
-
-  def createWebSocketRoutes[F[_] : Concurrent : Temporal : Async](topic: Topic[F, Desk]): WebSocketBuilder2[F] => HttpRoutes[F] = {
-
-    val deskBookingService = new DeskBookingServiceImpl[F](topic)
-    builder => deskBookingService.deskAvailabilityWebSocket(builder)
-  }
-
-  def createServer[F[_] : Async](
-                                  httpRoutes: HttpRoutes[F],
-                                  webSocketRoutes: WebSocketBuilder2[F] => HttpRoutes[F]
-                                ): Resource[F, Unit] = {
+  def createServer[F[_] : Async](httpRoutes: HttpRoutes[F]): Resource[F, Unit] = {
     EmberServerBuilder
       .default[F]
       .withHost(ipv4"0.0.0.0")
       .withPort(port"8080")
       .withHttpApp(httpRoutes.orNotFound)
-      //      .withHttpWebSocketApp(wsBuilder => webSocketRoutes(wsBuilder).orNotFound)
       .build
       .void
   }
 
   override def run(args: List[String]): IO[ExitCode] = {
 
-    val topicResource = Topic[IO, Desk].toResource
-
     transactorResource[IO].flatMap { transactor =>
-      topicResource.flatMap { topic =>
-
         val httpRoutesResource: Resource[IO, HttpRoutes[IO]] = createHttpRoutes[IO](transactor)
-        val webSocketRoutes: WebSocketBuilder2[IO] => HttpRoutes[IO] = createWebSocketRoutes[IO](topic)
 
         httpRoutesResource.flatMap { httpRoutes =>
-          createServer(httpRoutes, webSocketRoutes)
-        }
+          createServer(httpRoutes)
       }
     }.use(_ => IO.never).as(ExitCode.Success)
   }

@@ -2,7 +2,6 @@ package repository.business.business_address.mocks
 
 import cats.effect.IO
 import cats.effect.kernel.Ref
-import models.users.*
 import models.business.business_address.service.BusinessAddress
 import repositories.business.BusinessAddressRepositoryAlgebra
 
