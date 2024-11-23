@@ -24,8 +24,7 @@ class DeskListingRepositoryISpec(global: GlobalRead) extends IOSuite {
       createDeskListingsTable.update.run.transact(transactor.xa).void *>
         resetDeskListingsTable.update.run.transact(transactor.xa).void
     )
-
-
+  
   def testDeskListing(id: Option[Int], businessId: String) = {
 
     val availability =
@@ -100,7 +99,7 @@ class DeskListingRepositoryISpec(global: GlobalRead) extends IOSuite {
 
     for {
       deskListingOpt <- businessDeskRepo.findByUserId("business_id_1")
-      _ <- IO(println(s"Query Result: $deskListingOpt")) // Debug log the result
+//      _ <- IO(println(s"Query Result: $deskListingOpt")) // Debug log the result
     } yield expect(deskListingOpt == Some(expectedResult))
   }
 }
