@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Main-Class: Main
+Specification-Title: pistachio
+Specification-Version: 0.1.0-SNAPSHOT
+Specification-Vendor: pistachio
+Implementation-Title: pistachio
+Implementation-Version: 0.1.0-SNAPSHOT
+Implementation-Vendor: pistachio
+Implementation-Vendor-Id: pistachio
+

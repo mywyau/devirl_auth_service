@@ -34,7 +34,7 @@ class DeskListingControllerImpl[F[_] : Concurrent](deskService: DeskListingServi
           }
         }
   }
-}
+} 
 
 object DeskListingController {
   def apply[F[_] : Concurrent](deskService: DeskListingServiceAlgebra[F])(implicit logger: Logger[F]): DeskListingController[F] =

@@ -1,4 +1,3 @@
-
 import cats.NonEmptyParallel
 import cats.effect.*
 import cats.effect.syntax.all.*
@@ -26,17 +25,19 @@ object Main extends IOApp {
 
   implicit def logger[F[_] : Sync]: Logger[F] = Slf4jLogger.getLogger[F]
 
-  def transactorResource[F[_] : Async]: Resource[F, HikariTransactor[F]] =
+  def transactorResource[F[_] : Async]: Resource[F, HikariTransactor[F]] = {
+    val dbUrl = s"jdbc:postgresql://${sys.env.getOrElse("DB_HOST", "postgres")}:${sys.env.getOrElse("DB_PORT", "5432")}/${sys.env.getOrElse("DB_NAME", "cashew_db")}"
     for {
       ce <- ExecutionContexts.fixedThreadPool(32)
       xa <- HikariTransactor.newHikariTransactor[F](
         driverClassName = "org.postgresql.Driver",
-        url = "jdbc:postgresql://localhost:5450/cashew_db",
+        url = dbUrl,
         user = sys.env.getOrElse("DB_USER", "cashew_user"),
         pass = sys.env.getOrElse("DB_PASS", "cashew"),
         connectEC = ce
       )
     } yield xa
+  }
 
   def createHttpRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](
                                                                                        transactor: HikariTransactor[F]
@@ -77,10 +78,10 @@ object Main extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
 
     transactorResource[IO].flatMap { transactor =>
-        val httpRoutesResource: Resource[IO, HttpRoutes[IO]] = createHttpRoutes[IO](transactor)
+      val httpRoutesResource: Resource[IO, HttpRoutes[IO]] = createHttpRoutes[IO](transactor)
 
-        httpRoutesResource.flatMap { httpRoutes =>
-          createServer(httpRoutes)
+      httpRoutesResource.flatMap { httpRoutes =>
+        createServer(httpRoutes)
       }
     }.use(_ => IO.never).as(ExitCode.Success)
   }

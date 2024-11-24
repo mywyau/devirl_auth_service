@@ -41,6 +41,23 @@ services:
     networks:
       - db-network
 
+  # Pistachio Service
+  pistachio:
+    image: pistachio                                 # Image name for the Pistachio app
+    container_name: pistachio-app
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres                              # Hostname of the PostgreSQL service
+      DB_PORT: 5432                                  # PostgreSQL default port
+      DB_NAME: cashew_db                             # Database name
+      DB_USER: cashew_user                           # Database user
+      DB_PASSWORD: cashew                            # Database password
+    ports:
+      - "8080:8080"                                  # Map port 8080 for the Pistachio app
+    networks:
+      - db-network
+
 # Define a volume for persistent PostgreSQL data storage
 volumes:
   postgres_data:
