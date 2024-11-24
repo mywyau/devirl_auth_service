@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: shared-postgres-container
+    environment:
+      POSTGRES_DB: shared_db
+      POSTGRES_USER: shared_user
+      POSTGRES_PASSWORD: share
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - shared-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  shared-network:
+    external: true
+

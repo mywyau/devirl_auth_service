@@ -1,67 +1,36 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Service
-  postgres:
-    image: postgres:latest
-    container_name: postgres-container
-    environment:
-      POSTGRES_DB: cashew_db                          # The default database to create
-      POSTGRES_USER: cashew_user                      # The default user to create
-      POSTGRES_PASSWORD: cashew                       # The user's password
-    ports:
-      - "5450:5432"                                   # Map port 5450 on the host to 5432 inside the container
-    volumes:
-      - postgres_data:/var/lib/postgresql/data        # Persistent storage for the database
-      - ./init-multiple-databases.sh:/docker-entrypoint-initdb.d/init-multiple-databases.sh # Initialization script
-    networks:
-      - db-network
-
-  # Flyway Service for Database Migrations
-  flyway:
+  flyway-migration-cashew:
     image: flyway/flyway:latest
-    container_name: flyway-migration
-    depends_on:
-      - postgres
-    command: -url=jdbc:postgresql://postgres:5432/cashew_db -user=cashew_user -password=cashew migrate
+    container_name: flyway-migration-pistachio
+    command: -url=jdbc:postgresql://postgres:5432/shared_db -user=shared_user -password=share migrate
     volumes:
-      - ./migrations:/flyway/sql                     # Migrations folder where Flyway will look for scripts
+      - ./migrations:/flyway/sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -h postgres -p 5432 -U shared_user" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
-      - db-network
+      - shared-network
 
-  # Flyway Service for Cleaning Database
-  flyway_clean:
-    image: flyway/flyway:latest
-    container_name: flyway-clean
-    depends_on:
-      - postgres
-    command: -url=jdbc:postgresql://postgres:5432/cashew_db -user=cashew_user -password=cashew clean
-    volumes:
-      - ./migrations:/flyway/sql                     # Attach same migrations folder to avoid volume errors
-    networks:
-      - db-network
-
-  # Pistachio Service
   pistachio:
-    image: pistachio                                 # Image name for the Pistachio app
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: pistachio-app
-    depends_on:
-      - postgres
     environment:
-      DB_HOST: postgres                              # Hostname of the PostgreSQL service
-      DB_PORT: 5432                                  # PostgreSQL default port
-      DB_NAME: cashew_db                             # Database name
-      DB_USER: cashew_user                           # Database user
-      DB_PASSWORD: cashew                            # Database password
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: shared_db
+      DB_USER: shared_user
+      DB_PASSWORD: share
     ports:
-      - "8080:8080"                                  # Map port 8080 for the Pistachio app
+      - "8081:8081"
     networks:
-      - db-network
+      - shared-network
 
-# Define a volume for persistent PostgreSQL data storage
-volumes:
-  postgres_data:
-
-# Define a custom network for your services
 networks:
-  db-network:
+  shared-network:
+    external: true

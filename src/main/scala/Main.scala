@@ -26,14 +26,14 @@ object Main extends IOApp {
   implicit def logger[F[_] : Sync]: Logger[F] = Slf4jLogger.getLogger[F]
 
   def transactorResource[F[_] : Async]: Resource[F, HikariTransactor[F]] = {
-    val dbUrl = s"jdbc:postgresql://${sys.env.getOrElse("DB_HOST", "postgres")}:${sys.env.getOrElse("DB_PORT", "5432")}/${sys.env.getOrElse("DB_NAME", "cashew_db")}"
+    val dbUrl = s"jdbc:postgresql://${sys.env.getOrElse("DB_HOST", "postgres")}:${sys.env.getOrElse("DB_PORT", "5432")}/${sys.env.getOrElse("DB_NAME", "shared_db")}"
     for {
       ce <- ExecutionContexts.fixedThreadPool(32)
       xa <- HikariTransactor.newHikariTransactor[F](
         driverClassName = "org.postgresql.Driver",
         url = dbUrl,
-        user = sys.env.getOrElse("DB_USER", "cashew_user"),
-        pass = sys.env.getOrElse("DB_PASS", "cashew"),
+        user = sys.env.getOrElse("DB_USER", "shared_user"),
+        pass = sys.env.getOrElse("DB_PASS", "share"),
         connectEC = ce
       )
     } yield xa
@@ -69,7 +69,7 @@ object Main extends IOApp {
     EmberServerBuilder
       .default[F]
       .withHost(ipv4"0.0.0.0")
-      .withPort(port"8080")
+      .withPort(port"8081")
       .withHttpApp(httpRoutes.orNotFound)
       .build
       .void
