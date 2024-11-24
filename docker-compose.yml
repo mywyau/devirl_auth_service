@@ -1,41 +1,36 @@
 version: '3.8'
 
 services:
-
-  # Flyway Service for Database Migrations
-  flyway:
+  flyway-migration-cashew:
     image: flyway/flyway:latest
-    container_name: ${FLYWAY_MIGRATION_NAME}
+    container_name: flyway-migration-pistachio
     command: -url=jdbc:postgresql://postgres:5432/shared_db -user=shared_user -password=share migrate
     volumes:
       - ./migrations:/flyway/sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -h postgres -p 5432 -U shared_user" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - shared-network
 
-  # Pistachio Service
   pistachio:
-    image: pistachio                                 # Image name for the Pistachio app
     build:
       context: .
-      dockerfile: Dockerfile  # Specify the Dockerfile for cashew
+      dockerfile: Dockerfile
     container_name: pistachio-app
-    depends_on:
-      - flyway
     environment:
-      DB_HOST: postgres                              # Hostname of the PostgreSQL service
-      DB_PORT: 5432                                  # PostgreSQL default port
-      DB_NAME: shared_db                             # Database name
-      DB_USER: shared_user                           # Database user
-      DB_PASSWORD: share                            # Database password
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: shared_db
+      DB_USER: shared_user
+      DB_PASSWORD: share
     ports:
-      - "8081:8081"                                  # Map port 8080 for the Pistachio app
+      - "8081:8081"
     networks:
       - shared-network
 
-# Define a volume for persistent PostgreSQL data storage
-volumes:
-  postgres_data:
-
-# Define a custom network for your services
 networks:
   shared-network:
+    external: true
