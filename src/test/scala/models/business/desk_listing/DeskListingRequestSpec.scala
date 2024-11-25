@@ -75,25 +75,3 @@ object DeskListingRequestSpec extends SimpleIOSuite {
 }
 
 
-/*
-* http POST http://localhost:8080/cashew/business/desk/listing/create \
-  Content-Type:application/json \
-  Accept:application/json \
-business_id="business_123" \
-workspace_id="workspace_456" \
-title="Private Office Desk" \
-description="A comfortable desk in a private office space with all amenities included." \
-desk_type="PrivateDesk" \
-quantity:=5 \
-price_per_hour:=15.50 \
-price_per_day:=120.00 \
-rules="Please keep the desk clean and quiet." \
-features:='["Wi-Fi", "Power Outlets", "Monitor", "Ergonomic Chair"]' \
-availability:='{"days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "startTime": "2024-11-21T10:00:00", "endTime": "2024-11-21T10:30:00"}' \
-created_at="2024-11-21T10:00:00" \
-updated_at="2024-11-21T10:30:00"
-
-* 
-* */
-
-
