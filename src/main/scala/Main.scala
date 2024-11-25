@@ -26,7 +26,7 @@ object Main extends IOApp {
   implicit def logger[F[_] : Sync]: Logger[F] = Slf4jLogger.getLogger[F]
 
   def transactorResource[F[_] : Async]: Resource[F, HikariTransactor[F]] = {
-    val dbUrl = s"jdbc:postgresql://${sys.env.getOrElse("DB_HOST", "postgres")}:${sys.env.getOrElse("DB_PORT", "5432")}/${sys.env.getOrElse("DB_NAME", "shared_db")}"
+    val dbUrl = s"jdbc:postgresql://${sys.env.getOrElse("DB_HOST", "shared-postgres-container")}:${sys.env.getOrElse("DB_PORT", "5432")}/${sys.env.getOrElse("DB_NAME", "shared_db")}"
     for {
       ce <- ExecutionContexts.fixedThreadPool(32)
       xa <- HikariTransactor.newHikariTransactor[F](
@@ -47,7 +47,7 @@ object Main extends IOApp {
 
       // Combine all routes under the `/cashew` prefix
       combinedRoutes = Router(
-        "/cashew" -> (
+        "/pistachio" -> (
           deskListingRoutes
           )
       )
