@@ -62,9 +62,9 @@ object DatabaseResource extends GlobalResource {
       ce <- ExecutionContexts.fixedThreadPool(4)
       xa <- HikariTransactor.newHikariTransactor[IO](
         driverClassName = "org.postgresql.Driver",
-        url = "jdbc:postgresql://localhost:5450/cashew_test_db", // Moved to config/env variables later
-        user = sys.env.getOrElse("TEST_DB_USER", "cashew_user"), // Default to "postgres"
-        pass = sys.env.getOrElse("TEST_DB_PASS", "cashew"), // Default password
+        url = "jdbc:postgresql://localhost:5432/shared_test_db", // Moved to config/env variables later
+        user = sys.env.getOrElse("TEST_DB_USER", "shared_user"), // Default to "postgres"
+        pass = sys.env.getOrElse("TEST_DB_PASS", "share"), // Default password
         connectEC = ce // Connect execution context (for managing connection pool)
       )
       _ <- global.putR(TransactorResource(xa)) // Store repository.TransactorResource in global context

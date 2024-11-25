@@ -61,11 +61,11 @@ class DeskListingControllerISpec(global: GlobalRead) extends IOSuite {
     val deskListingController = DeskListingController(deskListingService)
 
     Router(
-      "/cashew" -> deskListingController.routes
+      "/pistachio" -> deskListingController.routes
     )
   }
 
-  test("GET - /cashew/business/desk/listing/create - should generate the user profile associated with the user") { (transactorResource, log) =>
+  test("GET - /pistachio/business/desk/listing/create - should generate the user profile associated with the user") { (transactorResource, log) =>
 
     val transactor = transactorResource._1.xa
     val client = transactorResource._2.client
@@ -95,7 +95,7 @@ class DeskListingControllerISpec(global: GlobalRead) extends IOSuite {
       ).asJson
 
     val request =
-      Request[IO](POST, uri"http://127.0.0.1:9999/cashew/business/desk/listing/create")
+      Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/desk/listing/create")
         .withEntity(testDeskListingRequest)
 
     val expectedDeskListing = CreatedResponse("Business Desk created successfully")
