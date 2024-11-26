@@ -6,8 +6,7 @@ import doobie.*
 import doobie.implicits.*
 import models.business.adts.PrivateDesk
 import models.office.office_address.OfficeAddress
-import models.office.office_specs.OfficeDetails
-import models.office.office_listing.OfficeAvailability
+import models.office.office_specs.OfficeAvailability
 import models.office.office_listing.requests.OfficeListingRequest
 import repositories.office.OfficeAddressRepositoryImpl
 import repository.fragments.OfficeAddressRepoFragments.{createOfficeAddressTable, resetOfficeAddressTable}
@@ -26,13 +25,13 @@ class OfficeAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
         resetOfficeAddressTable.update.run.transact(transactor.xa).void
     )
 
-  def testOfficeAddress(id: Option[Int], businessId: String, office_id: String): OfficeAddress = {
+  def testOfficeAddress(id: Option[Int], businessId: String, officeId: String): OfficeAddress = {
     OfficeAddress(
       id = id,
       businessId = businessId,
-      office_id = office_id,
-      building_name = Some("build_123"),
-      floor_number = Some("floor 1"),
+      officeId = officeId,
+      buildingName = Some("build_123"),
+      floorNumber = Some("floor 1"),
       street = Some("123 Main Street"),
       city = Some("New York"),
       country = Some("USA"),
@@ -75,9 +74,9 @@ class OfficeAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
       OfficeAddress(
         id = Some(1),
         businessId = "business_id_1",
-        office_id = "office_1",
-        building_name = Some("build_123"),
-        floor_number = Some("floor 1"),
+        officeId = "office_1",
+        buildingName = Some("build_123"),
+        floorNumber = Some("floor 1"),
         street = Some("123 Main Street"),
         city = Some("New York"),
         country = Some("USA"),

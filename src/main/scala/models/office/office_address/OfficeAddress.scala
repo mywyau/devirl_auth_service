@@ -9,9 +9,9 @@ import java.time.LocalDateTime
 case class OfficeAddress(
                           id: Option[Int],
                           businessId: String,
-                          office_id: String,
-                          building_name: Option[String],
-                          floor_number: Option[String],
+                          officeId: String,
+                          buildingName: Option[String],
+                          floorNumber: Option[String],
                           street: Option[String],
                           city: Option[String],
                           country: Option[String],

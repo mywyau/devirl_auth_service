@@ -39,10 +39,10 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
   val testOfficeAddress =
     OfficeAddress(
       id = Some(10),
-      businessId = "BIZ123",
-      office_id = "office_123",
-      building_name = Some("build_123"),
-      floor_number = Some("floor 1"),
+      businessId = "business_id_1",
+      officeId = "office_id_1",
+      buildingName = Some("build_123"),
+      floorNumber = Some("floor 1"),
       street = Some("123 Main Street"),
       city = Some("New York"),
       country = Some("USA"),
@@ -63,8 +63,8 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
 
   val officeListingRequest =
     OfficeListingRequest(
-      office_id = "OFF123",
-      officeDetails = testOfficeSpecs,
+      office_id = "office_id_1",
+      officeSpecs = testOfficeSpecs,
       addressDetails = testOfficeAddress,
       availability = testOfficeAvailability,
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
@@ -78,14 +78,14 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
     val expectedJson =
       """
         |{
-        |  "office_id": "OFF123",
+        |  "office_id": "office_id_1",
         |  "officeSpecs": {
         |    "id": 1,
         |    "businessId": "business_id_1",
         |    "officeId": "office_id_1",
         |    "officeName": "Modern Workspace",
         |    "description": "A vibrant office space in the heart of the city, ideal for teams or individuals.",
-        |    "officeType": "Coworking",
+        |    "officeType": "OpenPlanOffice",
         |    "numberOfFloors": 3,
         |    "capacity": 50,
         |    "availability": {
@@ -100,10 +100,10 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
         |  },
         |  "addressDetails": {
         |    "id": 10,
-        |    "businessId": "BIZ123",
-        |    "office_id": "office_123",
-        |    "building_name": "build_123",
-        |    "floor_number": "floor 1",
+        |    "businessId": "business_id_1",
+        |    "officeId": "office_id_1",
+        |    "buildingName": "build_123",
+        |    "floorNumber": "floor 1",
         |    "street": "123 Main Street",
         |    "city": "New York",
         |    "country": "USA",
@@ -127,8 +127,8 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
     val expectedResult: Json = parse(expectedJson).getOrElse(Json.Null)
 
     for {
-      //      _ <- IO(println(jsonResult.noSpaces)) // For debugging, prints the actual JSON result.
-      _ <- IO("")
+            _ <- IO(println(jsonResult.noSpaces)) // For debugging, prints the actual JSON result.
+//      _ <- IO("")
     } yield {
       expect(jsonResult == expectedResult)
     }

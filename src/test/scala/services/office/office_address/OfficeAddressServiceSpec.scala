@@ -15,9 +15,9 @@ object OfficeAddressServiceSpec extends SimpleIOSuite {
     OfficeAddress(
       id = Some(10),
       businessId = "business_1",
-      office_id = "office_1",
-      building_name = Some("build_123"),
-      floor_number = Some("floor 1"),
+      officeId = "office_1",
+      buildingName = Some("build_123"),
+      floorNumber = Some("floor 1"),
       street = Some("123 Main Street"),
       city = Some("New York"),
       country = Some("USA"),

@@ -14,9 +14,9 @@ object OfficeAddressRepositorySpec extends SimpleIOSuite {
     OfficeAddress(
       id = id,
       businessId = businessId,
-      office_id = office_id,
-      building_name = Some("building name"),
-      floor_number = Some("floor 3"),
+      officeId = office_id,
+      buildingName = Some("building name"),
+      floorNumber = Some("floor 3"),
       street = Some("fake street 1"),
       city = Some("fake city 1"),
       country = Some("United Kingdom"),

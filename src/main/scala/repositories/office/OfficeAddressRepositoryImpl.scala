@@ -51,9 +51,9 @@ class OfficeAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
         updated_at
       ) VALUES (
         ${officeAddress.businessId},
-        ${officeAddress.office_id},
-        ${officeAddress.building_name},
-        ${officeAddress.floor_number},
+        ${officeAddress.officeId},
+        ${officeAddress.buildingName},
+        ${officeAddress.floorNumber},
         ${officeAddress.street},
         ${officeAddress.city},
         ${officeAddress.country},
