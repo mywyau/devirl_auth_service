@@ -3,11 +3,10 @@ DROP TABLE IF EXISTS office_details;
 CREATE TABLE office_details (
     id BIGSERIAL PRIMARY KEY,                             -- Primary key with auto-increment, better scalability with BIGSERIAL
     office_id VARCHAR(255) NOT NULL UNIQUE,
-    office_name VARCHAR(255) NOT NULL,
-    office_type VARCHAR(255) NOT NULL,
-    primary_contact VARCHAR(255) NOT NULL,
-    contact_email VARCHAR(255) NOT NULL,
-    contact_phone VARCHAR(20) NOT NULL,
+    business_id VARCHAR(255) NOT NULL UNIQUE,
+    primary_contact VARCHAR(255),
+    contact_email VARCHAR(255),
+    contact_phone VARCHAR(20),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -15,8 +14,8 @@ DROP TABLE IF EXISTS office_address;
 
 CREATE TABLE office_address (
     id BIGSERIAL PRIMARY KEY,
-    business_id VARCHAR(255),
-    office_id VARCHAR(255),
+    business_id VARCHAR(255) NOT NULL UNIQUE,
+    office_id VARCHAR(255) NOT NULL UNIQUE,
     building_name VARCHAR(255),
     floor_number VARCHAR(50),
     street VARCHAR(255),
@@ -34,8 +33,8 @@ DROP TABLE IF EXISTS office_listing;
 
 CREATE TABLE office_specs (
     id SERIAL PRIMARY KEY,                              -- Unique ID for each workspace
-    business_id VARCHAR(255),
-    office_id VARCHAR(255),
+    business_id VARCHAR(255) NOT NULL UNIQUE,
+    office_id VARCHAR(255) NOT NULL UNIQUE,
     office_name VARCHAR(255),
     description TEXT,
     office_type VARCHAR(100),
