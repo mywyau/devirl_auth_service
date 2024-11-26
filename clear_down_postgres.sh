@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-docker-compose -f docker-compose.db.yml down
+docker-compose -f docker-compose.db.yml down --volumes --remove-orphans

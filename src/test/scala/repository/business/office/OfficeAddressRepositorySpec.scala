@@ -10,14 +10,20 @@ import java.time.LocalDateTime
 
 object OfficeAddressRepositorySpec extends SimpleIOSuite {
 
-  def testAddress(id: Option[Int], businessId: String): OfficeAddress =
+  def testAddress(id: Option[Int], businessId: String, office_id: String): OfficeAddress =
     OfficeAddress(
       id = id,
       businessId = businessId,
+      office_id = office_id,
+      building_name = Some("building name"),
+      floor_number = Some("floor 3"),
       street = Some("fake street 1"),
       city = Some("fake city 1"),
       country = Some("United Kingdom"),
+      county = Some("fake County"),
       postcode = Some("CF3 3NJ"),
+      latitude = Some(-100), 
+      longitude = Some(-96.7),
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
@@ -27,7 +33,7 @@ object OfficeAddressRepositorySpec extends SimpleIOSuite {
     Ref.of[IO, List[OfficeAddress]](initialUsers).map(MockOfficeAddressRepository.apply)
 
   test(".findByBusinessId() - should return an address if business_id exists") {
-    val existingAddressForUser = testAddress(Some(1), "business_id_1")
+    val existingAddressForUser = testAddress(Some(1), "business_id_1", "office_1")
 
     for {
       mockRepo <- createMockRepo(List(existingAddressForUser))
@@ -43,8 +49,8 @@ object OfficeAddressRepositorySpec extends SimpleIOSuite {
   }
 
   test(".createOfficeAddress() - when given a valid office address should insert an address into the postgres db") {
-    
-    val testAddressForUser2: OfficeAddress = testAddress(Some(2), "business_id_2")
+
+    val testAddressForUser2: OfficeAddress = testAddress(Some(2), "business_id_2", "office_2")
     for {
       mockRepo <- createMockRepo(List())
       result <- mockRepo.createOfficeAddress(testAddressForUser2)

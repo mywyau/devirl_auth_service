@@ -37,19 +37,30 @@ class OfficeAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
     sql"""
       INSERT INTO office_address (
         business_id,
+        office_id,
+        building_name,
+        floor_number,
         street,
         city,
         country,
+        county,
         postcode,
-        createdAt,
-        updatedAt
-      )
-      VALUES (
+        latitude,
+        longitude,
+        created_at,
+        updated_at
+      ) VALUES (
         ${officeAddress.businessId},
+        ${officeAddress.office_id},
+        ${officeAddress.building_name},
+        ${officeAddress.floor_number},
         ${officeAddress.street},
         ${officeAddress.city},
         ${officeAddress.country},
+        ${officeAddress.county},
         ${officeAddress.postcode},
+        ${officeAddress.latitude},
+        ${officeAddress.longitude},
         ${officeAddress.createdAt},
         ${officeAddress.updatedAt}
       )

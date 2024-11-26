@@ -15,15 +15,15 @@ DROP TABLE IF EXISTS office_address;
 
 CREATE TABLE office_address (
     id BIGSERIAL PRIMARY KEY,
-    user_id VARCHAR(255),
+    business_id VARCHAR(255),
     office_id VARCHAR(255),
+    building_name VARCHAR(255),
+    floor_number VARCHAR(50),
     street VARCHAR(255),
     city VARCHAR(255),
     country VARCHAR(255),
     county VARCHAR(255),
     postcode VARCHAR(255),
-    building_name VARCHAR(255),
-    floor_number VARCHAR(50),
     latitude DECIMAL(9,6),
     longitude DECIMAL(9,6),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

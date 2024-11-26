@@ -14,13 +14,6 @@ import java.time.LocalDateTime
 
 object OfficeListingRequestSpec extends SimpleIOSuite {
 
-  val availability: OfficeAvailability =
-    OfficeAvailability(
-      days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-      startTime = LocalDateTime.of(2025, 11, 21, 10, 0, 0),
-      endTime = LocalDateTime.of(2025, 11, 21, 10, 30, 0)
-    )
-
   val testOfficeDetails =
     OfficeDetails(
       id = Some(1),
@@ -40,10 +33,16 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
     OfficeAddress(
       id = Some(10),
       businessId = "BIZ123",
+      office_id = "office_123",
+      building_name = Some("build_123"),
+      floor_number = Some("floor 1"),
       street = Some("123 Main Street"),
       city = Some("New York"),
       country = Some("USA"),
+      county = Some("New York County"),
       postcode = Some("10001"),
+      latitude = Some(100.1),
+      longitude = Some(-100.1),
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
@@ -64,7 +63,6 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
-
 
   test("DeskListingRequest model encodes correctly to JSON") {
 
@@ -90,10 +88,16 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
         |  "addressDetails": {
         |    "id": 10,
         |    "businessId": "BIZ123",
+        |    "office_id": "office_123",
+        |    "building_name": "build_123",
+        |    "floor_number": "floor 1",
         |    "street": "123 Main Street",
         |    "city": "New York",
         |    "country": "USA",
+        |    "county": "New York County",
         |    "postcode": "10001",
+        |    "latitude": 100.1,
+        |    "longitude": -100.1,
         |    "createdAt": "2025-01-01T00:00:00",
         |    "updatedAt": "2025-01-01T00:00:00"
         |  },
@@ -110,7 +114,8 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
     val expectedResult: Json = parse(expectedJson).getOrElse(Json.Null)
 
     for {
-      _ <- IO(println(jsonResult.noSpaces)) // For debugging, prints the actual JSON result.
+      //      _ <- IO(println(jsonResult.noSpaces)) // For debugging, prints the actual JSON result.
+      _ <- IO("")
     } yield {
       expect(jsonResult == expectedResult)
     }
