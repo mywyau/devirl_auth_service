@@ -62,7 +62,7 @@ class OfficeSpecsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
         ${officeSpecs.numberOfFloors},
         ${officeSpecs.capacity},
         ${officeSpecs.amenities},
-        ${officeSpecs.availability.asJson.noSpaces}::jsonb},   
+        ${officeSpecs.availability.asJson.noSpaces}::jsonb,
         ${officeSpecs.rules},
         ${officeSpecs.createdAt},
         ${officeSpecs.updatedAt}
