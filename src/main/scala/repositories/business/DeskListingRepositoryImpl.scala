@@ -43,21 +43,6 @@ class DeskListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
 
   implicit val deskTypeMeta: Meta[DeskType] = Meta[String].imap(DeskType.fromString)(_.toString)
 
-  //  implicit val stringListMeta: Meta[List[String]] =
-  //    Meta.Advanced.other[PGobject]("text[]").imap(
-  //      pgObj => Option(pgObj.getValue).map(_.stripPrefix("{").stripSuffix("}").split(",").toList.map(_.replace("\"", ""))).getOrElse(Nil)
-  //    )(
-  //      list => {
-  //        val pgObj = new PGobject()
-  //        pgObj.setType("text[]")
-  //        pgObj.setValue(list.map("\"" + _ + "\"").mkString("{", ",", "}"))
-  //        pgObj
-  //      }
-  //    )
-
-  //  implicit val stringArrayMeta: Meta[List[String]] =
-  //    Meta.Advanced.array[String]("text", _.toList, _.toArray)
-
   override def findByUserId(business_id: String): F[Option[DeskListing]] = {
     sql"SELECT * FROM desk_listings WHERE business_id = $business_id"
       .query[DeskListing] // Ensure implicit Read[DeskListing] is available

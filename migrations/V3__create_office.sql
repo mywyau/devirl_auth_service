@@ -32,12 +32,14 @@ CREATE TABLE office_address (
 
 DROP TABLE IF EXISTS office_listing;
 
-CREATE TABLE office_listing (
+CREATE TABLE office_specs (
     id SERIAL PRIMARY KEY,                              -- Unique ID for each workspace
+    business_id VARCHAR(255),
     office_id VARCHAR(255),
     office_name VARCHAR(255),
     description TEXT,
     office_type VARCHAR(100),
+    number_of_floors INT,
     capacity INT,
     amenities TEXT[],                                   -- Array of amenities (e.g., Wi-Fi, Coffee)
     availability JSONB,                                 -- Availability info (days, opening time, closing time)

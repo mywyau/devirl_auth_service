@@ -5,14 +5,14 @@ import io.circe.{Decoder, Encoder, Json}
 import models.business.adts.DeskType
 import models.business.desk_listing.Availability
 import models.office.office_address.OfficeAddress
-import models.office.office_details.OfficeDetails
-import models.office.office_listing.OfficeAvailability
+import models.office.office_specs.OfficeAvailability
+import models.office.office_specs.OfficeSpecs
 
 import java.time.LocalDateTime
 
 case class OfficeListingRequest(
                                  office_id: String,
-                                 officeDetails: OfficeDetails,
+                                 officeSpecs: OfficeSpecs,
                                  addressDetails: OfficeAddress,
                                  availability: OfficeAvailability,
                                  createdAt: LocalDateTime,

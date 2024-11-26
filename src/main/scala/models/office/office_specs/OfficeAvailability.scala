@@ -1,4 +1,4 @@
-package models.office.office_listing
+package models.office.office_specs
 
 import doobie.util.meta.Meta
 import io.circe.generic.semiauto.*

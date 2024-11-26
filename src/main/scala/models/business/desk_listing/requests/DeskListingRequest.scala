@@ -24,7 +24,7 @@ case class DeskListingRequest(
                               )
 
 object DeskListingRequest {
-  implicit val businessDeskRequestEncoder: Encoder[DeskListingRequest] = deriveEncoder[DeskListingRequest]
-  implicit val businessDeskRequestDecoder: Decoder[DeskListingRequest] = deriveDecoder[DeskListingRequest]
+  implicit val eskRequestEncoder: Encoder[DeskListingRequest] = deriveEncoder[DeskListingRequest]
+  implicit val eskRequestDecoder: Decoder[DeskListingRequest] = deriveDecoder[DeskListingRequest]
 }
 
