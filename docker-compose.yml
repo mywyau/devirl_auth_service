@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  flyway-migration-cashew:
+  flyway-migration-pistachio:
     image: flyway/flyway:latest
     container_name: flyway-migration-pistachio
     command: -url=jdbc:postgresql://postgres:5432/shared_db -user=shared_user -password=share migrate

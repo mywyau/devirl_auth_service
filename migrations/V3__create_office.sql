@@ -1,12 +1,13 @@
 DROP TABLE IF EXISTS office_details;
 
-CREATE TABLE office_details (
+CREATE TABLE office_contact_details (
     id BIGSERIAL PRIMARY KEY,                             -- Primary key with auto-increment, better scalability with BIGSERIAL
     office_id VARCHAR(255) NOT NULL UNIQUE,
     business_id VARCHAR(255) NOT NULL UNIQUE,
-    primary_contact VARCHAR(255),
+    primary_contact_first_name VARCHAR(255),
+    primary_contact_last_name VARCHAR(255),
     contact_email VARCHAR(255),
-    contact_phone VARCHAR(20),
+    contact_number VARCHAR(20),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
