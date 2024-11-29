@@ -7,13 +7,15 @@ import models.business.desk_listing.Availability
 import models.office.office_address.OfficeAddress
 import models.office.office_specs.OfficeAvailability
 import models.office.office_specs.OfficeSpecs
+import models.office.office_contact_details.OfficeContactDetails
 
 import java.time.LocalDateTime
 
 case class OfficeListingRequest(
-                                 office_id: String,
-                                 officeSpecs: OfficeSpecs,
+                                 officeId: String,
                                  addressDetails: OfficeAddress,
+                                 officeSpecs: OfficeSpecs,
+                                 contactDetails: OfficeContactDetails,
                                  availability: OfficeAvailability,
                                  createdAt: LocalDateTime,
                                  updatedAt: LocalDateTime

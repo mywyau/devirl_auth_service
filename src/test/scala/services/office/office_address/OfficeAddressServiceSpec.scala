@@ -1,6 +1,9 @@
 package services.office.office_address
 
+import cats.data.Validated.Valid
+import cats.data.ValidatedNel
 import cats.effect.IO
+import models.database.SqlErrors
 import models.office.office_address.errors.OfficeAddressNotFound
 import models.office.office_address.OfficeAddress
 import repositories.office.OfficeAddressRepositoryAlgebra
@@ -35,9 +38,9 @@ object OfficeAddressServiceSpec extends SimpleIOSuite {
 
     def showAllUsers: IO[Map[String, OfficeAddress]] = IO.pure(existingOfficeAddress)
 
-    override def findByBusinessId(userId: String): IO[Option[OfficeAddress]] = IO.pure(existingOfficeAddress.get(userId))
+    override def findByBusinessId(businessId: String): IO[Option[OfficeAddress]] = IO.pure(existingOfficeAddress.get(businessId))
 
-    override def createOfficeAddress(user: OfficeAddress): IO[Int] = IO.pure(1) // Assume user creation always succeeds
+    override def createOfficeAddress(officeAddress: OfficeAddress): IO[ValidatedNel[SqlErrors, Int]] = IO(Valid(1))
   }
 
 
@@ -79,7 +82,7 @@ object OfficeAddressServiceSpec extends SimpleIOSuite {
     for {
       result <- service.createOfficeAddress(sampleAddress)
     } yield {
-      expect(result == 1)
+      expect(result == Valid(1))
     }
   }
 }

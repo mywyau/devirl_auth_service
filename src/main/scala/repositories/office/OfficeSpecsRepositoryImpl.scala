@@ -1,16 +1,18 @@
 package repositories.office
 
 import cats.Monad
+import cats.data.ValidatedNel
 import cats.effect.Concurrent
 import cats.syntax.all.*
 import doobie.*
 import doobie.implicits.*
-import doobie.postgres.implicits.*
 import doobie.implicits.javasql.*
+import doobie.postgres.implicits.*
 import doobie.util.meta.Meta
 import io.circe.syntax.*
-import models.office.office_specs.OfficeSpecs
 import models.office.adts.OfficeType
+import models.office.office_specs.OfficeSpecs
+import models.database.*
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -19,7 +21,7 @@ trait OfficeSpecsRepositoryAlgebra[F[_]] {
 
   def findByBusinessId(businessId: String): F[Option[OfficeSpecs]]
 
-  def createSpecs(user: OfficeSpecs): F[Int]
+  def createSpecs(user: OfficeSpecs): F[ValidatedNel[SqlErrors, Int]]
 }
 
 class OfficeSpecsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends OfficeSpecsRepositoryAlgebra[F] {
@@ -38,7 +40,7 @@ class OfficeSpecsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
     findQuery
   }
 
-  override def createSpecs(officeSpecs: OfficeSpecs): F[Int] = {
+  override def createSpecs(officeSpecs: OfficeSpecs): F[ValidatedNel[SqlErrors, Int]] = {
     sql"""
       INSERT INTO office_specs (
         business_id,
@@ -71,6 +73,21 @@ class OfficeSpecsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
       .update
       .run
       .transact(transactor)
+      .attempt // Capture potential errors
+      .map {
+        case Right(rowsAffected) =>
+          if (rowsAffected == 1) {
+            rowsAffected.validNel
+          } else {
+            InsertionFailed.invalidNel
+          }
+        case Left(e: java.sql.SQLIntegrityConstraintViolationException) =>
+          ConstraintViolation.invalidNel
+        case Left(e: java.sql.SQLException) =>
+          DatabaseError.invalidNel
+        case Left(e) =>
+          UnknownError.invalidNel
+      }
   }
 
 }

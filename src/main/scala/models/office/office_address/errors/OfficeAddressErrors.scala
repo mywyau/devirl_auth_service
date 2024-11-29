@@ -7,6 +7,14 @@ sealed trait OfficeAddressErrors {
   val errorMessage: String
 }
 
+case object OfficeAddressNotCreated extends OfficeAddressErrors:
+  override val code: String = this.toString
+  override val errorMessage: String = "address was not found"
+
+case object AddressDatabaseError extends OfficeAddressErrors:
+  override val code: String = this.toString
+  override val errorMessage: String = "DatabaseError"
+
 case object OfficeAddressNotFound extends OfficeAddressErrors:
   override val code: String = this.toString
   override val errorMessage: String = "address was not found"

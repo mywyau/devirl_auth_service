@@ -1,12 +1,15 @@
 package repositories.office
 
 import cats.Monad
+import cats.data.ValidatedNel
 import cats.effect.Concurrent
 import cats.syntax.all.*
 import doobie.*
 import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
+import models.database.*
+import models.office.office_contact_details.errors.OfficeContactDetailsErrors
 import models.office.office_contact_details.OfficeContactDetails
 
 import java.sql.Timestamp
@@ -16,7 +19,7 @@ trait OfficeContactDetailsRepositoryAlgebra[F[_]] {
 
   def findByBusinessId(businessId: String): F[Option[OfficeContactDetails]]
 
-  def createContactDetails(officeContactDetails: OfficeContactDetails): F[Int]
+  def createContactDetails(officeContactDetails: OfficeContactDetails): F[ValidatedNel[SqlErrors, Int]]
 }
 
 class OfficeContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends OfficeContactDetailsRepositoryAlgebra[F] {
@@ -33,7 +36,7 @@ class OfficeContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: 
     findQuery
   }
 
-  override def createContactDetails(officeContactDetails: OfficeContactDetails): F[Int] = {
+  override def createContactDetails(officeContactDetails: OfficeContactDetails): F[ValidatedNel[SqlErrors, Int]] = {
     sql"""
       INSERT INTO office_contact_details (
         business_id,
@@ -57,6 +60,21 @@ class OfficeContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: 
     """.update
       .run
       .transact(transactor)
+      .attempt
+      .map {
+        case Right(rowsAffected) =>
+          if (rowsAffected == 1) {
+            rowsAffected.validNel
+          } else {
+            InsertionFailed.invalidNel
+          }
+        case Left(e: java.sql.SQLIntegrityConstraintViolationException) =>
+          ConstraintViolation.invalidNel
+        case Left(e: java.sql.SQLException) =>
+          DatabaseError.invalidNel
+        case Left(e) =>
+          UnknownError.invalidNel
+      }
   }
 
 }

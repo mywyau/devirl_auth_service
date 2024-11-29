@@ -1,7 +1,10 @@
 package repository.business.office.mocks
 
+import cats.data.ValidatedNel
+import cats.data.Validated.validNel
 import cats.effect.IO
 import cats.effect.kernel.Ref
+import models.database.SqlErrors
 import models.office.office_address.OfficeAddress
 import repositories.office.OfficeAddressRepositoryAlgebra
 
@@ -12,6 +15,10 @@ case class MockOfficeAddressRepository(ref: Ref[IO, List[OfficeAddress]]) extend
   override def findByBusinessId(businessId: String): IO[Option[OfficeAddress]] =
     ref.get.map(_.find(_.businessId == businessId))
 
-  override def createOfficeAddress(officeAddress: OfficeAddress): IO[Int] =
-    ref.modify(addresses => (officeAddress :: addresses, 1))
+  override def createOfficeAddress(officeAddress: OfficeAddress): IO[ValidatedNel[SqlErrors, Int]] =
+    ref.modify { address =>
+      val updatedList = officeAddress :: address
+      (updatedList, validNel(1))
+    }
+
 }

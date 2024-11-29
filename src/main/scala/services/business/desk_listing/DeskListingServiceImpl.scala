@@ -10,8 +10,8 @@ import repositories.business.DeskListingRepositoryAlgebra
 
 
 class DeskListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
-                                                                             deskListingRepo: DeskListingRepositoryAlgebra[F]
-                                                                           ) extends DeskListingServiceAlgebra[F] {
+                                                                            deskListingRepo: DeskListingRepositoryAlgebra[F]
+                                                                          ) extends DeskListingServiceAlgebra[F] {
 
   override def findByUserId(userId: String): F[Either[DeskListingErrors, DeskListing]] = {
     deskListingRepo.findByUserId(userId).flatMap {
@@ -39,9 +39,9 @@ class DeskListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
 
 object DeskListingService {
 
-  def apply[F[_] : Concurrent : NonEmptyParallel](
-                                                   deskListingRepo: DeskListingRepositoryAlgebra[F]
-                                                 ): DeskListingServiceImpl[F] =
+  def apply[F[_] : Concurrent : NonEmptyParallel : Monad](
+                                                           deskListingRepo: DeskListingRepositoryAlgebra[F]
+                                                         ): DeskListingServiceImpl[F] =
     new DeskListingServiceImpl[F](deskListingRepo)
 }
 

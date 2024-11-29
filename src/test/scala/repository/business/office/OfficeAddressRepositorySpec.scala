@@ -1,6 +1,7 @@
 package repository.business.office
 
 import cats.effect.IO
+import cats.data.Validated.Valid
 import cats.effect.kernel.Ref
 import models.office.office_address.OfficeAddress
 import repository.business.office.mocks.MockOfficeAddressRepository
@@ -56,7 +57,7 @@ object OfficeAddressRepositorySpec extends SimpleIOSuite {
       result <- mockRepo.createOfficeAddress(testAddressForUser2)
       findInsertedAddress <- mockRepo.findByBusinessId("business_id_2")
     } yield expect.all(
-      result == 1,
+      result == Valid(1),
       findInsertedAddress == Some(testAddressForUser2)
     )
   }

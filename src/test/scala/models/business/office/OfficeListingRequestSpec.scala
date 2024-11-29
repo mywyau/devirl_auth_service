@@ -6,6 +6,7 @@ import io.circe.parser.*
 import io.circe.syntax.EncoderOps
 import models.office.adts.*
 import models.office.office_address.OfficeAddress
+import models.office.office_contact_details.OfficeContactDetails
 import models.office.office_listing.requests.OfficeListingRequest
 import models.office.office_specs.{OfficeAvailability, OfficeSpecs}
 import weaver.SimpleIOSuite
@@ -38,7 +39,7 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
 
   val testOfficeAddress =
     OfficeAddress(
-      id = Some(10),
+      id = Some(1),
       businessId = "business_id_1",
       officeId = "office_id_1",
       buildingName = Some("build_123"),
@@ -54,6 +55,19 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
+  val testOfficeContactDetails =
+    OfficeContactDetails(
+      id = Some(1),
+      businessId = "business_id_1",
+      officeId = "office_id_1",
+      primaryContactFirstName = "Michael",
+      primaryContactLastName = "Yau",
+      contactEmail = "mike@gmail.com",
+      contactNumber = "07402205071",
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+    )
+
   val testOfficeAvailability =
     OfficeAvailability(
       days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
@@ -63,9 +77,10 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
 
   val officeListingRequest =
     OfficeListingRequest(
-      office_id = "office_id_1",
-      officeSpecs = testOfficeSpecs,
+      officeId = "office_id_1",
       addressDetails = testOfficeAddress,
+      officeSpecs = testOfficeSpecs,
+      contactDetails = testOfficeContactDetails,
       availability = testOfficeAvailability,
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
@@ -78,7 +93,7 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
     val expectedJson =
       """
         |{
-        |  "office_id": "office_id_1",
+        |  "officeId": "office_id_1",
         |  "officeSpecs": {
         |    "id": 1,
         |    "businessId": "business_id_1",
@@ -99,7 +114,7 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
         |    "updatedAt": "2025-01-01T00:00:00"
         |  },
         |  "addressDetails": {
-        |    "id": 10,
+        |    "id": 1,
         |    "businessId": "business_id_1",
         |    "officeId": "office_id_1",
         |    "buildingName": "build_123",
@@ -111,6 +126,17 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
         |    "postcode": "10001",
         |    "latitude": 100.1,
         |    "longitude": -100.1,
+        |    "createdAt": "2025-01-01T00:00:00",
+        |    "updatedAt": "2025-01-01T00:00:00"
+        |  },
+        |  "contactDetails": {
+        |    "id": 1,
+        |    "businessId": "business_id_1",
+        |    "officeId": "office_id_1",
+        |    "primaryContactFirstName": "Michael",
+        |    "primaryContactLastName": "Yau",
+        |    "contactEmail": "mike@gmail.com",
+        |    "contactNumber": "07402205071",
         |    "createdAt": "2025-01-01T00:00:00",
         |    "updatedAt": "2025-01-01T00:00:00"
         |  },

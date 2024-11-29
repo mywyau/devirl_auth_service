@@ -7,5 +7,5 @@ trait OfficeContactDetailsServiceAlgebra[F[_]] {
 
   def getContactDetailsByBusinessId(businessId: String): F[Either[OfficeContactDetailsErrors, OfficeContactDetails]]
 
-  def createOfficeContactDetails(officeContactDetails: OfficeContactDetails): F[Int]
+  def createOfficeContactDetails(officeContactDetails: OfficeContactDetails): F[cats.data.ValidatedNel[OfficeContactDetailsErrors, Int]]
 }

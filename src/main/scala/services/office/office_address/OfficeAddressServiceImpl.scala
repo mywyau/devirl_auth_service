@@ -1,13 +1,16 @@
 package services.office.office_address
 
+import cats.data.ValidatedNel
 import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
+import models.database.*
+import models.office.office_address.OfficeAddress
 import models.office.office_address.errors.*
-import models.office.office_address.OfficeAddress
-import models.office.office_address.OfficeAddress
-import models.office.office_address.errors.OfficeAddressErrors
 import repositories.office.OfficeAddressRepositoryAlgebra
+import cats.data.Validated
+import cats.data.ValidatedNel
+import cats.data.Validated.{Invalid, Valid}
 
 
 class OfficeAddressServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
@@ -23,8 +26,21 @@ class OfficeAddressServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
     }
   }
 
-  override def createOfficeAddress(officeAddress: OfficeAddress): F[Int] = {
-    officeAddressRepo.createOfficeAddress(officeAddress)
+  override def createOfficeAddress(officeAddress: OfficeAddress): F[ValidatedNel[OfficeAddressErrors, Int]] = {
+
+    val addressCreation: F[ValidatedNel[SqlErrors, Int]] =
+      officeAddressRepo.createOfficeAddress(officeAddress)
+
+    addressCreation.map {
+      case Validated.Valid(addressId) =>
+        Valid(1)
+      case addressResult =>
+        val errors =
+          List(addressResult.toEither.left.getOrElse(Nil))
+        OfficeAddressNotCreated.invalidNel
+    }.handleErrorWith { e =>
+      Concurrent[F].pure(AddressDatabaseError.invalidNel)
+    }
   }
 }
 

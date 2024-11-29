@@ -1,6 +1,9 @@
 package services.office.office_contact_details
 
 import cats.effect.IO
+import cats.data.Validated.{Invalid, Valid}
+import cats.data.ValidatedNel
+import models.database.SqlErrors
 import models.office.office_contact_details.OfficeContactDetails
 import models.office.office_contact_details.errors.OfficeContactDetailsNotFound
 import repositories.office.OfficeContactDetailsRepositoryAlgebra
@@ -32,7 +35,8 @@ object OfficeContactDetailsServiceSpec extends SimpleIOSuite {
 
     override def findByBusinessId(businessId: String): IO[Option[OfficeContactDetails]] = IO.pure(existingOfficeContactDetails.get(businessId))
 
-    override def createContactDetails(officeContactDetails: OfficeContactDetails): IO[Int] = IO.pure(1)
+    override def createContactDetails(officeContactDetails: OfficeContactDetails): IO[ValidatedNel[SqlErrors, Int]] = IO(Valid(1))
+
   }
 
 
@@ -74,7 +78,7 @@ object OfficeContactDetailsServiceSpec extends SimpleIOSuite {
     for {
       result <- service.createOfficeContactDetails(sampleContactDetails)
     } yield {
-      expect(result == 1)
+      expect(result == Valid(1))
     }
   }
 }

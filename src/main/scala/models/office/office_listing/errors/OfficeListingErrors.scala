@@ -11,6 +11,14 @@ case object OfficeListingNotFound extends OfficeListingErrors:
   override val code: String = this.toString
   override val errorMessage: String = "address was not found"
 
+case object MultipleErrors extends OfficeListingErrors:
+  override val code: String = this.toString
+  override val errorMessage: String = "MultipleErrors"
+
+case object DatabaseError extends OfficeListingErrors:
+  override val code: String = this.toString
+  override val errorMessage: String = "MultipleErrors"
+
 case object OfficeEmptyStringField extends OfficeListingErrors:
   override val code: String = this.toString
   override val errorMessage: String = "empty field is invalid"
@@ -24,8 +32,8 @@ case object OfficeUserNotFound extends OfficeListingErrors:
   override val errorMessage: String = "user was not found"
 
 case object OfficeDatabaseError extends OfficeListingErrors:
-    override val code: String = this.toString
-    override val errorMessage: String = "OfficeDatabaseError"
+  override val code: String = this.toString
+  override val errorMessage: String = "OfficeDatabaseError"
 
 
 object OfficeListingErrors {
@@ -33,6 +41,8 @@ object OfficeListingErrors {
   def fromString(str: String): OfficeListingErrors =
     str match {
       case "OfficeListingNotFound" => OfficeListingNotFound
+      case "MultipleErrors" => MultipleErrors
+      case "DatabaseError" => DatabaseError
       case "OfficeEmptyStringField" => OfficeEmptyStringField
       case "OfficeInvalidFormat" => OfficeInvalidFormat
       case "OfficeUserNotFound" => OfficeUserNotFound
@@ -43,6 +53,8 @@ object OfficeListingErrors {
   implicit val officeListingErrorsEncoder: Encoder[OfficeListingErrors] =
     Encoder.encodeString.contramap {
       case OfficeListingNotFound => "OfficeListingNotFound"
+      case MultipleErrors => "MultipleErrors"
+      case DatabaseError => "DatabaseError"
       case OfficeEmptyStringField => "OfficeEmptyStringField"
       case OfficeInvalidFormat => "OfficeInvalidFormat"
       case OfficeUserNotFound => "OfficeUserNotFound"
@@ -52,6 +64,8 @@ object OfficeListingErrors {
   implicit val officeListingErrorsDecoder: Decoder[OfficeListingErrors] =
     Decoder.decodeString.emap {
       case "OfficeListingNotFound" => Right(OfficeListingNotFound)
+      case "MultipleErrors" => Right(MultipleErrors)
+      case "DatabaseError" => Right(DatabaseError)
       case "OfficeEmptyStringField" => Right(OfficeEmptyStringField)
       case "OfficeInvalidFormat" => Right(OfficeInvalidFormat)
       case "OfficeUserNotFound" => Right(OfficeUserNotFound)

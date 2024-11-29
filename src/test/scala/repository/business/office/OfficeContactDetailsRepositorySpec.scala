@@ -1,6 +1,7 @@
 package repository.business.office
 
 import cats.effect.IO
+import cats.data.Validated.{Valid}
 import cats.effect.kernel.Ref
 import models.office.office_contact_details.OfficeContactDetails
 import repository.business.office.mocks.MockOfficeContactDetailsRepository
@@ -51,7 +52,7 @@ object OfficeContactDetailsRepositorySpec extends SimpleIOSuite {
       result <- mockRepo.createContactDetails(testContactDetailsForUser2)
       findInsertedContactDetails <- mockRepo.findByBusinessId("business_id_2")
     } yield expect.all(
-      result == 1,
+      result == Valid(1),
       findInsertedContactDetails == Some(testContactDetailsForUser2)
     )
   }

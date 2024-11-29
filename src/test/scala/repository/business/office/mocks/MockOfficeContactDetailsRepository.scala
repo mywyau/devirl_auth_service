@@ -1,9 +1,12 @@
 package repository.business.office.mocks
 
+import cats.data.ValidatedNel
+import cats.data.Validated.validNel
 import cats.effect.IO
 import cats.effect.kernel.Ref
-import repositories.office.OfficeContactDetailsRepositoryAlgebra
+import models.database.SqlErrors
 import models.office.office_contact_details.OfficeContactDetails
+import repositories.office.OfficeContactDetailsRepositoryAlgebra
 
 import java.time.LocalDateTime
 
@@ -12,6 +15,11 @@ case class MockOfficeContactDetailsRepository(ref: Ref[IO, List[OfficeContactDet
   override def findByBusinessId(businessId: String): IO[Option[OfficeContactDetails]] =
     ref.get.map(_.find(_.businessId == businessId))
 
-  override def createContactDetails(officeContactDetails: OfficeContactDetails): IO[Int] =
-    ref.modify(contactDetails => (officeContactDetails :: contactDetails, 1))
+  override def createContactDetails(officeContactDetails: OfficeContactDetails): IO[ValidatedNel[SqlErrors, Int]] =
+    ref.modify { contactDetails =>
+      val updatedList = officeContactDetails :: contactDetails
+      (updatedList, validNel(1))
+    }
+
+
 }

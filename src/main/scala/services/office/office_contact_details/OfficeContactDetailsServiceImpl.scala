@@ -1,8 +1,11 @@
 package services.office.office_contact_details
 
+import cats.data.{Validated, ValidatedNel}
+import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
+import models.database.SqlErrors
 import models.office.office_contact_details.OfficeContactDetails
 import models.office.office_contact_details.errors.*
 import repositories.office.OfficeContactDetailsRepositoryAlgebra
@@ -21,8 +24,21 @@ class OfficeContactDetailsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Mon
     }
   }
 
-  override def createOfficeContactDetails(officeContactDetails: OfficeContactDetails): F[Int] = {
-    officeContactDetailsRepo.createContactDetails(officeContactDetails)
+  override def createOfficeContactDetails(officeContactDetails: OfficeContactDetails): F[ValidatedNel[OfficeContactDetailsErrors, Int]] = {
+
+    val contactDetailsCreation: F[ValidatedNel[SqlErrors, Int]] =
+      officeContactDetailsRepo.createContactDetails(officeContactDetails)
+
+    contactDetailsCreation.map {
+      case Validated.Valid(i) =>
+        Valid(i)
+      case contactDetailsResult =>
+        val errors =
+          List(contactDetailsResult.toEither.left.getOrElse(Nil))
+        OfficeContactDetailsNotCreated.invalidNel
+    }.handleErrorWith { e =>
+      Concurrent[F].pure(OfficeContactDetailsDatabaseError.invalidNel)
+    }
   }
 }
 

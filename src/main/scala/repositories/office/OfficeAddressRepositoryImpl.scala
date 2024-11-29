@@ -1,6 +1,7 @@
 package repositories.office
 
 import cats.Monad
+import cats.data.ValidatedNel
 import cats.effect.Concurrent
 import cats.syntax.all.*
 import doobie.*
@@ -8,6 +9,8 @@ import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import models.office.office_address.OfficeAddress
+import models.office.office_address.errors.OfficeAddressErrors
+import models.database.*
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -16,7 +19,7 @@ trait OfficeAddressRepositoryAlgebra[F[_]] {
 
   def findByBusinessId(businessId: String): F[Option[OfficeAddress]]
   
-  def createOfficeAddress(user: OfficeAddress): F[Int]
+  def createOfficeAddress(officeAddress: OfficeAddress): F[ValidatedNel[SqlErrors, Int]]
 }
 
 class OfficeAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends OfficeAddressRepositoryAlgebra[F] {
@@ -33,7 +36,7 @@ class OfficeAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
     findQuery
   }
 
-  override def createOfficeAddress(officeAddress: OfficeAddress): F[Int] = {
+  override def createOfficeAddress(officeAddress: OfficeAddress): F[ValidatedNel[SqlErrors, Int]] = {
     sql"""
       INSERT INTO office_address (
         business_id,
@@ -67,8 +70,22 @@ class OfficeAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
     """.update
       .run
       .transact(transactor)
+      .attempt // Capture potential errors
+      .map {
+        case Right(rowsAffected) =>
+          if (rowsAffected == 1) {
+            rowsAffected.validNel
+          } else {
+            InsertionFailed.invalidNel
+          }
+        case Left(e: java.sql.SQLIntegrityConstraintViolationException) =>
+          ConstraintViolation.invalidNel
+        case Left(e: java.sql.SQLException) =>
+          DatabaseError.invalidNel
+        case Left(e) =>
+          UnknownError.invalidNel
+      }
   }
-
 }
 
 
