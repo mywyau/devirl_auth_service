@@ -49,6 +49,7 @@ class OfficeSpecsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
         description,
         office_type,
         number_of_floors,
+        total_desks,
         capacity,
         amenities,
         availability,
@@ -62,6 +63,7 @@ class OfficeSpecsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
         ${officeSpecs.description},
         ${officeSpecs.officeType},
         ${officeSpecs.numberOfFloors},
+        ${officeSpecs.totalDesks},
         ${officeSpecs.capacity},
         ${officeSpecs.amenities},
         ${officeSpecs.availability.asJson.noSpaces}::jsonb,
@@ -96,6 +98,6 @@ class OfficeSpecsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
 object OfficeSpecsRepository {
   def apply[F[_] : Concurrent : Monad](
                                         transactor: Transactor[F]
-                                      ): OfficeSpecsRepositoryImpl[F] =
+                                      ): OfficeSpecsRepositoryAlgebra[F] =
     new OfficeSpecsRepositoryImpl[F](transactor)
 }

@@ -27,7 +27,7 @@ services:
       DB_USER: shared_user
       DB_PASSWORD: share
     ports:
-      - "8081:8081"
+      - "1010:1010"
     networks:
       - shared-network
 

@@ -34,6 +34,13 @@ import java.time.LocalDateTime
 
 object OfficeListingConstants {
 
+  val testOfficeAvailability: OfficeAvailability =
+    OfficeAvailability(
+      days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
+      startTime = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      endTime = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+    )
+
   val testOfficeSpecs: OfficeSpecs =
     OfficeSpecs(
       id = Some(1),
@@ -43,14 +50,10 @@ object OfficeListingConstants {
       description = "A vibrant office space in the heart of the city, ideal for teams or individuals.",
       officeType = OpenPlanOffice,
       numberOfFloors = 3,
+      totalDesks = 3,
       capacity = 50,
       amenities = List("Wi-Fi", "Coffee Machine", "Projector", "Whiteboard", "Parking"),
-      availability =
-        OfficeAvailability(
-          days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-          startTime = LocalDateTime.of(2024, 11, 21, 10, 0, 0),
-          endTime = LocalDateTime.of(2024, 11, 21, 10, 30, 0)
-        ),
+      availability = testOfficeAvailability,
       rules = Some("No smoking. Maintain cleanliness."),
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
@@ -88,20 +91,12 @@ object OfficeListingConstants {
     )
 
 
-  val testOfficeAvailability: OfficeAvailability =
-    OfficeAvailability(
-      days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-      startTime = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      endTime = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-    )
-
   def testOfficeListingRequest(officeId: String): OfficeListingRequest =
     OfficeListingRequest(
       officeId = officeId,
       addressDetails = testOfficeAddress,
       officeSpecs = testOfficeSpecs,
       contactDetails = testOfficeContactDetails,
-      availability = testOfficeAvailability,
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )

@@ -1,17 +1,3 @@
-DROP TABLE IF EXISTS business_details;
-
-CREATE TABLE business_details (
-    id BIGSERIAL PRIMARY KEY,                             -- Primary key with auto-increment, better scalability with BIGSERIAL
-    business_id VARCHAR(255) NOT NULL UNIQUE,
-    business_name VARCHAR(255) NOT NULL,
-    business_type VARCHAR(255) NOT NULL,
-    business_industry VARCHAR(255) NOT NULL,
-    primary_contact VARCHAR(255) NOT NULL,
-    contact_email VARCHAR(255) NOT NULL,
-    contact_phone VARCHAR(20) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 DROP TABLE IF EXISTS business_address;
 
 CREATE TABLE business_address (
@@ -24,6 +10,20 @@ CREATE TABLE business_address (
     postcode VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+DROP TABLE IF EXISTS business_details;
+
+CREATE TABLE business_details (
+    id BIGSERIAL PRIMARY KEY,                             -- Primary key with auto-increment, better scalability with BIGSERIAL
+    business_id VARCHAR(255) NOT NULL UNIQUE,
+    business_name VARCHAR(255) NOT NULL,
+    business_type VARCHAR(255) NOT NULL,
+    business_industry VARCHAR(255) NOT NULL,
+    primary_contact VARCHAR(255) NOT NULL,
+    contact_email VARCHAR(255) NOT NULL,
+    contact_phone VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 DROP TABLE IF EXISTS desk_listings;

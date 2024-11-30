@@ -83,6 +83,6 @@ class OfficeContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: 
 object OfficeContactDetailsRepository {
   def apply[F[_] : Concurrent : Monad](
                                         transactor: Transactor[F]
-                                      ): OfficeContactDetailsRepositoryImpl[F] =
+                                      ): OfficeContactDetailsRepositoryAlgebra[F] =
     new OfficeContactDetailsRepositoryImpl[F](transactor)
 }

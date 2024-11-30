@@ -28,6 +28,7 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
       description = "A vibrant office space in the heart of the city, ideal for teams or individuals.",
       officeType = OpenPlanOffice,
       numberOfFloors = 3,
+      totalDesks = 3,
       capacity = 50,
       amenities = List("Wi-Fi", "Coffee Machine", "Projector", "Whiteboard", "Parking"),
       availability =
@@ -72,20 +73,12 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
         updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
 
-  val testOfficeAvailability =
-    OfficeAvailability(
-      days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-      startTime = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      endTime = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-    )
-
   val officeListingRequest =
     OfficeListingRequest(
       officeId = "office_id_1",
       addressDetails = testOfficeAddress,
       officeSpecs = testOfficeSpecs,
       contactDetails = testOfficeContactDetails,
-      availability = testOfficeAvailability,
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )

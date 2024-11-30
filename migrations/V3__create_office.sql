@@ -8,7 +8,8 @@ CREATE TABLE office_contact_details (
     primary_contact_last_name VARCHAR(255),
     contact_email VARCHAR(255),
     contact_number VARCHAR(20),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 DROP TABLE IF EXISTS office_address;
@@ -40,6 +41,7 @@ CREATE TABLE office_specs (
     description TEXT,
     office_type VARCHAR(100),
     number_of_floors INT,
+    total_desks INT,
     capacity INT,
     amenities TEXT[],                                   -- Array of amenities (e.g., Wi-Fi, Coffee)
     availability JSONB,                                 -- Availability info (days, opening time, closing time)

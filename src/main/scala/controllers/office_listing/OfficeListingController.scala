@@ -26,7 +26,6 @@ class OfficeListingControllerImpl[F[_] : Concurrent](
   extends Http4sDsl[F] with OfficeListingControllerAlgebra[F] {
 
   implicit val officeListingRequestDecoder: EntityDecoder[F, OfficeListingRequest] = jsonOf[F, OfficeListingRequest]
-
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
     case req@POST -> Root / "business" / "businesses" / "office" / "listing" / "create" =>
       logger.info(s"[OfficeListingControllerImpl] POST - Creating office listing") *>

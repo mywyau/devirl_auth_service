@@ -92,6 +92,6 @@ class OfficeAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
 object OfficeAddressRepository {
   def apply[F[_] : Concurrent : Monad](
                                         transactor: Transactor[F]
-                                      ): OfficeAddressRepositoryImpl[F] =
+                                      ): OfficeAddressRepositoryAlgebra[F] =
     new OfficeAddressRepositoryImpl[F](transactor)
 }

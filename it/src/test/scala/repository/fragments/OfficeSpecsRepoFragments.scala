@@ -19,6 +19,7 @@ object OfficeSpecsRepoFragments {
         description TEXT,
         office_type VARCHAR(100),
         number_of_floors INT,
+        total_desks INT,
         capacity INT,
         amenities TEXT[],
         availability JSONB,
@@ -28,5 +29,4 @@ object OfficeSpecsRepoFragments {
       );
     """
   }
-
 }

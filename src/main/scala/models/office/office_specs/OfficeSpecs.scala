@@ -15,6 +15,7 @@ case class OfficeSpecs(
                         description: String,
                         officeType: OfficeType,
                         numberOfFloors: Int,
+                        totalDesks: Int,
                         capacity: Int,
                         amenities: List[String],
                         availability: OfficeAvailability,

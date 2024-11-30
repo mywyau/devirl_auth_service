@@ -24,6 +24,7 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
       description = "A vibrant office space in the heart of the city, ideal for teams or individuals.",
       officeType = OpenPlanOffice,
       numberOfFloors = 3,
+      totalDesks = 3,
       capacity = 50,
       amenities = List("Wi-Fi", "Coffee Machine", "Projector", "Whiteboard", "Parking"),
       availability =
@@ -81,12 +82,11 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
       addressDetails = testOfficeAddress,
       officeSpecs = testOfficeSpecs,
       contactDetails = testOfficeContactDetails,
-      availability = testOfficeAvailability,
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
-  test("DeskListingRequest model encodes correctly to JSON") {
+  test("OfficeListingRequest model encodes correctly to JSON") {
 
     val jsonResult = officeListingRequest.asJson
 
@@ -102,6 +102,7 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
         |    "description": "A vibrant office space in the heart of the city, ideal for teams or individuals.",
         |    "officeType": "OpenPlanOffice",
         |    "numberOfFloors": 3,
+        |    "totalDesks": 3,
         |    "capacity": 50,
         |    "availability": {
         |      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
@@ -140,11 +141,6 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
         |    "createdAt": "2025-01-01T00:00:00",
         |    "updatedAt": "2025-01-01T00:00:00"
         |  },
-        |  "availability": {
-        |    "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        |    "startTime": "2025-01-01T00:00:00",
-        |    "endTime": "2025-01-01T00:00:00"
-        |  },
         |  "createdAt": "2025-01-01T00:00:00",
         |  "updatedAt": "2025-01-01T00:00:00"
         |}
@@ -153,8 +149,8 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
     val expectedResult: Json = parse(expectedJson).getOrElse(Json.Null)
 
     for {
-            _ <- IO(println(jsonResult.noSpaces)) // For debugging, prints the actual JSON result.
-//      _ <- IO("")
+//            _ <- IO(println(jsonResult.noSpaces)) // For debugging, prints the actual JSON result.
+      _ <- IO("")
     } yield {
       expect(jsonResult == expectedResult)
     }

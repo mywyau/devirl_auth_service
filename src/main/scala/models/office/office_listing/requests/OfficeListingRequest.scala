@@ -16,7 +16,6 @@ case class OfficeListingRequest(
                                  addressDetails: OfficeAddress,
                                  officeSpecs: OfficeSpecs,
                                  contactDetails: OfficeContactDetails,
-                                 availability: OfficeAvailability,
                                  createdAt: LocalDateTime,
                                  updatedAt: LocalDateTime
                                )

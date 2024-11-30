@@ -34,6 +34,7 @@ class OfficeSpecsRepositoryISpecs(global: GlobalRead) extends IOSuite {
       description = "A vibrant office space in the heart of the city, ideal for teams or individuals.",
       officeType = OpenPlanOffice,
       numberOfFloors = 3,
+      totalDesks = 3,
       capacity = 50,
       amenities = List("Wi-Fi", "Coffee Machine", "Projector", "Whiteboard", "Parking"),
       availability =
@@ -83,6 +84,7 @@ class OfficeSpecsRepositoryISpecs(global: GlobalRead) extends IOSuite {
         description = "A vibrant office space in the heart of the city, ideal for teams or individuals.",
         officeType = OpenPlanOffice,
         numberOfFloors = 3,
+        totalDesks = 3,
         capacity = 50,
         amenities = List("Wi-Fi", "Coffee Machine", "Projector", "Whiteboard", "Parking"),
         availability =

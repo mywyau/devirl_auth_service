@@ -4,14 +4,17 @@ import cats.NonEmptyParallel
 import cats.effect.*
 import controllers.*
 import controllers.desk_listing.DeskListingControllerImpl
+import controllers.office_listing.OfficeListingControllerImpl
 import dev.profunktor.redis4cats.effect.Log
 import doobie.hikari.HikariTransactor
 import org.http4s.HttpRoutes
 import org.typelevel.log4cats.Logger
 import repositories.*
 import repositories.business.DeskListingRepositoryImpl
+import repositories.office.{OfficeAddressRepositoryImpl, OfficeContactDetailsRepositoryImpl, OfficeSpecsRepositoryImpl}
 import services.*
 import services.business.desk_listing.DeskListingServiceImpl
+import services.office.office_listing.OfficeListingServiceImpl
 
 object Routes {
 
@@ -23,5 +26,17 @@ object Routes {
     val deskListingController = new DeskListingControllerImpl[F](deskListingService)
 
     deskListingController.routes
+  }
+
+  def officeListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F])(implicit logger: Logger[F]): HttpRoutes[F] = {
+
+    val officeSpecsRepository = new OfficeSpecsRepositoryImpl[F](transactor)
+    val officeAddressRepository = new OfficeAddressRepositoryImpl[F](transactor)
+    val officeContactDetailsRepository = new OfficeContactDetailsRepositoryImpl[F](transactor)
+
+    val officeListingService = new OfficeListingServiceImpl[F](officeAddressRepository, officeContactDetailsRepository, officeSpecsRepository)
+    val officeListingController = new OfficeListingControllerImpl[F](officeListingService)
+
+    officeListingController.routes
   }
 }
