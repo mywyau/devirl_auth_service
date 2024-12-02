@@ -1,4 +1,4 @@
-package controllers.business.desk_listing
+package controllers.desk_listing
 
 import cats.effect.*
 import com.comcast.ip4s.{ipv4, port}

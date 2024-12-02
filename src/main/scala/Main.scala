@@ -45,9 +45,10 @@ object Main extends IOApp {
     for {
       deskListingRoutes <- Resource.pure(deskListingRoutes(transactor))
       officeListingRoutes <- Resource.pure(officeListingRoutes(transactor))
+      businessListingRoutes <- Resource.pure(businessListingRoutes(transactor))
       // Combine all routes under the `/cashew` prefix
       combinedRoutes = Router(
-        "/pistachio" -> (deskListingRoutes <+> officeListingRoutes)
+        "/pistachio" -> (deskListingRoutes <+> officeListingRoutes <+> businessListingRoutes)
       )
 
       // Wrap combined routes with CORS middleware

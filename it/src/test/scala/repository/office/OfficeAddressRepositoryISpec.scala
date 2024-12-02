@@ -1,4 +1,4 @@
-package repository.business.office
+package repository.office
 
 import cats.effect.{IO, Resource}
 import cats.implicits.*

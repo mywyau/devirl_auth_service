@@ -1,4 +1,4 @@
-package repository.business.desk_listing
+package repository.desk_listing
 
 import cats.effect.{IO, Resource}
 import cats.implicits.*

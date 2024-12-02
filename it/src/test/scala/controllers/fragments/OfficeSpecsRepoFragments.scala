@@ -13,12 +13,13 @@ object OfficeSpecsRepoFragments {
     sql"""
       CREATE TABLE IF NOT EXISTS office_specs (
         id SERIAL PRIMARY KEY,
-        business_id VARCHAR(255),
-        office_id VARCHAR(255),
+        business_id VARCHAR(255) NOT NULL UNIQUE,
+        office_id VARCHAR(255) NOT NULL UNIQUE,
         office_name VARCHAR(255),
         description TEXT,
         office_type VARCHAR(100),
         number_of_floors INT,
+        total_desks INT,
         capacity INT,
         amenities TEXT[],
         availability JSONB,

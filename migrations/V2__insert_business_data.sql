@@ -15,10 +15,10 @@ VALUES
 ('user_004', 'biz_004', 'Freelancers Unite', 'Sarah Connor', 'hello@freelancersunite.com', '+1-800-555-004', 'https://freelancersunite.com'),
 ('user_005', 'biz_005', 'Design Studio Hub', 'Emily Davis', 'contact@designstudiohub.com', '+1-800-555-005', 'https://designstudiohub.com');
 
-INSERT INTO business_specs (user_id, business_id, business_name, description, business_type)
+INSERT INTO business_specs (user_id, business_id, business_name, description)
 VALUES
-('user_001', 'biz_001', 'Tech Innovators', 'A tech-focused co-working space.', 'Co-working'),
-('user_002', 'biz_002', 'Green Startups Hub', 'A hub for eco-friendly startups.', 'Private Office'),
-('user_003', 'biz_003', 'Corporate Solutions Inc.', 'Office solutions for corporate businesses.', 'Corporate'),
-('user_004', 'biz_004', 'Freelancers Unite', 'A community-driven co-working space for freelancers.', 'Co-working'),
+('user_001', 'biz_001', 'Tech Innovators', 'A tech-focused co-working space.'),
+('user_002', 'biz_002', 'Green Startups Hub', 'A hub for eco-friendly startups.'),
+('user_003', 'biz_003', 'Corporate Solutions Inc.', 'Office solutions for corporate businesses.'),
+('user_004', 'biz_004', 'Freelancers Unite', 'A community-driven co-working space for freelancers.'),
 ('user_005', 'biz_005', 'Design Studio Hub', 'A creative space for designers and artists.', 'Creative Studio');

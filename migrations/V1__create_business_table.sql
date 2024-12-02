@@ -12,6 +12,8 @@ CREATE TABLE business_address (
     country VARCHAR(255),
     county VARCHAR(255),
     postcode VARCHAR(255),
+    latitude DECIMAL(9,6),
+    longitude DECIMAL(9,6),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

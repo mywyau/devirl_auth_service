@@ -1,29 +1,28 @@
-package controllers.fragments
+package controllers.fragments.business
 
 import doobie.implicits.*
 import doobie.util.fragment
 
-object OfficeAddressRepoFragments {
+object BusinessAddressRepoFragments {
 
-  val resetOfficeAddressTable: fragment.Fragment = {
-    sql"TRUNCATE TABLE office_address RESTART IDENTITY"
+  val resetBusinessAddressTable: fragment.Fragment = {
+    sql"TRUNCATE TABLE business_address RESTART IDENTITY"
   }
 
-  val createOfficeAddressTable: fragment.Fragment = {
+  val createBusinessAddressTable: fragment.Fragment = {
     sql"""
-      CREATE TABLE IF NOT EXISTS office_address (
+      CREATE TABLE IF NOT EXISTS business_address (
         id BIGSERIAL PRIMARY KEY,
+        user_id VARCHAR(255) NOT NULL UNIQUE,
         business_id VARCHAR(255) NOT NULL UNIQUE,
-        office_id VARCHAR(255) NOT NULL UNIQUE,
+        business_name VARCHAR(255),
         building_name VARCHAR(255),
-        floor_number VARCHAR(50),
+        floor_number VARCHAR(255),
         street VARCHAR(255),
         city VARCHAR(255),
         country VARCHAR(255),
         county VARCHAR(255),
         postcode VARCHAR(255),
-        latitude DECIMAL(9,6),
-        longitude DECIMAL(9,6),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
@@ -31,11 +30,11 @@ object OfficeAddressRepoFragments {
   }
 
 
-  val insertOfficeAddressTable: fragment.Fragment = {
+  val insertBusinessAddressTable: fragment.Fragment = {
     sql"""
-        INSERT INTO office_address (
+        INSERT INTO business_address (
           business_id,
-          office_id,
+          business_id,
           building_name,
           floor_number,
           street,
@@ -49,7 +48,7 @@ object OfficeAddressRepoFragments {
           updated_at
         ) VALUES (
           'user123',                     
-          'office456',                   
+          'business456',                   
           '123 Main Street',             
           'New York',                    
           'USA',                         

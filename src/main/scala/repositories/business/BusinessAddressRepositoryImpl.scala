@@ -41,7 +41,6 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
       INSERT INTO business_address (
         user_id,
         business_id,
-        business_name,
         building_name,
         floor_number,
         street,
@@ -49,6 +48,8 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
         country,
         county,
         postcode,
+        latitude,
+        longitude,
         created_at,
         updated_at
       )
@@ -62,6 +63,8 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
         ${businessAddress.country},
         ${businessAddress.county},
         ${businessAddress.postcode},
+        ${businessAddress.latitude},
+        ${businessAddress.longitude},
         ${businessAddress.createdAt},
         ${businessAddress.updatedAt}
         )

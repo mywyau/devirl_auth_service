@@ -2,17 +2,7 @@ ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / scalaVersion := "3.3.0"
 ThisBuild / parallelExecution := true
 
-
-lazy val shared = (project in file("shared"))
-  .settings(
-    name := "pistachio-shared",
-    scalaVersion := scalaVersion.value,
-    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test ++ AppDependencies.integrationTest,
-
-  )
-
 lazy val root = (project in file("."))
-  .dependsOn(shared) // Depend on shared module
   .settings(
     name := "pistachio",
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
@@ -21,7 +11,7 @@ lazy val root = (project in file("."))
   )
 
 lazy val it = (project in file("it"))
-  .dependsOn(root, shared) // Depend on root and shared module
+  .dependsOn(root) // Depend on root
   .settings(
     name := "pistachio-it",
     libraryDependencies ++= AppDependencies.integrationTest,
@@ -32,6 +22,7 @@ lazy val it = (project in file("it"))
   )
 
 
+// Merge strategy for sbt assembly for containerising the app
 import sbtassembly.AssemblyPlugin.autoImport.*
 
 assembly / assemblyMergeStrategy := {
