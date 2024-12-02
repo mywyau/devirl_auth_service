@@ -1,6 +1,7 @@
 package repositories.business
 
 import cats.Monad
+import cats.data.ValidatedNel
 import cats.effect.Concurrent
 import cats.syntax.all.*
 import doobie.*
@@ -8,6 +9,7 @@ import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import models.business.business_address.service.BusinessAddress
+import models.database.*
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -15,20 +17,9 @@ import java.time.LocalDateTime
 
 trait BusinessAddressRepositoryAlgebra[F[_]] {
 
-  def createRegistrationBusinessAddress(userId: String): F[Int]
-
-  def createUserAddress(user: BusinessAddress): F[Int]
-
   def findByUserId(userId: String): F[Option[BusinessAddress]]
 
-  def updateAddressDynamic(
-                            userId: String,
-                            street: Option[String],
-                            city: Option[String],
-                            country: Option[String],
-                            county: Option[String],
-                            postcode: Option[String]
-                          ): F[Option[BusinessAddress]]
+  def createBusinessAddress(businessAddress: BusinessAddress): F[ValidatedNel[SqlErrors, Int]]
 }
 
 class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends BusinessAddressRepositoryAlgebra[F] {
@@ -45,23 +36,14 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
     findQuery
   }
 
-  override def createRegistrationBusinessAddress(userId: String): F[Int] = {
-    sql"""
-      INSERT INTO business_address (
-        user_id
-      )
-      VALUES (
-        $userId
-        )
-    """.update
-      .run
-      .transact(transactor)
-  }
-
-  override def createUserAddress(businessAddress: BusinessAddress): F[Int] = {
+  override def createBusinessAddress(businessAddress: BusinessAddress): F[ValidatedNel[SqlErrors, Int]] = {
     sql"""
       INSERT INTO business_address (
         user_id,
+        business_id,
+        business_name,
+        building_name,
+        floor_number,
         street,
         city,
         country,
@@ -72,6 +54,9 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
       )
       VALUES (
         ${businessAddress.userId},
+        ${businessAddress.businessId},
+        ${businessAddress.buildingName},
+        ${businessAddress.floorNumber},
         ${businessAddress.street},
         ${businessAddress.city},
         ${businessAddress.country},
@@ -83,52 +68,22 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
     """.update
       .run
       .transact(transactor)
+      .attempt // Capture potential errors
+      .map {
+        case Right(rowsAffected) =>
+          if (rowsAffected == 1) {
+            rowsAffected.validNel
+          } else {
+            InsertionFailed.invalidNel
+          }
+        case Left(e: java.sql.SQLIntegrityConstraintViolationException) =>
+          ConstraintViolation.invalidNel
+        case Left(e: java.sql.SQLException) =>
+          DatabaseError.invalidNel
+        case Left(e) =>
+          UnknownError.invalidNel
+      }
   }
-
-  override def updateAddressDynamic(
-                                     userId: String,
-                                     street: Option[String],
-                                     city: Option[String],
-                                     country: Option[String],
-                                     county: Option[String],
-                                     postcode: Option[String]
-                                   ): F[Option[BusinessAddress]] = {
-
-    // Dynamically build the update query
-    val updates = List(
-      street.map(s => fr"street = $s"),
-      city.map(c => fr"city = $c"),
-      country.map(c => fr"country = $c"),
-      county.map(c => fr"county = $c"),
-      postcode.map(p => fr"postcode = $p")
-    ).flatten
-
-    val updateQuery: Option[ConnectionIO[Int]] =
-      if (updates.nonEmpty) {
-        (fr"UPDATE business_address SET" ++ updates.intercalate(fr",") ++
-          fr"WHERE user_id = $userId").update.run.some
-      } else None
-
-    val selectQuery: ConnectionIO[Option[BusinessAddress]] =
-      sql"""
-          SELECT id, user_id, street, city, country, county, postcode, created_at, updated_at
-          FROM business_address
-          WHERE user_id = $userId
-        """.query[BusinessAddress].option
-
-    val result: ConnectionIO[Option[BusinessAddress]] = updateQuery match {
-      case Some(query) =>
-        for {
-          rowsAffected <- query
-          updatedAddress <- if (rowsAffected > 0) selectQuery else none[BusinessAddress].pure[ConnectionIO]
-        } yield updatedAddress
-      case None =>
-        selectQuery // If no updates, return the existing address
-    }
-
-    result.transact(transactor)
-  }
-
 }
 
 

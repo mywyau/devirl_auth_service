@@ -9,11 +9,16 @@ import java.time.LocalDateTime
 case class BusinessAddress(
                             id: Option[Int],
                             userId: String,
+                            businessId: Option[String],
+                            buildingName: Option[String],
+                            floorNumber: Option[String],
                             street: Option[String],
                             city: Option[String],
                             country: Option[String],
                             county: Option[String],
                             postcode: Option[String],
+                            latitude: Option[BigDecimal],
+                            longitude: Option[BigDecimal],
                             createdAt: LocalDateTime,
                             updatedAt: LocalDateTime
                           )
