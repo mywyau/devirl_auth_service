@@ -79,7 +79,7 @@ class BusinessListingControllerISpec(global: GlobalRead) extends IOSuite {
   }
 
   test(
-    "GET - /pistachio/business/businesses/listing/create - " +
+    "POST - /pistachio/business/businesses/listing/create - " +
       "should generate the business listing data for a business in the respective tables, returning Created response"
   ) { (transactorResource, log) =>
 

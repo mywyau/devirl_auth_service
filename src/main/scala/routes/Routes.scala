@@ -20,7 +20,7 @@ import services.office.office_listing.OfficeListingServiceImpl
 
 object Routes {
 
-  def deskListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F])(implicit logger: Logger[F]): HttpRoutes[F] = {
+  def deskListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async](transactor: HikariTransactor[F])(implicit logger: Logger[F]): HttpRoutes[F] = {
 
     val deskListingRepo = new DeskListingRepositoryImpl[F](transactor)
 
@@ -30,7 +30,7 @@ object Routes {
     deskListingController.routes
   }
 
-  def officeListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F])(implicit logger: Logger[F]): HttpRoutes[F] = {
+  def officeListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async](transactor: HikariTransactor[F])(implicit logger: Logger[F]): HttpRoutes[F] = {
 
     val officeSpecsRepository = new OfficeSpecsRepositoryImpl[F](transactor)
     val officeAddressRepository = new OfficeAddressRepositoryImpl[F](transactor)
@@ -42,7 +42,7 @@ object Routes {
     officeListingController.routes
   }
 
-  def businessListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](transactor: HikariTransactor[F])(implicit logger: Logger[F]): HttpRoutes[F] = {
+  def businessListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async](transactor: HikariTransactor[F])(implicit logger: Logger[F]): HttpRoutes[F] = {
 
     val businessSpecsRepository = new BusinessSpecsRepositoryImpl[F](transactor)
     val businessAddressRepository = new BusinessAddressRepositoryImpl[F](transactor)

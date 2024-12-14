@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS office_details;
 
 CREATE TABLE office_contact_details (
-    id BIGSERIAL PRIMARY KEY,                             -- Primary key with auto-increment, better scalability with BIGSERIAL
+    id BIGSERIAL PRIMARY KEY,
     business_id VARCHAR(255) NOT NULL UNIQUE,
     office_id VARCHAR(255) NOT NULL UNIQUE,
     primary_contact_first_name VARCHAR(255),
@@ -34,7 +34,7 @@ CREATE TABLE office_address (
 DROP TABLE IF EXISTS office_listing;
 
 CREATE TABLE office_specs (
-    id SERIAL PRIMARY KEY,                              -- Unique ID for each workspace
+    id SERIAL PRIMARY KEY,
     business_id VARCHAR(255) NOT NULL UNIQUE,
     office_id VARCHAR(255) NOT NULL UNIQUE,
     office_name VARCHAR(255),
@@ -43,9 +43,9 @@ CREATE TABLE office_specs (
     number_of_floors INT,
     total_desks INT,
     capacity INT,
-    amenities TEXT[],                                   -- Array of amenities (e.g., Wi-Fi, Coffee)
-    availability JSONB,                                 -- Availability info (days, opening time, closing time)
-    rules TEXT,                                         -- Usage rules
+    amenities TEXT[],
+    availability JSONB,
+    rules TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

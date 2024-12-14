@@ -27,6 +27,7 @@ object BusinessListingConstants {
       id = Some(1),
       userId = "user_id_1",
       businessId = Some("business_id_1"),
+      businessName = Some("MikeyCorp"),
       buildingName = Some("BusinessListingControllerISpec Building"),
       floorNumber = Some("floor 1"),
       street = Some("123 Main Street"),
@@ -45,10 +46,12 @@ object BusinessListingConstants {
       id = Some(1),
       userId = "user_id_1",
       businessId = "business_id_1",
+      businessName = "businessCorp",
       primaryContactFirstName = "Michael",
       primaryContactLastName = "Yau",
       contactEmail = "mike@gmail.com",
       contactNumber = "07402205071",
+      websiteUrl = "mikey.com",
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )

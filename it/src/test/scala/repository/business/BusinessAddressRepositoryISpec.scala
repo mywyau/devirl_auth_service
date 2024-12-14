@@ -30,6 +30,7 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
       id = id,
       userId = userId,
       businessId = businessId,
+      businessName = Some("mikey corp"),
       buildingName = Some("build_123"),
       floorNumber = Some("floor 1"),
       street = Some("123 Main Street"),
@@ -72,6 +73,7 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
       BusinessAddress(
         id = Some(1),
         userId = "user_id_1",
+        businessName = Some("mikey corp"),
         businessId = Some("business_id_1"),
         buildingName = Some("build_123"),
         floorNumber = Some("floor 1"),

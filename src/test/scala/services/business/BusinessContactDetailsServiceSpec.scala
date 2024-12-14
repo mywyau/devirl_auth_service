@@ -20,10 +20,12 @@ object BusinessContactDetailsServiceSpec extends SimpleIOSuite {
       id = Some(1),
       userId = userId,
       businessId = businessId,
+      businessName = "MikeyCorp",
       primaryContactFirstName = "Michael",
       primaryContactLastName = "Yau",
       contactEmail = "mike@gmail.com",
       contactNumber = "07402205071",
+      websiteUrl = "mikey.com",
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )

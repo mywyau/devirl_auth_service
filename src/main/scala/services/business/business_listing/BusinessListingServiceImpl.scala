@@ -12,6 +12,7 @@ import models.business.business_listing.errors.BusinessListingErrors
 import models.business.business_listing.requests.BusinessListingRequest
 import models.business.business_listing.{BusinessListing, errors}
 import models.database.{SqlErrors, *}
+import org.typelevel.log4cats.Logger
 import repositories.business.{BusinessAddressRepositoryAlgebra, BusinessContactDetailsRepositoryAlgebra, BusinessSpecsRepositoryAlgebra}
 import services.business.business_listing.BusinessListingServiceAlgebra
 
@@ -20,7 +21,7 @@ class BusinessListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
                                                                                 businessAddressRepo: BusinessAddressRepositoryAlgebra[F],
                                                                                 businessContactDetailsRepo: BusinessContactDetailsRepositoryAlgebra[F],
                                                                                 businessSpecsRepo: BusinessSpecsRepositoryAlgebra[F]
-                                                                              ) extends BusinessListingServiceAlgebra[F] {
+                                                                              )(implicit logger: Logger[F]) extends BusinessListingServiceAlgebra[F] {
 
   override def findByBusinessId(businessId: String): F[Either[BusinessListingErrors, BusinessListing]] = {
     ???
@@ -40,10 +41,10 @@ class BusinessListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
     // Run the operations in parallel
     (addressCreation, contactDetailsCreation, specsCreation).parMapN {
       case (Validated.Valid(addressId), Validated.Valid(contactId), Validated.Valid(specsId)) =>
+        logger.info("Business created")
         Valid(1) // All operations succeeded; return success indicator
       case (addressResult, contactResult, specsResult) =>
-        // Collect errors if any operation fails
-        // Combine errors from all operations
+        logger.info("Business was no created DatabaseError")
         val errors =
           addressResult.toEither.left.toSeq ++
             contactResult.toEither.left.toSeq ++
@@ -62,7 +63,7 @@ object BusinessListingService {
                                                    businessAddressRepo: BusinessAddressRepositoryAlgebra[F],
                                                    businessContactDetailsRepo: BusinessContactDetailsRepositoryAlgebra[F],
                                                    businessSpecsRepo: BusinessSpecsRepositoryAlgebra[F]
-                                                 ): BusinessListingServiceImpl[F] =
+                                                 )(implicit logger: Logger[F]): BusinessListingServiceImpl[F] =
     new BusinessListingServiceImpl[F](businessAddressRepo, businessContactDetailsRepo, businessSpecsRepo)
 }
 

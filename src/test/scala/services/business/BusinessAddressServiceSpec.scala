@@ -18,6 +18,7 @@ object BusinessAddressServiceSpec extends SimpleIOSuite {
       id = id,
       userId = userId,
       businessId = Some("business_id_1"),
+      businessName = Some("mikeyCorp"),
       buildingName = Some("building name"),
       floorNumber = Some("floor 1"),
       street = Some("1 Canton Street"),

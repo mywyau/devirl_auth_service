@@ -25,9 +25,10 @@ CREATE TABLE business_contact_details (
     user_id VARCHAR(255) NOT NULL UNIQUE,
     business_id VARCHAR(255) NOT NULL UNIQUE,
     business_name VARCHAR(255),
-    primary_contact VARCHAR(255),
+    primary_contact_first_name VARCHAR(255),
+    primary_contact_last_name VARCHAR(255),
     contact_email VARCHAR(255),
-    contact_phone VARCHAR(20),
+    contact_number VARCHAR(20),
     website_url VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

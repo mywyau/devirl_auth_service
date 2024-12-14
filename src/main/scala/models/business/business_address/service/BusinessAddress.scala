@@ -10,6 +10,7 @@ case class BusinessAddress(
                             id: Option[Int],
                             userId: String,
                             businessId: Option[String],
+                            businessName: Option[String],
                             buildingName: Option[String],
                             floorNumber: Option[String],
                             street: Option[String],

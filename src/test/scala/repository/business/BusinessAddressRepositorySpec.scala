@@ -16,6 +16,7 @@ object BusinessAddressRepositorySpec extends SimpleIOSuite {
       id = id,
       userId = userId,
       businessId = Some("business1"),
+      businessName = Some("mikeyCorp"),
       buildingName = Some("building 1"),
       floorNumber = Some("floor 1"),
       street = Some("1 Canton Street"),

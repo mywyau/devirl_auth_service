@@ -26,7 +26,7 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
 
   implicit val localDateTimeMeta: Meta[LocalDateTime] =
     Meta[Timestamp].imap(_.toLocalDateTime)(Timestamp.valueOf)
-  
+
   override def findByUserId(userId: String): F[Option[BusinessAddress]] = {
     val findQuery: F[Option[BusinessAddress]] =
       sql"SELECT * FROM business_address WHERE user_id = $userId"
@@ -41,6 +41,7 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
       INSERT INTO business_address (
         user_id,
         business_id,
+        business_name,
         building_name,
         floor_number,
         street,
@@ -56,6 +57,7 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
       VALUES (
         ${businessAddress.userId},
         ${businessAddress.businessId},
+        ${businessAddress.businessName},
         ${businessAddress.buildingName},
         ${businessAddress.floorNumber},
         ${businessAddress.street},

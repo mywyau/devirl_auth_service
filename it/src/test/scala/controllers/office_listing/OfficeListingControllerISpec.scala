@@ -78,7 +78,7 @@ class OfficeListingControllerISpec(global: GlobalRead) extends IOSuite {
     )
   }
 
-  test("GET - /pistachio/business/businesses/office/listing/create - should generate the office listing data for a business in the respective tables, returning Created response") { (transactorResource, log) =>
+  test("POST - /pistachio/business/businesses/office/listing/create - should generate the office listing data for a business in the respective tables, returning Created response") { (transactorResource, log) =>
 
     val transactor = transactorResource._1.xa
     val client = transactorResource._2.client

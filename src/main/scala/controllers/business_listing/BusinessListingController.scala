@@ -31,14 +31,14 @@ class BusinessListingControllerImpl[F[_] : Concurrent](businessService: Business
               logger.info(s"[BusinessListingControllerImpl] POST - Successfully created a business listing") *>
                 Created(CreatedResponse("Business created successfully").asJson)
             case _ =>
-              InternalServerError(ErrorResponse("Code", "An error occurred").asJson)
+              InternalServerError(ErrorResponse(code = "Code", message = "An error occurred").asJson)
           }
         }
   }
-} 
+}
 
 object BusinessListingController {
-  def apply[F[_] : Concurrent](businessService: BusinessListingServiceAlgebra[F])(implicit logger: Logger[F]): BusinessListingController[F] =
+  def apply[F[_] : Concurrent : Logger](businessService: BusinessListingServiceAlgebra[F]): BusinessListingController[F] =
     new BusinessListingControllerImpl[F](businessService)
 }
 

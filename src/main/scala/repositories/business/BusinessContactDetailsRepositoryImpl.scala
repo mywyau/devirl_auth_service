@@ -39,21 +39,25 @@ class BusinessContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor
   override def createContactDetails(businessContactDetails: BusinessContactDetails): F[ValidatedNel[SqlErrors, Int]] = {
     sql"""
       INSERT INTO business_contact_details (
+        user_id,
         business_id,
-        business_id,
+        business_name,
         primary_contact_first_name,
         primary_contact_last_name,
         contact_email,
         contact_number,
+        website_url,
         created_at,
         updated_at
       ) VALUES (
+        ${businessContactDetails.userId},
         ${businessContactDetails.businessId},
-        ${businessContactDetails.businessId},
+        ${businessContactDetails.businessName},
         ${businessContactDetails.primaryContactFirstName},
         ${businessContactDetails.primaryContactLastName},
         ${businessContactDetails.contactEmail},
         ${businessContactDetails.contactNumber},
+        ${businessContactDetails.websiteUrl},
         ${businessContactDetails.createdAt},
         ${businessContactDetails.updatedAt}
       )

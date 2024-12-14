@@ -40,15 +40,17 @@ class BusinessSpecsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
   override def createSpecs(businessSpecs: BusinessSpecs): F[ValidatedNel[SqlErrors, Int]] = {
     sql"""
       INSERT INTO business_specs (
+        user_id,
         business_id,
         business_name,
         description,
         created_at,
         updated_at
       ) VALUES (
-        ${businessSpecs.businessId},
+        ${businessSpecs.userId},
         ${businessSpecs.businessId},
         ${businessSpecs.businessName},
+        ${businessSpecs.description},
         ${businessSpecs.createdAt},
         ${businessSpecs.updatedAt}
       )
