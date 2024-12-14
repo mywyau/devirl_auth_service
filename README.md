@@ -1,75 +1,63 @@
 # pistachio
 
-## This service is my business be application
+This Backend service is responsible for business domain data e.g. businesses, offices and desks.
+
+### To run the app
 
 ```
-curl -X POST http://localhost:1010/pistachio/business/businesses/office/listing/create \
-  -H "Content-Type: application/json" \
-  -d '{
-    "officeId": "office_id_1",
-    "officeSpecs": {
-      "id": 4,
-      "businessId": "business_id_1",
-      "officeId": "office_id_1",
-      "officeName": "Modern Workspace",
-      "description": "A vibrant office space in the heart of the city, ideal for teams or individuals.",
-      "officeType": "OpenPlanOffice",
-      "numberOfFloors": 3,
-      "totalDesks": 3,
-      "capacity": 50,
-      "availability": {
-        "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        "startTime": "2024-11-21T10:00:00",
-        "endTime": "2024-11-21T10:30:00"
-      },
-      "amenities": ["Wi-Fi", "Coffee Machine", "Projector", "Whiteboard", "Parking"],
-      "rules": "No smoking. Maintain cleanliness.",
-      "createdAt": "2025-01-01T00:00:00",
-      "updatedAt": "2025-01-01T00:00:00"
-    },
-    "addressDetails": {
-      "id": 4,
-      "businessId": "business_id_1",
-      "officeId": "office_id_1",
-      "buildingName": "build_123",
-      "floorNumber": "floor 1",
-      "street": "123 Main Street",
-      "city": "New York",
-      "country": "USA",
-      "county": "New York County",
-      "postcode": "10001",
-      "latitude": 100.1,
-      "longitude": -100.1,
-      "createdAt": "2025-01-01T00:00:00",
-      "updatedAt": "2025-01-01T00:00:00"
-    },
-    "contactDetails": {
-      "id": 4,
-      "businessId": "business_id_1",
-      "officeId": "office_id_1",
-      "primaryContactFirstName": "Michael",
-      "primaryContactLastName": "Yau",
-      "contactEmail": "mike@gmail.com",
-      "contactNumber": "07402205071",
-      "createdAt": "2025-01-01T00:00:00",
-      "updatedAt": "2025-01-01T00:00:00"
-    },
-    "createdAt": "2025-01-01T00:00:00",
-    "updatedAt": "2025-01-01T00:00:00"
-  }'
+./run.sh
+```
 
+### To run the tests
+
+```
+./run_tests.sh
+```
+
+### To run only a single test suite in the integration tests:
+
+Please remember to include the package/path for the shared resources,
+the shared resources is needed to help WeaverTests locate the shared resources needed for the tests
+
+```
+./itTestOnly RegistrationControllerISpec controllers.ControllerSharedResource 
+```
+
+---
+
+### To populate the postgres sql database using flyway
+
+Please run the docker compose scripts
+
+```
+./setup_flyway_migrations.sh
+```
+
+### To clear down the database
+
+```
+./clear_down_flyway.sh
 ```
 
 ```
-http POST http://localhost:1010/pistachio/business/desk/listing/create Content-Type:application/json \
-business_id="business_1" workspace_id="workspace_123" title="Executive Desk" \
-description="A premium desk in the executive lounge with all amenities." desk_type="PrivateDesk" \
-quantity:=5 price_per_hour:=10.50 price_per_day:=75.00 \
-rules="No food or drink allowed on the desk." \
-features:='["Wi-Fi", "Adjustable Height", "Monitor", "Power Outlets"]' \
-availability:='{"days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "startTime": "09:00:00", "endTime": "18:00:00"}' \
-created_at="2024-11-30T03:25:18" updated_at="2024-11-30T03:25:18"
+./clear_down_postgres.sh
+```
 
+### To clear down docker container for app and orphans
+```
+docker-compose down --volumes --remove-orphans
+```
 
+---
 
+### To connect to postgres sql db
+
+```
+psql -h localhost -p 5432 -U shared_user -d shared_db
+```
+
+### Set base search path for schema
+
+```
+ALTER ROLE shared_user SET search_path TO share_schema, public;
 ```
