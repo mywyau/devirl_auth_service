@@ -36,7 +36,7 @@ class BusinessContactDetailsControllerImpl[F[_] : Concurrent](
             BadRequest(errorResponse.asJson)
         }
 
-    case req@POST -> Root / "business" / "businesses" / "listing" / "create" =>
+    case req@POST -> Root / "business" / "businesses" / "contact" /  "details" / "create" =>
       logger.info(s"[BusinessListingControllerImpl] POST - Creating business listing") *>
         req.decode[BusinessContactDetails] { request =>
           businessContactDetailsService.createBusinessContactDetails(request).flatMap {

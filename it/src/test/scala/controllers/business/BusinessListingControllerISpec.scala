@@ -15,7 +15,7 @@ import models.business.adts.*
 import models.business.business_address.service.BusinessAddress
 import models.business.business_contact_details.BusinessContactDetails
 import models.business.business_listing.requests.BusinessListingRequest
-import models.business.business_specs.{BusinessAvailability, BusinessSpecifications}
+import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
 import models.responses.CreatedResponse
 import org.http4s.*
 import org.http4s.Method.*
@@ -26,7 +26,7 @@ import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import repositories.business.{BusinessAddressRepository, BusinessContactDetailsRepository, BusinessSpecsRepository}
+import repositories.business.{BusinessAddressRepository, BusinessContactDetailsRepository, BusinessSpecificationsRepository}
 import services.business.business_listing.BusinessListingService
 import shared.{HttpClientResource, TransactorResource}
 import weaver.*

@@ -1,4 +1,4 @@
-package models.business.business_specs.responses.error
+package models.business.specifications.responses.error
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}

@@ -5,10 +5,10 @@ import cats.data.{Validated, ValidatedNel}
 import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
-import models.business.business_specs.BusinessSpecifications
-import models.business.business_specs.errors.*
+import models.business.specifications.BusinessSpecifications
+import models.business.specifications.errors.*
 import models.database.SqlErrors
-import repositories.business.BusinessSpecsRepositoryAlgebra
+import repositories.business.BusinessSpecificationsRepositoryAlgebra
 
 trait BusinessSpecificationsServiceAlgebra[F[_]] {
 
@@ -19,7 +19,7 @@ trait BusinessSpecificationsServiceAlgebra[F[_]] {
 
 
 class BusinessSpecificationsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
-                                                                                       businessSpecificationsRepo: BusinessSpecsRepositoryAlgebra[F]
+                                                                                       businessSpecificationsRepo: BusinessSpecificationsRepositoryAlgebra[F]
                                                                                      ) extends BusinessSpecificationsServiceAlgebra[F] {
 
   override def getByBusinessId(businessId: String): F[Either[BusinessSpecificationsErrors, BusinessSpecifications]] = {
@@ -52,7 +52,7 @@ class BusinessSpecificationsServiceImpl[F[_] : Concurrent : NonEmptyParallel : M
 object BusinessSpecificationsService {
 
   def apply[F[_] : Concurrent : NonEmptyParallel](
-                                                   businessSpecificationsRepo: BusinessSpecsRepositoryAlgebra[F]
+                                                   businessSpecificationsRepo: BusinessSpecificationsRepositoryAlgebra[F]
                                                  ): BusinessSpecificationsServiceImpl[F] =
     new BusinessSpecificationsServiceImpl[F](businessSpecificationsRepo)
 }

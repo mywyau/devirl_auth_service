@@ -23,4 +23,25 @@ object BusinessSpecsRepoFragments {
     """
   }
 
+  val insertBusinessSpecsTable: fragment.Fragment = {
+    sql"""
+      INSERT INTO business_specs (
+        user_id,
+        business_id,
+        business_name,
+        description,
+        created_at,
+        updated_at
+      ) VALUES (
+        'user_id_1',
+        'business_id_1',
+        'Example Business Name',
+        'some description',
+        '2025-01-01 00:00:00',
+        '2025-01-01 00:00:00'
+      );
+     """
+  }
+
+
 }

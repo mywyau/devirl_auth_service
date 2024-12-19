@@ -3,7 +3,7 @@ package controllers.constants
 import cats.effect.*
 import models.business.adts.*
 import models.business.business_contact_details.BusinessContactDetails
-import models.business.business_specs.{BusinessAvailability, BusinessSpecifications}
+import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
 
 import java.time.LocalDateTime
 

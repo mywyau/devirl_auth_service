@@ -7,7 +7,7 @@ import doobie.implicits.*
 import models.business.adts.PrivateDesk
 import models.business.business_address.service.BusinessAddress
 import models.business.business_address.requests.BusinessAddressRequest
-import models.business.business_specs.BusinessAvailability
+import models.business.specifications.BusinessAvailability
 import repositories.business.BusinessAddressRepositoryImpl
 import repository.fragments.business.BusinessAddressRepoFragments.{createBusinessAddressTable, resetBusinessAddressTable}
 import shared.TransactorResource

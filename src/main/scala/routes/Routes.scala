@@ -11,7 +11,7 @@ import doobie.hikari.HikariTransactor
 import org.http4s.HttpRoutes
 import org.typelevel.log4cats.Logger
 import repositories.*
-import repositories.business.{BusinessAddressRepositoryImpl, BusinessContactDetailsRepositoryImpl, BusinessSpecsRepositoryImpl}
+import repositories.business.{BusinessAddressRepositoryImpl, BusinessContactDetailsRepositoryImpl, BusinessSpecificationsRepositoryImpl}
 import repositories.desk.DeskListingRepositoryImpl
 import repositories.office.{OfficeAddressRepositoryImpl, OfficeContactDetailsRepositoryImpl, OfficeSpecsRepositoryImpl}
 import services.*
@@ -45,7 +45,7 @@ object Routes {
 
   def businessListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {
 
-    val businessSpecsRepository = new BusinessSpecsRepositoryImpl[F](transactor)
+    val businessSpecsRepository = new BusinessSpecificationsRepositoryImpl[F](transactor)
     val businessAddressRepository = new BusinessAddressRepositoryImpl[F](transactor)
     val businessContactDetailsRepository = new BusinessContactDetailsRepositoryImpl[F](transactor)
 

@@ -9,11 +9,11 @@ import models.business.business_address.requests.BusinessAddressRequest
 import models.business.business_contact_details.BusinessContactDetails
 import models.business.business_listing.errors.BusinessListingErrors
 import models.business.business_listing.requests.BusinessListingRequest
-import models.business.business_specs.{BusinessAvailability, BusinessSpecifications}
+import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
 import models.database.{SqlErrors, *}
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import repositories.business.{BusinessAddressRepositoryAlgebra, BusinessContactDetailsRepositoryAlgebra, BusinessSpecsRepositoryAlgebra}
+import repositories.business.{BusinessAddressRepositoryAlgebra, BusinessContactDetailsRepositoryAlgebra, BusinessSpecificationsRepositoryAlgebra}
 import services.business.business_listing.BusinessListingServiceImpl
 import weaver.SimpleIOSuite
 
@@ -95,9 +95,9 @@ object BusinessListingServiceSpec extends SimpleIOSuite {
     override def createContactDetails(businessContactDetails: BusinessContactDetails): IO[ValidatedNel[SqlErrors, Int]] = contactResult
   }
 
-  class MockSpecsRepository(
+  class MockSpecificationsRepository(
                              specsResult: IO[ValidatedNel[SqlErrors, Int]]
-                           ) extends BusinessSpecsRepositoryAlgebra[IO] {
+                           ) extends BusinessSpecificationsRepositoryAlgebra[IO] {
 
     override def findByBusinessId(businessId: String): IO[Option[BusinessSpecifications]] = ???
 
@@ -111,7 +111,7 @@ object BusinessListingServiceSpec extends SimpleIOSuite {
                        ): BusinessListingServiceImpl[IO] = {
     val addressRepo = new MockBusinessAddressRepository(addressResult)
     val contactRepo = new MockContactDetailsRepository(contactResult)
-    val specsRepo = new MockSpecsRepository(specsResult)
+    val specsRepo = new MockSpecificationsRepository(specsResult)
 
     new BusinessListingServiceImpl[IO](addressRepo, contactRepo, specsRepo)
   }

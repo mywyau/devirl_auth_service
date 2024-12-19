@@ -1,11 +1,11 @@
-package models.business.business_specs.requests
+package models.business.specifications.requests
 
 import doobie.util.meta.Meta
 import io.circe.generic.semiauto.*
 import io.circe.parser.decode
 import io.circe.syntax.*
 import io.circe.{Decoder, Encoder}
-import models.business.business_specs.BusinessAvailability
+import models.business.specifications.BusinessAvailability
 
 import java.time.LocalDateTime
 

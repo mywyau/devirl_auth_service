@@ -1,4 +1,4 @@
-package models.business.business_specs.errors
+package models.business.specifications.errors
 
 import io.circe.{Decoder, Encoder}
 

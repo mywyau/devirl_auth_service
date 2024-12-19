@@ -5,18 +5,18 @@ import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
 import models.business.adts.PrivateDesk
-import models.business.business_specs.BusinessSpecifications
-import models.business.business_specs.BusinessAvailability
-import repositories.business.BusinessSpecsRepositoryImpl
+import models.business.specifications.BusinessSpecifications
+import models.business.specifications.BusinessAvailability
+import repositories.business.BusinessSpecificationsRepositoryImpl
 import repository.fragments.business.BusinessSpecsRepoFragments.{createBusinessSpecsTable, resetBusinessSpecsTable}
 import shared.TransactorResource
 import weaver.{GlobalRead, IOSuite, ResourceTag}
 
 import java.time.LocalDateTime
 
-class BusinessSpecsRepositoryISpec(global: GlobalRead) extends IOSuite {
+class BusinessSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite {
 
-  type Res = BusinessSpecsRepositoryImpl[IO]
+  type Res = BusinessSpecificationsRepositoryImpl[IO]
 
   private def initializeSchema(transactor: TransactorResource): Resource[IO, Unit] =
     Resource.eval(
@@ -36,7 +36,7 @@ class BusinessSpecsRepositoryISpec(global: GlobalRead) extends IOSuite {
     )
   }
 
-  private def seedTestSpecs(businessSpecsRepo: BusinessSpecsRepositoryImpl[IO]): IO[Unit] = {
+  private def seedTestSpecs(businessSpecsRepo: BusinessSpecificationsRepositoryImpl[IO]): IO[Unit] = {
     val users = List(
       testBusinessSpecs(Some(1), "user_id_1", "business_id_1"),
       testBusinessSpecs(Some(2), "user_id_2", "business_id_2"),
@@ -47,10 +47,10 @@ class BusinessSpecsRepositoryISpec(global: GlobalRead) extends IOSuite {
     users.traverse(businessSpecsRepo.createSpecs).void
   }
 
-  def sharedResource: Resource[IO, BusinessSpecsRepositoryImpl[IO]] = {
+  def sharedResource: Resource[IO, BusinessSpecificationsRepositoryImpl[IO]] = {
     val setup = for {
       transactor <- global.getOrFailR[TransactorResource]()
-      businessSpecsRepo = new BusinessSpecsRepositoryImpl[IO](transactor.xa)
+      businessSpecsRepo = new BusinessSpecificationsRepositoryImpl[IO](transactor.xa)
       createSchemaIfNotPresent <- initializeSchema(transactor)
       seedTable <- Resource.eval(seedTestSpecs(businessSpecsRepo))
     } yield businessSpecsRepo

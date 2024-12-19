@@ -3,10 +3,10 @@ package services.business
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.ValidatedNel
 import cats.effect.IO
-import models.business.business_specs.errors.BusinessSpecificationsNotFound
-import models.business.business_specs.BusinessSpecifications
+import models.business.specifications.errors.BusinessSpecificationsNotFound
+import models.business.specifications.BusinessSpecifications
 import models.database.SqlErrors
-import repositories.business.BusinessSpecsRepositoryAlgebra
+import repositories.business.BusinessSpecificationsRepositoryAlgebra
 import services.business.specifications.BusinessSpecificationsService
 import services.business.mocks.MockBusinessSpecificationsRepository
 import weaver.SimpleIOSuite

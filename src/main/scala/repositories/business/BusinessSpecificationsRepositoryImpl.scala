@@ -10,20 +10,20 @@ import doobie.implicits.javasql.*
 import doobie.postgres.implicits.*
 import doobie.util.meta.Meta
 import io.circe.syntax.*
-import models.business.business_specs.BusinessSpecifications
+import models.business.specifications.BusinessSpecifications
 import models.database.*
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
-trait BusinessSpecsRepositoryAlgebra[F[_]] {
+trait BusinessSpecificationsRepositoryAlgebra[F[_]] {
 
   def findByBusinessId(businessId: String): F[Option[BusinessSpecifications]]
 
   def createSpecs(businessSpecifications: BusinessSpecifications): F[ValidatedNel[SqlErrors, Int]]
 }
 
-class BusinessSpecsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends BusinessSpecsRepositoryAlgebra[F] {
+class BusinessSpecificationsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends BusinessSpecificationsRepositoryAlgebra[F] {
 
   implicit val localDateTimeMeta: Meta[LocalDateTime] =
     Meta[Timestamp].imap(_.toLocalDateTime)(Timestamp.valueOf)
@@ -78,9 +78,9 @@ class BusinessSpecsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
 }
 
 
-object BusinessSpecsRepository {
+object BusinessSpecificationsRepository {
   def apply[F[_] : Concurrent : Monad](
                                         transactor: Transactor[F]
-                                      ): BusinessSpecsRepositoryAlgebra[F] =
-    new BusinessSpecsRepositoryImpl[F](transactor)
+                                      ): BusinessSpecificationsRepositoryAlgebra[F] =
+    new BusinessSpecificationsRepositoryImpl[F](transactor)
 }

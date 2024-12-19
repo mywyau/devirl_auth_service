@@ -4,7 +4,7 @@ import cats.effect.*
 import cats.implicits.*
 import cats.syntax.all.*
 import com.comcast.ip4s.{ipv4, port}
-import controllers.business.{BusinessAddressController, BusinessContactDetailsController}
+import controllers.business.{BusinessAddressController, BusinessContactDetailsController, BusinessSpecificationsController}
 import controllers.business_listing.BusinessListingController
 import controllers.desk_listing.DeskListingController
 import controllers.office_listing.OfficeListingController
@@ -23,12 +23,13 @@ import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import repositories.business.{BusinessAddressRepository, BusinessContactDetailsRepository, BusinessSpecsRepository}
+import repositories.business.{BusinessAddressRepository, BusinessContactDetailsRepository, BusinessSpecificationsRepository}
 import repositories.desk.DeskListingRepository
 import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeSpecsRepository}
 import services.business.address.BusinessAddressService
 import services.business.business_listing.BusinessListingService
 import services.business.contact_details.BusinessContactDetailsService
+import services.business.specifications.BusinessSpecificationsService
 import services.desk_listing.DeskListingService
 import services.office.office_listing.OfficeListingService
 import weaver.*
@@ -60,11 +61,21 @@ object TestRoutes {
     businessAddressController.routes
   }
 
+  def businessSpecificationsRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
+
+    val businessSpecificationsRepository = BusinessSpecificationsRepository(transactor)
+
+    val businessSpecificationsService = BusinessSpecificationsService(businessSpecificationsRepository)
+    val businessSpecificationsController = BusinessSpecificationsController(businessSpecificationsService)
+
+    businessSpecificationsController.routes
+  }
+
   def businessListingRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
 
     val businessAddressRepository = BusinessAddressRepository(transactor)
     val businessContactDetailsRepository = BusinessContactDetailsRepository(transactor)
-    val businessSpecsRepository = BusinessSpecsRepository(transactor)
+    val businessSpecsRepository = BusinessSpecificationsRepository(transactor)
 
     val businessListingService = BusinessListingService(businessAddressRepository, businessContactDetailsRepository, businessSpecsRepository)
     val businessListingController = BusinessListingController(businessListingService)
@@ -99,6 +110,7 @@ object TestRoutes {
       "/pistachio" -> (
         businessAddressRoutes(transactor) <+>
           businessContactDetailsRoutes(transactor) <+>
+          businessSpecificationsRoutes(transactor) <+>
           businessListingRoutes(transactor) <+>
           deskListingRoutes(transactor) <+>
           officeListingRoutes(transactor)

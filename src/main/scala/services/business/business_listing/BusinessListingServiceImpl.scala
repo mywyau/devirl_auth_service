@@ -13,14 +13,14 @@ import models.business.business_listing.requests.BusinessListingRequest
 import models.business.business_listing.{BusinessListing, errors}
 import models.database.{SqlErrors, *}
 import org.typelevel.log4cats.Logger
-import repositories.business.{BusinessAddressRepositoryAlgebra, BusinessContactDetailsRepositoryAlgebra, BusinessSpecsRepositoryAlgebra}
+import repositories.business.{BusinessAddressRepositoryAlgebra, BusinessContactDetailsRepositoryAlgebra, BusinessSpecificationsRepositoryAlgebra}
 import services.business.business_listing.BusinessListingServiceAlgebra
 
 
 class BusinessListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
                                                                                 businessAddressRepo: BusinessAddressRepositoryAlgebra[F],
                                                                                 businessContactDetailsRepo: BusinessContactDetailsRepositoryAlgebra[F],
-                                                                                businessSpecsRepo: BusinessSpecsRepositoryAlgebra[F]
+                                                                                businessSpecsRepo: BusinessSpecificationsRepositoryAlgebra[F]
                                                                               )(implicit logger: Logger[F]) extends BusinessListingServiceAlgebra[F] {
 
   override def findByBusinessId(businessId: String): F[Either[BusinessListingErrors, BusinessListing]] = {
@@ -62,7 +62,7 @@ object BusinessListingService {
   def apply[F[_] : Concurrent : NonEmptyParallel](
                                                    businessAddressRepo: BusinessAddressRepositoryAlgebra[F],
                                                    businessContactDetailsRepo: BusinessContactDetailsRepositoryAlgebra[F],
-                                                   businessSpecsRepo: BusinessSpecsRepositoryAlgebra[F]
+                                                   businessSpecsRepo: BusinessSpecificationsRepositoryAlgebra[F]
                                                  )(implicit logger: Logger[F]): BusinessListingServiceImpl[F] =
     new BusinessListingServiceImpl[F](businessAddressRepo, businessContactDetailsRepo, businessSpecsRepo)
 }

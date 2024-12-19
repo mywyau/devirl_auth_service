@@ -1,8 +1,8 @@
-package models.business.business_specs
+package models.business.specifications
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
-import models.business.business_specs.BusinessAvailability
+import models.business.specifications.BusinessAvailability
 
 import java.time.LocalDateTime
 
