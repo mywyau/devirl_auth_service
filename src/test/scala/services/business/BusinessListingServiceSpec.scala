@@ -5,11 +5,11 @@ import cats.effect.IO
 import cats.implicits.*
 import models.business.adts.*
 import models.business.business_address.service.BusinessAddress
-import models.business.business_address.service.BusinessAddress
+import models.business.business_address.requests.BusinessAddressRequest
 import models.business.business_contact_details.BusinessContactDetails
 import models.business.business_listing.errors.BusinessListingErrors
 import models.business.business_listing.requests.BusinessListingRequest
-import models.business.business_specs.{BusinessAvailability, BusinessSpecs}
+import models.business.business_specs.{BusinessAvailability, BusinessSpecifications}
 import models.database.{SqlErrors, *}
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
@@ -23,8 +23,8 @@ object BusinessListingServiceSpec extends SimpleIOSuite {
 
   implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
 
-  val testBusinessSpecs: BusinessSpecs =
-    BusinessSpecs(
+  val testBusinessSpecs: BusinessSpecifications =
+    BusinessSpecifications(
       id = Some(1),
       userId = "user_id_1",
       businessId = "business_id_1",
@@ -34,9 +34,8 @@ object BusinessListingServiceSpec extends SimpleIOSuite {
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
-  val testBusinessAddress: BusinessAddress =
-    BusinessAddress(
-      id = Some(1),
+  val testBusinessAddressRequest: BusinessAddressRequest =
+    BusinessAddressRequest(
       userId = "user_id_1",
       businessId = Some("business_id_1"),
       businessName = Some("businessCorp"),
@@ -71,21 +70,20 @@ object BusinessListingServiceSpec extends SimpleIOSuite {
   val businessListingRequest: BusinessListingRequest =
     BusinessListingRequest(
       businessId = "business_id_1",
-      addressDetails = testBusinessAddress,
+      addressDetails = testBusinessAddressRequest,
       businessSpecs = testBusinessSpecs,
       contactDetails = testBusinessContactDetails,
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
-  // Mock repositories
   class MockBusinessAddressRepository(
                                        addressResult: IO[ValidatedNel[SqlErrors, Int]]
                                      ) extends BusinessAddressRepositoryAlgebra[IO] {
 
-    override def findByUserId(userId: String): IO[Option[BusinessAddress]] = ???
+    override def findByBusinessId(userId: String): IO[Option[BusinessAddress]] = ???
 
-    override def createBusinessAddress(businessAddress: BusinessAddress): IO[ValidatedNel[SqlErrors, Int]] = addressResult
+    override def createBusinessAddress(businessAddress: BusinessAddressRequest): IO[ValidatedNel[SqlErrors, Int]] = addressResult
   }
 
   class MockContactDetailsRepository(
@@ -101,9 +99,9 @@ object BusinessListingServiceSpec extends SimpleIOSuite {
                              specsResult: IO[ValidatedNel[SqlErrors, Int]]
                            ) extends BusinessSpecsRepositoryAlgebra[IO] {
 
-    override def findByBusinessId(businessId: String): IO[Option[BusinessSpecs]] = ???
+    override def findByBusinessId(businessId: String): IO[Option[BusinessSpecifications]] = ???
 
-    override def createSpecs(user: BusinessSpecs): IO[ValidatedNel[SqlErrors, Int]] = specsResult
+    override def createSpecs(user: BusinessSpecifications): IO[ValidatedNel[SqlErrors, Int]] = specsResult
   }
 
   def createTestService(

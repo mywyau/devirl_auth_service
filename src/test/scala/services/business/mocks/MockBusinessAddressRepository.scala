@@ -1,13 +1,14 @@
 package services.business.mocks
 
-import cats.data.ValidatedNel
 import cats.data.Validated.Valid
+import cats.data.ValidatedNel
 import cats.effect.IO
 import models.business.business_address.errors.BusinessAddressNotFound
+import models.business.business_address.requests.BusinessAddressRequest
 import models.business.business_address.service.BusinessAddress
 import models.database.SqlErrors
 import repositories.business.BusinessAddressRepositoryAlgebra
-import services.business.business_address.{BusinessAddressService, BusinessAddressServiceImpl}
+import services.business.address.{BusinessAddressService, BusinessAddressServiceImpl}
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
@@ -19,7 +20,7 @@ class MockBusinessAddressRepository(
 
   def showAllUsers: IO[Map[String, BusinessAddress]] = IO.pure(existingBusinessAddress)
 
-  override def findByUserId(userId: String): IO[Option[BusinessAddress]] = IO.pure(existingBusinessAddress.get(userId))
+  override def findByBusinessId(businessId: String): IO[Option[BusinessAddress]] = IO.pure(existingBusinessAddress.get(businessId))
 
-  override def createBusinessAddress(businessAddress: BusinessAddress): IO[ValidatedNel[SqlErrors, Int]] = IO.pure(Valid(1))
+  override def createBusinessAddress(request: BusinessAddressRequest): IO[ValidatedNel[SqlErrors, Int]] = IO.pure(Valid(1))
 }

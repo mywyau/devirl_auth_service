@@ -45,7 +45,7 @@ object Main extends IOApp {
       deskListingRoutes <- Resource.pure(deskListingRoutes(transactor))
       officeListingRoutes <- Resource.pure(officeListingRoutes(transactor))
       businessListingRoutes <- Resource.pure(businessListingRoutes(transactor))
-      // Combine all routes under the `/cashew` prefix
+      // Combine all routes under the `/pistachio` prefix
       combinedRoutes = Router(
         "/pistachio" -> (deskListingRoutes <+> officeListingRoutes <+> businessListingRoutes)
       )

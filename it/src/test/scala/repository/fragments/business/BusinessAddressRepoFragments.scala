@@ -15,6 +15,7 @@ object BusinessAddressRepoFragments {
         id BIGSERIAL PRIMARY KEY,
         user_id VARCHAR(255) NOT NULL UNIQUE,
         business_id VARCHAR(255) NOT NULL UNIQUE,
+        business_name VARCHAR(255),
         building_name VARCHAR(255),
         floor_number VARCHAR(255),
         street VARCHAR(255),
@@ -34,7 +35,7 @@ object BusinessAddressRepoFragments {
   val insertBusinessAddressTable: fragment.Fragment = {
     sql"""
         INSERT INTO business_address (
-          business_id,
+          user_id,
           business_id,
           building_name,
           floor_number,
@@ -48,19 +49,20 @@ object BusinessAddressRepoFragments {
           created_at,
           updated_at
         ) VALUES (
-          'user123',                     
-          'business456',                   
-          '123 Main Street',             
-          'New York',                    
+          'user_id_1',
+          'business_id_1',
+          'business_name_1',
+          'building_name_1',
+          'floor_1',
+          '123 Main Street',
+          'New York',
           'USA',                         
           'Manhattan',                   
-          '10001',                       
-          'Empire State Building',       
-          '5th Floor',                   
-          40.748817,                     
-          -73.985428,                    
-          CURRENT_TIMESTAMP,             
-          CURRENT_TIMESTAMP              
+          '10001',
+          100.1,
+          -100.1,
+          2025-01-01 00:00:00,
+          2025-01-01 00:00:00
         );
     """
   }

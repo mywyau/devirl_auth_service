@@ -8,7 +8,7 @@ import models.business.adts.PrivateDesk
 import models.business.desk_listing.Availability
 import models.business.desk_listing.requests.DeskListingRequest
 import models.business.desk_listing.service.DeskListing
-import repositories.business.DeskListingRepositoryImpl
+import repositories.desk.DeskListingRepositoryImpl
 import repository.fragments.DeskListingRepoFragments.{createDeskListingsTable, resetDeskListingsTable}
 import shared.TransactorResource
 import weaver.{GlobalRead, IOSuite, ResourceTag}

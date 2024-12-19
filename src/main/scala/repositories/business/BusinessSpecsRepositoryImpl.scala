@@ -10,7 +10,7 @@ import doobie.implicits.javasql.*
 import doobie.postgres.implicits.*
 import doobie.util.meta.Meta
 import io.circe.syntax.*
-import models.business.business_specs.BusinessSpecs
+import models.business.business_specs.BusinessSpecifications
 import models.database.*
 
 import java.sql.Timestamp
@@ -18,9 +18,9 @@ import java.time.LocalDateTime
 
 trait BusinessSpecsRepositoryAlgebra[F[_]] {
 
-  def findByBusinessId(businessId: String): F[Option[BusinessSpecs]]
+  def findByBusinessId(businessId: String): F[Option[BusinessSpecifications]]
 
-  def createSpecs(user: BusinessSpecs): F[ValidatedNel[SqlErrors, Int]]
+  def createSpecs(businessSpecifications: BusinessSpecifications): F[ValidatedNel[SqlErrors, Int]]
 }
 
 class BusinessSpecsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends BusinessSpecsRepositoryAlgebra[F] {
@@ -28,16 +28,16 @@ class BusinessSpecsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
   implicit val localDateTimeMeta: Meta[LocalDateTime] =
     Meta[Timestamp].imap(_.toLocalDateTime)(Timestamp.valueOf)
 
-  override def findByBusinessId(businessId: String): F[Option[BusinessSpecs]] = {
-    val findQuery: F[Option[BusinessSpecs]] =
+  override def findByBusinessId(businessId: String): F[Option[BusinessSpecifications]] = {
+    val findQuery: F[Option[BusinessSpecifications]] =
       sql"SELECT * FROM business_specs WHERE business_id = $businessId"
-        .query[BusinessSpecs]
+        .query[BusinessSpecifications]
         .option
         .transact(transactor)
     findQuery
   }
 
-  override def createSpecs(businessSpecs: BusinessSpecs): F[ValidatedNel[SqlErrors, Int]] = {
+  override def createSpecs(businessSpecs: BusinessSpecifications): F[ValidatedNel[SqlErrors, Int]] = {
     sql"""
       INSERT INTO business_specs (
         user_id,

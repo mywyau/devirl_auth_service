@@ -20,8 +20,8 @@ import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import repositories.business.DeskListingRepositoryImpl
-import services.business.desk_listing.DeskListingServiceImpl
+import repositories.desk.DeskListingRepositoryImpl
+import services.desk_listing.DeskListingServiceImpl
 import shared.{HttpClientResource, TransactorResource}
 import weaver.*
 

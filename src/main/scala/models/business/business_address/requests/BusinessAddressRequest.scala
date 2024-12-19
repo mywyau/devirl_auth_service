@@ -2,17 +2,24 @@ package models.business.business_address.requests
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
+
 import java.time.LocalDateTime
 
 case class BusinessAddressRequest(
                                    userId: String,
-                                   street: String,
-                                   city: String,
-                                   country: String,
+                                   businessId: Option[String],
+                                   businessName: Option[String],
+                                   buildingName: Option[String],
+                                   floorNumber: Option[String],
+                                   street: Option[String],
+                                   city: Option[String],
+                                   country: Option[String],
                                    county: Option[String],
-                                   postcode: String,
+                                   postcode: Option[String],
+                                   latitude: Option[BigDecimal],
+                                   longitude: Option[BigDecimal],
                                    createdAt: LocalDateTime,
-                                   updated_at: LocalDateTime
+                                   updatedAt: LocalDateTime
                                  )
 
 object BusinessAddressRequest {

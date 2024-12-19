@@ -4,7 +4,7 @@ import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import cats.effect.IO
 import models.business.business_address.errors.*
-import services.business.business_address.validation.BusinessAddressValidationServiceImpl
+import services.business.address.validation.BusinessAddressValidationServiceImpl
 import weaver.SimpleIOSuite
 
 object BusinessAddressValidationServiceSpec extends SimpleIOSuite {

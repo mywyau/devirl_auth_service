@@ -6,7 +6,7 @@ import doobie.*
 import doobie.implicits.*
 import models.business.adts.PrivateDesk
 import models.business.business_address.service.BusinessAddress
-import models.business.business_listing.requests.BusinessListingRequest
+import models.business.business_address.requests.BusinessAddressRequest
 import models.business.business_specs.BusinessAvailability
 import repositories.business.BusinessAddressRepositoryImpl
 import repository.fragments.business.BusinessAddressRepoFragments.{createBusinessAddressTable, resetBusinessAddressTable}
@@ -25,12 +25,11 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
         resetBusinessAddressTable.update.run.transact(transactor.xa).void
     )
 
-  def testBusinessAddress(id: Option[Int], userId: String, businessId: Option[String]): BusinessAddress = {
-    BusinessAddress(
-      id = id,
+  def testBusinessAddressRequest(userId: String, businessId: Option[String]): BusinessAddressRequest = {
+    BusinessAddressRequest(
       userId = userId,
       businessId = businessId,
-      businessName = Some("mikey corp"),
+      businessName = Some("mikey_corp"),
       buildingName = Some("build_123"),
       floorNumber = Some("floor 1"),
       street = Some("123 Main Street"),
@@ -47,11 +46,11 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
 
   private def seedTestAddresses(businessAddressRepo: BusinessAddressRepositoryImpl[IO]): IO[Unit] = {
     val users = List(
-      testBusinessAddress(Some(1), "user_id_1", Some("business_id_1")),
-      testBusinessAddress(Some(2), "user_id_2", Some("business_id_2")),
-      testBusinessAddress(Some(3), "user_id_3", Some("business_id_3")),
-      testBusinessAddress(Some(4), "user_id_4", Some("business_id_4")),
-      testBusinessAddress(Some(5), "user_id_5", Some("business_id_5"))
+      testBusinessAddressRequest("user_id_1", Some("business_id_1")),
+      testBusinessAddressRequest("user_id_2", Some("business_id_2")),
+      testBusinessAddressRequest("user_id_3", Some("business_id_3")),
+      testBusinessAddressRequest("user_id_4", Some("business_id_4")),
+      testBusinessAddressRequest("user_id_5", Some("business_id_5"))
     )
     users.traverse(businessAddressRepo.createBusinessAddress).void
   }
@@ -73,7 +72,7 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
       BusinessAddress(
         id = Some(1),
         userId = "user_id_1",
-        businessName = Some("mikey corp"),
+        businessName = Some("mikey_corp"),
         businessId = Some("business_id_1"),
         buildingName = Some("build_123"),
         floorNumber = Some("floor 1"),
@@ -89,7 +88,7 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
       )
 
     for {
-      businessAddressOpt <- businessAddressRepo.findByUserId("user_id_1")
+      businessAddressOpt <- businessAddressRepo.findByBusinessId("business_id_1")
       //      _ <- IO(println(s"Query Result: $businessAddressOpt")) // Debug log the result
     } yield expect(businessAddressOpt == Some(expectedResult))
   }

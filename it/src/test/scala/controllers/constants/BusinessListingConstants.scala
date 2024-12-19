@@ -2,17 +2,18 @@ package controllers.constants
 
 import cats.effect.*
 import models.business.adts.*
+import models.business.business_address.requests.BusinessAddressRequest
 import models.business.business_address.service.BusinessAddress
 import models.business.business_contact_details.BusinessContactDetails
 import models.business.business_listing.requests.BusinessListingRequest
-import models.business.business_specs.{BusinessAvailability, BusinessSpecs}
+import models.business.business_specs.{BusinessAvailability, BusinessSpecifications}
 
 import java.time.LocalDateTime
 
 object BusinessListingConstants {
 
-  val testBusinessSpecs: BusinessSpecs =
-    BusinessSpecs(
+  val testBusinessSpecs: BusinessSpecifications =
+    BusinessSpecifications(
       id = Some(1),
       userId = "user_id_1",
       businessId = "business_id_1",
@@ -41,6 +42,25 @@ object BusinessListingConstants {
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
+  val testBusinessAddressRequest: BusinessAddressRequest =
+    BusinessAddressRequest(
+      userId = "user_id_1",
+      businessId = Some("business_id_1"),
+      businessName = Some("MikeyCorp"),
+      buildingName = Some("BusinessListingControllerISpec Building"),
+      floorNumber = Some("floor 1"),
+      street = Some("123 Main Street"),
+      city = Some("New York"),
+      country = Some("USA"),
+      county = Some("New York County"),
+      postcode = Some("10001"),
+      latitude = Some(100.1),
+      longitude = Some(-100.1),
+      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+    )
+
+
   val testBusinessContactDetails: BusinessContactDetails =
     BusinessContactDetails(
       id = Some(1),
@@ -60,7 +80,7 @@ object BusinessListingConstants {
   def testBusinessListingRequest(businessId: String): BusinessListingRequest =
     BusinessListingRequest(
       businessId = businessId,
-      addressDetails = testBusinessAddress,
+      addressDetails = testBusinessAddressRequest,
       businessSpecs = testBusinessSpecs,
       contactDetails = testBusinessContactDetails,
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),

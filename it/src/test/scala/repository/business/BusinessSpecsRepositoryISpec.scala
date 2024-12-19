@@ -5,7 +5,7 @@ import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
 import models.business.adts.PrivateDesk
-import models.business.business_specs.BusinessSpecs
+import models.business.business_specs.BusinessSpecifications
 import models.business.business_specs.BusinessAvailability
 import repositories.business.BusinessSpecsRepositoryImpl
 import repository.fragments.business.BusinessSpecsRepoFragments.{createBusinessSpecsTable, resetBusinessSpecsTable}
@@ -24,8 +24,8 @@ class BusinessSpecsRepositoryISpec(global: GlobalRead) extends IOSuite {
         resetBusinessSpecsTable.update.run.transact(transactor.xa).void
     )
 
-  def testBusinessSpecs(id: Option[Int], userId: String, businessId: String): BusinessSpecs = {
-    BusinessSpecs(
+  def testBusinessSpecs(id: Option[Int], userId: String, businessId: String): BusinessSpecifications = {
+    BusinessSpecifications(
       id = id,
       userId = userId,
       businessId = businessId,
@@ -61,7 +61,7 @@ class BusinessSpecsRepositoryISpec(global: GlobalRead) extends IOSuite {
   test(".findByBusinessId() - should return the business specifications if business_id exists for a previously created business specifications") { businessSpecsRepo =>
 
     val expectedResult =
-      BusinessSpecs(
+      BusinessSpecifications(
         id = Some(1),
         userId = "user_id_1",
         businessId = "business_id_1",
