@@ -1,67 +1,70 @@
 package controllers
 
 import cats.effect.*
+import com.comcast.ip4s.{Host, Port, ipv4, port}
+import configuration.models.*
+import configuration.{BaseAppConfig, ConfigReader, ConfigReaderAlgebra}
+import controllers.TestRoutes.*
 import doobie.*
 import doobie.hikari.HikariTransactor
 import doobie.implicits.*
 import doobie.util.ExecutionContexts
-import org.http4s.ember.client.EmberClientBuilder
-import shared.{HttpClientResource, TransactorResource}
-import weaver.{GlobalResource, GlobalWrite}
-import com.comcast.ip4s.{ipv4, port}
-import TestRoutes.*
 import org.http4s.*
 import org.http4s.Method.*
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
+import org.http4s.client.Client
+import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
+import repository.DatabaseResource.{postgresqlConfigResource, transactorResource}
+import shared.{HttpClientResource, TransactorResource}
+import weaver.{GlobalResource, GlobalWrite}
 
-object ControllerSharedResource extends GlobalResource {
+import scala.concurrent.ExecutionContext
 
-  def createServer[F[_] : Async](router: HttpRoutes[F]): Resource[F, Server] =
+object ControllerSharedResource extends GlobalResource with BaseAppConfig {
+
+  def executionContextResource: Resource[IO, ExecutionContext] =
+    ExecutionContexts.fixedThreadPool(4)
+
+  def transactorResource(postgresqlConfig: PostgresqlConfig, ce: ExecutionContext): Resource[IO, HikariTransactor[IO]] =
+    HikariTransactor.newHikariTransactor[IO](
+      driverClassName = "org.postgresql.Driver",
+      url = s"jdbc:postgresql://${postgresqlConfig.host}:${postgresqlConfig.port}/${postgresqlConfig.dbName}",
+      user = postgresqlConfig.username,
+      pass = postgresqlConfig.password,
+      connectEC = ce
+    )
+
+  def clientResource: Resource[IO, Client[IO]] =
+    EmberClientBuilder.default[IO].build
+
+  def serverResource(
+                      host: Host,
+                      port: Port,
+                      router: HttpRoutes[IO]
+                    ): Resource[IO, Server] =
     EmberServerBuilder
-      .default[F]
-      .withHost(ipv4"127.0.0.1")
-      .withPort(port"9999")
+      .default[IO]
+      .withHost(host)
+      .withPort(port)
       .withHttpApp(router.orNotFound)
       .build
 
   def sharedResources(global: GlobalWrite): Resource[IO, Unit] = {
     for {
-      ce <- ExecutionContexts.fixedThreadPool(4)
-      xa: HikariTransactor[IO] <- HikariTransactor.newHikariTransactor[IO](
-        driverClassName = "org.postgresql.Driver",
-        url = "jdbc:postgresql://localhost:5432/shared_test_db", // Moved to config/env variables later
-        user = sys.env.getOrElse("TEST_DB_USER", "shared_user"), // Default to "postgres"
-        pass = sys.env.getOrElse("TEST_DB_PASS", "share"), // Default password
-        connectEC = ce
-      )
-      client <- EmberClientBuilder.default[IO].build
-      sharedSingleInstanceServer <- createServer(createTestRouter(xa)) // create shared server for tests
-      _ <- global.putR(TransactorResource(xa)) // Store repository.TransactorResource in global context
+      appConfig <- configResource
+      host <- hostResource(appConfig)
+      port <- portResource(appConfig)
+      postgresqlConfig <- postgresqlConfigResource(appConfig)
+      ce <- executionContextResource
+      xa <- transactorResource(postgresqlConfig, ce)
+      client <- clientResource
+      _ <- serverResource(host, port, createTestRouter(xa))
+      _ <- global.putR(TransactorResource(xa))
       _ <- global.putR(HttpClientResource(client))
     } yield ()
-  }
-
-  private def printSchema(xa: Transactor[IO]): IO[Unit] = {
-    val schemaQuery =
-      sql"""
-        SELECT column_name, data_type, is_nullable
-        FROM information_schema.columns
-        WHERE table_name = 'user_login_details'
-      """.query[(String, String, String)]
-        .to[List]
-        .transact(xa)
-
-    schemaQuery.flatMap { schema =>
-      IO {
-        println("Table Schema for 'user_login_details':")
-        schema.foreach { case (name, typ, nullable) =>
-          println(s"Column: $name, Type: $typ, Nullable: $nullable")
-        }
-      }
-    }
   }
 }
