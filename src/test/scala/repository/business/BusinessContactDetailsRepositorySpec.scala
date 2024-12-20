@@ -3,7 +3,7 @@ package repository.business
 import cats.data.Validated.Valid
 import cats.effect.IO
 import cats.effect.kernel.Ref
-import models.business.business_contact_details.BusinessContactDetails
+import models.business.contact_details.BusinessContactDetails
 import repository.business.mocks.MockBusinessContactDetailsRepository
 import weaver.SimpleIOSuite
 

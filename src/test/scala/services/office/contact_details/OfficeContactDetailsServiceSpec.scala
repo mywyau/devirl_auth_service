@@ -4,8 +4,8 @@ import cats.effect.IO
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.ValidatedNel
 import models.database.SqlErrors
-import models.office.office_contact_details.OfficeContactDetails
-import models.office.office_contact_details.errors.OfficeContactDetailsNotFound
+import models.office.contact_details.OfficeContactDetails
+import models.office.contact_details.errors.OfficeContactDetailsNotFound
 import repositories.office.OfficeContactDetailsRepositoryAlgebra
 import services.office.contact_details.{OfficeContactDetailsService, OfficeContactDetailsServiceImpl}
 import weaver.SimpleIOSuite

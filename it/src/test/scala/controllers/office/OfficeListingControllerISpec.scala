@@ -12,10 +12,10 @@ import doobie.util.transactor.Transactor
 import io.circe.Json
 import io.circe.syntax.*
 import models.office.adts.*
-import models.office.office_address.OfficeAddress
-import models.office.office_contact_details.OfficeContactDetails
+import models.office.address_details.OfficeAddress
+import models.office.contact_details.OfficeContactDetails
 import models.office.office_listing.requests.OfficeListingRequest
-import models.office.office_specs.{OfficeAvailability, OfficeSpecs}
+import models.office.specifications.{OfficeAvailability, OfficeSpecs}
 import models.responses.CreatedResponse
 import org.http4s.*
 import org.http4s.Method.*

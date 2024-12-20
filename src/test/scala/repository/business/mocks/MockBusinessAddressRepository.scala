@@ -4,8 +4,8 @@ import cats.data.ValidatedNel
 import cats.data.Validated.Valid
 import cats.effect.IO
 import cats.effect.kernel.Ref
-import models.business.business_address.service.BusinessAddress
-import models.business.business_address.requests.BusinessAddressRequest
+import models.business.address_details.service.BusinessAddress
+import models.business.address_details.requests.BusinessAddressRequest
 import models.database.SqlErrors
 import repositories.business.BusinessAddressRepositoryAlgebra
 

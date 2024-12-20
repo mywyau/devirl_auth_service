@@ -1,7 +1,7 @@
 package services.office.contact_details
 
-import models.office.office_contact_details.OfficeContactDetails
-import models.office.office_contact_details.errors.OfficeContactDetailsErrors
+import models.office.contact_details.OfficeContactDetails
+import models.office.contact_details.errors.OfficeContactDetailsErrors
 
 trait OfficeContactDetailsServiceAlgebra[F[_]] {
 

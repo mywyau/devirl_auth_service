@@ -2,9 +2,9 @@ package services.business
 
 import cats.data.Validated.Valid
 import cats.effect.IO
-import models.business.business_address.errors.BusinessAddressNotFound
-import models.business.business_address.requests.BusinessAddressRequest
-import models.business.business_address.service.BusinessAddress
+import models.business.address_details.errors.BusinessAddressNotFound
+import models.business.address_details.requests.BusinessAddressRequest
+import models.business.address_details.service.BusinessAddress
 import repositories.business.BusinessAddressRepositoryAlgebra
 import services.business.address.{BusinessAddressService, BusinessAddressServiceImpl}
 import services.business.mocks.MockBusinessAddressRepository

@@ -8,8 +8,8 @@ import doobie.*
 import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
-import models.office.office_address.OfficeAddress
-import models.office.office_address.errors.OfficeAddressErrors
+import models.office.address_details.OfficeAddress
+import models.office.address_details.errors.OfficeAddressErrors
 import models.database.*
 
 import java.sql.Timestamp

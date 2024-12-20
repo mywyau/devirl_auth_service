@@ -10,9 +10,9 @@ import doobie.util.transactor.Transactor
 import io.circe.Json
 import io.circe.syntax.*
 import models.business.adts.*
-import models.business.business_contact_details.BusinessContactDetails
-import models.business.business_contact_details.requests.BusinessContactDetailsRequest
-import models.business.business_contact_details.BusinessContactDetails
+import models.business.contact_details.BusinessContactDetails
+import models.business.contact_details.requests.BusinessContactDetailsRequest
+import models.business.contact_details.BusinessContactDetails
 import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
 import models.responses.CreatedResponse
 import org.http4s.*

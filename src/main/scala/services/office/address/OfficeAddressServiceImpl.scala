@@ -5,8 +5,8 @@ import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.database.*
-import models.office.office_address.OfficeAddress
-import models.office.office_address.errors.*
+import models.office.address_details.OfficeAddress
+import models.office.address_details.errors.*
 import repositories.office.OfficeAddressRepositoryAlgebra
 import cats.data.Validated
 import cats.data.ValidatedNel

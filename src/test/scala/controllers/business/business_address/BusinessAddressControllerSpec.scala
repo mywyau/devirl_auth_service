@@ -4,8 +4,8 @@ import cats.effect.IO
 import controllers.business.BusinessAddressController
 import controllers.business.business_address.constants.BusinessAddressControllerConstants.sampleBusinessAddress1
 import controllers.business.business_address.mocks.MockBusinessAddressService
-import models.business.business_address.errors.BusinessUserNotFound
-import models.business.business_address.responses.error.BusinessAddressErrorResponse
+import models.business.address_details.errors.BusinessUserNotFound
+import models.business.address_details.responses.error.BusinessAddressErrorResponse
 import org.http4s.*
 import org.http4s.Status.{BadRequest, Ok}
 import org.http4s.circe.*

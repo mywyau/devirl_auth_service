@@ -5,7 +5,7 @@ import cats.data.ValidatedNel
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import models.database.SqlErrors
-import models.office.office_address.OfficeAddress
+import models.office.address_details.OfficeAddress
 import repositories.office.OfficeAddressRepositoryAlgebra
 
 import java.time.LocalDateTime

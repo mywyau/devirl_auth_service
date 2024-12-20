@@ -5,10 +5,10 @@ import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
 import models.office.adts.*
-import models.office.office_address.OfficeAddress
-import models.office.office_contact_details.OfficeContactDetails
+import models.office.address_details.OfficeAddress
+import models.office.contact_details.OfficeContactDetails
 import models.office.office_listing.requests.OfficeListingRequest
-import models.office.office_specs.{OfficeAvailability, OfficeSpecs}
+import models.office.specifications.{OfficeAvailability, OfficeSpecs}
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime

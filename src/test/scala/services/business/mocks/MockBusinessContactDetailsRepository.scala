@@ -3,8 +3,8 @@ package services.business.mocks
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.ValidatedNel
 import cats.effect.IO
-import models.business.business_contact_details.BusinessContactDetails
-import models.business.business_contact_details.errors.BusinessContactDetailsNotFound
+import models.business.contact_details.BusinessContactDetails
+import models.business.contact_details.errors.BusinessContactDetailsNotFound
 import models.database.SqlErrors
 import repositories.business.BusinessContactDetailsRepositoryAlgebra
 import weaver.SimpleIOSuite

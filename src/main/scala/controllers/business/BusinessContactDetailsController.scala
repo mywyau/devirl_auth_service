@@ -4,7 +4,7 @@ import cats.data.Validated.Valid
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
-import models.business.business_contact_details.BusinessContactDetails
+import models.business.contact_details.BusinessContactDetails
 import models.responses.{CreatedResponse, ErrorResponse}
 import org.http4s.*
 import org.http4s.circe.*

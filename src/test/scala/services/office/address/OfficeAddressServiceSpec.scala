@@ -4,8 +4,8 @@ import cats.data.Validated.Valid
 import cats.data.ValidatedNel
 import cats.effect.IO
 import models.database.SqlErrors
-import models.office.office_address.errors.OfficeAddressNotFound
-import models.office.office_address.OfficeAddress
+import models.office.address_details.errors.OfficeAddressNotFound
+import models.office.address_details.OfficeAddress
 import repositories.office.OfficeAddressRepositoryAlgebra
 import services.office.address.{OfficeAddressService, OfficeAddressServiceImpl}
 import weaver.SimpleIOSuite

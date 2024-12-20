@@ -1,9 +1,9 @@
 package services.business.address
 
 import cats.data.ValidatedNel
-import models.business.business_address.errors.BusinessAddressErrors
-import models.business.business_address.requests.BusinessAddressRequest
-import models.business.business_address.service.BusinessAddress
+import models.business.address_details.errors.BusinessAddressErrors
+import models.business.address_details.requests.BusinessAddressRequest
+import models.business.address_details.service.BusinessAddress
 import models.database.SqlErrors
 
 

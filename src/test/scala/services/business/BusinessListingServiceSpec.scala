@@ -4,9 +4,9 @@ import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.effect.IO
 import cats.implicits.*
 import models.business.adts.*
-import models.business.business_address.service.BusinessAddress
-import models.business.business_address.requests.BusinessAddressRequest
-import models.business.business_contact_details.BusinessContactDetails
+import models.business.address_details.service.BusinessAddress
+import models.business.address_details.requests.BusinessAddressRequest
+import models.business.contact_details.BusinessContactDetails
 import models.business.business_listing.errors.BusinessListingErrors
 import models.business.business_listing.requests.BusinessListingRequest
 import models.business.specifications.{BusinessAvailability, BusinessSpecifications}

@@ -5,12 +5,12 @@ import cats.effect.IO
 import cats.implicits.*
 import models.database.*
 import models.database.SqlErrors
-import models.office.office_address.OfficeAddress
-import models.office.office_contact_details.OfficeContactDetails
+import models.office.address_details.OfficeAddress
+import models.office.contact_details.OfficeContactDetails
 import models.office.office_listing.errors.OfficeListingErrors
 import models.office.office_listing.requests.OfficeListingRequest
-import models.office.office_specs.OfficeAvailability
-import models.office.office_specs.OfficeSpecs
+import models.office.specifications.OfficeAvailability
+import models.office.specifications.OfficeSpecs
 import models.office.adts.*
 import repositories.office.{OfficeAddressRepositoryAlgebra, OfficeContactDetailsRepositoryAlgebra, OfficeSpecsRepositoryAlgebra}
 import weaver.SimpleIOSuite

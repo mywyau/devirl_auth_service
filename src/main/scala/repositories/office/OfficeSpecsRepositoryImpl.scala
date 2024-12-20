@@ -11,7 +11,7 @@ import doobie.postgres.implicits.*
 import doobie.util.meta.Meta
 import io.circe.syntax.*
 import models.office.adts.OfficeType
-import models.office.office_specs.OfficeSpecs
+import models.office.specifications.OfficeSpecs
 import models.database.*
 
 import java.sql.Timestamp

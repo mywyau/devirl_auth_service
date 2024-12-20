@@ -7,8 +7,8 @@ import cats.implicits.*
 import cats.syntax.all.*
 import cats.{Monad, NonEmptyParallel}
 import models.database.{SqlErrors, *}
-import models.office.office_address.OfficeAddress
-import models.office.office_address.errors.OfficeAddressErrors
+import models.office.address_details.OfficeAddress
+import models.office.address_details.errors.OfficeAddressErrors
 import models.office.office_listing.errors.OfficeListingErrors
 import models.office.office_listing.requests.OfficeListingRequest
 import models.office.office_listing.{OfficeListing, errors}

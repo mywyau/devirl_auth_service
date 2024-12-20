@@ -5,9 +5,9 @@ import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
 import models.business.adts.PrivateDesk
-import models.office.office_specs.OfficeSpecs
+import models.office.specifications.OfficeSpecs
 import models.office.adts.OpenPlanOffice
-import models.office.office_specs.OfficeAvailability
+import models.office.specifications.OfficeAvailability
 import repositories.office.OfficeSpecsRepositoryImpl
 import repository.fragments.OfficeSpecsRepoFragments.{createOfficeSpecsTable, resetOfficeSpecsTable}
 import shared.TransactorResource

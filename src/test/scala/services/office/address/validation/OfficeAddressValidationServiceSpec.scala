@@ -3,7 +3,7 @@ package services.office.address.validation
 import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import cats.effect.IO
-import models.office.office_address.errors.*
+import models.office.address_details.errors.*
 import services.office.address.validation.OfficeAddressValidationServiceImpl
 import weaver.SimpleIOSuite
 

@@ -9,8 +9,8 @@ import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import models.database.*
-import models.business.business_contact_details.errors.BusinessContactDetailsErrors
-import models.business.business_contact_details.BusinessContactDetails
+import models.business.contact_details.errors.BusinessContactDetailsErrors
+import models.business.contact_details.BusinessContactDetails
 
 import java.sql.Timestamp
 import java.time.LocalDateTime

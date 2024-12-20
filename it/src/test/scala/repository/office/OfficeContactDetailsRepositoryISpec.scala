@@ -5,7 +5,7 @@ import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
 import models.business.adts.PrivateDesk
-import models.office.office_contact_details.OfficeContactDetails
+import models.office.contact_details.OfficeContactDetails
 import repositories.office.OfficeContactDetailsRepositoryImpl
 import repository.fragments.OfficeContactDetailsRepoFragments.{createOfficeContactDetailsTable, resetOfficeContactDetailsTable}
 import shared.TransactorResource

@@ -2,8 +2,8 @@ package controllers.constants
 
 import cats.effect.*
 import models.business.adts.*
-import models.business.business_address.service.BusinessAddress
-import models.business.business_contact_details.BusinessContactDetails
+import models.business.address_details.service.BusinessAddress
+import models.business.contact_details.BusinessContactDetails
 import models.business.business_listing.requests.BusinessListingRequest
 import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
 

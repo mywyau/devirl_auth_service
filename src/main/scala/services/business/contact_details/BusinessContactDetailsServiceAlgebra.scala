@@ -1,7 +1,7 @@
 package services.business.contact_details
 
-import models.business.business_contact_details.BusinessContactDetails
-import models.business.business_contact_details.errors.BusinessContactDetailsErrors
+import models.business.contact_details.BusinessContactDetails
+import models.business.contact_details.errors.BusinessContactDetailsErrors
 
 trait BusinessContactDetailsServiceAlgebra[F[_]] {
 

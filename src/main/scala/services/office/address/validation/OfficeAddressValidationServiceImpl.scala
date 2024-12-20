@@ -3,8 +3,8 @@ package services.office.address.validation
 import cats.data.Validated
 import cats.effect.Concurrent
 import cats.implicits.*
-import models.business.business_address.errors.*
-import models.office.office_address.errors.*
+import models.business.address_details.errors.*
+import models.office.address_details.errors.*
 
 class OfficeAddressValidationServiceImpl[F[_] : Concurrent] extends OfficeAddressValidationServiceAlgebra[F] {
 

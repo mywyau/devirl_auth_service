@@ -1,7 +1,7 @@
 package services.business.address.validation
 
 import cats.data.Validated
-import models.business.business_address.errors.BusinessAddressErrors
+import models.business.address_details.errors.BusinessAddressErrors
 
 trait BusinessAddressValidationServiceAlgebra[F[_]] {
 

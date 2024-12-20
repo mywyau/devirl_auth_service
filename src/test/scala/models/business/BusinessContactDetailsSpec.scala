@@ -4,7 +4,7 @@ import cats.effect.IO
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
-import models.business.business_contact_details.BusinessContactDetails
+import models.business.contact_details.BusinessContactDetails
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime

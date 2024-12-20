@@ -1,7 +1,7 @@
 package services.office.address.validation
 
 import cats.data.Validated
-import models.office.office_address.errors.*
+import models.office.address_details.errors.*
 
 trait OfficeAddressValidationServiceAlgebra[F[_]] {
 

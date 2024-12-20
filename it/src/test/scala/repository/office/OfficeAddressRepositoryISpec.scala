@@ -5,8 +5,8 @@ import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
 import models.business.adts.PrivateDesk
-import models.office.office_address.OfficeAddress
-import models.office.office_specs.OfficeAvailability
+import models.office.address_details.OfficeAddress
+import models.office.specifications.OfficeAvailability
 import models.office.office_listing.requests.OfficeListingRequest
 import repositories.office.OfficeAddressRepositoryImpl
 import repository.fragments.OfficeAddressRepoFragments.{createOfficeAddressTable, resetOfficeAddressTable}

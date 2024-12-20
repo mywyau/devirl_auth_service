@@ -4,7 +4,7 @@ import cats.data.Validated.validNel
 import cats.data.ValidatedNel
 import cats.effect.IO
 import cats.effect.kernel.Ref
-import models.business.business_contact_details.BusinessContactDetails
+import models.business.contact_details.BusinessContactDetails
 import models.database.SqlErrors
 import repositories.business.BusinessContactDetailsRepositoryAlgebra
 

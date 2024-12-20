@@ -6,8 +6,8 @@ import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.database.SqlErrors
-import models.office.office_contact_details.OfficeContactDetails
-import models.office.office_contact_details.errors.*
+import models.office.contact_details.OfficeContactDetails
+import models.office.contact_details.errors.*
 import repositories.office.OfficeContactDetailsRepositoryAlgebra
 
 

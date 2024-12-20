@@ -51,12 +51,13 @@ object Main extends IOApp {
       )
 
       // Wrap combined routes with CORS middleware
-      corsRoutes = CORS.policy
-        .withAllowOriginAll
-        .withAllowCredentials(false)
-        .withAllowHeadersAll
-        .withMaxAge(1.day)
-        .apply(combinedRoutes)
+      corsRoutes =
+        CORS.policy
+          .withAllowOriginAll
+          .withAllowCredentials(false)
+          .withAllowHeadersAll
+          .withMaxAge(1.day)
+          .apply(combinedRoutes)
 
       // Apply throttle middleware
       throttledRoutes <- Resource.eval(throttleMiddleware(corsRoutes))

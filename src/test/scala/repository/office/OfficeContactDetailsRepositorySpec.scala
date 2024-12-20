@@ -3,7 +3,7 @@ package repository.office
 import cats.data.Validated.Valid
 import cats.effect.IO
 import cats.effect.kernel.Ref
-import models.office.office_contact_details.OfficeContactDetails
+import models.office.contact_details.OfficeContactDetails
 import repository.office.mocks.MockOfficeContactDetailsRepository
 import weaver.SimpleIOSuite
 
