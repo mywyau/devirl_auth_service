@@ -9,9 +9,9 @@ import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.Json
 import io.circe.syntax.*
-import models.business.adts.*
 import models.business.address_details.requests.BusinessAddressRequest
 import models.business.address_details.service.BusinessAddress
+import models.business.adts.*
 import models.business.contact_details.BusinessContactDetails
 import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
 import models.responses.CreatedResponse
@@ -67,6 +67,32 @@ class BusinessAddressControllerISpec(global: GlobalRead) extends IOSuite {
         expect.all(
           response.status == Status.Ok,
           body == expectedBusinessAddress
+        )
+      }
+    }
+  }
+
+  test(
+    "POST - /pistachio/business/businesses/address/details/create - " +
+      "should generate the business address data for a business in database table, returning Created response"
+  ) { (transactorResource, log) =>
+
+    val transactor = transactorResource._1.xa
+    val client = transactorResource._2.client
+
+    val businessAddressRequest: Json = testBusinessAddressRequest("user_id_2", Some("business_id_2")).asJson
+
+    val request =
+      Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/businesses/address/details/create")
+        .withEntity(businessAddressRequest)
+
+    val expectedBody = CreatedResponse("Business contact details created successfully")
+
+    client.run(request).use { response =>
+      response.as[CreatedResponse].map { body =>
+        expect.all(
+          response.status == Status.Created,
+          body == expectedBody
         )
       }
     }

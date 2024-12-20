@@ -24,6 +24,7 @@ class BusinessAddressControllerImpl[F[_] : Concurrent](
   implicit val businessAddressRequestRequestDecoder: EntityDecoder[F, BusinessAddressRequest] = jsonOf[F, BusinessAddressRequest]
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
+
     case GET -> Root / "business" / "businesses" / "address" / "details" / businessId =>
       logger.info(s"[BusinessAddressControllerImpl] GET - Business address details for userId: $businessId") *>
         businessAddressService.getByBusinessId(businessId).flatMap {
@@ -35,7 +36,7 @@ class BusinessAddressControllerImpl[F[_] : Concurrent](
             BadRequest(errorResponse.asJson)
         }
 
-    case req@POST -> Root / "business" / "businesses" / "address" / "create" =>
+    case req@POST -> Root / "business" / "businesses" / "address" / "details" / "create" =>
       logger.info(s"[BusinessAddressControllerImpl] POST - Creating business address") *>
         req.decode[BusinessAddressRequest] { request =>
           businessAddressService.createAddress(request).flatMap {

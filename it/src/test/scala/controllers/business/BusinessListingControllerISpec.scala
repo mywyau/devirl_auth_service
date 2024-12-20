@@ -70,13 +70,13 @@ class BusinessListingControllerISpec(global: GlobalRead) extends IOSuite {
       Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/businesses/listing/create")
         .withEntity(businessListingRequest)
 
-    val expectedBusinessListing = CreatedResponse("Business created successfully")
+    val expectedBody = CreatedResponse("Business created successfully")
 
     client.run(request).use { response =>
       response.as[CreatedResponse].map { body =>
         expect.all(
           response.status == Status.Created,
-          body == expectedBusinessListing
+          body == expectedBody
         )
       }
     }
