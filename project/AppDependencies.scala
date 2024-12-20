@@ -18,7 +18,7 @@ object AppDependencies {
   // Compile dependencies
   val compile: Seq[ModuleID] = Seq(
     "org.typelevel" %% "log4cats-slf4j" % "2.6.0",
-    "ch.qos.logback" % "logback-classic" % "1.5.6" exclude ("org.slf4j", "slf4j-jdk14"),
+    "ch.qos.logback" % "logback-classic" % "1.5.6" exclude("org.slf4j", "slf4j-jdk14"),
     "org.typelevel" %% "cats-core" % catsCoreVersion,
     "org.typelevel" %% "cats-effect" % catsEffectVersion,
     "org.http4s" %% "http4s-dsl" % http4sVersion,
@@ -34,7 +34,8 @@ object AppDependencies {
     "io.circe" %% "circe-generic" % circeVersion,
     "io.circe" %% "circe-core" % circeVersion,
     "io.circe" %% "circe-parser" % circeVersion,
-    "org.http4s" %% "http4s-ember-client" % "0.23.28"
+    "org.http4s" %% "http4s-ember-client" % "0.23.28",
+    "com.github.pureconfig" %% "pureconfig-core" % "0.17.8"
   )
 
   // Test dependencies
@@ -52,7 +53,8 @@ object AppDependencies {
     "org.flywaydb" % "flyway-core" % flywayVersion,
     "com.disneystreaming" %% "weaver-cats" % weaverVersion % Test,
     "org.http4s" %% "http4s-ember-client" % "0.23.28" % Test,
-    "com.disneystreaming" %% "weaver-scalacheck" % "0.7.6" % Test
+    "com.disneystreaming" %% "weaver-scalacheck" % "0.7.6" % Test,
+    "com.github.pureconfig" %% "pureconfig-core" % "0.17.8" % Test
   )
 
   // Additional workaround for macOS if needed

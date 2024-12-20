@@ -1,10 +1,10 @@
+
 import cats.NonEmptyParallel
 import cats.effect.*
 import cats.effect.syntax.all.*
 import cats.implicits.*
 import com.comcast.ip4s.*
-import dev.profunktor.redis4cats.effect.Log
-import dev.profunktor.redis4cats.effect.Log.Stdout.*
+import configuration.ConfigReader
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
 import fs2.concurrent.Topic
@@ -14,6 +14,7 @@ import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.Router
 import org.http4s.server.middleware.CORS
+import org.http4s.server.websocket.WebSocketBuilder2
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import routes.Routes.*
@@ -38,9 +39,9 @@ object Main extends IOApp {
     } yield xa
   }
 
-  def createHttpRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Log](
-                                                                                       transactor: HikariTransactor[F]
-                                                                                     ): Resource[F, HttpRoutes[F]] = {
+  def createHttpRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async](
+                                                                                 transactor: HikariTransactor[F]
+                                                                               ): Resource[F, HttpRoutes[F]] = {
     for {
       deskListingRoutes <- Resource.pure(deskListingRoutes(transactor))
       officeListingRoutes <- Resource.pure(officeListingRoutes(transactor))
@@ -51,24 +52,27 @@ object Main extends IOApp {
       )
 
       // Wrap combined routes with CORS middleware
-      corsRoutes =
-        CORS.policy
-          .withAllowOriginAll
-          .withAllowCredentials(false)
-          .withAllowHeadersAll
-          .withMaxAge(1.day)
-          .apply(combinedRoutes)
+      corsRoutes = CORS.policy
+        .withAllowOriginAll
+        .withAllowCredentials(false)
+        .withAllowHeadersAll
+        .withMaxAge(1.day)
+        .apply(combinedRoutes)
 
       // Apply throttle middleware
       throttledRoutes <- Resource.eval(throttleMiddleware(corsRoutes))
     } yield throttledRoutes
   }
 
-  def createServer[F[_] : Async](httpRoutes: HttpRoutes[F]): Resource[F, Unit] = {
+  def createServer[F[_] : Async](
+                                  host: Host,
+                                  port: Port,
+                                  httpRoutes: HttpRoutes[F]
+                                ): Resource[F, Unit] = {
     EmberServerBuilder
       .default[F]
-      .withHost(ipv4"0.0.0.0")
-      .withPort(port"1010")
+      .withHost(host)
+      .withPort(port)
       .withHttpApp(httpRoutes.orNotFound)
       .build
       .void
@@ -76,13 +80,30 @@ object Main extends IOApp {
 
   override def run(args: List[String]): IO[ExitCode] = {
 
-    transactorResource[IO].flatMap { transactor =>
-      val httpRoutesResource: Resource[IO, HttpRoutes[IO]] = createHttpRoutes[IO](transactor)
+    val configReader = ConfigReader[IO]
 
-      httpRoutesResource.flatMap { httpRoutes =>
-        createServer(httpRoutes)
+    for {
+      appConfig <- configReader.loadAppConfig.handleErrorWith { e =>
+        IO.raiseError(new RuntimeException(s"Failed to load app configuration: ${e.getMessage}", e))
       }
-    }.use(_ => IO.never).as(ExitCode.Success)
-  }
+      _ <- Logger[IO].info(s"Loaded configuration: $appConfig")
+      host <- IO.fromOption(Host.fromString(appConfig.serverConfig.host))(new RuntimeException("Invalid host in configuration"))
+      port <- IO.fromOption(Port.fromInt(appConfig.serverConfig.port))(new RuntimeException("Invalid port in configuration"))
+      exitCode: ExitCode <-
+        transactorResource[IO].flatMap { transactor =>
 
+          val httpRoutesResource: Resource[IO, HttpRoutes[IO]] = createHttpRoutes[IO](transactor)
+
+          httpRoutesResource.flatMap { httpRoutes =>
+            createServer(
+              host,
+              port,
+              httpRoutes
+            )
+          }
+        }.use(_ => IO.never).as(ExitCode.Success)
+    } yield {
+      exitCode
+    }
+  }
 }
