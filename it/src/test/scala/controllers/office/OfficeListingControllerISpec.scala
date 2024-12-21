@@ -11,8 +11,8 @@ import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.Json
 import io.circe.syntax.*
-import models.office.adts.*
 import models.office.address_details.OfficeAddress
+import models.office.adts.*
 import models.office.contact_details.OfficeContactDetails
 import models.office.office_listing.requests.OfficeListingRequest
 import models.office.specifications.{OfficeAvailability, OfficeSpecs}
@@ -52,10 +52,13 @@ class OfficeListingControllerISpec(global: GlobalRead) extends IOSuite {
     } yield (transactor, client)
   }
 
-  test("POST - /pistachio/business/businesses/office/listing/create - should generate the office listing data for a business in the respective tables, returning Created response") { (transactorResource, log) =>
+  test(
+    "POST - /pistachio/business/businesses/office/listing/create - " +
+      "should generate the office listing data for a business in the respective tables, returning Created response"
+  ) { (sharedResources, log) =>
 
-    val transactor = transactorResource._1.xa
-    val client = transactorResource._2.client
+    val transactor = sharedResources._1.xa
+    val client = sharedResources._2.client
 
     val officeListingRequest: Json = testOfficeListingRequest("office_id_1").asJson
 

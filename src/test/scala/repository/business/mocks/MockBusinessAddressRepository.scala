@@ -5,8 +5,8 @@ import cats.data.{Validated, ValidatedNel}
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import cats.implicits.*
+import models.business.address_details.BusinessAddress
 import models.business.address_details.requests.BusinessAddressRequest
-import models.business.address_details.service.BusinessAddress
 import models.database.*
 import repositories.business.BusinessAddressRepositoryAlgebra
 

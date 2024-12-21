@@ -1,7 +1,6 @@
 package controllers.business.business_address.constants
 
-import models.business.address_details.service.BusinessAddress
-
+import models.business.address_details.BusinessAddress
 import java.time.LocalDateTime
 
 object BusinessAddressControllerConstants {

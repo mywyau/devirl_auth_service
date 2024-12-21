@@ -3,8 +3,8 @@ package repository.constants
 import cats.data.Validated.Valid
 import cats.effect.IO
 import cats.effect.kernel.Ref
+import models.business.address_details.BusinessAddress
 import models.business.address_details.requests.BusinessAddressRequest
-import models.business.address_details.service.BusinessAddress
 import repository.business.mocks.MockBusinessAddressRepository
 
 import java.time.LocalDateTime

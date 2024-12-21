@@ -9,8 +9,8 @@ import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.Json
 import io.circe.syntax.*
+import models.business.address_details.BusinessAddress
 import models.business.address_details.requests.BusinessAddressRequest
-import models.business.address_details.service.BusinessAddress
 import models.business.adts.*
 import models.business.contact_details.BusinessContactDetails
 import models.business.specifications.{BusinessAvailability, BusinessSpecifications}

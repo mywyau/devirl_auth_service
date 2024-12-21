@@ -3,8 +3,8 @@ package services.constants
 import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.effect.IO
 import cats.implicits.*
+import models.business.address_details.BusinessAddress
 import models.business.address_details.requests.BusinessAddressRequest
-import models.business.address_details.service.BusinessAddress
 import models.business.adts.*
 import models.business.business_listing.errors.BusinessListingErrors
 import models.business.business_listing.requests.BusinessListingRequest

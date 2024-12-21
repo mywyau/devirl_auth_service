@@ -33,7 +33,7 @@ class BusinessContactDetailsControllerImpl[F[_] : Concurrent](
               Ok(contactDetails.asJson)
           case Left(error) =>
             val errorResponse = ErrorResponse(error.code, error.errorMessage)
-            BadRequest(errorResponse.asJson)
+            NotFound(errorResponse.asJson)
         }
 
     case req@POST -> Root / "business" / "businesses" / "contact" / "details" / "create" =>

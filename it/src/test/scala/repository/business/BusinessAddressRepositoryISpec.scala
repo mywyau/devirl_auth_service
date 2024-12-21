@@ -5,8 +5,8 @@ import cats.effect.{IO, Resource}
 import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
+import models.business.address_details.BusinessAddress
 import models.business.address_details.requests.BusinessAddressRequest
-import models.business.address_details.service.BusinessAddress
 import models.business.adts.PrivateDesk
 import models.business.specifications.BusinessAvailability
 import repositories.business.BusinessAddressRepositoryImpl

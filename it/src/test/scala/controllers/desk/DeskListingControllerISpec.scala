@@ -52,10 +52,12 @@ class DeskListingControllerISpec(global: GlobalRead) extends IOSuite {
     } yield (transactor, client)
   }
 
-  test("GET - /pistachio/business/desk/listing/create - should generate the user profile associated with the user") { (transactorResource, log) =>
+  test(
+    "GET - /pistachio/business/desk/listing/create - should generate the user profile associated with the user"
+  ) { (sharedResources, log) =>
 
-    val transactor = transactorResource._1.xa
-    val client = transactorResource._2.client
+    val transactor = sharedResources._1.xa
+    val client = sharedResources._2.client
 
     val availability =
       Availability(

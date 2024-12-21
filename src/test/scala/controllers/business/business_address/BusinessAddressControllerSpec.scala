@@ -5,7 +5,7 @@ import controllers.business.BusinessAddressController
 import controllers.business.business_address.constants.BusinessAddressControllerConstants.sampleBusinessAddress1
 import controllers.business.business_address.mocks.MockBusinessAddressService
 import models.business.address_details.errors.BusinessUserNotFound
-import models.business.address_details.responses.error.BusinessAddressErrorResponse
+import models.responses.ErrorResponse
 import org.http4s.*
 import org.http4s.Status.{BadRequest, Ok}
 import org.http4s.circe.*
@@ -46,10 +46,10 @@ object BusinessAddressControllerSpec extends SimpleIOSuite with SpecBase {
 
     for {
       response <- controller.orNotFound.run(request)
-      body <- response.as[BusinessAddressErrorResponse]
+      body <- response.as[ErrorResponse]
     } yield expect.all(
       response.status == BadRequest,
-      body == BusinessAddressErrorResponse(BusinessUserNotFound.code, BusinessUserNotFound.errorMessage)
+      body == ErrorResponse(BusinessUserNotFound.code, BusinessUserNotFound.errorMessage)
     )
   }
 }

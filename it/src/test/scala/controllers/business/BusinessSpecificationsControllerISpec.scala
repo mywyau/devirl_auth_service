@@ -2,6 +2,7 @@ package controllers.business
 
 import cats.effect.*
 import com.comcast.ip4s.{ipv4, port}
+import configuration.models.AppConfig
 import controllers.business.BusinessSpecificationsController
 import controllers.constants.BusinessSpecificationsConstants.*
 import controllers.fragments.business.BusinessSpecsRepoFragments.*
@@ -49,10 +50,10 @@ class BusinessSpecificationsControllerISpec(global: GlobalRead) extends IOSuite 
   test(
     "GET - /pistachio/business/businesses/specifications/business_id_1 - " +
       "given a business_id, find the business specifications data for given id, returning OK and the specifications json"
-  ) { (transactorResource, log) =>
+  ) { (sharedResources, log) =>
 
-    val transactor = transactorResource._1.xa
-    val client = transactorResource._2.client
+    val transactor = sharedResources._1.xa
+    val client = sharedResources._2.client
 
     val request =
       Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/businesses/specifications/business_id_1")
@@ -72,10 +73,10 @@ class BusinessSpecificationsControllerISpec(global: GlobalRead) extends IOSuite 
   test(
     "DELETE - /pistachio/business/businesses/specifications/business_id_2 - " +
       "given a business_id, delete the business specifications data for given business id, returning OK and Deleted response json"
-  ) { (transactorResource, log) =>
+  ) { (sharedResources, log) =>
 
-    val transactor = transactorResource._1.xa
-    val client = transactorResource._2.client
+    val transactor = sharedResources._1.xa
+    val client = sharedResources._2.client
 
     val request =
       Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/businesses/specifications/business_id_2")

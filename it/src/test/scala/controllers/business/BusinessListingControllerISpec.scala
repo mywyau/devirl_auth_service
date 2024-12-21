@@ -2,6 +2,7 @@ package controllers.business
 
 import cats.effect.*
 import com.comcast.ip4s.{ipv4, port}
+import configuration.models.AppConfig
 import controllers.business_listing.BusinessListingController
 import controllers.constants.BusinessListingConstants.*
 import controllers.fragments.business.BusinessAddressRepoFragments.*
@@ -11,8 +12,8 @@ import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.Json
 import io.circe.syntax.*
+import models.business.address_details.BusinessAddress
 import models.business.adts.*
-import models.business.address_details.service.BusinessAddress
 import models.business.contact_details.BusinessContactDetails
 import models.business.business_listing.requests.BusinessListingRequest
 import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
@@ -57,10 +58,10 @@ class BusinessListingControllerISpec(global: GlobalRead) extends IOSuite {
   test(
     "POST - /pistachio/business/businesses/listing/create - " +
       "should generate the business listing data for a business in the respective tables, returning Created response"
-  ) { (transactorResource, log) =>
+  ) { (sharedResources, log) =>
 
-    val transactor = transactorResource._1.xa
-    val client = transactorResource._2.client
+    val transactor = sharedResources._1.xa
+    val client = sharedResources._2.client
 
     val businessListingRequest: Json = testBusinessListingRequest("business_id_1").asJson
 
