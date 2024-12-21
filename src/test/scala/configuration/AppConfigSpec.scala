@@ -1,7 +1,7 @@
 package configuration
 
 import cats.effect.IO
-import configuration.models.{AppConfig, IntegrationSpecConfig, ServerConfig}
+import configuration.models.{AppConfig, IntegrationSpecConfig, PostgresqlConfig, ServerConfig}
 import weaver.SimpleIOSuite
 
 object AppConfigSpec extends SimpleIOSuite {
@@ -12,15 +12,20 @@ object AppConfigSpec extends SimpleIOSuite {
 
     val serverConfig = ServerConfig("0.0.0.0", 8081)
 
+    val postgresqlConfig =
+      PostgresqlConfig(
+        dbName = "shared_test_db",
+        host = "localhost",
+        port = 5432,
+        username = "shared_user",
+        password = "share"
+      )
+
     val integrationSpecConfig =
       IntegrationSpecConfig(
         host = "127.0.0.1",
         port = 9999,
-        postgresDbName = "shared_test_db",
-        postgresHost = "localhost",
-        postgresPort = 5432,
-        postgresUsername = "shared_user",
-        postgresPassword = "share"
+        postgresqlConfig
       )
 
     val appConfig = AppConfig(serverConfig, integrationSpecConfig)
@@ -30,8 +35,9 @@ object AppConfigSpec extends SimpleIOSuite {
     } yield {
       expect.all(
         config.serverConfig == serverConfig,
-        config.integrationSpecConfig == integrationSpecConfig,
-        config == appConfig
+        config == appConfig,
+        config.integrationSpecConfig.postgresqlConfig == postgresqlConfig,
+        config.integrationSpecConfig == integrationSpecConfig
       )
     }
   }

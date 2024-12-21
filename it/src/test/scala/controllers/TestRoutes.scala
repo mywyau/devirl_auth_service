@@ -3,7 +3,6 @@ package controllers
 import cats.effect.*
 import cats.implicits.*
 import cats.syntax.all.*
-import com.comcast.ip4s.{ipv4, port}
 import controllers.business.{BusinessAddressController, BusinessContactDetailsController, BusinessSpecificationsController}
 import controllers.business_listing.BusinessListingController
 import controllers.desk_listing.DeskListingController
@@ -12,15 +11,8 @@ import doobie.hikari.HikariTransactor
 import doobie.implicits.*
 import doobie.util.ExecutionContexts
 import doobie.util.transactor.Transactor
-import io.circe.Json
-import io.circe.syntax.*
-import models.business.adts.*
-import org.http4s.*
-import org.http4s.Method.*
-import org.http4s.circe.*
-import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
-import org.http4s.implicits.*
-import org.http4s.server.{Router, Server}
+import org.http4s.server.Router
+import org.http4s.HttpRoutes
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import repositories.business.{BusinessAddressRepository, BusinessContactDetailsRepository, BusinessSpecificationsRepository}
@@ -32,7 +24,6 @@ import services.business.contact_details.BusinessContactDetailsService
 import services.business.specifications.BusinessSpecificationsService
 import services.desk_listing.DeskListingService
 import services.office.office_listing.OfficeListingService
-import weaver.*
 
 import java.time.LocalDateTime
 

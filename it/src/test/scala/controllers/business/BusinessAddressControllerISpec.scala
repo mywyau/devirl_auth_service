@@ -33,7 +33,7 @@ import java.time.LocalDateTime
 
 class BusinessAddressControllerISpec(global: GlobalRead) extends IOSuite {
 
-  implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
+//  implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
 
   type Res = (TransactorResource, HttpClientResource)
 
