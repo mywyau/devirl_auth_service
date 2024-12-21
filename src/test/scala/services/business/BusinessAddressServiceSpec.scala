@@ -8,48 +8,12 @@ import models.business.address_details.service.BusinessAddress
 import repositories.business.BusinessAddressRepositoryAlgebra
 import services.business.address.{BusinessAddressService, BusinessAddressServiceImpl}
 import services.business.mocks.MockBusinessAddressRepository
+import services.constants.BusinessAddressConstants.*
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
 
 object BusinessAddressServiceSpec extends SimpleIOSuite {
-
-  def testBusinessAddressRequest(userId: String, businessId: Option[String]): BusinessAddressRequest =
-    BusinessAddressRequest(
-      userId = userId,
-      businessId = businessId,
-      businessName = Some("mikeyCorp"),
-      buildingName = Some("building name"),
-      floorNumber = Some("floor 1"),
-      street = Some("1 Canton Street"),
-      city = Some("fake city 1"),
-      country = Some("UK"),
-      county = Some("County 1"),
-      postcode = Some("CF3 3NJ"),
-      latitude = Some(100.1),
-      longitude = Some(-100.1),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-    )
-
-  def testBusinessAddress(id: Option[Int], userId: String, businessId: Option[String]): BusinessAddress =
-    BusinessAddress(
-      id = id,
-      userId = userId,
-      businessId = businessId,
-      businessName = Some("mikeyCorp"),
-      buildingName = Some("building name"),
-      floorNumber = Some("floor 1"),
-      street = Some("1 Canton Street"),
-      city = Some("fake city 1"),
-      country = Some("UK"),
-      county = Some("County 1"),
-      postcode = Some("CF3 3NJ"),
-      latitude = Some(100.1),
-      longitude = Some(-100.1),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-    )
 
   test(".getByBusinessId() - when there is an existing business address details given a businessId should return the correct address details - Right(address)") {
 

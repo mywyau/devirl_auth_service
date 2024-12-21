@@ -64,8 +64,6 @@ class BusinessListingControllerISpec(global: GlobalRead) extends IOSuite {
 
     val businessListingRequest: Json = testBusinessListingRequest("business_id_1").asJson
 
-    //    println(businessListingRequest.spaces2) // For pretty-printed JSON
-
     val request =
       Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/businesses/listing/create")
         .withEntity(businessListingRequest)

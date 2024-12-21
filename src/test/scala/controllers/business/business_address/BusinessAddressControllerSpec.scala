@@ -13,16 +13,16 @@ import org.http4s.circe.CirceEntityDecoder.*
 import org.http4s.implicits.*
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
+import services.SpecBase
 import services.business.address.BusinessAddressServiceAlgebra
 import weaver.SimpleIOSuite
 
-object BusinessAddressControllerSpec extends SimpleIOSuite {
 
-  implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
+object BusinessAddressControllerSpec extends SimpleIOSuite with SpecBase {
 
   def createUserController(businessAddressService: BusinessAddressServiceAlgebra[IO]): HttpRoutes[IO] =
     BusinessAddressController[IO](businessAddressService).routes
-  
+
   test("POST - /business/businesses/address/details/ should return 201 when user is created successfully") {
 
     val mockBusinessAddressService = new MockBusinessAddressService(Map("user_id_1" -> sampleBusinessAddress1))

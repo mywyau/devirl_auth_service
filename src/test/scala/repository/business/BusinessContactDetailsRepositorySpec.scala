@@ -5,34 +5,12 @@ import cats.effect.IO
 import cats.effect.kernel.Ref
 import models.business.contact_details.BusinessContactDetails
 import repository.business.mocks.MockBusinessContactDetailsRepository
+import repository.constants.BusinessContactDetailsConstants.*
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
 
 object BusinessContactDetailsRepositorySpec extends SimpleIOSuite {
-
-  def testContactDetails(
-                          id: Option[Int],
-                          userId: String,
-                          businessId: String,
-                          business_id: String
-                        ): BusinessContactDetails =
-    BusinessContactDetails(
-      id = id,
-      userId = userId,
-      businessId = businessId,
-      businessName = "mikeyCorp",
-      primaryContactFirstName = "Michael",
-      primaryContactLastName = "Yau",
-      contactEmail = "mikey@gmail.com",
-      contactNumber = "07402205071",
-      websiteUrl = "mikey.com",
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-    )
-
-  def createMockRepo(initialUsers: List[BusinessContactDetails]): IO[MockBusinessContactDetailsRepository] =
-    Ref.of[IO, List[BusinessContactDetails]](initialUsers).map(MockBusinessContactDetailsRepository.apply)
 
   test(".findByBusinessId() - should return the contact details if business_id exists") {
     val existingContactDetailsForUser = testContactDetails(Some(1), "user_id_1","business_id_1", "business_1")
@@ -45,7 +23,7 @@ object BusinessContactDetailsRepositorySpec extends SimpleIOSuite {
 
   test(".findByBusinessId() - should return None if business_id does not exist") {
     for {
-      mockRepo <- createMockRepo(Nil) // No users initially
+      mockRepo <- createMockRepo(Nil)
       result <- mockRepo.findByBusinessId("business_id_1")
     } yield expect(result.isEmpty)
   }

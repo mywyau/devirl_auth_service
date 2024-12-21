@@ -9,30 +9,16 @@ import models.database.SqlErrors
 import repositories.business.BusinessContactDetailsRepositoryAlgebra
 import services.business.contact_details.BusinessContactDetailsService
 import services.business.mocks.MockBusinessContactDetailsRepository
+import services.constants.BusinessContactDetailsConstants.*
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
 
 object BusinessContactDetailsServiceSpec extends SimpleIOSuite {
 
-  def testContactDetails(id: Option[Int], userId: String, businessId: String, business_id: String): BusinessContactDetails =
-    BusinessContactDetails(
-      id = Some(1),
-      userId = userId,
-      businessId = businessId,
-      businessName = "MikeyCorp",
-      primaryContactFirstName = "Michael",
-      primaryContactLastName = "Yau",
-      contactEmail = "mike@gmail.com",
-      contactNumber = "07402205071",
-      websiteUrl = "mikey.com",
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-    )
-
   test(".getContactDetailsByBusinessId() - when there is an existing user ContactDetails details given a business_id should return the correct ContactDetails - Right(ContactDetails)") {
 
-    val existingContactDetailsForUser = testContactDetails(Some(1),"user_id_1", "business_1", "business_1")
+    val existingContactDetailsForUser = testContactDetails(Some(1), "user_id_1", "business_1", "business_1")
 
     val mockBusinessContactDetailsRepository = new MockBusinessContactDetailsRepository(Map("business_1" -> existingContactDetailsForUser))
     val service = BusinessContactDetailsService[IO](mockBusinessContactDetailsRepository)
@@ -60,7 +46,7 @@ object BusinessContactDetailsServiceSpec extends SimpleIOSuite {
 
   test(".createBusinessContactDetails() - when given a BusinessContactDetails successfully create the ContactDetails") {
 
-    val sampleContactDetails = testContactDetails(Some(1),"user_id_1", "business_1", "business_1")
+    val sampleContactDetails = testContactDetails(Some(1), "user_id_1", "business_1", "business_1")
 
     val mockBusinessContactDetailsRepository = new MockBusinessContactDetailsRepository(Map())
     val service = BusinessContactDetailsService[IO](mockBusinessContactDetailsRepository)

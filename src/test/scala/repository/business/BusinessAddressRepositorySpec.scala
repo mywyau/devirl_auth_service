@@ -6,51 +6,10 @@ import cats.effect.kernel.Ref
 import models.business.address_details.requests.BusinessAddressRequest
 import models.business.address_details.service.BusinessAddress
 import repository.business.mocks.MockBusinessAddressRepository
+import repository.constants.BusinessAddressConstants.*
 import weaver.SimpleIOSuite
 
-import java.time.LocalDateTime
-
 object BusinessAddressRepositorySpec extends SimpleIOSuite {
-
-  def testAddressRequest(userId: String, businessId: Option[String]): BusinessAddressRequest =
-    BusinessAddressRequest(
-      userId = userId,
-      businessId = businessId,
-      businessName = Some("mikeyCorp"),
-      buildingName = Some("building 1"),
-      floorNumber = Some("floor 1"),
-      street = Some("1 Canton Street"),
-      city = Some("fake city 1"),
-      country = Some("UK"),
-      county = Some("County 1"),
-      postcode = Some("CF3 3NJ"),
-      latitude = Some(100.1),
-      longitude = Some(-100.1),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-    )
-
-  def testAddress(id: Option[Int], userId: String, businessId: Option[String]): BusinessAddress =
-    BusinessAddress(
-      id = id,
-      userId = userId,
-      businessId = businessId,
-      businessName = Some("mikeyCorp"),
-      buildingName = Some("building 1"),
-      floorNumber = Some("floor 1"),
-      street = Some("1 Canton Street"),
-      city = Some("fake city 1"),
-      country = Some("UK"),
-      county = Some("County 1"),
-      postcode = Some("CF3 3NJ"),
-      latitude = Some(100.1),
-      longitude = Some(-100.1),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-    )
-
-  def createMockRepo(initialUsers: List[BusinessAddress]): IO[MockBusinessAddressRepository] =
-    Ref.of[IO, List[BusinessAddress]](initialUsers).map(MockBusinessAddressRepository.apply)
 
   test(".findByBusinessId() - should return an address if business_id_1 exists") {
 
@@ -64,7 +23,7 @@ object BusinessAddressRepositorySpec extends SimpleIOSuite {
 
   test(".findByBusinessId() - should return None if business_id_1 does not exist") {
     for {
-      mockRepo <- createMockRepo(Nil)
+      mockRepo <- createMockRepo(List())
       result <- mockRepo.findByBusinessId("business_id_1")
     } yield expect(result.isEmpty)
   }
