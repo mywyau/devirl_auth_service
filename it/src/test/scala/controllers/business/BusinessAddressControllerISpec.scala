@@ -14,7 +14,7 @@ import models.business.address_details.service.BusinessAddress
 import models.business.adts.*
 import models.business.contact_details.BusinessContactDetails
 import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
-import models.responses.CreatedResponse
+import models.responses.{CreatedResponse, DeletedResponse}
 import org.http4s.*
 import org.http4s.Method.*
 import org.http4s.circe.*
@@ -32,8 +32,6 @@ import weaver.*
 import java.time.LocalDateTime
 
 class BusinessAddressControllerISpec(global: GlobalRead) extends IOSuite {
-
-//  implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
 
   type Res = (TransactorResource, HttpClientResource)
 
@@ -80,7 +78,7 @@ class BusinessAddressControllerISpec(global: GlobalRead) extends IOSuite {
     val transactor = transactorResource._1.xa
     val client = transactorResource._2.client
 
-    val businessAddressRequest: Json = testBusinessAddressRequest("user_id_2", Some("business_id_2")).asJson
+    val businessAddressRequest: Json = testBusinessAddressRequest("user_id_3", Some("business_id_3")).asJson
 
     val request =
       Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/businesses/address/details/create")
@@ -92,6 +90,29 @@ class BusinessAddressControllerISpec(global: GlobalRead) extends IOSuite {
       response.as[CreatedResponse].map { body =>
         expect.all(
           response.status == Status.Created,
+          body == expectedBody
+        )
+      }
+    }
+  }
+
+  test(
+    "DELETE - /pistachio/business/businesses/address/details/business_id_2 - " +
+      "given a business_id, delete the business address details data for given business id, returning OK and Deleted response json"
+  ) { (transactorResource, log) =>
+
+    val transactor = transactorResource._1.xa
+    val client = transactorResource._2.client
+
+    val request =
+      Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/businesses/address/details/business_id_2")
+
+    val expectedBody = DeletedResponse("Business address details deleted successfully")
+
+    client.run(request).use { response =>
+      response.as[DeletedResponse].map { body =>
+        expect.all(
+          response.status == Status.Ok,
           body == expectedBody
         )
       }

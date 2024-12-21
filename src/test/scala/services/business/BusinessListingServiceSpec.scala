@@ -84,6 +84,8 @@ object BusinessListingServiceSpec extends SimpleIOSuite {
     override def findByBusinessId(userId: String): IO[Option[BusinessAddress]] = ???
 
     override def createBusinessAddress(businessAddress: BusinessAddressRequest): IO[ValidatedNel[SqlErrors, Int]] = addressResult
+
+    override def deleteBusinessAddress(businessId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
   }
 
   class MockContactDetailsRepository(

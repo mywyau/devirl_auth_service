@@ -49,22 +49,9 @@ object BusinessAddressRepoFragments {
             longitude,
             created_at,
             updated_at
-        ) VALUES (
-            'user_id_1',
-            'business_id_1',
-            'business_name_1',
-            'building_name_1',
-            'floor_1',
-            '123 Main Street',
-            'New York',
-            'USA',
-            'Manhattan',
-            '10001',
-            100.1,
-            -100.1,
-            '2025-01-01 00:00:00',
-            '2025-01-01 00:00:00'
-        );
+        ) VALUES
+        ('user_id_1','business_id_1','business_name_1','building_name_1','floor_1','123 Main Street','New York','USA','Manhattan','10001',100.1,-100.1,'2025-01-01 00:00:00','2025-01-01 00:00:00'),
+        ('user_id_2','business_id_2','business_name_2','building_name_2','floor_2','123 Main Street','New York','USA','Manhattan','10001',100.1,-100.1,'2025-01-01 00:00:00','2025-01-01 00:00:00');
       """
   }
 }

@@ -27,6 +27,11 @@ class BusinessAddressServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
   override def createAddress(businessAddressRequest: BusinessAddressRequest): F[ValidatedNel[SqlErrors, Int]] = {
     businessAddressRepo.createBusinessAddress(businessAddressRequest)
   }
+
+  override def deleteAddress(businessId: String): F[ValidatedNel[SqlErrors, Int]] = {
+    businessAddressRepo.deleteBusinessAddress(businessId)
+  }
+
 }
 
 object BusinessAddressService {

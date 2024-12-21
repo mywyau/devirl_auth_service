@@ -71,4 +71,28 @@ class BusinessContactDetailsControllerISpec(global: GlobalRead) extends IOSuite 
       }
     }
   }
+
+
+  test(
+    "DELETE - /pistachio/business/businesses/contact/details/business_id_2 - " +
+      "given a business_id, delete the business contact details data for given business id, returning OK and Deleted response json"
+  ) { (transactorResource, log) =>
+
+    val transactor = transactorResource._1.xa
+    val client = transactorResource._2.client
+
+    val request =
+      Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/businesses/contact/details/business_id_2")
+
+    val expectedBody = DeletedResponse("Business contact details deleted successfully")
+
+    client.run(request).use { response =>
+      response.as[DeletedResponse].map { body =>
+        expect.all(
+          response.status == Status.Ok,
+          body == expectedBody
+        )
+      }
+    }
+  }
 }

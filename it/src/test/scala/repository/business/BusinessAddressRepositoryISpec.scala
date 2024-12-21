@@ -1,12 +1,13 @@
 package repository.business
 
+import cats.data.Validated.Valid
 import cats.effect.{IO, Resource}
 import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
-import models.business.adts.PrivateDesk
-import models.business.address_details.service.BusinessAddress
 import models.business.address_details.requests.BusinessAddressRequest
+import models.business.address_details.service.BusinessAddress
+import models.business.adts.PrivateDesk
 import models.business.specifications.BusinessAvailability
 import repositories.business.BusinessAddressRepositoryImpl
 import repository.fragments.business.BusinessAddressRepoFragments.{createBusinessAddressTable, resetBusinessAddressTable}
@@ -66,14 +67,14 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
     setup
   }
 
-  test(".findByBusinessId() - should return the business address if business_id exists for a previously created business address") { businessAddressRepo =>
+  test(".findByBusinessId() - should find and return the business address if business_id exists for a previously created business address") { businessAddressRepo =>
 
     val expectedResult =
       BusinessAddress(
         id = Some(1),
         userId = "user_id_1",
-        businessName = Some("mikey_corp"),
         businessId = Some("business_id_1"),
+        businessName = Some("mikey_corp"),
         buildingName = Some("build_123"),
         floorNumber = Some("floor 1"),
         street = Some("123 Main Street"),
@@ -91,5 +92,37 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
       businessAddressOpt <- businessAddressRepo.findByBusinessId("business_id_1")
       //      _ <- IO(println(s"Query Result: $businessAddressOpt")) // Debug log the result
     } yield expect(businessAddressOpt == Some(expectedResult))
+  }
+
+  test(".deleteBusinessAddress() - should delete the business address if business_id exists for a previously existing business address") { businessAddressRepo =>
+
+    val expectedResult =
+      BusinessAddress(
+        id = Some(4),
+        userId = "user_id_4",
+        businessId = Some("business_id_4"),
+        businessName = Some("mikey_corp"),
+        buildingName = Some("build_123"),
+        floorNumber = Some("floor 1"),
+        street = Some("123 Main Street"),
+        city = Some("New York"),
+        country = Some("USA"),
+        county = Some("fake county"),
+        postcode = Some("10001"),
+        latitude = Some(100.1),
+        longitude = Some(-100.1),
+        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      )
+
+    for {
+      firstFindResult <- businessAddressRepo.findByBusinessId("business_id_4")
+      deleteResult <- businessAddressRepo.deleteBusinessAddress("business_id_4")
+      afterDeletionFindResult <- businessAddressRepo.findByBusinessId("business_id_4")
+    } yield expect.all(
+      firstFindResult == Some(expectedResult),
+      deleteResult == Valid(1),
+      afterDeletionFindResult == None
+    )
   }
 }

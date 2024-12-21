@@ -21,4 +21,7 @@ class MockBusinessAddressService(userAddressData: Map[String, BusinessAddress])
   }
 
   override def createAddress(request: BusinessAddressRequest): IO[ValidatedNel[SqlErrors, Int]] = IO.pure(Valid(1))
+
+
+  override def deleteAddress(businessId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
 }
