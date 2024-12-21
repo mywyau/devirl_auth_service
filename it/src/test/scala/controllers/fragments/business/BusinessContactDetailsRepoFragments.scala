@@ -40,18 +40,9 @@ object BusinessContactDetailsRepoFragments {
         website_url,
         created_at,
         updated_at
-      ) VALUES (
-        'user_id_1',
-        'business_id_1',
-        'Example Business Name',
-        'John',
-        'Doe',
-        'johndoe@example.com',
-        '123-456-7890',
-        'https://example.com',
-        '2025-01-01 00:00:00',
-        '2025-01-01 00:00:00'
-      );
+      ) VALUES
+       ('user_id_1','business_id_1','Example Business Name','John','Doe','johndoe@example.com','123-456-7890','https://example.com','2025-01-01 00:00:00','2025-01-01 00:00:00'),
+       ('user_id_2','business_id_2','Example Business Name','John','Doe','johndoe@example.com','123-456-7890','https://example.com','2025-01-01 00:00:00','2025-01-01 00:00:00');
      """
   }
 }

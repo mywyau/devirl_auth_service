@@ -15,6 +15,8 @@ trait BusinessSpecificationsServiceAlgebra[F[_]] {
   def getByBusinessId(businessId: String): F[Either[BusinessSpecificationsErrors, BusinessSpecifications]]
 
   def create(businessSpecifications: BusinessSpecifications): F[cats.data.ValidatedNel[BusinessSpecificationsErrors, Int]]
+
+  def delete(businessId: String): F[ValidatedNel[SqlErrors, Int]]
 }
 
 
@@ -46,6 +48,10 @@ class BusinessSpecificationsServiceImpl[F[_] : Concurrent : NonEmptyParallel : M
     }.handleErrorWith { e =>
       Concurrent[F].pure(BusinessSpecificationsDatabaseError.invalidNel)
     }
+  }
+
+  override def delete(businessId: String): F[ValidatedNel[SqlErrors, Int]] = {
+    businessSpecificationsRepo.deleteSpecifications(businessId)
   }
 }
 

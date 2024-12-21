@@ -21,6 +21,8 @@ trait BusinessSpecificationsRepositoryAlgebra[F[_]] {
   def findByBusinessId(businessId: String): F[Option[BusinessSpecifications]]
 
   def createSpecs(businessSpecifications: BusinessSpecifications): F[ValidatedNel[SqlErrors, Int]]
+
+  def deleteSpecifications(businessId: String): F[ValidatedNel[SqlErrors, Int]]
 }
 
 class BusinessSpecificationsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends BusinessSpecificationsRepositoryAlgebra[F] {
@@ -75,6 +77,27 @@ class BusinessSpecificationsRepositoryImpl[F[_] : Concurrent : Monad](transactor
       }
   }
 
+  override def deleteSpecifications(businessId: String): F[ValidatedNel[SqlErrors, Int]] = {
+    val deleteQuery: Update0 =
+      sql"""
+          DELETE FROM business_specs
+          WHERE business_id = $businessId
+        """.update
+
+    deleteQuery
+      .run
+      .transact(transactor)
+      .attempt
+      .map {
+        case Right(affectedRows) =>
+          if (affectedRows > 0)
+            affectedRows.validNel
+          else
+            NotFoundError.invalidNel
+        case Left(ex) =>
+          DeleteError.invalidNel
+      }
+  }
 }
 
 

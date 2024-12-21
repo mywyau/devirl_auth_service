@@ -40,6 +40,10 @@ class BusinessContactDetailsServiceImpl[F[_] : Concurrent : NonEmptyParallel : M
       Concurrent[F].pure(BusinessContactDetailsDatabaseError.invalidNel)
     }
   }
+
+  override def deleteContactDetails(businessId: String): F[ValidatedNel[SqlErrors, Int]] = {
+    businessContactDetailsRepo.deleteContactDetails(businessId)
+  }
 }
 
 object BusinessContactDetailsService {

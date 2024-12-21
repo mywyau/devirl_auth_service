@@ -1,11 +1,11 @@
 package controllers.business
 
-import cats.data.Validated.Valid
+import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
 import models.business.contact_details.BusinessContactDetails
-import models.responses.{CreatedResponse, ErrorResponse}
+import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse}
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
@@ -36,16 +36,27 @@ class BusinessContactDetailsControllerImpl[F[_] : Concurrent](
             BadRequest(errorResponse.asJson)
         }
 
-    case req@POST -> Root / "business" / "businesses" / "contact" /  "details" / "create" =>
-      logger.info(s"[BusinessListingControllerImpl] POST - Creating business listing") *>
+    case req@POST -> Root / "business" / "businesses" / "contact" / "details" / "create" =>
+      logger.info(s"[BusinessContactControllerImpl] POST - Creating business listing") *>
         req.decode[BusinessContactDetails] { request =>
           businessContactDetailsService.createBusinessContactDetails(request).flatMap {
             case Valid(listing) =>
-              logger.info(s"[BusinessListingControllerImpl] POST - Successfully created a business contact details") *>
+              logger.info(s"[BusinessContactControllerImpl] POST - Successfully created a business contact details") *>
                 Created(CreatedResponse("Business contact details created successfully").asJson)
             case _ =>
               InternalServerError(ErrorResponse(code = "Code", message = "An error occurred").asJson)
           }
+        }
+
+    case DELETE -> Root / "business" / "businesses" / "contact" / "details" / businessId =>
+      logger.info(s"[BusinessContactControllerImpl] DELETE - Attempting to delete business contact details") *>
+        businessContactDetailsService.deleteContactDetails(businessId).flatMap {
+          case Valid(contact) =>
+            logger.info(s"[BusinessContactControllerImpl] DELETE - Successfully deleted business contact details for $businessId") *>
+              Ok(DeletedResponse("Business contact details deleted successfully").asJson)
+          case Invalid(error) =>
+            val errorResponse = ErrorResponse("placeholder error", "some deleted business contact details message")
+            BadRequest(errorResponse.asJson)
         }
   }
 }

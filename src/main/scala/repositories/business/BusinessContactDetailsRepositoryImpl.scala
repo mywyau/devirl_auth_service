@@ -20,6 +20,8 @@ trait BusinessContactDetailsRepositoryAlgebra[F[_]] {
   def findByBusinessId(businessId: String): F[Option[BusinessContactDetails]]
 
   def createContactDetails(businessContactDetails: BusinessContactDetails): F[ValidatedNel[SqlErrors, Int]]
+
+  def deleteContactDetails(businessId: String): F[ValidatedNel[SqlErrors, Int]]
 }
 
 class BusinessContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends BusinessContactDetailsRepositoryAlgebra[F] {
@@ -78,6 +80,29 @@ class BusinessContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor
           DatabaseError.invalidNel
         case Left(e) =>
           UnknownError.invalidNel
+      }
+  }
+
+
+  override def deleteContactDetails(businessId: String): F[ValidatedNel[SqlErrors, Int]] = {
+    val deleteQuery: Update0 =
+      sql"""
+        DELETE FROM business_contact_details
+        WHERE business_id = $businessId
+      """.update
+
+    deleteQuery
+      .run
+      .transact(transactor)
+      .attempt
+      .map {
+        case Right(affectedRows) =>
+          if (affectedRows > 0)
+            affectedRows.validNel
+          else
+            NotFoundError.invalidNel
+        case Left(ex) =>
+          DeleteError.invalidNel
       }
   }
 

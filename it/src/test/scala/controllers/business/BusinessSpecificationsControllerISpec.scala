@@ -11,7 +11,7 @@ import io.circe.Json
 import io.circe.syntax.*
 import models.business.adts.*
 import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
-import models.responses.CreatedResponse
+import models.responses.{CreatedResponse, DeletedResponse}
 import org.http4s.*
 import org.http4s.Method.*
 import org.http4s.circe.*
@@ -64,6 +64,29 @@ class BusinessSpecificationsControllerISpec(global: GlobalRead) extends IOSuite 
         expect.all(
           response.status == Status.Ok,
           body == expectedBusinessSpecifications
+        )
+      }
+    }
+  }
+
+  test(
+    "DELETE - /pistachio/business/businesses/specifications/business_id_2 - " +
+      "given a business_id, delete the business specifications data for given business id, returning OK and Deleted response json"
+  ) { (transactorResource, log) =>
+
+    val transactor = transactorResource._1.xa
+    val client = transactorResource._2.client
+
+    val request =
+      Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/businesses/specifications/business_id_2")
+
+    val expectedBody = DeletedResponse("Business specifications deleted successfully")
+
+    client.run(request).use { response =>
+      response.as[DeletedResponse].map { body =>
+        expect.all(
+          response.status == Status.Ok,
+          body == expectedBody
         )
       }
     }

@@ -14,7 +14,7 @@ import models.business.contact_details.BusinessContactDetails
 import models.business.contact_details.requests.BusinessContactDetailsRequest
 import models.business.contact_details.BusinessContactDetails
 import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
-import models.responses.CreatedResponse
+import models.responses.{CreatedResponse, DeletedResponse}
 import org.http4s.*
 import org.http4s.Method.*
 import org.http4s.circe.*

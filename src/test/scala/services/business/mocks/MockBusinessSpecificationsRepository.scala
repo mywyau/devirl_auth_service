@@ -20,4 +20,5 @@ class MockBusinessSpecificationsRepository(
 
   override def createSpecs(businessSpecifications: BusinessSpecifications): IO[ValidatedNel[SqlErrors, Int]] = IO(Valid(1))
 
+  override def deleteSpecifications(businessId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
 }

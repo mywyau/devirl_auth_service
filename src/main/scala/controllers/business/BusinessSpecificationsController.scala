@@ -1,11 +1,11 @@
 package controllers.business
 
-import cats.data.Validated.Valid
+import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
 import models.business.specifications.BusinessSpecifications
-import models.responses.{CreatedResponse, ErrorResponse}
+import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse}
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
@@ -46,6 +46,17 @@ class BusinessSpecificationsControllerImpl[F[_] : Concurrent](
             case _ =>
               InternalServerError(ErrorResponse(code = "Code", message = "An error occurred").asJson)
           }
+        }
+
+    case DELETE -> Root / "business" / "businesses" / "specifications" / businessId =>
+      logger.info(s"[BusinessAddressControllerImpl] DELETE - Attempting to delete the business specifications") *>
+        businessSpecificationsService.delete(businessId).flatMap {
+          case Valid(address) =>
+            logger.info(s"[BusinessAddressControllerImpl] DELETE - Successfully deleted business specifications for $businessId") *>
+              Ok(DeletedResponse("Business specifications deleted successfully").asJson)
+          case Invalid(error) =>
+            val errorResponse = ErrorResponse("placeholder error", "some deleted business specifications message")
+            BadRequest(errorResponse.asJson)
         }
   }
 }

@@ -32,14 +32,9 @@ object BusinessSpecsRepoFragments {
         description,
         created_at,
         updated_at
-      ) VALUES (
-        'user_id_1',
-        'business_id_1',
-        'Example Business Name',
-        'some description',
-        '2025-01-01 00:00:00',
-        '2025-01-01 00:00:00'
-      );
+      ) VALUES
+      ('user_id_1','business_id_1','Example Business Name','some description','2025-01-01 00:00:00','2025-01-01 00:00:00'),
+      ('user_id_2','business_id_2','Example Business Name','some description','2025-01-01 00:00:00','2025-01-01 00:00:00');
      """
   }
 

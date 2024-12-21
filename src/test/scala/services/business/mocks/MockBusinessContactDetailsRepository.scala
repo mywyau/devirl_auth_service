@@ -21,4 +21,5 @@ class MockBusinessContactDetailsRepository(
 
   override def createContactDetails(businessContactDetails: BusinessContactDetails): IO[ValidatedNel[SqlErrors, Int]] = IO(Valid(1))
 
+  override def deleteContactDetails(businessId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
 }
