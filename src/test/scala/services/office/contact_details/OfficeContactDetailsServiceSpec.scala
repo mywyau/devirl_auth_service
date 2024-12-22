@@ -1,8 +1,8 @@
 package services.office.contact_details
 
-import cats.effect.IO
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.ValidatedNel
+import cats.effect.IO
 import models.database.SqlErrors
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.errors.OfficeContactDetailsNotFound
@@ -33,14 +33,18 @@ object OfficeContactDetailsServiceSpec extends SimpleIOSuite {
 
     def showAllUsers: IO[Map[String, OfficeContactDetails]] = IO.pure(existingOfficeContactDetails)
 
-    override def findByBusinessId(businessId: String): IO[Option[OfficeContactDetails]] = IO.pure(existingOfficeContactDetails.get(businessId))
+    override def findByOfficeId(businessId: String): IO[Option[OfficeContactDetails]] = IO.pure(existingOfficeContactDetails.get(businessId))
 
-    override def createContactDetails(officeContactDetails: OfficeContactDetails): IO[ValidatedNel[SqlErrors, Int]] = IO(Valid(1))
+    override def create(officeContactDetails: OfficeContactDetails): IO[ValidatedNel[SqlErrors, Int]] = IO(Valid(1))
 
+    override def delete(officeId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
   }
 
 
-  test(".getContactDetailsByBusinessId() - when there is an existing user ContactDetails details given a business_id should return the correct ContactDetails - Right(ContactDetails)") {
+  test(
+    ".getContactDetailsByBusinessId() - " +
+      "when there is an existing user ContactDetails details given a business_id should return the correct ContactDetails - Right(ContactDetails)"
+  ) {
 
     val existingContactDetailsForUser = testContactDetails(Some(1), "business_1", "office_1")
 
@@ -48,13 +52,16 @@ object OfficeContactDetailsServiceSpec extends SimpleIOSuite {
     val service = new OfficeContactDetailsServiceImpl[IO](mockOfficeContactDetailsRepository)
 
     for {
-      result <- service.getContactDetailsByBusinessId("business_1")
+      result <- service.getByOfficeId("business_1")
     } yield {
       expect(result == Right(existingContactDetailsForUser))
     }
   }
 
-  test(".getContactDetailsByBusinessId() - when there are no existing user ContactDetails details given a business_id should return Left(ContactDetailsNotFound)") {
+  test(
+    ".getContactDetailsByBusinessId() - " +
+      "when there are no existing user ContactDetails details given a business_id should return Left(ContactDetailsNotFound)"
+  ) {
 
     val existingContactDetailsForUser = testContactDetails(Some(1), "business_1", "office_1")
 
@@ -62,7 +69,7 @@ object OfficeContactDetailsServiceSpec extends SimpleIOSuite {
     val service = new OfficeContactDetailsServiceImpl[IO](mockOfficeContactDetailsRepository)
 
     for {
-      result <- service.getContactDetailsByBusinessId("business_1")
+      result <- service.getByOfficeId("business_1")
     } yield {
       expect(result == Left(OfficeContactDetailsNotFound))
     }
@@ -76,7 +83,7 @@ object OfficeContactDetailsServiceSpec extends SimpleIOSuite {
     val service = OfficeContactDetailsService(mockOfficeContactDetailsRepository)
 
     for {
-      result <- service.createOfficeContactDetails(sampleContactDetails)
+      result <- service.create(sampleContactDetails)
     } yield {
       expect(result == Valid(1))
     }

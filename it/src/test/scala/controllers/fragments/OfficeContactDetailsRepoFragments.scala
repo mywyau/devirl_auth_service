@@ -24,4 +24,22 @@ object OfficeContactDetailsRepoFragments {
       );
     """
   }
+
+  val insertOfficeContactDetailsData = {
+    sql"""
+      INSERT INTO office_contact_details (
+        business_id,
+        office_id,
+        primary_contact_first_name,
+        primary_contact_last_name,
+        contact_email,
+        contact_number,
+        created_at,
+        updated_at
+      ) VALUES
+        ('BUS12345', 'OFF001', 'Alice', 'Johnson', 'alice.johnson@example.com', '+15551234567', '2023-01-01 12:00:00', '2023-01-01 12:00:00'),
+        ('BUS67890', 'OFF002', 'Bob', 'Smith', 'bob.smith@example.com', '+15557654321', '2023-02-01 15:30:00', '2023-02-01 15:30:00'),
+        ('BUS11223', 'OFF003', 'Carol', 'Davis', 'carol.davis@example.com', '+15559876543', '2023-03-01 09:45:00', '2023-03-01 09:45:00');
+    """
+  }
 }

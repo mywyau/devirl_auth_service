@@ -12,14 +12,15 @@ import java.time.LocalDateTime
 
 case class MockOfficeContactDetailsRepository(ref: Ref[IO, List[OfficeContactDetails]]) extends OfficeContactDetailsRepositoryAlgebra[IO] {
 
-  override def findByBusinessId(businessId: String): IO[Option[OfficeContactDetails]] =
+  override def findByOfficeId(businessId: String): IO[Option[OfficeContactDetails]] =
     ref.get.map(_.find(_.businessId == businessId))
 
-  override def createContactDetails(officeContactDetails: OfficeContactDetails): IO[ValidatedNel[SqlErrors, Int]] =
+  override def create(officeContactDetails: OfficeContactDetails): IO[ValidatedNel[SqlErrors, Int]] =
     ref.modify { contactDetails =>
       val updatedList = officeContactDetails :: contactDetails
       (updatedList, validNel(1))
     }
 
 
+  override def delete(officeId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
 }

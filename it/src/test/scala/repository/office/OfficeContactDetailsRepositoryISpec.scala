@@ -45,7 +45,7 @@ class OfficeContactDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
       testOfficeContactDetails(Some(4), "business_id_4", "office_4"),
       testOfficeContactDetails(Some(5), "business_id_5", "office_5")
     )
-    users.traverse(officeContactDetailsRepo.createContactDetails).void
+    users.traverse(officeContactDetailsRepo.create).void
   }
 
   def sharedResource: Resource[IO, OfficeContactDetailsRepositoryImpl[IO]] = {
@@ -77,7 +77,7 @@ class OfficeContactDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
       )
 
     for {
-      officeContactDetailsOpt <- officeContactDetailsRepo.findByBusinessId("business_id_1")
+      officeContactDetailsOpt <- officeContactDetailsRepo.findByOfficeId("office_1")
       //      _ <- IO(println(s"Query Result: $officeContactDetailsOpt")) // Debug log the result
     } yield expect(officeContactDetailsOpt == Some(expectedResult))
   }

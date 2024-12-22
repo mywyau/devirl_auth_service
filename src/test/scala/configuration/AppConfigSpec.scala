@@ -16,6 +16,7 @@ object AppConfigSpec extends SimpleIOSuite {
       expect.all(
         config.serverConfig == serverConfig,
         config == appConfig,
+        config.postgresqlConfig == appConfig.postgresqlConfig,
         config.integrationSpecConfig.postgresqlConfig == postgresqlConfig,
         config.integrationSpecConfig == integrationSpecConfig
       )

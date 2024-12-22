@@ -23,7 +23,12 @@ object AppConfigConstants {
       postgresqlConfig
     )
 
-  val appConfig = AppConfig(serverConfig, integrationSpecConfig)
+  val appConfig =
+    AppConfig(
+      serverConfig = serverConfig,
+      postgresqlConfig = postgresqlConfig,
+      integrationSpecConfig = integrationSpecConfig
+    )
 
 
 }

@@ -3,15 +3,15 @@ package controllers.office
 import cats.effect.*
 import com.comcast.ip4s.{ipv4, port}
 import configuration.models.AppConfig
-import controllers.constants.OfficeAddressConstants.*
-import controllers.fragments.OfficeAddressRepoFragments.{createOfficeAddressTable, insertOfficeAddressesTable, resetOfficeAddressTable}
-import controllers.office.OfficeAddressController
+import controllers.constants.OfficeContactDetailsConstants.*
+import controllers.fragments.OfficeContactDetailsRepoFragments.{createOfficeContactDetailsTable, insertOfficeContactDetailsData, resetOfficeContactDetailsTable}
+import controllers.office.OfficeContactDetailsController
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.Json
 import io.circe.syntax.*
-import models.office.address_details.OfficeAddress
 import models.office.adts.*
+import models.office.contact_details.OfficeContactDetails
 import models.responses.{CreatedResponse, DeletedResponse}
 import org.http4s.*
 import org.http4s.Method.*
@@ -22,14 +22,12 @@ import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import repositories.office.OfficeAddressRepository
-import services.office.address.OfficeAddressService
 import shared.{HttpClientResource, TransactorResource}
 import weaver.*
 
 import java.time.LocalDateTime
 
-class OfficeAddressControllerISpec(global: GlobalRead) extends IOSuite {
+class OfficeContactDetailsControllerISpec(global: GlobalRead) extends IOSuite {
 
   implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
 
@@ -39,49 +37,49 @@ class OfficeAddressControllerISpec(global: GlobalRead) extends IOSuite {
     for {
       transactor <- global.getOrFailR[TransactorResource]()
       _ <- Resource.eval(
-        createOfficeAddressTable.update.run.transact(transactor.xa).void *>
-          resetOfficeAddressTable.update.run.transact(transactor.xa).void *>
-          insertOfficeAddressesTable.update.run.transact(transactor.xa).void
+        createOfficeContactDetailsTable.update.run.transact(transactor.xa).void *>
+          resetOfficeContactDetailsTable.update.run.transact(transactor.xa).void *>
+          insertOfficeContactDetailsData.update.run.transact(transactor.xa).void
       )
       client <- global.getOrFailR[HttpClientResource]()
     } yield (transactor, client)
   }
 
   test(
-    "GET - /pistachio/business/offices/address/OFF001 - " +
-      "given a office_id, find the office address data for given id, returning OK and the address json"
+    "GET - /pistachio/business/offices/contact/details/OFF001 - " +
+      "given a office_id, find the office contact details data for given id, returning OK and the contact json"
   ) { (sharedResources, log) =>
 
     val transactor = sharedResources._1.xa
     val client = sharedResources._2.client
 
     val request =
-      Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/offices/address/OFF001")
+      Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/offices/contact/details/OFF001")
 
-    val expectedOfficeAddress = testOfficeAddress1(Some(1), "BUS123", "OFF001")
+    val expectedOfficeContactDetails = aliceContactDetails(Some(1), "BUS12345", "OFF001")
 
     client.run(request).use { response =>
-      response.as[OfficeAddress].map { body =>
+      response.as[OfficeContactDetails].map { body =>
         expect.all(
           response.status == Status.Ok,
-          body == expectedOfficeAddress
+          body == expectedOfficeContactDetails
         )
       }
     }
   }
 
   test(
-    "DELETE - /pistachio/business/offices/address/OFF002 - " +
-      "given a office_id, delete the office address data for given office id, returning OK and Deleted response json"
+    "DELETE - /pistachio/business/offices/contact/details/OFF002 - " +
+      "given a office_id, delete the office contact details data for given office id, returning OK and Deleted response json"
   ) { (sharedResources, log) =>
 
     val transactor = sharedResources._1.xa
     val client = sharedResources._2.client
 
     val request =
-      Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/offices/address/OFF002")
+      Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/offices/contact/details/OFF002")
 
-    val expectedBody = DeletedResponse("Office address deleted successfully")
+    val expectedBody = DeletedResponse("Office contact details deleted successfully")
 
     client.run(request).use { response =>
       response.as[DeletedResponse].map { body =>
