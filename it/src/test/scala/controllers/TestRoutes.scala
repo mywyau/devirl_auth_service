@@ -6,7 +6,7 @@ import cats.syntax.all.*
 import controllers.business.{BusinessAddressController, BusinessContactDetailsController, BusinessSpecificationsController}
 import controllers.business_listing.BusinessListingController
 import controllers.desk_listing.DeskListingController
-import controllers.office.OfficeSpecificationsController
+import controllers.office.{OfficeAddressController, OfficeSpecificationsController}
 import controllers.office_listing.OfficeListingController
 import doobie.hikari.HikariTransactor
 import doobie.implicits.*
@@ -25,6 +25,7 @@ import services.business.contact_details.BusinessContactDetailsService
 import services.business.specifications.BusinessSpecificationsService
 import services.desk_listing.DeskListingService
 import services.office.OfficeSpecificationsService
+import services.office.address.OfficeAddressService
 import services.office.office_listing.OfficeListingService
 
 import java.time.LocalDateTime
@@ -85,6 +86,17 @@ object TestRoutes {
     deskListingController.routes
   }
 
+  def officeAddressRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
+
+    val officeAddressRepository = OfficeAddressRepository(transactor)
+
+    val officeAddressService = OfficeAddressService(officeAddressRepository)
+    val officeAddressController = OfficeAddressController(officeAddressService)
+
+    officeAddressController.routes
+  }
+
+
   def officeSpecificationsRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
 
     val officeSpecificationsRepository = OfficeSpecsRepository(transactor)
@@ -115,8 +127,9 @@ object TestRoutes {
           businessContactDetailsRoutes(transactor) <+>
           businessSpecificationsRoutes(transactor) <+>
           businessListingRoutes(transactor) <+>
-          officeListingRoutes(transactor) <+>
+          officeAddressRoutes(transactor) <+>
           officeSpecificationsRoutes(transactor) <+>
+          officeListingRoutes(transactor) <+>
           deskListingRoutes(transactor)
         )
     )

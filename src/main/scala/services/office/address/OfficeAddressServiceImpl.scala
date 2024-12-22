@@ -1,6 +1,7 @@
 package services.office.address
 
-import cats.data.ValidatedNel
+import cats.data.Validated.{Invalid, Valid}
+import cats.data.{Validated, ValidatedNel}
 import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
@@ -8,28 +9,25 @@ import models.database.*
 import models.office.address_details.OfficeAddress
 import models.office.address_details.errors.*
 import repositories.office.OfficeAddressRepositoryAlgebra
-import cats.data.Validated
-import cats.data.ValidatedNel
-import cats.data.Validated.{Invalid, Valid}
 
 
 class OfficeAddressServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
                                                                               officeAddressRepo: OfficeAddressRepositoryAlgebra[F]
                                                                             ) extends OfficeAddressServiceAlgebra[F] {
 
-  override def getAddressByBusinessId(userId: String): F[Either[OfficeAddressErrors, OfficeAddress]] = {
-    officeAddressRepo.findByBusinessId(userId).flatMap {
-      case Some(user) =>
-        Concurrent[F].pure(Right(user))
+  override def getByOfficeId(officeId: String): F[Either[OfficeAddressErrors, OfficeAddress]] = {
+    officeAddressRepo.findByOfficeId(officeId).flatMap {
+      case Some(office) =>
+        Concurrent[F].pure(Right(office))
       case None =>
         Concurrent[F].pure(Left(OfficeAddressNotFound))
     }
   }
 
-  override def createOfficeAddress(officeAddress: OfficeAddress): F[ValidatedNel[OfficeAddressErrors, Int]] = {
+  override def create(officeAddress: OfficeAddress): F[ValidatedNel[OfficeAddressErrors, Int]] = {
 
     val addressCreation: F[ValidatedNel[SqlErrors, Int]] =
-      officeAddressRepo.createOfficeAddress(officeAddress)
+      officeAddressRepo.create(officeAddress)
 
     addressCreation.map {
       case Validated.Valid(addressId) =>
@@ -42,6 +40,11 @@ class OfficeAddressServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
       Concurrent[F].pure(AddressDatabaseError.invalidNel)
     }
   }
+
+  override def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]] = {
+    officeAddressRepo.delete(officeId)
+  }
+
 }
 
 object OfficeAddressService {

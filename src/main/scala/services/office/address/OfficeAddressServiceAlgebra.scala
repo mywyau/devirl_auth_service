@@ -7,7 +7,9 @@ import models.office.address_details.errors.OfficeAddressErrors
 
 trait OfficeAddressServiceAlgebra[F[_]] {
 
-  def getAddressByBusinessId(userId: String): F[Either[OfficeAddressErrors, OfficeAddress]]
+  def getByOfficeId(officeId: String): F[Either[OfficeAddressErrors, OfficeAddress]]
 
-  def createOfficeAddress(officeAddress: OfficeAddress): F[ValidatedNel[OfficeAddressErrors, Int]]
+  def create(officeAddress: OfficeAddress): F[ValidatedNel[OfficeAddressErrors, Int]]
+
+  def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
 }

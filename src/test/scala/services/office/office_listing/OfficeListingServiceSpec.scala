@@ -88,9 +88,11 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
                                      addressResult: IO[ValidatedNel[SqlErrors, Int]]
                                    ) extends OfficeAddressRepositoryAlgebra[IO] {
 
-    override def findByBusinessId(businessId: String): IO[Option[OfficeAddress]] = ???
+    override def findByOfficeId(officeId: String): IO[Option[OfficeAddress]] = ???
 
-    override def createOfficeAddress(officeAddress: OfficeAddress): IO[ValidatedNel[SqlErrors, Int]] = addressResult
+    override def create(officeAddress: OfficeAddress): IO[ValidatedNel[SqlErrors, Int]] = addressResult
+
+    override def delete(officeId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
   }
 
   class MockContactDetailsRepository(

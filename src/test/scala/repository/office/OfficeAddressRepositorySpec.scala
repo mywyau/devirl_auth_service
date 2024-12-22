@@ -33,19 +33,19 @@ object OfficeAddressRepositorySpec extends SimpleIOSuite {
   def createMockRepo(initialUsers: List[OfficeAddress]): IO[MockOfficeAddressRepository] =
     Ref.of[IO, List[OfficeAddress]](initialUsers).map(MockOfficeAddressRepository.apply)
 
-  test(".findByBusinessId() - should return an address if business_id exists") {
+  test(".findByOfficeId() - should return an address if office_id exists") {
     val existingAddressForUser = testAddress(Some(1), "business_id_1", "office_1")
 
     for {
       mockRepo <- createMockRepo(List(existingAddressForUser))
-      result <- mockRepo.findByBusinessId("business_id_1")
+      result <- mockRepo.findByOfficeId("office_1")
     } yield expect(result.contains(existingAddressForUser))
   }
 
-  test(".findByBusinessId() - should return None if business_id does not exist") {
+  test(".findByOfficeId() - should return None if business_id does not exist") {
     for {
       mockRepo <- createMockRepo(Nil) // No users initially
-      result <- mockRepo.findByBusinessId("business_id_1")
+      result <- mockRepo.findByOfficeId("office_1")
     } yield expect(result.isEmpty)
   }
 
@@ -54,8 +54,8 @@ object OfficeAddressRepositorySpec extends SimpleIOSuite {
     val testAddressForUser2: OfficeAddress = testAddress(Some(2), "business_id_2", "office_2")
     for {
       mockRepo <- createMockRepo(List())
-      result <- mockRepo.createOfficeAddress(testAddressForUser2)
-      findInsertedAddress <- mockRepo.findByBusinessId("business_id_2")
+      result <- mockRepo.create(testAddressForUser2)
+      findInsertedAddress <- mockRepo.findByOfficeId("office_2")
     } yield expect.all(
       result == Valid(1),
       findInsertedAddress == Some(testAddressForUser2)

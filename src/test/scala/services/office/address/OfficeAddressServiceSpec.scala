@@ -38,9 +38,11 @@ object OfficeAddressServiceSpec extends SimpleIOSuite {
 
     def showAllUsers: IO[Map[String, OfficeAddress]] = IO.pure(existingOfficeAddress)
 
-    override def findByBusinessId(businessId: String): IO[Option[OfficeAddress]] = IO.pure(existingOfficeAddress.get(businessId))
+    override def findByOfficeId(officeId: String): IO[Option[OfficeAddress]] = IO.pure(existingOfficeAddress.get(officeId))
 
-    override def createOfficeAddress(officeAddress: OfficeAddress): IO[ValidatedNel[SqlErrors, Int]] = IO(Valid(1))
+    override def create(officeAddress: OfficeAddress): IO[ValidatedNel[SqlErrors, Int]] = IO(Valid(1))
+
+    override def delete(officeId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
   }
 
 
@@ -52,7 +54,7 @@ object OfficeAddressServiceSpec extends SimpleIOSuite {
     val service = new OfficeAddressServiceImpl[IO](mockOfficeAddressRepository)
 
     for {
-      result <- service.getAddressByBusinessId("business_1")
+      result <- service.getByOfficeId("business_1")
     } yield {
       expect(result == Right(existingAddressForUser))
     }
@@ -66,7 +68,7 @@ object OfficeAddressServiceSpec extends SimpleIOSuite {
     val service = new OfficeAddressServiceImpl[IO](mockOfficeAddressRepository)
 
     for {
-      result <- service.getAddressByBusinessId("business_1")
+      result <- service.getByOfficeId("business_1")
     } yield {
       expect(result == Left(OfficeAddressNotFound))
     }
@@ -80,7 +82,7 @@ object OfficeAddressServiceSpec extends SimpleIOSuite {
     val service = OfficeAddressService(mockOfficeAddressRepository)
 
     for {
-      result <- service.createOfficeAddress(sampleAddress)
+      result <- service.create(sampleAddress)
     } yield {
       expect(result == Valid(1))
     }

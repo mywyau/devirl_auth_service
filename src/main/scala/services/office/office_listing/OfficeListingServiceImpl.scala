@@ -29,7 +29,7 @@ class OfficeListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
   override def createOffice(officeListing: OfficeListingRequest): F[ValidatedNel[SqlErrors, Int]] = {
 
     val addressCreation: F[ValidatedNel[SqlErrors, Int]] =
-      officeAddressRepo.createOfficeAddress(officeListing.addressDetails)
+      officeAddressRepo.create(officeListing.addressDetails)
 
     val contactDetailsCreation: F[ValidatedNel[SqlErrors, Int]] =
       officeContactDetailsRepo.createContactDetails(officeListing.contactDetails)
@@ -53,6 +53,9 @@ class OfficeListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
       Concurrent[F].pure(UnknownError.invalidNel)
     }
   }
+
+
+
 
 }
 
