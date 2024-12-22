@@ -99,7 +99,7 @@ class OfficeSpecsRepositoryISpecs(global: GlobalRead) extends IOSuite {
       )
 
     for {
-      officeSpecsOpt <- officeSpecsRepo.findByBusinessId("business_id_1")
+      officeSpecsOpt <- officeSpecsRepo.findByOfficeId("office_1")
       //      _ <- IO(println(s"Query Result: $officeSpecsOpt")) // Debug log the result
     } yield expect(officeSpecsOpt == Some(expectedResult))
   }

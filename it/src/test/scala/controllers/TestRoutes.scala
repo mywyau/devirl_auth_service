@@ -6,13 +6,14 @@ import cats.syntax.all.*
 import controllers.business.{BusinessAddressController, BusinessContactDetailsController, BusinessSpecificationsController}
 import controllers.business_listing.BusinessListingController
 import controllers.desk_listing.DeskListingController
+import controllers.office.OfficeSpecificationsController
 import controllers.office_listing.OfficeListingController
 import doobie.hikari.HikariTransactor
 import doobie.implicits.*
 import doobie.util.ExecutionContexts
 import doobie.util.transactor.Transactor
-import org.http4s.server.Router
 import org.http4s.HttpRoutes
+import org.http4s.server.Router
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import repositories.business.{BusinessAddressRepository, BusinessContactDetailsRepository, BusinessSpecificationsRepository}
@@ -23,6 +24,7 @@ import services.business.business_listing.BusinessListingService
 import services.business.contact_details.BusinessContactDetailsService
 import services.business.specifications.BusinessSpecificationsService
 import services.desk_listing.DeskListingService
+import services.office.OfficeSpecificationsService
 import services.office.office_listing.OfficeListingService
 
 import java.time.LocalDateTime
@@ -83,6 +85,16 @@ object TestRoutes {
     deskListingController.routes
   }
 
+  def officeSpecificationsRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
+
+    val officeSpecificationsRepository = OfficeSpecsRepository(transactor)
+
+    val officeSpecificationsService = OfficeSpecificationsService(officeSpecificationsRepository)
+    val officeSpecificationsController = OfficeSpecificationsController(officeSpecificationsService)
+
+    officeSpecificationsController.routes
+  }
+
   def officeListingRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
 
     val officeAddressRepository = OfficeAddressRepository(transactor)
@@ -103,8 +115,9 @@ object TestRoutes {
           businessContactDetailsRoutes(transactor) <+>
           businessSpecificationsRoutes(transactor) <+>
           businessListingRoutes(transactor) <+>
-          deskListingRoutes(transactor) <+>
-          officeListingRoutes(transactor)
+          officeListingRoutes(transactor) <+>
+          officeSpecificationsRoutes(transactor) <+>
+          deskListingRoutes(transactor)
         )
     )
   }

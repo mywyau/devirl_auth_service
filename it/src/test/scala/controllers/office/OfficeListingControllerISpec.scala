@@ -5,7 +5,7 @@ import com.comcast.ip4s.{ipv4, port}
 import controllers.constants.OfficeListingConstants.*
 import controllers.fragments.OfficeAddressRepoFragments.*
 import controllers.fragments.OfficeContactDetailsRepoFragments.*
-import controllers.fragments.OfficeSpecsRepoFragments.*
+import controllers.fragments.OfficeSpecificationRepoFragments.*
 import controllers.office_listing.OfficeListingController
 import doobie.implicits.*
 import doobie.util.transactor.Transactor

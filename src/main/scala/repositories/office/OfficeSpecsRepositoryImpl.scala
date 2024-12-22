@@ -10,18 +10,21 @@ import doobie.implicits.javasql.*
 import doobie.postgres.implicits.*
 import doobie.util.meta.Meta
 import io.circe.syntax.*
+import models.database.*
 import models.office.adts.OfficeType
 import models.office.specifications.OfficeSpecs
-import models.database.*
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
 trait OfficeSpecsRepositoryAlgebra[F[_]] {
 
-  def findByBusinessId(businessId: String): F[Option[OfficeSpecs]]
+  def findByOfficeId(officeId: String): F[Option[OfficeSpecs]]
 
   def createSpecs(user: OfficeSpecs): F[ValidatedNel[SqlErrors, Int]]
+
+  def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
+
 }
 
 class OfficeSpecsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends OfficeSpecsRepositoryAlgebra[F] {
@@ -31,9 +34,9 @@ class OfficeSpecsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
 
   implicit val officeTypeMeta: Meta[OfficeType] = Meta[String].imap(OfficeType.fromString)(_.toString)
 
-  override def findByBusinessId(businessId: String): F[Option[OfficeSpecs]] = {
+  override def findByOfficeId(officeId: String): F[Option[OfficeSpecs]] = {
     val findQuery: F[Option[OfficeSpecs]] =
-      sql"SELECT * FROM office_specs WHERE business_id = $businessId"
+      sql"SELECT * FROM office_specs WHERE office_id = $officeId"
         .query[OfficeSpecs]
         .option
         .transact(transactor)
@@ -75,7 +78,7 @@ class OfficeSpecsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
       .update
       .run
       .transact(transactor)
-      .attempt // Capture potential errors
+      .attempt
       .map {
         case Right(rowsAffected) =>
           if (rowsAffected == 1) {
@@ -89,6 +92,29 @@ class OfficeSpecsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
           DatabaseError.invalidNel
         case Left(e) =>
           UnknownError.invalidNel
+      }
+  }
+
+
+  override def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]] = {
+    val deleteQuery: Update0 =
+      sql"""
+          DELETE FROM office_specs
+          WHERE office_id = $officeId
+        """.update
+
+    deleteQuery
+      .run
+      .transact(transactor)
+      .attempt
+      .map {
+        case Right(affectedRows) =>
+          if (affectedRows > 0)
+            affectedRows.validNel
+          else
+            NotFoundError.invalidNel
+        case Left(ex) =>
+          DeleteError.invalidNel
       }
   }
 

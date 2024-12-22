@@ -33,19 +33,45 @@ INSERT INTO office_address (
     created_at,
     updated_at
 ) VALUES (
-    'business123',                      -- user_id
-    'office456',                    -- office_id
-    'Empire State Building',        -- building_name
-    '5th Floor',                    -- floor_number
-    '123 Main Street',              -- street
-    'New York',                     -- city
-    'USA',                          -- country
-    'Manhattan',                    -- county
-    '10001',                        -- postcode
-    40.748817,                      -- latitude
-    -73.985428,                     -- longitude
-    CURRENT_TIMESTAMP,              -- created_at
-    CURRENT_TIMESTAMP               -- updated_at
+    'business123',
+    'office456',
+    'Empire State Building',
+    '5th Floor',
+    '123 Main Street',
+    'New York',
+    'USA',
+    'Manhattan',
+    '10001',
+    40.748817,
+    -73.985428,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+);
+
+INSERT INTO office_specs (
+    business_id,
+    office_id,
+    office_name,
+    description,
+    office_type,
+    number_of_floors,
+    total_desks,
+    capacity,
+    amenities,
+    availability,
+    rules
+) VALUES
+(
+    'BUS001', 'OFF001', 'Downtown Workspace', 'A modern co-working space.', 'co-working', 2, 50, 100,
+    ARRAY['WiFi', 'Coffee', 'Meeting Rooms'],
+    '{"monday": "8:00-18:00", "tuesday": "8:00-18:00"}',
+    'No loud conversations. Keep the desks clean.'
+),
+(
+    'BUS002', 'OFF002', 'Suburban Office', 'A quiet office in the suburbs.', 'private', 1, 20, 40,
+    ARRAY['Parking', 'WiFi', 'Tea'],
+    '{"monday": "9:00-17:00", "wednesday": "9:00-17:00"}',
+    'No pets. Maintain silence.'
 );
 
 
