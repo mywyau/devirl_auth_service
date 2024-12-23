@@ -4,8 +4,9 @@ import cats.data.Validated.Valid
 import cats.data.ValidatedNel
 import cats.effect.IO
 import models.database.SqlErrors
-import models.office.address_details.errors.OfficeAddressNotFound
 import models.office.address_details.OfficeAddress
+import models.office.address_details.errors.OfficeAddressNotFound
+import models.office.address_details.requests.OfficeAddressRequest
 import repositories.office.OfficeAddressRepositoryAlgebra
 import services.office.address.{OfficeAddressService, OfficeAddressServiceImpl}
 import weaver.SimpleIOSuite
@@ -16,9 +17,9 @@ object OfficeAddressServiceSpec extends SimpleIOSuite {
 
   def testAddress(id: Option[Int], businessId: String, office_id: String): OfficeAddress =
     OfficeAddress(
-      id = Some(10),
-      businessId = "business_1",
-      officeId = "office_1",
+      id = id,
+      businessId = businessId,
+      officeId = office_id,
       buildingName = Some("build_123"),
       floorNumber = Some("floor 1"),
       street = Some("123 Main Street"),
@@ -32,15 +33,30 @@ object OfficeAddressServiceSpec extends SimpleIOSuite {
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
+  def testAddressRequest(businessId: String, office_id: String): OfficeAddressRequest =
+    OfficeAddressRequest(
+      businessId = businessId,
+      officeId = office_id,
+      buildingName = Some("build_123"),
+      floorNumber = Some("floor 1"),
+      street = Some("123 Main Street"),
+      city = Some("New York"),
+      country = Some("USA"),
+      county = Some("New York County"),
+      postcode = Some("10001"),
+      latitude = Some(100.1),
+      longitude = Some(-100.1)
+    )
+
   class MockOfficeAddressRepository(
-                                       existingOfficeAddress: Map[String, OfficeAddress] = Map.empty
-                                     ) extends OfficeAddressRepositoryAlgebra[IO] {
+                                     existingOfficeAddress: Map[String, OfficeAddress] = Map.empty
+                                   ) extends OfficeAddressRepositoryAlgebra[IO] {
 
     def showAllUsers: IO[Map[String, OfficeAddress]] = IO.pure(existingOfficeAddress)
 
     override def findByOfficeId(officeId: String): IO[Option[OfficeAddress]] = IO.pure(existingOfficeAddress.get(officeId))
 
-    override def create(officeAddress: OfficeAddress): IO[ValidatedNel[SqlErrors, Int]] = IO(Valid(1))
+    override def create(officeAddressRequest: OfficeAddressRequest): IO[ValidatedNel[SqlErrors, Int]] = IO(Valid(1))
 
     override def delete(officeId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
   }
@@ -76,7 +92,7 @@ object OfficeAddressServiceSpec extends SimpleIOSuite {
 
   test(".createOfficeAddress() - when given a OfficeAddress successfully create the address") {
 
-    val sampleAddress = testAddress(Some(1), "business_1", "office_1")
+    val sampleAddress = testAddressRequest("business_1", "office_1")
 
     val mockOfficeAddressRepository = new MockOfficeAddressRepository(Map())
     val service = OfficeAddressService(mockOfficeAddressRepository)

@@ -4,8 +4,8 @@ import cats.effect.IO
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
+import models.office.address_details.requests.OfficeAddressRequest
 import models.office.adts.*
-import models.office.address_details.OfficeAddress
 import models.office.contact_details.OfficeContactDetails
 import models.office.office_listing.requests.OfficeListingRequest
 import models.office.specifications.{OfficeAvailability, OfficeSpecs}
@@ -38,9 +38,8 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
-  val testOfficeAddress =
-    OfficeAddress(
-      id = Some(1),
+  val testOfficeAddressRequest =
+    OfficeAddressRequest(
       businessId = "business_id_1",
       officeId = "office_id_1",
       buildingName = Some("build_123"),
@@ -51,9 +50,7 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
       county = Some("New York County"),
       postcode = Some("10001"),
       latitude = Some(100.1),
-      longitude = Some(-100.1),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      longitude = Some(-100.1)
     )
 
   val testOfficeContactDetails =
@@ -79,7 +76,7 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
   val officeListingRequest =
     OfficeListingRequest(
       officeId = "office_id_1",
-      addressDetails = testOfficeAddress,
+      addressDetails = testOfficeAddressRequest,
       officeSpecs = testOfficeSpecs,
       contactDetails = testOfficeContactDetails,
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
@@ -115,7 +112,6 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
         |    "updatedAt": "2025-01-01T00:00:00"
         |  },
         |  "addressDetails": {
-        |    "id": 1,
         |    "businessId": "business_id_1",
         |    "officeId": "office_id_1",
         |    "buildingName": "build_123",
@@ -126,9 +122,7 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
         |    "county": "New York County",
         |    "postcode": "10001",
         |    "latitude": 100.1,
-        |    "longitude": -100.1,
-        |    "createdAt": "2025-01-01T00:00:00",
-        |    "updatedAt": "2025-01-01T00:00:00"
+        |    "longitude": -100.1
         |  },
         |  "contactDetails": {
         |    "id": 1,

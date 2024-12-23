@@ -5,7 +5,7 @@ import configuration.models.{AppConfig, IntegrationSpecConfig, PostgresqlConfig,
 object AppConfigConstants {
 
   val serverConfig =
-    ServerConfig("0.0.0.0", 8081)
+    ServerConfig("0.0.0.0", 1010)
 
   val postgresqlConfig =
     PostgresqlConfig(

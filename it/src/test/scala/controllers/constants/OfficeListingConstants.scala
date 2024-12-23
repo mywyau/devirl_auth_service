@@ -12,6 +12,7 @@ import io.circe.Json
 import io.circe.syntax.*
 import models.office.adts.*
 import models.office.address_details.OfficeAddress
+import models.office.address_details.requests.OfficeAddressRequest
 import models.office.contact_details.OfficeContactDetails
 import models.office.office_listing.requests.OfficeListingRequest
 import models.office.specifications.{OfficeAvailability, OfficeSpecs}
@@ -77,6 +78,21 @@ object OfficeListingConstants {
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
+  val testOfficeAddressRequest: OfficeAddressRequest =
+    OfficeAddressRequest(
+      businessId = "business_id_1",
+      officeId = "office_id_1",
+      buildingName = Some("OfficeListingControllerISpec Building"),
+      floorNumber = Some("floor 1"),
+      street = Some("123 Main Street"),
+      city = Some("New York"),
+      country = Some("USA"),
+      county = Some("New York County"),
+      postcode = Some("10001"),
+      latitude = Some(100.1),
+      longitude = Some(-100.1)
+    )
+
   val testOfficeContactDetails: OfficeContactDetails =
     OfficeContactDetails(
       id = Some(1),
@@ -94,7 +110,7 @@ object OfficeListingConstants {
   def testOfficeListingRequest(officeId: String): OfficeListingRequest =
     OfficeListingRequest(
       officeId = officeId,
-      addressDetails = testOfficeAddress,
+      addressDetails = testOfficeAddressRequest,
       officeSpecs = testOfficeSpecs,
       contactDetails = testOfficeContactDetails,
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),

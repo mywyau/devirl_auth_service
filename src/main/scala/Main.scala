@@ -44,11 +44,12 @@ object Main extends IOApp {
                                                                                ): Resource[F, HttpRoutes[F]] = {
     for {
       deskListingRoutes <- Resource.pure(deskListingRoutes(transactor))
+      officeAddressRoutes <- Resource.pure(officeAddressRoutes(transactor))
       officeListingRoutes <- Resource.pure(officeListingRoutes(transactor))
       businessListingRoutes <- Resource.pure(businessListingRoutes(transactor))
       // Combine all routes under the `/pistachio` prefix
       combinedRoutes = Router(
-        "/pistachio" -> (deskListingRoutes <+> officeListingRoutes <+> businessListingRoutes)
+        "/pistachio" -> (deskListingRoutes <+> officeAddressRoutes <+> officeListingRoutes <+> businessListingRoutes)
       )
 
       // Wrap combined routes with CORS middleware
@@ -101,7 +102,8 @@ object Main extends IOApp {
               httpRoutes
             )
           }
-        }.use(_ => IO.never).as(ExitCode.Success)
+        }.use(_ => IO.never)
+          .as(ExitCode.Success)
     } yield {
       exitCode
     }

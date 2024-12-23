@@ -47,21 +47,12 @@ object OfficeAddressRepoFragments {
           longitude,
           created_at,
           updated_at
-        ) VALUES (
-          'user123',                     
-          'office456',                   
-          '123 Main Street',             
-          'New York',                    
-          'USA',                         
-          'Manhattan',                   
-          '10001',                       
-          'Empire State Building',       
-          '5th Floor',                   
-          40.748817,                     
-          -73.985428,                    
-          CURRENT_TIMESTAMP,             
-          CURRENT_TIMESTAMP              
-        );
+        ) VALUES
+          ('business_id_1', 'office_id_1', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('business_id_2', 'office_id_2', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('business_id_3', 'office_id_3', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('business_id_4', 'office_id_4', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('business_id_5', 'office_id_5', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00');
     """
   }
 }

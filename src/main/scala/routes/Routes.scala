@@ -5,6 +5,7 @@ import cats.effect.*
 import controllers.*
 import controllers.desk_listing.DeskListingControllerImpl
 import controllers.office_listing.OfficeListingControllerImpl
+import controllers.office.OfficeAddressController
 import controllers.business_listing.BusinessListingControllerImpl
 import dev.profunktor.redis4cats.effect.Log
 import doobie.hikari.HikariTransactor
@@ -18,6 +19,7 @@ import services.*
 import services.business.business_listing.BusinessListingServiceImpl
 import services.desk_listing.DeskListingServiceImpl
 import services.office.office_listing.OfficeListingServiceImpl
+import services.office.address.OfficeAddressService
 
 object Routes {
 
@@ -29,6 +31,16 @@ object Routes {
     val deskListingController = new DeskListingControllerImpl[F](deskListingService)
 
     deskListingController.routes
+  }
+
+  def officeAddressRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+
+    val officeAddressRepository = new OfficeAddressRepositoryImpl[F](transactor)
+
+    val officeAddressService = OfficeAddressService(officeAddressRepository)
+    val officeAddressController =  OfficeAddressController(officeAddressService)
+
+    officeAddressController.routes
   }
 
   def officeListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {

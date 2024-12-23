@@ -6,6 +6,7 @@ import cats.effect.IO
 import cats.effect.kernel.Ref
 import models.database.SqlErrors
 import models.office.address_details.OfficeAddress
+import models.office.address_details.requests.OfficeAddressRequest
 import repositories.office.OfficeAddressRepositoryAlgebra
 
 import java.time.LocalDateTime
@@ -15,9 +16,26 @@ case class MockOfficeAddressRepository(ref: Ref[IO, List[OfficeAddress]]) extend
   override def findByOfficeId(officeId: String): IO[Option[OfficeAddress]] =
     ref.get.map(_.find(_.officeId == officeId))
 
-  override def create(officeAddress: OfficeAddress): IO[ValidatedNel[SqlErrors, Int]] =
+  override def create(officeAddressRequest: OfficeAddressRequest): IO[ValidatedNel[SqlErrors, Int]] =
     ref.modify { address =>
-      val updatedList = officeAddress :: address
+      val updatedList =
+        OfficeAddress(
+          id = Some(1),
+          businessId = officeAddressRequest.businessId,
+          officeId = officeAddressRequest.officeId,
+          buildingName = officeAddressRequest.buildingName,
+          floorNumber = officeAddressRequest.floorNumber,
+          street = officeAddressRequest.street,
+          city = officeAddressRequest.city,
+          country = officeAddressRequest.country,
+          county = officeAddressRequest.county,
+          postcode = officeAddressRequest.postcode,
+          latitude = officeAddressRequest.latitude,
+          longitude = officeAddressRequest.longitude,
+          createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+          updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        )
+          :: address
       (updatedList, validNel(1))
     }
 

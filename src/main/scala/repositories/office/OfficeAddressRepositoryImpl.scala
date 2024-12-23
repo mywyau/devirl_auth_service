@@ -10,6 +10,7 @@ import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import models.database.*
 import models.office.address_details.OfficeAddress
+import models.office.address_details.requests.OfficeAddressRequest
 import models.office.address_details.errors.OfficeAddressErrors
 
 import java.sql.Timestamp
@@ -19,7 +20,7 @@ trait OfficeAddressRepositoryAlgebra[F[_]] {
 
   def findByOfficeId(officeId: String): F[Option[OfficeAddress]]
 
-  def create(officeAddress: OfficeAddress): F[ValidatedNel[SqlErrors, Int]]
+  def create(officeAddressRequest: OfficeAddressRequest): F[ValidatedNel[SqlErrors, Int]]
 
   def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
 
@@ -39,7 +40,7 @@ class OfficeAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
     findQuery
   }
 
-  override def create(officeAddress: OfficeAddress): F[ValidatedNel[SqlErrors, Int]] = {
+  override def create(officeAddressRequest: OfficeAddressRequest): F[ValidatedNel[SqlErrors, Int]] = {
     sql"""
       INSERT INTO office_address (
         business_id,
@@ -52,28 +53,24 @@ class OfficeAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
         county,
         postcode,
         latitude,
-        longitude,
-        created_at,
-        updated_at
+        longitude
       ) VALUES (
-        ${officeAddress.businessId},
-        ${officeAddress.officeId},
-        ${officeAddress.buildingName},
-        ${officeAddress.floorNumber},
-        ${officeAddress.street},
-        ${officeAddress.city},
-        ${officeAddress.country},
-        ${officeAddress.county},
-        ${officeAddress.postcode},
-        ${officeAddress.latitude},
-        ${officeAddress.longitude},
-        ${officeAddress.createdAt},
-        ${officeAddress.updatedAt}
+        ${officeAddressRequest.businessId},
+        ${officeAddressRequest.officeId},
+        ${officeAddressRequest.buildingName},
+        ${officeAddressRequest.floorNumber},
+        ${officeAddressRequest.street},
+        ${officeAddressRequest.city},
+        ${officeAddressRequest.country},
+        ${officeAddressRequest.county},
+        ${officeAddressRequest.postcode},
+        ${officeAddressRequest.latitude},
+        ${officeAddressRequest.longitude}
       )
-    """.update
+    """.update // Specify `shared_schema` explicitly
       .run
       .transact(transactor)
-      .attempt // Capture potential errors
+      .attempt
       .map {
         case Right(rowsAffected) =>
           if (rowsAffected == 1) {

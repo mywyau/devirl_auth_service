@@ -61,3 +61,6 @@ psql -h localhost -p 5432 -U shared_user -d shared_db
 ```
 ALTER ROLE shared_user SET search_path TO share_schema, public;
 ```
+
+
+http POST http://localhost:1010/pistachio/business/offices/address/create Content-Type:application/json businessId="BUS12345" officeId="OFF12345" buildingName="Example Building" floorNumber="12" street="123 Example Street" city="Example City" country="Example Country" county="Example County" postcode="12345" latitude:=12.345678 longitude:=-98.765432
