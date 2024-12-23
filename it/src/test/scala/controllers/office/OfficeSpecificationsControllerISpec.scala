@@ -11,7 +11,7 @@ import doobie.util.transactor.Transactor
 import io.circe.Json
 import io.circe.syntax.*
 import models.office.adts.*
-import models.office.specifications.{OfficeAvailability, OfficeSpecs}
+import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
 import models.responses.{CreatedResponse, DeletedResponse}
 import org.http4s.*
 import org.http4s.Method.*
@@ -22,7 +22,7 @@ import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import repositories.office.OfficeSpecsRepository
+import repositories.office.OfficeSpecificationsRepository
 import services.office.OfficeSpecificationsService
 import shared.{HttpClientResource, TransactorResource}
 import weaver.*
@@ -61,7 +61,7 @@ class OfficeSpecificationsControllerISpec(global: GlobalRead) extends IOSuite {
     val expectedOfficeSpecifications = testOfficeSpecs1(Some(1), "BUS001", "OFF001")
 
     client.run(request).use { response =>
-      response.as[OfficeSpecs].map { body =>
+      response.as[OfficeSpecifications].map { body =>
         expect.all(
           response.status == Status.Ok,
           body == expectedOfficeSpecifications

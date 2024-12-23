@@ -6,8 +6,8 @@ import cats.effect.{Concurrent, IO}
 import cats.implicits.*
 import cats.syntax.all.*
 import cats.{Monad, NonEmptyParallel}
-import models.business.address_details.BusinessAddress
-import models.business.address_details.errors.BusinessAddressErrors
+import models.business.address.BusinessAddress
+import models.business.address.errors.BusinessAddressErrors
 import models.business.business_listing.errors.BusinessListingErrors
 import models.business.business_listing.requests.BusinessListingRequest
 import models.business.business_listing.{BusinessListing, errors}

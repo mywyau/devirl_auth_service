@@ -1,4 +1,4 @@
-package models.business.address_details
+package models.business.address
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}

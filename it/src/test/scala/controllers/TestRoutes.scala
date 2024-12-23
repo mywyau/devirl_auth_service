@@ -18,7 +18,7 @@ import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import repositories.business.{BusinessAddressRepository, BusinessContactDetailsRepository, BusinessSpecificationsRepository}
 import repositories.desk.DeskListingRepository
-import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeSpecsRepository}
+import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeSpecificationsRepository}
 import services.business.address.BusinessAddressService
 import services.business.business_listing.BusinessListingService
 import services.business.contact_details.BusinessContactDetailsService
@@ -70,9 +70,9 @@ object TestRoutes {
 
     val businessAddressRepository = BusinessAddressRepository(transactor)
     val businessContactDetailsRepository = BusinessContactDetailsRepository(transactor)
-    val businessSpecsRepository = BusinessSpecificationsRepository(transactor)
+    val businessSpecificationsRepository = BusinessSpecificationsRepository(transactor)
 
-    val businessListingService = BusinessListingService(businessAddressRepository, businessContactDetailsRepository, businessSpecsRepository)
+    val businessListingService = BusinessListingService(businessAddressRepository, businessContactDetailsRepository, businessSpecificationsRepository)
     val businessListingController = BusinessListingController(businessListingService)
 
     businessListingController.routes
@@ -110,7 +110,7 @@ object TestRoutes {
 
   def officeSpecificationsRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
 
-    val officeSpecificationsRepository = OfficeSpecsRepository(transactor)
+    val officeSpecificationsRepository = OfficeSpecificationsRepository(transactor)
 
     val officeSpecificationsService = OfficeSpecificationsService(officeSpecificationsRepository)
     val officeSpecificationsController = OfficeSpecificationsController(officeSpecificationsService)
@@ -122,7 +122,7 @@ object TestRoutes {
 
     val officeAddressRepository = OfficeAddressRepository(transactor)
     val officeContactDetailsRepository = OfficeContactDetailsRepository(transactor)
-    val officeSpecsRepository = OfficeSpecsRepository(transactor)
+    val officeSpecsRepository = OfficeSpecificationsRepository(transactor)
 
     val officeListingService = OfficeListingService(officeAddressRepository, officeContactDetailsRepository, officeSpecsRepository)
     val officeListingController = OfficeListingController(officeListingService)

@@ -8,15 +8,15 @@ import models.office.address_details.requests.OfficeAddressRequest
 import models.office.adts.*
 import models.office.contact_details.OfficeContactDetails
 import models.office.office_listing.requests.OfficeListingRequest
-import models.office.specifications.{OfficeAvailability, OfficeSpecs}
+import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
 
 object OfficeListingRequestSpec extends SimpleIOSuite {
 
-  val testOfficeSpecs: OfficeSpecs =
-    OfficeSpecs(
+  val testOfficeSpecs: OfficeSpecifications =
+    OfficeSpecifications(
       id = Some(1),
       businessId = "business_id_1",
       officeId = "office_id_1",

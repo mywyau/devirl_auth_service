@@ -45,11 +45,20 @@ object Main extends IOApp {
     for {
       deskListingRoutes <- Resource.pure(deskListingRoutes(transactor))
       officeAddressRoutes <- Resource.pure(officeAddressRoutes(transactor))
+      officeContactDetailsRoutes <- Resource.pure(officeContactDetailsRoutes(transactor))
+      officeSpecificationsRoutes <- Resource.pure(officeSpecificationsRoutes(transactor))
       officeListingRoutes <- Resource.pure(officeListingRoutes(transactor))
       businessListingRoutes <- Resource.pure(businessListingRoutes(transactor))
-      // Combine all routes under the `/pistachio` prefix
+
       combinedRoutes = Router(
-        "/pistachio" -> (deskListingRoutes <+> officeAddressRoutes <+> officeListingRoutes <+> businessListingRoutes)
+        "/pistachio" -> (
+          deskListingRoutes <+>
+            officeAddressRoutes <+>
+            officeContactDetailsRoutes <+>
+            officeSpecificationsRoutes <+>
+            officeListingRoutes <+>
+            businessListingRoutes
+          )
       )
 
       // Wrap combined routes with CORS middleware
@@ -93,16 +102,16 @@ object Main extends IOApp {
       exitCode: ExitCode <-
         transactorResource[IO].flatMap { transactor =>
 
-          val httpRoutesResource: Resource[IO, HttpRoutes[IO]] = createHttpRoutes[IO](transactor)
+            val httpRoutesResource: Resource[IO, HttpRoutes[IO]] = createHttpRoutes[IO](transactor)
 
-          httpRoutesResource.flatMap { httpRoutes =>
-            createServer(
-              host,
-              port,
-              httpRoutes
-            )
-          }
-        }.use(_ => IO.never)
+            httpRoutesResource.flatMap { httpRoutes =>
+              createServer(
+                host,
+                port,
+                httpRoutes
+              )
+            }
+          }.use(_ => IO.never)
           .as(ExitCode.Success)
     } yield {
       exitCode

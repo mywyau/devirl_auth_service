@@ -15,7 +15,7 @@ import models.office.address_details.OfficeAddress
 import models.office.adts.*
 import models.office.contact_details.OfficeContactDetails
 import models.office.office_listing.requests.OfficeListingRequest
-import models.office.specifications.{OfficeAvailability, OfficeSpecs}
+import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
 import models.responses.CreatedResponse
 import org.http4s.*
 import org.http4s.Method.*
@@ -24,7 +24,7 @@ import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.implicits.*
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeSpecsRepository}
+import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeSpecificationsRepository}
 import services.office.office_listing.OfficeListingService
 import shared.{HttpClientResource, TransactorResource}
 import weaver.*

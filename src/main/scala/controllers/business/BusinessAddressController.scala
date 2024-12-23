@@ -4,7 +4,7 @@ import cats.data.Validated.{Valid, Invalid}
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
-import models.business.address_details.requests.BusinessAddressRequest
+import models.business.address.requests.BusinessAddressRequest
 import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse}
 import org.http4s.*
 import org.http4s.circe.*

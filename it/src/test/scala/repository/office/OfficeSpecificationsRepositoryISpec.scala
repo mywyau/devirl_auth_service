@@ -5,19 +5,19 @@ import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
 import models.business.adts.PrivateDesk
-import models.office.specifications.OfficeSpecs
+import models.office.specifications.OfficeSpecifications
 import models.office.adts.OpenPlanOffice
 import models.office.specifications.OfficeAvailability
-import repositories.office.OfficeSpecsRepositoryImpl
-import repository.fragments.OfficeSpecsRepoFragments.{createOfficeSpecsTable, resetOfficeSpecsTable}
+import repositories.office.OfficeSpecificationsRepositoryImpl
+import repository.fragments.OfficeSpecificationsRepoFragments.{createOfficeSpecsTable, resetOfficeSpecsTable}
 import shared.TransactorResource
 import weaver.{GlobalRead, IOSuite, ResourceTag}
 
 import java.time.LocalDateTime
 
-class OfficeSpecsRepositoryISpecs(global: GlobalRead) extends IOSuite {
+class OfficeSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite {
 
-  type Res = OfficeSpecsRepositoryImpl[IO]
+  type Res = OfficeSpecificationsRepositoryImpl[IO]
 
   private def initializeSchema(transactor: TransactorResource): Resource[IO, Unit] =
     Resource.eval(
@@ -25,8 +25,8 @@ class OfficeSpecsRepositoryISpecs(global: GlobalRead) extends IOSuite {
         resetOfficeSpecsTable.update.run.transact(transactor.xa).void
     )
 
-  def testOfficeSpecs(id: Option[Int], businessId: String, officeId: String): OfficeSpecs = {
-    OfficeSpecs(
+  def testOfficeSpecs(id: Option[Int], businessId: String, officeId: String): OfficeSpecifications = {
+    OfficeSpecifications(
       id = Some(1),
       businessId = businessId,
       officeId = officeId,
@@ -49,7 +49,7 @@ class OfficeSpecsRepositoryISpecs(global: GlobalRead) extends IOSuite {
     )
   }
 
-  private def seedTestSpecs(officeSpecsRepo: OfficeSpecsRepositoryImpl[IO]): IO[Unit] = {
+  private def seedTestSpecs(officeSpecsRepo: OfficeSpecificationsRepositoryImpl[IO]): IO[Unit] = {
     val users = List(
       testOfficeSpecs(Some(1), "business_id_1", "office_1"),
       testOfficeSpecs(Some(2), "business_id_2", "office_2"),
@@ -60,10 +60,10 @@ class OfficeSpecsRepositoryISpecs(global: GlobalRead) extends IOSuite {
     users.traverse(officeSpecsRepo.createSpecs).void
   }
 
-  def sharedResource: Resource[IO, OfficeSpecsRepositoryImpl[IO]] = {
+  def sharedResource: Resource[IO, OfficeSpecificationsRepositoryImpl[IO]] = {
     val setup = for {
       transactor <- global.getOrFailR[TransactorResource]()
-      officeSpecsRepo = new OfficeSpecsRepositoryImpl[IO](transactor.xa)
+      officeSpecsRepo = new OfficeSpecificationsRepositoryImpl[IO](transactor.xa)
       createSchemaIfNotPresent <- initializeSchema(transactor)
       seedTable <- Resource.eval(seedTestSpecs(officeSpecsRepo))
     } yield officeSpecsRepo
@@ -76,7 +76,7 @@ class OfficeSpecsRepositoryISpecs(global: GlobalRead) extends IOSuite {
     val officeSpecs = testOfficeSpecs(Some(1), "business_id_1", "office_1")
 
     val expectedResult =
-      OfficeSpecs(
+      OfficeSpecifications(
         id = Some(1),
         businessId = "business_id_1",
         officeId = "office_1",

@@ -4,9 +4,9 @@ import cats.data.ValidatedNel
 import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
-import models.business.address_details.BusinessAddress
-import models.business.address_details.errors.*
-import models.business.address_details.requests.BusinessAddressRequest
+import models.business.address.BusinessAddress
+import models.business.address.errors.*
+import models.business.address.requests.BusinessAddressRequest
 import models.database.SqlErrors
 import repositories.business.BusinessAddressRepositoryAlgebra
 

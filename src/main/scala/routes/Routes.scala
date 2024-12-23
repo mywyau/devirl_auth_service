@@ -3,31 +3,32 @@ package routes
 import cats.NonEmptyParallel
 import cats.effect.*
 import controllers.*
-import controllers.desk_listing.DeskListingControllerImpl
-import controllers.office_listing.OfficeListingControllerImpl
-import controllers.office.OfficeAddressController
 import controllers.business_listing.BusinessListingControllerImpl
+import controllers.desk_listing.DeskListingControllerImpl
+import controllers.office.{OfficeAddressController, OfficeContactDetailsController, OfficeSpecificationsController}
+import controllers.office_listing.OfficeListingController
 import dev.profunktor.redis4cats.effect.Log
 import doobie.hikari.HikariTransactor
 import org.http4s.HttpRoutes
 import org.typelevel.log4cats.Logger
 import repositories.*
-import repositories.business.{BusinessAddressRepositoryImpl, BusinessContactDetailsRepositoryImpl, BusinessSpecificationsRepositoryImpl}
-import repositories.desk.DeskListingRepositoryImpl
-import repositories.office.{OfficeAddressRepositoryImpl, OfficeContactDetailsRepositoryImpl, OfficeSpecsRepositoryImpl}
+import repositories.business.{BusinessAddressRepository, BusinessContactDetailsRepository, BusinessSpecificationsRepository}
+import repositories.desk.DeskListingRepository
+import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeSpecificationsRepository}
 import services.*
-import services.business.business_listing.BusinessListingServiceImpl
-import services.desk_listing.DeskListingServiceImpl
-import services.office.office_listing.OfficeListingServiceImpl
+import services.business.business_listing.BusinessListingService
+import services.desk_listing.DeskListingService
+import services.office.OfficeSpecificationsService
 import services.office.address.OfficeAddressService
+import services.office.contact_details.OfficeContactDetailsService
+import services.office.office_listing.OfficeListingService
 
 object Routes {
 
   def deskListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {
 
-    val deskListingRepo = new DeskListingRepositoryImpl[F](transactor)
-
-    val deskListingService = new DeskListingServiceImpl[F](deskListingRepo)
+    val deskListingRepo = DeskListingRepository(transactor)
+    val deskListingService = DeskListingService(deskListingRepo)
     val deskListingController = new DeskListingControllerImpl[F](deskListingService)
 
     deskListingController.routes
@@ -35,33 +36,50 @@ object Routes {
 
   def officeAddressRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {
 
-    val officeAddressRepository = new OfficeAddressRepositoryImpl[F](transactor)
-
+    val officeAddressRepository = OfficeAddressRepository(transactor)
     val officeAddressService = OfficeAddressService(officeAddressRepository)
-    val officeAddressController =  OfficeAddressController(officeAddressService)
+    val officeAddressController = OfficeAddressController(officeAddressService)
 
     officeAddressController.routes
   }
 
+  def officeContactDetailsRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+
+    val officeContactDetailsRepository = OfficeContactDetailsRepository(transactor)
+    val officeContactDetailsService = OfficeContactDetailsService(officeContactDetailsRepository)
+    val officeContactDetailsController = OfficeContactDetailsController(officeContactDetailsService)
+
+    officeContactDetailsController.routes
+  }
+
+  def officeSpecificationsRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+
+    val officeSpecificationsRepository = OfficeSpecificationsRepository(transactor)
+    val officeSpecificationsService = OfficeSpecificationsService(officeSpecificationsRepository)
+    val officeSpecificationsController = OfficeSpecificationsController(officeSpecificationsService)
+
+    officeSpecificationsController.routes
+  }
+
   def officeListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {
 
-    val officeSpecsRepository = new OfficeSpecsRepositoryImpl[F](transactor)
-    val officeAddressRepository = new OfficeAddressRepositoryImpl[F](transactor)
-    val officeContactDetailsRepository = new OfficeContactDetailsRepositoryImpl[F](transactor)
+    val officeSpecificationsRepository = OfficeSpecificationsRepository(transactor)
+    val officeAddressRepository = OfficeAddressRepository(transactor)
+    val officeContactDetailsRepository = OfficeContactDetailsRepository(transactor)
 
-    val officeListingService = new OfficeListingServiceImpl[F](officeAddressRepository, officeContactDetailsRepository, officeSpecsRepository)
-    val officeListingController = new OfficeListingControllerImpl[F](officeListingService)
+    val officeListingService = OfficeListingService(officeAddressRepository, officeContactDetailsRepository, officeSpecificationsRepository)
+    val officeListingController = OfficeListingController(officeListingService)
 
     officeListingController.routes
   }
 
   def businessListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {
 
-    val businessSpecsRepository = new BusinessSpecificationsRepositoryImpl[F](transactor)
-    val businessAddressRepository = new BusinessAddressRepositoryImpl[F](transactor)
-    val businessContactDetailsRepository = new BusinessContactDetailsRepositoryImpl[F](transactor)
+    val businessSpecsRepository = BusinessSpecificationsRepository(transactor)
+    val businessAddressRepository = BusinessAddressRepository(transactor)
+    val businessContactDetailsRepository = BusinessContactDetailsRepository(transactor)
 
-    val businessListingService = new BusinessListingServiceImpl[F](businessAddressRepository, businessContactDetailsRepository, businessSpecsRepository)
+    val businessListingService = BusinessListingService(businessAddressRepository, businessContactDetailsRepository, businessSpecsRepository)
     val businessListingController = new BusinessListingControllerImpl[F](businessListingService)
 
     businessListingController.routes

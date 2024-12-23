@@ -15,7 +15,7 @@ import models.office.address_details.OfficeAddress
 import models.office.address_details.requests.OfficeAddressRequest
 import models.office.contact_details.OfficeContactDetails
 import models.office.office_listing.requests.OfficeListingRequest
-import models.office.specifications.{OfficeAvailability, OfficeSpecs}
+import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
 import models.responses.CreatedResponse
 import org.http4s.*
 import org.http4s.Method.*
@@ -26,7 +26,7 @@ import org.http4s.implicits.*
 import org.http4s.server.{Router, Server}
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeSpecsRepository}
+import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeSpecificationsRepository}
 import services.office.office_listing.OfficeListingService
 import shared.{HttpClientResource, TransactorResource}
 import weaver.*
@@ -42,8 +42,8 @@ object OfficeListingConstants {
       endTime = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
-  val testOfficeSpecs: OfficeSpecs =
-    OfficeSpecs(
+  val testOfficeSpecs: OfficeSpecifications =
+    OfficeSpecifications(
       id = Some(1),
       businessId = "business_id_1",
       officeId = "office_id_1",

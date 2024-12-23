@@ -3,9 +3,9 @@ package services.business.mocks
 import cats.data.Validated.Valid
 import cats.data.ValidatedNel
 import cats.effect.IO
-import models.business.address_details.BusinessAddress
-import models.business.address_details.errors.BusinessAddressNotFound
-import models.business.address_details.requests.BusinessAddressRequest
+import models.business.address.BusinessAddress
+import models.business.address.errors.BusinessAddressNotFound
+import models.business.address.requests.BusinessAddressRequest
 import models.database.SqlErrors
 import repositories.business.BusinessAddressRepositoryAlgebra
 import services.business.address.{BusinessAddressService, BusinessAddressServiceImpl}

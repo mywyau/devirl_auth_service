@@ -7,9 +7,19 @@ import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.database.*
 import models.office.address_details.OfficeAddress
-import models.office.address_details.requests.OfficeAddressRequest
 import models.office.address_details.errors.*
+import models.office.address_details.requests.OfficeAddressRequest
 import repositories.office.OfficeAddressRepositoryAlgebra
+
+
+trait OfficeAddressServiceAlgebra[F[_]] {
+
+  def getByOfficeId(officeId: String): F[Either[OfficeAddressErrors, OfficeAddress]]
+
+  def create(officeAddress: OfficeAddressRequest): F[ValidatedNel[OfficeAddressErrors, Int]]
+
+  def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
+}
 
 
 class OfficeAddressServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](

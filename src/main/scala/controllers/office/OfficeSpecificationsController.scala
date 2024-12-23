@@ -4,7 +4,7 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
-import models.office.specifications.OfficeSpecs
+import models.office.specifications.OfficeSpecifications
 import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse}
 import org.http4s.*
 import org.http4s.circe.*
@@ -21,7 +21,7 @@ class OfficeSpecificationsControllerImpl[F[_] : Concurrent](
                                                            )(implicit logger: Logger[F])
   extends Http4sDsl[F] with OfficeSpecificationsControllerAlgebra[F] {
 
-  implicit val officeSpecificationsRequestDecoder: EntityDecoder[F, OfficeSpecs] = jsonOf[F, OfficeSpecs]
+  implicit val officeSpecificationsRequestDecoder: EntityDecoder[F, OfficeSpecifications] = jsonOf[F, OfficeSpecifications]
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
@@ -38,7 +38,7 @@ class OfficeSpecificationsControllerImpl[F[_] : Concurrent](
 
     case req@POST -> Root / "business" / "offices" / "specifications" / "create" =>
       logger.info(s"[OfficeListingControllerImpl] POST - Creating office listing") *>
-        req.decode[OfficeSpecs] { request =>
+        req.decode[OfficeSpecifications] { request =>
           officeSpecificationsService.create(request).flatMap {
             case Valid(listing) =>
               logger.info(s"[OfficeListingControllerImpl] POST - Successfully created a office specifications") *>

@@ -3,7 +3,7 @@ package repository.fragments
 import doobie.implicits.*
 import doobie.util.fragment
 
-object OfficeSpecsRepoFragments {
+object OfficeSpecificationsRepoFragments {
 
   val resetOfficeSpecsTable: fragment.Fragment = {
     sql"TRUNCATE TABLE office_specs RESTART IDENTITY"

@@ -3,7 +3,7 @@ package services.business.address.validation
 import cats.data.Validated
 import cats.effect.Concurrent
 import cats.implicits.*
-import models.business.address_details.errors.*
+import models.business.address.errors.*
 
 class BusinessAddressValidationServiceImpl[F[_] : Concurrent] extends BusinessAddressValidationServiceAlgebra[F] {
 

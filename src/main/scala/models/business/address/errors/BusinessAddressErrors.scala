@@ -1,4 +1,4 @@
-package models.business.address_details.errors
+package models.business.address.errors
 
 import io.circe.{Decoder, Encoder}
 

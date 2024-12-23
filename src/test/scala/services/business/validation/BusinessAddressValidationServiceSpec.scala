@@ -3,7 +3,7 @@ package services.business.validation
 import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import cats.effect.IO
-import models.business.address_details.errors.*
+import models.business.address.errors.*
 import services.business.address.validation.BusinessAddressValidationServiceImpl
 import weaver.SimpleIOSuite
 

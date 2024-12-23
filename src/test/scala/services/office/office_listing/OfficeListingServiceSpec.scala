@@ -10,16 +10,16 @@ import models.office.adts.*
 import models.office.contact_details.OfficeContactDetails
 import models.office.office_listing.errors.OfficeListingErrors
 import models.office.office_listing.requests.OfficeListingRequest
-import models.office.specifications.{OfficeAvailability, OfficeSpecs}
-import repositories.office.{OfficeAddressRepositoryAlgebra, OfficeContactDetailsRepositoryAlgebra, OfficeSpecsRepositoryAlgebra}
+import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
+import repositories.office.{OfficeAddressRepositoryAlgebra, OfficeContactDetailsRepositoryAlgebra, OfficeSpecificationsRepositoryAlgebra}
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
 
 object OfficeListingServiceSpec extends SimpleIOSuite {
 
-  val testOfficeSpecs: OfficeSpecs =
-    OfficeSpecs(
+  val testOfficeSpecs: OfficeSpecifications =
+    OfficeSpecifications(
       id = Some(1),
       businessId = "business_id_1",
       officeId = "office_id_1",
@@ -104,11 +104,11 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
 
   class MockSpecsRepository(
                              specsResult: IO[ValidatedNel[SqlErrors, Int]]
-                           ) extends OfficeSpecsRepositoryAlgebra[IO] {
+                           ) extends OfficeSpecificationsRepositoryAlgebra[IO] {
 
-    override def createSpecs(user: OfficeSpecs): IO[ValidatedNel[SqlErrors, Int]] = specsResult
+    override def createSpecs(user: OfficeSpecifications): IO[ValidatedNel[SqlErrors, Int]] = specsResult
 
-    override def findByOfficeId(officeId: String): IO[Option[OfficeSpecs]] = ???
+    override def findByOfficeId(officeId: String): IO[Option[OfficeSpecifications]] = ???
 
     override def delete(officeId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
   }

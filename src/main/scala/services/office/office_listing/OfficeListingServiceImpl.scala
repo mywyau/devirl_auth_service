@@ -12,14 +12,21 @@ import models.office.address_details.errors.OfficeAddressErrors
 import models.office.office_listing.errors.OfficeListingErrors
 import models.office.office_listing.requests.OfficeListingRequest
 import models.office.office_listing.{OfficeListing, errors}
-import repositories.office.{OfficeAddressRepositoryAlgebra, OfficeContactDetailsRepositoryAlgebra, OfficeSpecsRepositoryAlgebra}
+import repositories.office.{OfficeAddressRepositoryAlgebra, OfficeContactDetailsRepositoryAlgebra, OfficeSpecificationsRepositoryAlgebra}
 import services.office.office_listing.OfficeListingServiceAlgebra
+
+trait OfficeListingServiceAlgebra[F[_]] {
+
+  def findByBusinessId(businessId: String): F[Either[OfficeListingErrors, OfficeListing]]
+
+  def createOffice(officeListing: OfficeListingRequest): F[ValidatedNel[SqlErrors, Int]]
+}
 
 
 class OfficeListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
                                                                               officeAddressRepo: OfficeAddressRepositoryAlgebra[F],
                                                                               officeContactDetailsRepo: OfficeContactDetailsRepositoryAlgebra[F],
-                                                                              officeSpecsRepo: OfficeSpecsRepositoryAlgebra[F]
+                                                                              officeSpecsRepo: OfficeSpecificationsRepositoryAlgebra[F]
                                                                             ) extends OfficeListingServiceAlgebra[F] {
 
   override def findByBusinessId(businessId: String): F[Either[OfficeListingErrors, OfficeListing]] = {
@@ -64,7 +71,7 @@ object OfficeListingService {
   def apply[F[_] : Concurrent : NonEmptyParallel](
                                                    officeAddressRepo: OfficeAddressRepositoryAlgebra[F],
                                                    officeContactDetailsRepo: OfficeContactDetailsRepositoryAlgebra[F],
-                                                   officeSpecsRepo: OfficeSpecsRepositoryAlgebra[F]
+                                                   officeSpecsRepo: OfficeSpecificationsRepositoryAlgebra[F]
                                                  ): OfficeListingServiceImpl[F] =
     new OfficeListingServiceImpl[F](officeAddressRepo, officeContactDetailsRepo, officeSpecsRepo)
 }

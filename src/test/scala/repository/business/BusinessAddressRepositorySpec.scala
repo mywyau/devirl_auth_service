@@ -3,8 +3,8 @@ package repository.business
 import cats.data.Validated.Valid
 import cats.effect.IO
 import cats.effect.kernel.Ref
-import models.business.address_details.BusinessAddress
-import models.business.address_details.requests.BusinessAddressRequest
+import models.business.address.BusinessAddress
+import models.business.address.requests.BusinessAddressRequest
 import repository.business.mocks.MockBusinessAddressRepository
 import repository.constants.BusinessAddressConstants.*
 import weaver.SimpleIOSuite

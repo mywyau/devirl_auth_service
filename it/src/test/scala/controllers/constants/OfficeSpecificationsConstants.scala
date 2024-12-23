@@ -2,14 +2,14 @@ package controllers.constants
 
 import cats.effect.*
 import models.office.adts.*
-import models.office.specifications.{OfficeAvailability, OfficeSpecs}
+import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
 
 import java.time.LocalDateTime
 
 object OfficeSpecificationsConstants {
 
-  def testOfficeSpecs1(id: Option[Int], businessId: String, officeId: String): OfficeSpecs = {
-    OfficeSpecs(
+  def testOfficeSpecs1(id: Option[Int], businessId: String, officeId: String): OfficeSpecifications = {
+    OfficeSpecifications(
       id = id,
       businessId = businessId,
       officeId = officeId,
@@ -32,8 +32,8 @@ object OfficeSpecificationsConstants {
     )
   }
 
-  def testOfficeSpecs2(id: Option[Int], businessId: String, officeId: String): OfficeSpecs = {
-    OfficeSpecs(
+  def testOfficeSpecs2(id: Option[Int], businessId: String, officeId: String): OfficeSpecifications = {
+    OfficeSpecifications(
       id = id,
       businessId = businessId,
       officeId = officeId,
