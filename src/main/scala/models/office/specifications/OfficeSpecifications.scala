@@ -24,6 +24,7 @@ case class OfficeSpecifications(
                                  updatedAt: LocalDateTime
                                )
 
+
 object OfficeSpecifications {
   implicit val officeSpecificationsEncoder: Encoder[OfficeSpecifications] = deriveEncoder[OfficeSpecifications]
   implicit val officeSpecificationsDecoder: Decoder[OfficeSpecifications] = deriveDecoder[OfficeSpecifications]

@@ -14,7 +14,7 @@ import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
 import repositories.office.{OfficeAddressRepositoryAlgebra, OfficeContactDetailsRepositoryAlgebra, OfficeSpecificationsRepositoryAlgebra}
 import weaver.SimpleIOSuite
 
-import java.time.LocalDateTime
+import java.time.{LocalDateTime, LocalTime}
 
 object OfficeListingServiceSpec extends SimpleIOSuite {
 
@@ -33,8 +33,8 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
       availability =
         OfficeAvailability(
           days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-          startTime = LocalDateTime.of(2024, 11, 21, 10, 0, 0),
-          endTime = LocalDateTime.of(2024, 11, 21, 10, 30, 0)
+          startTime = LocalTime.of(10, 0, 0),
+          endTime = LocalTime.of(10, 30, 0)
         ),
       rules = Some("No smoking. Maintain cleanliness."),
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),

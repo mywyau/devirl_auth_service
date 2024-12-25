@@ -3,7 +3,7 @@ package configuration.models
 import pureconfig.ConfigReader
 import pureconfig.generic.derivation.*
 
-case class ServerConfig(host: String, port: Int) derives ConfigReader
+case class ServerConfig(host: String, port: Int)derives ConfigReader
 
 case class PostgresqlConfig(
                              dbName: String,
@@ -11,16 +11,24 @@ case class PostgresqlConfig(
                              port: Int,
                              username: String,
                              password: String
-                           )
+                           )derives ConfigReader
 
 case class IntegrationSpecConfig(
-                                  host: String,
-                                  port: Int,
+                                  serverConfig: ServerConfig,
                                   postgresqlConfig: PostgresqlConfig
-                                ) derives ConfigReader
+                                )derives ConfigReader
+
+case class LocalConfig(
+                        serverConfig: ServerConfig,
+                        postgresqlConfig: PostgresqlConfig,
+                      )derives ConfigReader
+
+case class FeatureSwitches(
+                            useDockerHost: Boolean
+                          )derives ConfigReader
 
 case class AppConfig(
-                      serverConfig: ServerConfig,
-                      postgresqlConfig: PostgresqlConfig,
+                      featureSwitches: FeatureSwitches,
+                      localConfig: LocalConfig,
                       integrationSpecConfig: IntegrationSpecConfig
-                    ) derives ConfigReader
+                    )derives ConfigReader

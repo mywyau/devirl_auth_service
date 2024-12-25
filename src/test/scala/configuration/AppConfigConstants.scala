@@ -1,13 +1,22 @@
 package configuration
 
-import configuration.models.{AppConfig, IntegrationSpecConfig, PostgresqlConfig, ServerConfig}
+import configuration.models.*
 
 object AppConfigConstants {
 
-  val serverConfig =
-    ServerConfig("0.0.0.0", 1010)
+  val appServerConfig =
+    ServerConfig(
+      host = "0.0.0.0",
+      port = 1010
+    )
 
-  val postgresqlConfig =
+  val integrationSpecServerConfig =
+    ServerConfig(
+      host = "127.0.0.1",
+      port = 9999,
+    )
+
+  val integrationPostgresqlConfig =
     PostgresqlConfig(
       dbName = "shared_test_db",
       host = "localhost",
@@ -16,17 +25,38 @@ object AppConfigConstants {
       password = "share"
     )
 
+  val containerPostgresqlConfig =
+    PostgresqlConfig(
+      dbName = "shared_test_db",
+      host = "postgresql",
+      port = 5432,
+      username = "shared_user",
+      password = "share"
+    )
+
   val integrationSpecConfig =
     IntegrationSpecConfig(
-      host = "127.0.0.1",
-      port = 9999,
-      postgresqlConfig
+      serverConfig = integrationSpecServerConfig,
+      postgresqlConfig = integrationPostgresqlConfig
     )
+
+  val localConfig = {
+    LocalConfig(
+      serverConfig = appServerConfig,
+      postgresqlConfig = containerPostgresqlConfig
+    )
+  }
+
+  val featureSwitches = {
+    FeatureSwitches(
+      useDockerHost = true
+    )
+  }
 
   val appConfig =
     AppConfig(
-      serverConfig = serverConfig,
-      postgresqlConfig = postgresqlConfig,
+      featureSwitches = featureSwitches,
+      localConfig = localConfig,
       integrationSpecConfig = integrationSpecConfig
     )
 

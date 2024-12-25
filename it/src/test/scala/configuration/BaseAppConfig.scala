@@ -22,7 +22,7 @@ trait BaseAppConfig {
   def hostResource(appConfig: AppConfig): Resource[IO, Host] = {
     Resource.eval(
       IO.fromEither(
-        Host.fromString(appConfig.integrationSpecConfig.host)
+        Host.fromString(appConfig.integrationSpecConfig.serverConfig.host)
           .toRight(new RuntimeException("[ControllerSharedResource] Invalid host configuration"))
       )
     )
@@ -31,7 +31,7 @@ trait BaseAppConfig {
   def portResource(appConfig: AppConfig): Resource[IO, Port] = {
     Resource.eval(
       IO.fromEither(
-        Port.fromInt(appConfig.integrationSpecConfig.port)
+        Port.fromInt(appConfig.integrationSpecConfig.serverConfig.port)
           .toRight(new RuntimeException("[ControllerSharedResource] Invalid port configuration"))
       )
     )

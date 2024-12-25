@@ -11,7 +11,7 @@ import models.office.office_listing.requests.OfficeListingRequest
 import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
 import weaver.SimpleIOSuite
 
-import java.time.LocalDateTime
+import java.time.{LocalDateTime, LocalTime}
 
 object OfficeListingRequestSpec extends SimpleIOSuite {
 
@@ -30,8 +30,8 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
       availability =
         OfficeAvailability(
           days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-          startTime = LocalDateTime.of(2024, 11, 21, 10, 0, 0),
-          endTime = LocalDateTime.of(2024, 11, 21, 10, 30, 0)
+          startTime = LocalTime.of(10, 0, 0),
+          endTime = LocalTime.of(10, 30, 0)
         ),
       rules = Some("No smoking. Maintain cleanliness."),
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
@@ -66,13 +66,6 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
-  val testOfficeAvailability =
-    OfficeAvailability(
-      days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-      startTime = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      endTime = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-    )
-
   val officeListingRequest =
     OfficeListingRequest(
       officeId = "office_id_1",
@@ -103,8 +96,8 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
         |    "capacity": 50,
         |    "availability": {
         |      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        |      "startTime": "2024-11-21T10:00:00",
-        |      "endTime": "2024-11-21T10:30:00"
+        |      "startTime": "10:00:00",
+        |      "endTime": "10:30:00"
         |    },
         |    "amenities": ["Wi-Fi", "Coffee Machine", "Projector", "Whiteboard", "Parking"],
         |    "rules": "No smoking. Maintain cleanliness.",
@@ -144,6 +137,7 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
 
     for {
       _ <- IO("")
+//      _ <- IO(println(jsonResult))
     } yield {
       expect(jsonResult == expectedResult)
     }

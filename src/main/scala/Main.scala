@@ -97,8 +97,8 @@ object Main extends IOApp {
         IO.raiseError(new RuntimeException(s"Failed to load app configuration: ${e.getMessage}", e))
       }
       _ <- Logger[IO].info(s"Loaded configuration: $appConfig")
-      host <- IO.fromOption(Host.fromString(appConfig.serverConfig.host))(new RuntimeException("Invalid host in configuration"))
-      port <- IO.fromOption(Port.fromInt(appConfig.serverConfig.port))(new RuntimeException("Invalid port in configuration"))
+      host <- IO.fromOption(Host.fromString(appConfig.localConfig.serverConfig.host))(new RuntimeException("Invalid host in configuration"))
+      port <- IO.fromOption(Port.fromInt(appConfig.localConfig.serverConfig.port))(new RuntimeException("Invalid port in configuration"))
       exitCode: ExitCode <-
         transactorResource[IO].flatMap { transactor =>
 
