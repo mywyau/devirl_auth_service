@@ -27,7 +27,7 @@ import weaver.*
 
 import java.time.LocalDateTime
 
-object DeskListingConstants {
+object DeskListingControllerConstants {
 
   val availability =
     Availability(

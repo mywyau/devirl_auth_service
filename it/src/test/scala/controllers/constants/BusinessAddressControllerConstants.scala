@@ -10,7 +10,7 @@ import models.business.specifications.{BusinessAvailability, BusinessSpecificati
 
 import java.time.LocalDateTime
 
-object BusinessAddressConstants {
+object BusinessAddressControllerConstants {
 
   def testBusinessAddress(id: Option[Int], userId: String, businessId: Option[String]): BusinessAddress = {
     BusinessAddress(

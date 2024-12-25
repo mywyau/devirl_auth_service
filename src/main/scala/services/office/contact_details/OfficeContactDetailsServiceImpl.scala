@@ -8,6 +8,7 @@ import cats.{Monad, NonEmptyParallel}
 import models.database.SqlErrors
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.errors.*
+import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
 import repositories.office.OfficeContactDetailsRepositoryAlgebra
 
 
@@ -15,7 +16,7 @@ trait OfficeContactDetailsServiceAlgebra[F[_]] {
 
   def getByOfficeId(officeId: String): F[Either[OfficeContactDetailsErrors, OfficeContactDetails]]
 
-  def create(officeContactDetails: OfficeContactDetails): F[cats.data.ValidatedNel[OfficeContactDetailsErrors, Int]]
+  def create(createOfficeContactDetailsRequest: CreateOfficeContactDetailsRequest): F[cats.data.ValidatedNel[OfficeContactDetailsErrors, Int]]
 
   def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
 
@@ -34,10 +35,10 @@ class OfficeContactDetailsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Mon
     }
   }
 
-  override def create(officeContactDetails: OfficeContactDetails): F[ValidatedNel[OfficeContactDetailsErrors, Int]] = {
+  override def create(createOfficeContactDetailsRequest: CreateOfficeContactDetailsRequest): F[ValidatedNel[OfficeContactDetailsErrors, Int]] = {
 
     val contactDetailsCreation: F[ValidatedNel[SqlErrors, Int]] =
-      officeContactDetailsRepo.create(officeContactDetails)
+      officeContactDetailsRepo.create(createOfficeContactDetailsRequest)
 
     contactDetailsCreation.map {
       case Validated.Valid(i) =>

@@ -3,7 +3,7 @@ package controllers.office
 import cats.effect.*
 import com.comcast.ip4s.{ipv4, port}
 import configuration.models.AppConfig
-import controllers.constants.OfficeSpecificationsConstants.*
+import controllers.constants.OfficeSpecificationsControllerConstants.*
 import controllers.fragments.OfficeSpecificationRepoFragments.{createOfficeSpecsTable, insertOfficeSpecificationsTable, resetOfficeSpecsTable}
 import controllers.office.OfficeSpecificationsController
 import doobie.implicits.*
@@ -65,6 +65,32 @@ class OfficeSpecificationsControllerISpec(global: GlobalRead) extends IOSuite {
         expect.all(
           response.status == Status.Ok,
           body == expectedOfficeSpecifications
+        )
+      }
+    }
+  }
+
+  test(
+    "POST - /pistachio/business/offices/specifications/create - " +
+      "should generate the office specifications data in postgresql, returning Created response"
+  ) { (sharedResources, log) =>
+
+    val transactor = sharedResources._1.xa
+    val client = sharedResources._2.client
+
+    val businessListingRequest: Json = testCreateOfficeSpecificationsRequest("BUSINESS1337", "OFFICE1337").asJson
+
+    val request =
+      Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/offices/specifications/create")
+        .withEntity(businessListingRequest)
+
+    val expectedBody = CreatedResponse("Office specifications created successfully")
+
+    client.run(request).use { response =>
+      response.as[CreatedResponse].map { body =>
+        expect.all(
+          response.status == Status.Created,
+          body == expectedBody
         )
       }
     }

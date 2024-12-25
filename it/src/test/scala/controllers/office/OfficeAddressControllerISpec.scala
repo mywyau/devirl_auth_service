@@ -3,7 +3,7 @@ package controllers.office
 import cats.effect.*
 import com.comcast.ip4s.{ipv4, port}
 import configuration.models.AppConfig
-import controllers.constants.OfficeAddressConstants.*
+import controllers.constants.OfficeAddressControllerConstants.*
 import controllers.fragments.OfficeAddressRepoFragments.{createOfficeAddressTable, insertOfficeAddressesTable, resetOfficeAddressTable}
 import controllers.office.OfficeAddressController
 import doobie.implicits.*
@@ -11,6 +11,7 @@ import doobie.util.transactor.Transactor
 import io.circe.Json
 import io.circe.syntax.*
 import models.office.address_details.OfficeAddress
+import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.adts.*
 import models.responses.{CreatedResponse, DeletedResponse}
 import org.http4s.*
@@ -58,10 +59,10 @@ class OfficeAddressControllerISpec(global: GlobalRead) extends IOSuite {
     val request =
       Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/offices/address/OFF001")
 
-    val expectedOfficeAddress = testOfficeAddress1(Some(1), "BUS123", "OFF001")
+    val expectedOfficeAddress = testCreateOfficeAddressRequest("BUS123", "OFF001")
 
     client.run(request).use { response =>
-      response.as[OfficeAddress].map { body =>
+      response.as[CreateOfficeAddressRequest].map { body =>
         expect.all(
           response.status == Status.Ok,
           body == expectedOfficeAddress
@@ -69,6 +70,33 @@ class OfficeAddressControllerISpec(global: GlobalRead) extends IOSuite {
       }
     }
   }
+
+  test(
+    "POST - /pistachio/business/offices/address/create - " +
+      "should generate the office address data in postgresql, returning Created response"
+  ) { (sharedResources, log) =>
+
+    val transactor = sharedResources._1.xa
+    val client = sharedResources._2.client
+
+    val businessListingRequest: Json = testCreateOfficeAddressRequest("BUSINESS1337", "OFFICE1337").asJson
+
+    val request =
+      Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/offices/address/create")
+        .withEntity(businessListingRequest)
+
+    val expectedBody = CreatedResponse("Office address created successfully")
+
+    client.run(request).use { response =>
+      response.as[CreatedResponse].map { body =>
+        expect.all(
+          response.status == Status.Created,
+          body == expectedBody
+        )
+      }
+    }
+  }
+
 
   test(
     "DELETE - /pistachio/business/offices/address/OFF002 - " +

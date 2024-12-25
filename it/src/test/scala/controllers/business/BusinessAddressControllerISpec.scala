@@ -3,7 +3,7 @@ package controllers.business
 import cats.effect.*
 import com.comcast.ip4s.{ipv4, port}
 import controllers.business.BusinessAddressController
-import controllers.constants.BusinessAddressConstants.*
+import controllers.constants.BusinessAddressControllerConstants.*
 import controllers.fragments.business.BusinessAddressRepoFragments.*
 import doobie.implicits.*
 import doobie.util.transactor.Transactor

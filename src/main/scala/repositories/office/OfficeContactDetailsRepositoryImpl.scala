@@ -11,6 +11,7 @@ import doobie.util.meta.Meta
 import models.database.*
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.errors.OfficeContactDetailsErrors
+import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -19,7 +20,7 @@ trait OfficeContactDetailsRepositoryAlgebra[F[_]] {
 
   def findByOfficeId(officeId: String): F[Option[OfficeContactDetails]]
 
-  def create(officeContactDetails: OfficeContactDetails): F[ValidatedNel[SqlErrors, Int]]
+  def create(createOfficeContactDetailsRequest: CreateOfficeContactDetailsRequest): F[ValidatedNel[SqlErrors, Int]]
 
   def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
 }
@@ -38,7 +39,7 @@ class OfficeContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: 
     findQuery
   }
 
-  override def create(officeContactDetails: OfficeContactDetails): F[ValidatedNel[SqlErrors, Int]] = {
+  override def create(createOfficeContactDetailsRequest: CreateOfficeContactDetailsRequest): F[ValidatedNel[SqlErrors, Int]] = {
     sql"""
       INSERT INTO office_contact_details (
         business_id,
@@ -46,18 +47,14 @@ class OfficeContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: 
         primary_contact_first_name,
         primary_contact_last_name,
         contact_email,
-        contact_number,
-        created_at,
-        updated_at
+        contact_number
       ) VALUES (
-        ${officeContactDetails.businessId},
-        ${officeContactDetails.officeId},
-        ${officeContactDetails.primaryContactFirstName},
-        ${officeContactDetails.primaryContactLastName},
-        ${officeContactDetails.contactEmail},
-        ${officeContactDetails.contactNumber},
-        ${officeContactDetails.createdAt},
-        ${officeContactDetails.updatedAt}
+        ${createOfficeContactDetailsRequest.businessId},
+        ${createOfficeContactDetailsRequest.officeId},
+        ${createOfficeContactDetailsRequest.primaryContactFirstName},
+        ${createOfficeContactDetailsRequest.primaryContactLastName},
+        ${createOfficeContactDetailsRequest.contactEmail},
+        ${createOfficeContactDetailsRequest.contactNumber}
       )
     """.update
       .run

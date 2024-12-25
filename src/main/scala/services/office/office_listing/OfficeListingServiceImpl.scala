@@ -36,13 +36,13 @@ class OfficeListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
   override def createOffice(officeListing: OfficeListingRequest): F[ValidatedNel[SqlErrors, Int]] = {
 
     val addressCreation: F[ValidatedNel[SqlErrors, Int]] =
-      officeAddressRepo.create(officeListing.addressDetails)
+      officeAddressRepo.create(officeListing.createOfficeAddressRequest)
 
     val contactDetailsCreation: F[ValidatedNel[SqlErrors, Int]] =
-      officeContactDetailsRepo.create(officeListing.contactDetails)
+      officeContactDetailsRepo.create(officeListing.createOfficeContactDetailsRequest)
 
     val specsCreation: F[ValidatedNel[SqlErrors, Int]] =
-      officeSpecsRepo.createSpecs(officeListing.officeSpecs)
+      officeSpecsRepo.createSpecs(officeListing.createOfficeSpecificationsRequest)
 
     // Run the operations in parallel
     (addressCreation, contactDetailsCreation, specsCreation).parMapN {

@@ -1,39 +1,24 @@
 package controllers.constants
 
 import cats.effect.*
-import com.comcast.ip4s.{ipv4, port}
-import controllers.fragments.OfficeAddressRepoFragments.*
-import controllers.fragments.OfficeContactDetailsRepoFragments.*
-import controllers.fragments.OfficeSpecificationRepoFragments.*
-import controllers.office_listing.OfficeListingController
-import doobie.implicits.*
-import doobie.util.transactor.Transactor
 import io.circe.Json
 import io.circe.syntax.*
-import models.office.address_details.OfficeAddress
 import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.adts.*
 import models.office.contact_details.OfficeContactDetails
+import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
 import models.office.office_listing.requests.OfficeListingRequest
+import models.office.specifications.requests.CreateOfficeSpecificationsRequest
 import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
 import models.responses.CreatedResponse
 import org.http4s.*
 import org.http4s.Method.*
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
-import org.http4s.ember.server.EmberServerBuilder
-import org.http4s.implicits.*
-import org.http4s.server.{Router, Server}
-import org.typelevel.log4cats.SelfAwareStructuredLogger
-import org.typelevel.log4cats.slf4j.Slf4jLogger
-import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeSpecificationsRepository}
-import services.office.office_listing.OfficeListingService
-import shared.{HttpClientResource, TransactorResource}
-import weaver.*
 
 import java.time.{LocalDateTime, LocalTime}
 
-object OfficeListingConstants {
+object OfficeListingControllerConstants {
 
   val testOfficeAvailability: OfficeAvailability =
     OfficeAvailability(
@@ -42,9 +27,8 @@ object OfficeListingConstants {
       endTime = LocalTime.of(0, 0, 0)
     )
 
-  val testOfficeSpecs: OfficeSpecifications =
-    OfficeSpecifications(
-      id = Some(1),
+  val testCreateOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest =
+    CreateOfficeSpecificationsRequest(
       businessId = "business_id_1",
       officeId = "office_id_1",
       officeName = "Modern Workspace",
@@ -55,27 +39,7 @@ object OfficeListingConstants {
       capacity = 50,
       amenities = List("Wi-Fi", "Coffee Machine", "Projector", "Whiteboard", "Parking"),
       availability = testOfficeAvailability,
-      rules = Some("No smoking. Maintain cleanliness."),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-    )
-
-  val testOfficeAddress: OfficeAddress =
-    OfficeAddress(
-      id = Some(1),
-      businessId = "business_id_1",
-      officeId = "office_id_1",
-      buildingName = Some("OfficeListingControllerISpec Building"),
-      floorNumber = Some("floor 1"),
-      street = Some("123 Main Street"),
-      city = Some("New York"),
-      country = Some("USA"),
-      county = Some("New York County"),
-      postcode = Some("10001"),
-      latitude = Some(100.1),
-      longitude = Some(-100.1),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      rules = Some("No smoking. Maintain cleanliness.")
     )
 
   val testOfficeAddressRequest: CreateOfficeAddressRequest =
@@ -93,26 +57,23 @@ object OfficeListingConstants {
       longitude = Some(-100.1)
     )
 
-  val testOfficeContactDetails: OfficeContactDetails =
-    OfficeContactDetails(
-      id = Some(1),
+  val testCreateOfficeContactDetailsRequest =
+    CreateOfficeContactDetailsRequest(
       businessId = "business_id_1",
       officeId = "office_id_1",
       primaryContactFirstName = "Michael",
       primaryContactLastName = "Yau",
       contactEmail = "mike@gmail.com",
-      contactNumber = "07402205071",
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      contactNumber = "07402205071"
     )
 
 
   def testOfficeListingRequest(officeId: String): OfficeListingRequest =
     OfficeListingRequest(
       officeId = officeId,
-      addressDetails = testOfficeAddressRequest,
-      officeSpecs = testOfficeSpecs,
-      contactDetails = testOfficeContactDetails,
+      createOfficeAddressRequest = testOfficeAddressRequest,
+      createOfficeSpecificationsRequest = testCreateOfficeSpecificationsRequest,
+      createOfficeContactDetailsRequest = testCreateOfficeContactDetailsRequest,
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )

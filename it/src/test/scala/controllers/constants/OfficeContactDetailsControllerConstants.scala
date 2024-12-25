@@ -2,10 +2,21 @@ package controllers.constants
 
 import cats.effect.*
 import models.office.contact_details.OfficeContactDetails
+import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
 
 import java.time.LocalDateTime
 
-object OfficeContactDetailsConstants {
+object OfficeContactDetailsControllerConstants {
+
+  def createNewContactDetailsRequest(businessId: String, officeId: String): CreateOfficeContactDetailsRequest =
+    CreateOfficeContactDetailsRequest(
+      businessId = businessId,
+      officeId = officeId,
+      primaryContactFirstName = "Ned",
+      primaryContactLastName = "Flanders",
+      contactEmail = "ned.flanders@example.com",
+      contactNumber = "+15551239999"
+    )
 
   def aliceContactDetails(id: Option[Int], businessId: String, officeId: String): OfficeContactDetails =
     OfficeContactDetails(

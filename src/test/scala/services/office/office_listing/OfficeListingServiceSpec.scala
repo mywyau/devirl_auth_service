@@ -8,9 +8,11 @@ import models.office.address_details.OfficeAddress
 import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.adts.*
 import models.office.contact_details.OfficeContactDetails
+import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
 import models.office.office_listing.errors.OfficeListingErrors
 import models.office.office_listing.requests.OfficeListingRequest
 import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
+import models.office.specifications.requests.CreateOfficeSpecificationsRequest
 import repositories.office.{OfficeAddressRepositoryAlgebra, OfficeContactDetailsRepositoryAlgebra, OfficeSpecificationsRepositoryAlgebra}
 import weaver.SimpleIOSuite
 
@@ -18,9 +20,8 @@ import java.time.{LocalDateTime, LocalTime}
 
 object OfficeListingServiceSpec extends SimpleIOSuite {
 
-  val testOfficeSpecs: OfficeSpecifications =
-    OfficeSpecifications(
-      id = Some(1),
+  val testCreateOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest =
+    CreateOfficeSpecificationsRequest(
       businessId = "business_id_1",
       officeId = "office_id_1",
       officeName = "Modern Workspace",
@@ -36,12 +37,10 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
           startTime = LocalTime.of(10, 0, 0),
           endTime = LocalTime.of(10, 30, 0)
         ),
-      rules = Some("No smoking. Maintain cleanliness."),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      rules = Some("No smoking. Maintain cleanliness.")
     )
 
-  val testOfficeAddress =
+  val testCreateOfficeAddressRequest =
     CreateOfficeAddressRequest(
       businessId = "business_id_1",
       officeId = "office_id_1",
@@ -69,12 +68,22 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
+  val testCreateOfficeContactDetailsRequest =
+    CreateOfficeContactDetailsRequest(
+      businessId = "business_id_1",
+      officeId = "office_id_1",
+      primaryContactFirstName = "Michael",
+      primaryContactLastName = "Yau",
+      contactEmail = "mike@gmail.com",
+      contactNumber = "07402205071",
+    )
+
   val officeListingRequest =
     OfficeListingRequest(
       officeId = "office_id_1",
-      addressDetails = testOfficeAddress,
-      officeSpecs = testOfficeSpecs,
-      contactDetails = testOfficeContactDetails,
+      createOfficeAddressRequest = testCreateOfficeAddressRequest,
+      createOfficeSpecificationsRequest = testCreateOfficeSpecificationsRequest,
+      createOfficeContactDetailsRequest = testCreateOfficeContactDetailsRequest,
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
@@ -97,7 +106,7 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
 
     override def findByOfficeId(businessId: String): IO[Option[OfficeContactDetails]] = ???
 
-    override def create(officeContactDetails: OfficeContactDetails): IO[ValidatedNel[SqlErrors, Int]] = contactResult
+    override def create(createOfficeContactDetailsRequest: CreateOfficeContactDetailsRequest): IO[ValidatedNel[SqlErrors, Int]] = contactResult
 
     override def delete(officeId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
   }
@@ -106,9 +115,9 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
                              specsResult: IO[ValidatedNel[SqlErrors, Int]]
                            ) extends OfficeSpecificationsRepositoryAlgebra[IO] {
 
-    override def createSpecs(user: OfficeSpecifications): IO[ValidatedNel[SqlErrors, Int]] = specsResult
-
     override def findByOfficeId(officeId: String): IO[Option[OfficeSpecifications]] = ???
+
+    override def createSpecs(createOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest): IO[ValidatedNel[SqlErrors, Int]] = specsResult
 
     override def delete(officeId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
   }

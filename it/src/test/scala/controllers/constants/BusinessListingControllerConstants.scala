@@ -10,7 +10,7 @@ import models.business.specifications.{BusinessAvailability, BusinessSpecificati
 
 import java.time.LocalDateTime
 
-object BusinessListingConstants {
+object BusinessListingControllerConstants {
 
   val testBusinessSpecs: BusinessSpecifications =
     BusinessSpecifications(

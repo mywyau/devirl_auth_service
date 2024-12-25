@@ -5,16 +5,16 @@ import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
 import models.office.adts.*
-import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
+import models.office.specifications.OfficeAvailability
+import models.office.specifications.requests.CreateOfficeSpecificationsRequest
 import weaver.SimpleIOSuite
 
 import java.time.{LocalDateTime, LocalTime}
 
-object OfficeSpecificationsSpec extends SimpleIOSuite {
+object CreateOfficeSpecificationsRequestSpec extends SimpleIOSuite {
 
-  val officeSpecifications: OfficeSpecifications =
-    OfficeSpecifications(
-      id = Some(1),
+  val createOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest =
+    CreateOfficeSpecificationsRequest(
       businessId = "business_id_1",
       officeId = "office_id_1",
       officeName = "Modern Workspace",
@@ -30,19 +30,16 @@ object OfficeSpecificationsSpec extends SimpleIOSuite {
           startTime = LocalTime.of(10, 0, 0),
           endTime = LocalTime.of(10, 30, 0)
         ),
-      rules = Some("No smoking. Maintain cleanliness."),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      rules = Some("No smoking. Maintain cleanliness.")
     )
 
-  test("OfficeSpecifications model encodes correctly to JSON") {
+  test("CreateOfficeSpecificationsRequest model encodes correctly to JSON") {
 
-    val jsonResult = officeSpecifications.asJson
+    val jsonResult = createOfficeSpecificationsRequest.asJson
 
     val expectedJson =
       """
         |{
-        |   "id": 1,
         |   "businessId": "business_id_1",
         |   "officeId": "office_id_1",
         |   "officeName": "Modern Workspace",
@@ -57,9 +54,7 @@ object OfficeSpecificationsSpec extends SimpleIOSuite {
         |     "endTime": "10:30:00"
         |   },
         |   "amenities": ["Wi-Fi", "Coffee Machine", "Projector", "Whiteboard", "Parking"],
-        |   "rules": "No smoking. Maintain cleanliness.",
-        |   "createdAt": "2025-01-01T00:00:00",
-        |   "updatedAt": "2025-01-01T00:00:00"
+        |   "rules": "No smoking. Maintain cleanliness."
         |}
         |""".stripMargin
 

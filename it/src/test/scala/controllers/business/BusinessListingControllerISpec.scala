@@ -4,7 +4,7 @@ import cats.effect.*
 import com.comcast.ip4s.{ipv4, port}
 import configuration.models.AppConfig
 import controllers.business_listing.BusinessListingController
-import controllers.constants.BusinessListingConstants.*
+import controllers.constants.BusinessListingControllerConstants.*
 import controllers.fragments.business.BusinessAddressRepoFragments.*
 import controllers.fragments.business.BusinessContactDetailsRepoFragments.*
 import controllers.fragments.business.BusinessSpecsRepoFragments.*

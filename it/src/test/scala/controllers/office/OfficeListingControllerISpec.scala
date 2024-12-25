@@ -2,7 +2,7 @@ package controllers.office
 
 import cats.effect.*
 import com.comcast.ip4s.{ipv4, port}
-import controllers.constants.OfficeListingConstants.*
+import controllers.constants.OfficeListingControllerConstants.*
 import controllers.fragments.OfficeAddressRepoFragments.*
 import controllers.fragments.OfficeContactDetailsRepoFragments.*
 import controllers.fragments.OfficeSpecificationRepoFragments.*

@@ -5,6 +5,7 @@ import cats.data.{Validated, ValidatedNel}
 import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
+import models.office.specifications.requests.CreateOfficeSpecificationsRequest
 import models.office.specifications.OfficeSpecifications
 import models.office.specifications.errors.*
 import models.database.SqlErrors
@@ -14,7 +15,7 @@ trait OfficeSpecificationsServiceAlgebra[F[_]] {
 
   def getByOfficeId(officeId: String): F[Either[OfficeSpecificationsErrors, OfficeSpecifications]]
 
-  def create(officeSpecifications: OfficeSpecifications): F[cats.data.ValidatedNel[OfficeSpecificationsErrors, Int]]
+  def create(createOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest): F[cats.data.ValidatedNel[OfficeSpecificationsErrors, Int]]
 
   def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
 }
@@ -33,10 +34,10 @@ class OfficeSpecificationsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Mon
     }
   }
 
-  override def create(officeSpecifications: OfficeSpecifications): F[ValidatedNel[OfficeSpecificationsErrors, Int]] = {
+  override def create(createOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest): F[ValidatedNel[OfficeSpecificationsErrors, Int]] = {
 
     val specificationsCreation: F[ValidatedNel[SqlErrors, Int]] =
-      officeSpecificationsRepo.createSpecs(officeSpecifications)
+      officeSpecificationsRepo.createSpecs(createOfficeSpecificationsRequest)
 
     specificationsCreation.map {
       case Validated.Valid(i) =>

@@ -12,6 +12,7 @@ import doobie.util.meta.Meta
 import io.circe.syntax.*
 import models.database.*
 import models.office.adts.OfficeType
+import models.office.specifications.requests.CreateOfficeSpecificationsRequest
 import models.office.specifications.OfficeSpecifications
 
 import java.sql.Timestamp
@@ -21,7 +22,7 @@ trait OfficeSpecificationsRepositoryAlgebra[F[_]] {
 
   def findByOfficeId(officeId: String): F[Option[OfficeSpecifications]]
 
-  def createSpecs(user: OfficeSpecifications): F[ValidatedNel[SqlErrors, Int]]
+  def createSpecs(createOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest): F[ValidatedNel[SqlErrors, Int]]
 
   def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
 
@@ -43,7 +44,7 @@ class OfficeSpecificationsRepositoryImpl[F[_] : Concurrent : Monad](transactor: 
     findQuery
   }
 
-  override def createSpecs(officeSpecs: OfficeSpecifications): F[ValidatedNel[SqlErrors, Int]] = {
+  override def createSpecs(createOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest): F[ValidatedNel[SqlErrors, Int]] = {
     sql"""
       INSERT INTO office_specs (
         business_id,
@@ -56,23 +57,19 @@ class OfficeSpecificationsRepositoryImpl[F[_] : Concurrent : Monad](transactor: 
         capacity,
         amenities,
         availability,
-        rules,
-        created_at,
-        updated_at
+        rules
       ) VALUES (
-        ${officeSpecs.businessId},
-        ${officeSpecs.officeId},
-        ${officeSpecs.officeName},
-        ${officeSpecs.description},
-        ${officeSpecs.officeType},
-        ${officeSpecs.numberOfFloors},
-        ${officeSpecs.totalDesks},
-        ${officeSpecs.capacity},
-        ${officeSpecs.amenities},
-        ${officeSpecs.availability.asJson.noSpaces}::jsonb,
-        ${officeSpecs.rules},
-        ${officeSpecs.createdAt},
-        ${officeSpecs.updatedAt}
+        ${createOfficeSpecificationsRequest.businessId},
+        ${createOfficeSpecificationsRequest.officeId},
+        ${createOfficeSpecificationsRequest.officeName},
+        ${createOfficeSpecificationsRequest.description},
+        ${createOfficeSpecificationsRequest.officeType},
+        ${createOfficeSpecificationsRequest.numberOfFloors},
+        ${createOfficeSpecificationsRequest.totalDesks},
+        ${createOfficeSpecificationsRequest.capacity},
+        ${createOfficeSpecificationsRequest.amenities},
+        ${createOfficeSpecificationsRequest.availability.asJson.noSpaces}::jsonb,
+        ${createOfficeSpecificationsRequest.rules}
       )
     """
       .update
