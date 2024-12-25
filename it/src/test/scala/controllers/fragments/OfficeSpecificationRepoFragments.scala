@@ -58,7 +58,7 @@ object OfficeSpecificationRepoFragments {
           50,
           100,
           ARRAY['Wi-Fi', 'Coffee Machine', 'Meeting Rooms'],
-          '{"days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "startTime": "2025-01-01T08:00:00", "endTime": "2025-01-01T18:00:00"}',
+          '{"days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "startTime": "08:00:00", "endTime": "18:00:00"}',
           'No loud conversations. Keep the desks clean.',
           '2025-01-01 00:00:00',
           '2025-01-01 00:00:00'
@@ -73,7 +73,7 @@ object OfficeSpecificationRepoFragments {
           20,
           40,
           ARRAY['Wi-Fi', 'Tea', 'Parking'],
-          '{"days": ["Monday", "Wednesday"], "startTime": "2025-01-01T08:00:00", "endTime": "2025-01-01T18:00:00"}',
+          '{"days": ["Monday", "Wednesday"], "startTime": "08:00:00", "endTime": "18:00:00"}',
           'No pets. Maintain silence.',
           '2025-01-01 00:00:00',
           '2025-01-01 00:00:00'
