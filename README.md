@@ -58,9 +58,19 @@ psql -h localhost -p 5432 -U shared_user -d shared_db
 
 ### Set base search path for schema
 
+only needed if using multiple schemas in the db. At the moment we are using public so no need beforehand 
+accidentally set a new schema in flyway conf
+
 ```
 ALTER ROLE shared_user SET search_path TO share_schema, public;
 ```
 
 
+### Httpie requests 
+
+We can use httppie instead of curl
+
+WIP TODO: add some exmaples to hit our endpoints
+```
 http POST http://localhost:1010/pistachio/business/offices/address/create Content-Type:application/json businessId="BUS12345" officeId="OFF12345" buildingName="Example Building" floorNumber="12" street="123 Example Street" city="Example City" country="Example Country" county="Example County" postcode="12345" latitude:=12.345678 longitude:=-98.765432
+```
