@@ -4,7 +4,7 @@ import cats.effect.*
 import models.office.adts.*
 import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
 
-import java.time.LocalDateTime
+import java.time.{LocalDateTime, LocalTime}
 
 object OfficeSpecificationsConstants {
 
@@ -23,8 +23,8 @@ object OfficeSpecificationsConstants {
       availability =
         OfficeAvailability(
           days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-          startTime = LocalDateTime.of(2025, 1, 1, 8, 0, 0),
-          endTime = LocalDateTime.of(2025, 1, 1, 18, 0, 0)
+          startTime = LocalTime.of(8, 0, 0),
+          endTime = LocalTime.of(18, 0, 0)
         ),
       rules = Some("No loud conversations. Keep the desks clean."),
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
@@ -47,8 +47,8 @@ object OfficeSpecificationsConstants {
       availability =
         OfficeAvailability(
           days = List("Monday", "Wednesday"),
-          startTime = LocalDateTime.of(2025, 1, 1, 8, 0, 0),
-          endTime = LocalDateTime.of(2025, 1, 1, 18, 0, 0)
+          startTime = LocalTime.of(8, 0, 0),
+          endTime = LocalTime.of(18, 0, 0)
         ),
       rules = Some("No pets. Maintain silence."),
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),

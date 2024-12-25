@@ -10,9 +10,9 @@ import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.Json
 import io.circe.syntax.*
-import models.office.adts.*
 import models.office.address_details.OfficeAddress
 import models.office.address_details.requests.OfficeAddressRequest
+import models.office.adts.*
 import models.office.contact_details.OfficeContactDetails
 import models.office.office_listing.requests.OfficeListingRequest
 import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
@@ -31,15 +31,15 @@ import services.office.office_listing.OfficeListingService
 import shared.{HttpClientResource, TransactorResource}
 import weaver.*
 
-import java.time.LocalDateTime
+import java.time.{LocalDateTime, LocalTime}
 
 object OfficeListingConstants {
 
   val testOfficeAvailability: OfficeAvailability =
     OfficeAvailability(
       days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-      startTime = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      endTime = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      startTime = LocalTime.of(0, 0, 0),
+      endTime = LocalTime.of(0, 0, 0)
     )
 
   val testOfficeSpecs: OfficeSpecifications =

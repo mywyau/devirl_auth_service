@@ -5,15 +5,14 @@ import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
 import models.business.adts.PrivateDesk
-import models.office.specifications.OfficeSpecifications
 import models.office.adts.OpenPlanOffice
-import models.office.specifications.OfficeAvailability
+import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
 import repositories.office.OfficeSpecificationsRepositoryImpl
 import repository.fragments.OfficeSpecificationsRepoFragments.{createOfficeSpecsTable, resetOfficeSpecsTable}
 import shared.TransactorResource
 import weaver.{GlobalRead, IOSuite, ResourceTag}
 
-import java.time.LocalDateTime
+import java.time.{LocalDateTime, LocalTime}
 
 class OfficeSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite {
 
@@ -40,8 +39,8 @@ class OfficeSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite {
       availability =
         OfficeAvailability(
           days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-          startTime = LocalDateTime.of(2024, 11, 21, 10, 0, 0),
-          endTime = LocalDateTime.of(2024, 11, 21, 10, 30, 0)
+          startTime = LocalTime.of(10, 0, 0),
+          endTime = LocalTime.of(10, 30, 0)
         ),
       rules = Some("No smoking. Maintain cleanliness."),
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
@@ -90,8 +89,8 @@ class OfficeSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite {
         availability =
           OfficeAvailability(
             days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-            startTime = LocalDateTime.of(2024, 11, 21, 10, 0, 0),
-            endTime = LocalDateTime.of(2024, 11, 21, 10, 30, 0)
+            startTime = LocalTime.of(10, 0, 0),
+            endTime = LocalTime.of(10, 30, 0)
           ),
         rules = Some("No smoking. Maintain cleanliness."),
         createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
