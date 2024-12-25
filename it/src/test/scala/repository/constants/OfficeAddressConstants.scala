@@ -1,14 +1,14 @@
 package repository.constants
 
 import models.office.address_details.OfficeAddress
-import models.office.address_details.requests.OfficeAddressRequest
+import models.office.address_details.requests.CreateOfficeAddressRequest
 
 import java.time.LocalDateTime
 
 object OfficeAddressConstants {
 
-  def testOfficeAddressRequest(businessId: String, officeId: String): OfficeAddressRequest = {
-    OfficeAddressRequest(
+  def testOfficeAddressRequest(businessId: String, officeId: String): CreateOfficeAddressRequest = {
+    CreateOfficeAddressRequest(
       businessId = businessId,
       officeId = officeId,
       buildingName = Some("Empire State Building"),

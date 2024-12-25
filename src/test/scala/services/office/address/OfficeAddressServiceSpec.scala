@@ -6,7 +6,7 @@ import cats.effect.IO
 import models.database.SqlErrors
 import models.office.address_details.OfficeAddress
 import models.office.address_details.errors.OfficeAddressNotFound
-import models.office.address_details.requests.OfficeAddressRequest
+import models.office.address_details.requests.CreateOfficeAddressRequest
 import repositories.office.OfficeAddressRepositoryAlgebra
 import services.office.address.{OfficeAddressService, OfficeAddressServiceImpl}
 import weaver.SimpleIOSuite
@@ -33,8 +33,8 @@ object OfficeAddressServiceSpec extends SimpleIOSuite {
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
-  def testAddressRequest(businessId: String, office_id: String): OfficeAddressRequest =
-    OfficeAddressRequest(
+  def testAddressRequest(businessId: String, office_id: String): CreateOfficeAddressRequest =
+    CreateOfficeAddressRequest(
       businessId = businessId,
       officeId = office_id,
       buildingName = Some("build_123"),
@@ -56,7 +56,7 @@ object OfficeAddressServiceSpec extends SimpleIOSuite {
 
     override def findByOfficeId(officeId: String): IO[Option[OfficeAddress]] = IO.pure(existingOfficeAddress.get(officeId))
 
-    override def create(officeAddressRequest: OfficeAddressRequest): IO[ValidatedNel[SqlErrors, Int]] = IO(Valid(1))
+    override def create(officeAddressRequest: CreateOfficeAddressRequest): IO[ValidatedNel[SqlErrors, Int]] = IO(Valid(1))
 
     override def delete(officeId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
   }

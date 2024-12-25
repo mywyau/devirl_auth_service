@@ -5,7 +5,7 @@ import cats.effect.IO
 import cats.implicits.*
 import models.database.{SqlErrors, *}
 import models.office.address_details.OfficeAddress
-import models.office.address_details.requests.OfficeAddressRequest
+import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.adts.*
 import models.office.contact_details.OfficeContactDetails
 import models.office.office_listing.errors.OfficeListingErrors
@@ -42,7 +42,7 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
     )
 
   val testOfficeAddress =
-    OfficeAddressRequest(
+    CreateOfficeAddressRequest(
       businessId = "business_id_1",
       officeId = "office_id_1",
       buildingName = Some("build_123"),
@@ -86,7 +86,7 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
 
     override def findByOfficeId(officeId: String): IO[Option[OfficeAddress]] = ???
 
-    override def create(officeAddressRequest: OfficeAddressRequest): IO[ValidatedNel[SqlErrors, Int]] = addressResult
+    override def create(officeAddressRequest: CreateOfficeAddressRequest): IO[ValidatedNel[SqlErrors, Int]] = addressResult
 
     override def delete(officeId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
   }

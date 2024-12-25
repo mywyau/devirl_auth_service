@@ -10,7 +10,7 @@ import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import models.database.*
 import models.office.address_details.OfficeAddress
-import models.office.address_details.requests.OfficeAddressRequest
+import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.address_details.errors.OfficeAddressErrors
 
 import java.sql.Timestamp
@@ -20,7 +20,7 @@ trait OfficeAddressRepositoryAlgebra[F[_]] {
 
   def findByOfficeId(officeId: String): F[Option[OfficeAddress]]
 
-  def create(officeAddressRequest: OfficeAddressRequest): F[ValidatedNel[SqlErrors, Int]]
+  def create(officeAddressRequest: CreateOfficeAddressRequest): F[ValidatedNel[SqlErrors, Int]]
 
   def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
 
@@ -40,7 +40,7 @@ class OfficeAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
     findQuery
   }
 
-  override def create(officeAddressRequest: OfficeAddressRequest): F[ValidatedNel[SqlErrors, Int]] = {
+  override def create(officeAddressRequest: CreateOfficeAddressRequest): F[ValidatedNel[SqlErrors, Int]] = {
     sql"""
       INSERT INTO office_address (
         business_id,

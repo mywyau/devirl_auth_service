@@ -4,7 +4,7 @@ import cats.data.Validated.Valid
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import models.office.address_details.OfficeAddress
-import models.office.address_details.requests.OfficeAddressRequest
+import models.office.address_details.requests.CreateOfficeAddressRequest
 import repository.office.mocks.MockOfficeAddressRepository
 import weaver.SimpleIOSuite
 
@@ -12,8 +12,8 @@ import java.time.LocalDateTime
 
 object OfficeAddressRepositorySpec extends SimpleIOSuite {
 
-  def testOfficeAddressRequest(businessId: String, office_id: String): OfficeAddressRequest =
-    OfficeAddressRequest(
+  def testOfficeAddressRequest(businessId: String, office_id: String): CreateOfficeAddressRequest =
+    CreateOfficeAddressRequest(
       businessId = businessId,
       officeId = office_id,
       buildingName = Some("building name"),
@@ -67,7 +67,7 @@ object OfficeAddressRepositorySpec extends SimpleIOSuite {
 
   test(".createOfficeAddress() - when given a valid office address should insert an address into the postgres db") {
 
-    val testAddressRequest: OfficeAddressRequest = testOfficeAddressRequest("business_id_2", "office_2")
+    val testAddressRequest: CreateOfficeAddressRequest = testOfficeAddressRequest("business_id_2", "office_2")
     val testAddressForUser2: OfficeAddress = testAddress(Some(1), "business_id_2", "office_2")
     for {
       mockRepo <- createMockRepo(List())

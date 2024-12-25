@@ -5,7 +5,7 @@ import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
 import models.office.address_details.OfficeAddress
-import models.office.address_details.requests.OfficeAddressRequest
+import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse}
 import org.http4s.*
 import org.http4s.circe.*
@@ -23,7 +23,7 @@ class OfficeAddressControllerImpl[F[_] : Concurrent](
   extends Http4sDsl[F] with OfficeAddressControllerAlgebra[F] {
 
   implicit val officeAddressDecoder: EntityDecoder[F, OfficeAddress] = jsonOf[F, OfficeAddress]
-  implicit val officeAddressRequestDecoder: EntityDecoder[F, OfficeAddressRequest] = jsonOf[F, OfficeAddressRequest]
+  implicit val officeAddressRequestDecoder: EntityDecoder[F, CreateOfficeAddressRequest] = jsonOf[F, CreateOfficeAddressRequest]
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
@@ -40,7 +40,7 @@ class OfficeAddressControllerImpl[F[_] : Concurrent](
 
     case req@POST -> Root / "business" / "offices" / "address" / "create" =>
       logger.info(s"[OfficeListingControllerImpl] POST - Creating office listing") *>
-        req.decode[OfficeAddressRequest] { request =>
+        req.decode[CreateOfficeAddressRequest] { request =>
           officeAddressService.create(request).flatMap {
             case Valid(listing) =>
               logger.info(s"[OfficeListingControllerImpl] POST - Successfully created a office address") *>

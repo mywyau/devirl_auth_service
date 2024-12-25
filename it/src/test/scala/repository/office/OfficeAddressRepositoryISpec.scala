@@ -6,7 +6,7 @@ import doobie.*
 import doobie.implicits.*
 import models.business.adts.PrivateDesk
 import models.office.address_details.OfficeAddress
-import models.office.address_details.requests.OfficeAddressRequest
+import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.office_listing.requests.OfficeListingRequest
 import models.office.specifications.OfficeAvailability
 import repositories.office.OfficeAddressRepositoryImpl

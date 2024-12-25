@@ -8,7 +8,7 @@ import cats.{Monad, NonEmptyParallel}
 import models.database.*
 import models.office.address_details.OfficeAddress
 import models.office.address_details.errors.*
-import models.office.address_details.requests.OfficeAddressRequest
+import models.office.address_details.requests.CreateOfficeAddressRequest
 import repositories.office.OfficeAddressRepositoryAlgebra
 
 
@@ -16,7 +16,7 @@ trait OfficeAddressServiceAlgebra[F[_]] {
 
   def getByOfficeId(officeId: String): F[Either[OfficeAddressErrors, OfficeAddress]]
 
-  def create(officeAddress: OfficeAddressRequest): F[ValidatedNel[OfficeAddressErrors, Int]]
+  def create(officeAddress: CreateOfficeAddressRequest): F[ValidatedNel[OfficeAddressErrors, Int]]
 
   def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
 }
@@ -35,7 +35,7 @@ class OfficeAddressServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
     }
   }
 
-  override def create(officeAddressRequest: OfficeAddressRequest): F[ValidatedNel[OfficeAddressErrors, Int]] = {
+  override def create(officeAddressRequest: CreateOfficeAddressRequest): F[ValidatedNel[OfficeAddressErrors, Int]] = {
 
     val addressCreation: F[ValidatedNel[SqlErrors, Int]] =
       officeAddressRepo.create(officeAddressRequest)

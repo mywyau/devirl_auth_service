@@ -11,7 +11,7 @@ import doobie.util.transactor.Transactor
 import io.circe.Json
 import io.circe.syntax.*
 import models.office.address_details.OfficeAddress
-import models.office.address_details.requests.OfficeAddressRequest
+import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.adts.*
 import models.office.contact_details.OfficeContactDetails
 import models.office.office_listing.requests.OfficeListingRequest
@@ -78,8 +78,8 @@ object OfficeListingConstants {
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
-  val testOfficeAddressRequest: OfficeAddressRequest =
-    OfficeAddressRequest(
+  val testOfficeAddressRequest: CreateOfficeAddressRequest =
+    CreateOfficeAddressRequest(
       businessId = "business_id_1",
       officeId = "office_id_1",
       buildingName = Some("OfficeListingControllerISpec Building"),
