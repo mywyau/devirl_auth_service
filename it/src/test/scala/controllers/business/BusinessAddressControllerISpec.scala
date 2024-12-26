@@ -84,7 +84,7 @@ class BusinessAddressControllerISpec(global: GlobalRead) extends IOSuite {
       Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/businesses/address/details/create")
         .withEntity(businessAddressRequest)
 
-    val expectedBody = CreatedResponse("Business contact details created successfully")
+    val expectedBody = CreatedResponse("Business address details created successfully")
 
     client.run(request).use { response =>
       response.as[CreatedResponse].map { body =>

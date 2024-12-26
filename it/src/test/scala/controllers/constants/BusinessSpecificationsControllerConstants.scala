@@ -3,9 +3,7 @@ package controllers.constants
 import cats.effect.*
 import models.business.address.BusinessAddress
 import models.business.adts.*
-import models.business.address.requests.CreateBusinessAddressRequest
-import models.business.contact_details.BusinessContactDetails
-import models.business.business_listing.requests.BusinessListingRequest
+import models.business.specifications.requests.CreateBusinessSpecificationsRequest
 import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
 
 import java.time.LocalDateTime
@@ -21,5 +19,17 @@ object BusinessSpecificationsControllerConstants {
       description = "some description",
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+    )
+
+
+  def testCreateBusinessSpecificationsRequest(
+                                               userId: String,
+                                               businessId: String
+                                             ): CreateBusinessSpecificationsRequest =
+    CreateBusinessSpecificationsRequest(
+      userId = userId,
+      businessId = businessId,
+      businessName = "Example Business Name",
+      description = "some description"
     )
 }

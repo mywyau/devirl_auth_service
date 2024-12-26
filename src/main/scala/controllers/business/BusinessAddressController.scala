@@ -42,7 +42,7 @@ class BusinessAddressControllerImpl[F[_] : Concurrent](
           businessAddressService.createAddress(request).flatMap {
             case Valid(listing) =>
               logger.info(s"[BusinessAddressControllerImpl] POST - Successfully created a business address") *>
-                Created(CreatedResponse("Business contact details created successfully").asJson)
+                Created(CreatedResponse("Business address details created successfully").asJson)
             case _ =>
               InternalServerError(ErrorResponse(code = "Code", message = "An error occurred").asJson)
           }

@@ -119,6 +119,32 @@ class BusinessContactDetailsControllerISpec(global: GlobalRead) extends IOSuite 
   }
 
   test(
+    "POST - /pistachio/business/businesses/contact/details/create - " +
+      "should generate the business contact data for a business in database table, returning Created response"
+  ) { (transactorResource, log) =>
+
+    val transactor = transactorResource._1.xa
+    val client = transactorResource._2.client
+
+    val businessAddressRequest: Json = testCreateBusinessContactDetailsRequest("user_id_3", "business_id_3").asJson
+
+    val request =
+      Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/businesses/contact/details/create")
+        .withEntity(businessAddressRequest)
+
+    val expectedBody = CreatedResponse("Business contact details created successfully")
+
+    client.run(request).use { response =>
+      response.as[CreatedResponse].map { body =>
+        expect.all(
+          response.status == Status.Created,
+          body == expectedBody
+        )
+      }
+    }
+  }
+
+  test(
     "DELETE - /pistachio/business/businesses/contact/details/business_id_2 - " +
       "given a business_id, delete the business contact details data for given business id, returning OK and Deleted response json"
   ) { (sharedResources, log) =>

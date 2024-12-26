@@ -71,6 +71,32 @@ class BusinessSpecificationsControllerISpec(global: GlobalRead) extends IOSuite 
   }
 
   test(
+    "POST - /pistachio/business/businesses/specifications/create - " +
+      "should generate the business specifications data for a business in database table, returning Created response"
+  ) { (sharedResource, log) =>
+
+    val transactor = sharedResource._1.xa
+    val client = sharedResource._2.client
+
+    val businessAddressRequest: Json = testCreateBusinessSpecificationsRequest("user_id_3", "business_id_3").asJson
+
+    val request =
+      Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/businesses/specifications/create")
+        .withEntity(businessAddressRequest)
+
+    val expectedBody = CreatedResponse("Business specifications created successfully")
+
+    client.run(request).use { response =>
+      response.as[CreatedResponse].map { body =>
+        expect.all(
+          response.status == Status.Created,
+          body == expectedBody
+        )
+      }
+    }
+  }
+
+  test(
     "DELETE - /pistachio/business/businesses/specifications/business_id_2 - " +
       "given a business_id, delete the business specifications data for given business id, returning OK and Deleted response json"
   ) { (sharedResources, log) =>
