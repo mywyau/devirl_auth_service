@@ -3,17 +3,29 @@ package services.business
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.ValidatedNel
 import cats.effect.IO
-import models.business.specifications.errors.BusinessSpecificationsNotFound
 import models.business.specifications.BusinessSpecifications
+import models.business.specifications.errors.BusinessSpecificationsNotFound
+import models.business.specifications.requests.CreateBusinessSpecificationsRequest
 import models.database.SqlErrors
 import repositories.business.BusinessSpecificationsRepositoryAlgebra
-import services.business.specifications.BusinessSpecificationsService
 import services.business.mocks.MockBusinessSpecificationsRepository
+import services.business.specifications.BusinessSpecificationsService
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
 
 object BusinessSpecificationsServiceSpec extends SimpleIOSuite {
+
+  def testCreateBusinessSpecificationsRequest(
+                                               userId: String,
+                                               businessId: String
+                                             ): CreateBusinessSpecificationsRequest =
+    CreateBusinessSpecificationsRequest(
+      userId = userId,
+      businessId = businessId,
+      businessName = "MikeyCorp",
+      description = "Some description"
+    )
 
   def testSpecifications(
                           id: Option[Int],
@@ -60,7 +72,7 @@ object BusinessSpecificationsServiceSpec extends SimpleIOSuite {
 
   test(".create() - when given a BusinessSpecifications, successfully create the BusinessSpecifications in Database") {
 
-    val sampleSpecifications = testSpecifications(Some(1), "user_id_1", "business_1")
+    val sampleSpecifications = testCreateBusinessSpecificationsRequest("user_id_1", "business_1")
 
     val mockBusinessSpecificationsRepository = new MockBusinessSpecificationsRepository(Map())
     val service = BusinessSpecificationsService[IO](mockBusinessSpecificationsRepository)

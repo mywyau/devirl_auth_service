@@ -2,7 +2,7 @@ package controllers.constants
 
 import cats.effect.*
 import models.business.address.BusinessAddress
-import models.business.address.requests.BusinessAddressRequest
+import models.business.address.requests.CreateBusinessAddressRequest
 import models.business.adts.*
 import models.business.business_listing.requests.BusinessListingRequest
 import models.business.contact_details.BusinessContactDetails
@@ -32,8 +32,8 @@ object BusinessAddressControllerConstants {
     )
   }
 
-  def testBusinessAddressRequest(userId: String, businessId: Option[String]): BusinessAddressRequest = {
-    BusinessAddressRequest(
+  def testBusinessAddressRequest(userId: String, businessId: Option[String]): CreateBusinessAddressRequest = {
+    CreateBusinessAddressRequest(
       userId = userId,
       businessId = businessId,
       businessName = Some("business_name_1"),
@@ -45,9 +45,7 @@ object BusinessAddressControllerConstants {
       county = Some("Manhattan"),
       postcode = Some("10001"),
       latitude = Some(100.1),
-      longitude = Some(-100.1),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      longitude = Some(-100.1)
     )
   }
 

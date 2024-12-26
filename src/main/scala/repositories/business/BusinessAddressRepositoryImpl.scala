@@ -9,7 +9,7 @@ import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import models.business.address.BusinessAddress
-import models.business.address.requests.BusinessAddressRequest
+import models.business.address.requests.CreateBusinessAddressRequest
 import models.database.*
 
 import java.sql.Timestamp
@@ -20,7 +20,7 @@ trait BusinessAddressRepositoryAlgebra[F[_]] {
 
   def findByBusinessId(businessId: String): F[Option[BusinessAddress]]
 
-  def createBusinessAddress(request: BusinessAddressRequest): F[ValidatedNel[SqlErrors, Int]]
+  def createBusinessAddress(request: CreateBusinessAddressRequest): F[ValidatedNel[SqlErrors, Int]]
 
   def deleteBusinessAddress(businessId: String): F[ValidatedNel[SqlErrors, Int]]
 }
@@ -39,7 +39,7 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
     findQuery
   }
 
-  override def createBusinessAddress(request: BusinessAddressRequest): F[ValidatedNel[SqlErrors, Int]] = {
+  override def createBusinessAddress(request: CreateBusinessAddressRequest): F[ValidatedNel[SqlErrors, Int]] = {
     sql"""
       INSERT INTO business_address (
         user_id,
@@ -53,9 +53,7 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
         county,
         postcode,
         latitude,
-        longitude,
-        created_at,
-        updated_at
+        longitude
       )
       VALUES (
         ${request.userId},
@@ -69,9 +67,7 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
         ${request.county},
         ${request.postcode},
         ${request.latitude},
-        ${request.longitude},
-        ${request.createdAt},
-        ${request.updatedAt}
+        ${request.longitude}
         )
     """.update
       .run

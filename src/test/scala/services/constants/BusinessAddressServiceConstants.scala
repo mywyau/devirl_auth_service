@@ -4,7 +4,7 @@ import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.effect.IO
 import cats.implicits.*
 import models.business.address.BusinessAddress
-import models.business.address.requests.BusinessAddressRequest
+import models.business.address.requests.CreateBusinessAddressRequest
 import models.business.adts.*
 import models.business.business_listing.errors.BusinessListingErrors
 import models.business.business_listing.requests.BusinessListingRequest
@@ -19,10 +19,10 @@ import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
 
-object BusinessAddressConstants {
+object BusinessAddressServiceConstants {
 
-  def testBusinessAddressRequest(userId: String, businessId: Option[String]): BusinessAddressRequest =
-    BusinessAddressRequest(
+  def testBusinessAddressRequest(userId: String, businessId: Option[String]): CreateBusinessAddressRequest =
+    CreateBusinessAddressRequest(
       userId = userId,
       businessId = businessId,
       businessName = Some("mikeyCorp"),
@@ -34,9 +34,7 @@ object BusinessAddressConstants {
       county = Some("County 1"),
       postcode = Some("CF3 3NJ"),
       latitude = Some(100.1),
-      longitude = Some(-100.1),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      longitude = Some(-100.1)
     )
 
   def testBusinessAddress(id: Option[Int], userId: String, businessId: Option[String]): BusinessAddress =

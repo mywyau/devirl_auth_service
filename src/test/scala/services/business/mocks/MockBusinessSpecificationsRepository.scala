@@ -4,6 +4,7 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.data.ValidatedNel
 import cats.effect.IO
 import models.business.specifications.BusinessSpecifications
+import models.business.specifications.requests.CreateBusinessSpecificationsRequest
 import models.database.SqlErrors
 import repositories.business.BusinessSpecificationsRepositoryAlgebra
 import weaver.SimpleIOSuite
@@ -18,7 +19,7 @@ class MockBusinessSpecificationsRepository(
 
   override def findByBusinessId(businessId: String): IO[Option[BusinessSpecifications]] = IO.pure(existingBusinessSpecification.get(businessId))
 
-  override def createSpecs(businessSpecifications: BusinessSpecifications): IO[ValidatedNel[SqlErrors, Int]] = IO(Valid(1))
+  override def create(createBusinessSpecificationsRequest: CreateBusinessSpecificationsRequest): IO[ValidatedNel[SqlErrors, Int]] = IO(Valid(1))
 
-  override def deleteSpecifications(businessId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
+  override def delete(businessId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
 }

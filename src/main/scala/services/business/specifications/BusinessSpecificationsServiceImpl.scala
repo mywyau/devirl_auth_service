@@ -7,6 +7,7 @@ import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.business.specifications.BusinessSpecifications
 import models.business.specifications.errors.*
+import models.business.specifications.requests.CreateBusinessSpecificationsRequest
 import models.database.SqlErrors
 import repositories.business.BusinessSpecificationsRepositoryAlgebra
 
@@ -14,7 +15,7 @@ trait BusinessSpecificationsServiceAlgebra[F[_]] {
 
   def getByBusinessId(businessId: String): F[Either[BusinessSpecificationsErrors, BusinessSpecifications]]
 
-  def create(businessSpecifications: BusinessSpecifications): F[cats.data.ValidatedNel[BusinessSpecificationsErrors, Int]]
+  def create(createBusinessSpecificationsRequest: CreateBusinessSpecificationsRequest): F[cats.data.ValidatedNel[BusinessSpecificationsErrors, Int]]
 
   def delete(businessId: String): F[ValidatedNel[SqlErrors, Int]]
 }
@@ -33,10 +34,10 @@ class BusinessSpecificationsServiceImpl[F[_] : Concurrent : NonEmptyParallel : M
     }
   }
 
-  override def create(businessSpecifications: BusinessSpecifications): F[ValidatedNel[BusinessSpecificationsErrors, Int]] = {
+  override def create(createBusinessSpecificationsRequest: CreateBusinessSpecificationsRequest): F[ValidatedNel[BusinessSpecificationsErrors, Int]] = {
 
     val specificationsCreation: F[ValidatedNel[SqlErrors, Int]] =
-      businessSpecificationsRepo.createSpecs(businessSpecifications)
+      businessSpecificationsRepo.create(createBusinessSpecificationsRequest)
 
     specificationsCreation.map {
       case Validated.Valid(i) =>
@@ -51,7 +52,7 @@ class BusinessSpecificationsServiceImpl[F[_] : Concurrent : NonEmptyParallel : M
   }
 
   override def delete(businessId: String): F[ValidatedNel[SqlErrors, Int]] = {
-    businessSpecificationsRepo.deleteSpecifications(businessId)
+    businessSpecificationsRepo.delete(businessId)
   }
 }
 

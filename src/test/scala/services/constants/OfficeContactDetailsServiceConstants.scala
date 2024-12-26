@@ -12,7 +12,7 @@ import repository.office.mocks.MockOfficeContactDetailsRepository
 
 import java.time.LocalDateTime
 
-object OfficeContactDetailsConstants {
+object OfficeContactDetailsServiceConstants {
 
   def testOfficeContactDetails(id: Option[Int], businessId: String, office_id: String): OfficeContactDetails =
     OfficeContactDetails(

@@ -42,7 +42,7 @@ class OfficeListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
       officeContactDetailsRepo.create(officeListing.createOfficeContactDetailsRequest)
 
     val specsCreation: F[ValidatedNel[SqlErrors, Int]] =
-      officeSpecsRepo.createSpecs(officeListing.createOfficeSpecificationsRequest)
+      officeSpecsRepo.create(officeListing.createOfficeSpecificationsRequest)
 
     // Run the operations in parallel
     (addressCreation, contactDetailsCreation, specsCreation).parMapN {

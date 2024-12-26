@@ -22,7 +22,7 @@ trait OfficeSpecificationsRepositoryAlgebra[F[_]] {
 
   def findByOfficeId(officeId: String): F[Option[OfficeSpecifications]]
 
-  def createSpecs(createOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest): F[ValidatedNel[SqlErrors, Int]]
+  def create(createOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest): F[ValidatedNel[SqlErrors, Int]]
 
   def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
 
@@ -44,7 +44,7 @@ class OfficeSpecificationsRepositoryImpl[F[_] : Concurrent : Monad](transactor: 
     findQuery
   }
 
-  override def createSpecs(createOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest): F[ValidatedNel[SqlErrors, Int]] = {
+  override def create(createOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest): F[ValidatedNel[SqlErrors, Int]] = {
     sql"""
       INSERT INTO office_specs (
         business_id,

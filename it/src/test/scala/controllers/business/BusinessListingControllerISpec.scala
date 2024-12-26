@@ -7,7 +7,7 @@ import controllers.business_listing.BusinessListingController
 import controllers.constants.BusinessListingControllerConstants.*
 import controllers.fragments.business.BusinessAddressRepoFragments.*
 import controllers.fragments.business.BusinessContactDetailsRepoFragments.*
-import controllers.fragments.business.BusinessSpecsRepoFragments.*
+import controllers.fragments.business.BusinessSpecificationsRepoFragments.*
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.Json

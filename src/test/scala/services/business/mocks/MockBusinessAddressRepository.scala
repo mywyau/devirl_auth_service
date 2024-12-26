@@ -5,7 +5,7 @@ import cats.data.ValidatedNel
 import cats.effect.IO
 import models.business.address.BusinessAddress
 import models.business.address.errors.BusinessAddressNotFound
-import models.business.address.requests.BusinessAddressRequest
+import models.business.address.requests.CreateBusinessAddressRequest
 import models.database.SqlErrors
 import repositories.business.BusinessAddressRepositoryAlgebra
 import services.business.address.{BusinessAddressService, BusinessAddressServiceImpl}
@@ -22,7 +22,7 @@ class MockBusinessAddressRepository(
 
   override def findByBusinessId(businessId: String): IO[Option[BusinessAddress]] = IO.pure(existingBusinessAddress.get(businessId))
 
-  override def createBusinessAddress(request: BusinessAddressRequest): IO[ValidatedNel[SqlErrors, Int]] = IO.pure(Valid(1))
+  override def createBusinessAddress(request: CreateBusinessAddressRequest): IO[ValidatedNel[SqlErrors, Int]] = IO.pure(Valid(1))
 
   override def deleteBusinessAddress(businessId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
 }

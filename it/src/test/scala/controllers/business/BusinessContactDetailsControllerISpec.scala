@@ -12,7 +12,7 @@ import io.circe.syntax.*
 import models.business.adts.*
 import models.business.contact_details.BusinessContactDetails
 import models.business.contact_details.errors.*
-import models.business.contact_details.requests.BusinessContactDetailsRequest
+import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
 import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
 import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse}
 import org.http4s.*

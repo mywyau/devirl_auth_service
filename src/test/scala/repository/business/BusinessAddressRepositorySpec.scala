@@ -4,9 +4,9 @@ import cats.data.Validated.Valid
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import models.business.address.BusinessAddress
-import models.business.address.requests.BusinessAddressRequest
+import models.business.address.requests.CreateBusinessAddressRequest
 import repository.business.mocks.MockBusinessAddressRepository
-import repository.constants.BusinessAddressConstants.*
+import repository.constants.BusinessAddressRepositoryConstants.*
 import weaver.SimpleIOSuite
 
 object BusinessAddressRepositorySpec extends SimpleIOSuite {
@@ -30,7 +30,7 @@ object BusinessAddressRepositorySpec extends SimpleIOSuite {
 
   test(".createBusinessAddress() - when given a valid business address should insert an address into the postgres db") {
 
-    val testBusinessAddressRequest: BusinessAddressRequest = testAddressRequest("user_id_2", Some("business_id_2"))
+    val testBusinessAddressRequest: CreateBusinessAddressRequest = testCreateBusinessAddressRequest("user_id_2", Some("business_id_2"))
     val testAddressForUser2: BusinessAddress = testAddress(Some(1), "user_id_2", Some("business_id_2"))
 
     for {

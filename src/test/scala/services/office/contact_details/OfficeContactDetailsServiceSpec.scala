@@ -9,7 +9,7 @@ import models.office.contact_details.errors.OfficeContactDetailsNotFound
 import repositories.office.OfficeContactDetailsRepositoryAlgebra
 import services.office.contact_details.{OfficeContactDetailsService, OfficeContactDetailsServiceImpl}
 import weaver.SimpleIOSuite
-import services.constants.OfficeContactDetailsConstants.*
+import services.constants.OfficeContactDetailsServiceConstants.*
 
 import java.time.LocalDateTime
 

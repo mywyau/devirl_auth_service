@@ -4,11 +4,13 @@ import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.effect.IO
 import cats.implicits.*
 import models.business.address.BusinessAddress
-import models.business.address.requests.BusinessAddressRequest
+import models.business.address.requests.CreateBusinessAddressRequest
 import models.business.adts.*
 import models.business.business_listing.errors.BusinessListingErrors
 import models.business.business_listing.requests.BusinessListingRequest
 import models.business.contact_details.BusinessContactDetails
+import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
+import models.business.specifications.requests.CreateBusinessSpecificationsRequest
 import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
 import models.database.*
 import org.typelevel.log4cats.SelfAwareStructuredLogger
@@ -25,30 +27,32 @@ object BusinessListingMocks {
 
     override def findByBusinessId(userId: String): IO[Option[BusinessAddress]] = ???
 
-    override def createBusinessAddress(businessAddress: BusinessAddressRequest): IO[ValidatedNel[SqlErrors, Int]] = addressResult
+    override def createBusinessAddress(businessAddress: CreateBusinessAddressRequest): IO[ValidatedNel[SqlErrors, Int]] = addressResult
 
     override def deleteBusinessAddress(businessId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
   }
 
-  class MockContactDetailsRepository(
-                                      contactResult: IO[ValidatedNel[SqlErrors, Int]]
-                                    ) extends BusinessContactDetailsRepositoryAlgebra[IO] {
+  class MockBusinessContactDetailsRepository(
+                                              contactResult: IO[ValidatedNel[SqlErrors, Int]]
+                                            ) extends BusinessContactDetailsRepositoryAlgebra[IO] {
 
     override def findByBusinessId(businessId: String): IO[Option[BusinessContactDetails]] = ???
 
-    override def createContactDetails(businessContactDetails: BusinessContactDetails): IO[ValidatedNel[SqlErrors, Int]] = contactResult
+    override def create(createBusinessContactDetailsRequest: CreateBusinessContactDetailsRequest): IO[ValidatedNel[SqlErrors, Int]] = contactResult
 
-    override def deleteContactDetails(businessId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
+    override def delete(businessId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
   }
 
-  class MockSpecificationsRepository(
-                                      specsResult: IO[ValidatedNel[SqlErrors, Int]]
-                                    ) extends BusinessSpecificationsRepositoryAlgebra[IO] {
+  class MockBusinessSpecificationsRepository(
+                                              specsResult: IO[ValidatedNel[SqlErrors, Int]]
+                                            ) extends BusinessSpecificationsRepositoryAlgebra[IO] {
 
     override def findByBusinessId(businessId: String): IO[Option[BusinessSpecifications]] = ???
 
-    override def createSpecs(user: BusinessSpecifications): IO[ValidatedNel[SqlErrors, Int]] = specsResult
+    override def create(createBusinessSpecificationsRequest: CreateBusinessSpecificationsRequest): IO[ValidatedNel[SqlErrors, Int]] = specsResult
 
-    override def deleteSpecifications(businessId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
+    override def delete(businessId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
+
+
   }
 }

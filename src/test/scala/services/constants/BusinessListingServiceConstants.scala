@@ -1,16 +1,30 @@
-package controllers.constants
+package services.constants
 
-import cats.effect.*
-import models.business.address.BusinessAddress
 import models.business.address.requests.CreateBusinessAddressRequest
-import models.business.adts.*
 import models.business.business_listing.requests.BusinessListingRequest
 import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
 import models.business.specifications.requests.CreateBusinessSpecificationsRequest
 
 import java.time.LocalDateTime
 
-object BusinessListingControllerConstants {
+
+object BusinessListingServiceConstants {
+
+  val testCreateBusinessAddressRequest: CreateBusinessAddressRequest =
+    CreateBusinessAddressRequest(
+      userId = "user_id_1",
+      businessId = Some("business_id_1"),
+      businessName = Some("businessCorp"),
+      buildingName = Some("build_123"),
+      floorNumber = Some("floor 1"),
+      street = Some("1 Canton Street"),
+      city = Some("New York"),
+      country = Some("USA"),
+      county = Some("New York County"),
+      postcode = Some("10001"),
+      latitude = Some(100.1),
+      longitude = Some(-100.1)
+    )
 
   val testCreateBusinessSpecificationsRequest: CreateBusinessSpecificationsRequest =
     CreateBusinessSpecificationsRequest(
@@ -20,24 +34,7 @@ object BusinessListingControllerConstants {
       description = "A vibrant business space in the heart of the city, ideal for teams or individuals."
     )
 
-  val testCreateBusinessAddressRequest: CreateBusinessAddressRequest =
-    CreateBusinessAddressRequest(
-      userId = "user_id_1",
-      businessId = Some("business_id_1"),
-      businessName = Some("MikeyCorp"),
-      buildingName = Some("BusinessListingControllerISpec Building"),
-      floorNumber = Some("floor 1"),
-      street = Some("123 Main Street"),
-      city = Some("New York"),
-      country = Some("USA"),
-      county = Some("New York County"),
-      postcode = Some("10001"),
-      latitude = Some(100.1),
-      longitude = Some(-100.1)
-    )
-
-
-  val testCreateBusinessContactDetailsRequest: CreateBusinessContactDetailsRequest =
+  val testCreateBusinessContactDetailsRequest =
     CreateBusinessContactDetailsRequest(
       userId = "user_id_1",
       businessId = "business_id_1",
@@ -49,15 +46,13 @@ object BusinessListingControllerConstants {
       websiteUrl = "mikey.com"
     )
 
-
-  def testBusinessListingRequest(businessId: String): BusinessListingRequest =
+  val businessListingRequest: BusinessListingRequest =
     BusinessListingRequest(
-      businessId = businessId,
+      businessId = "business_id_1",
       addressDetails = testCreateBusinessAddressRequest,
       businessSpecs = testCreateBusinessSpecificationsRequest,
       contactDetails = testCreateBusinessContactDetailsRequest,
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
-
 }

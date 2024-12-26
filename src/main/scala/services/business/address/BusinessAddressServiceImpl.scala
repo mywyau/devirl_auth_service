@@ -6,10 +6,19 @@ import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.business.address.BusinessAddress
 import models.business.address.errors.*
-import models.business.address.requests.BusinessAddressRequest
+import models.business.address.requests.CreateBusinessAddressRequest
 import models.database.SqlErrors
 import repositories.business.BusinessAddressRepositoryAlgebra
 
+
+trait BusinessAddressServiceAlgebra[F[_]] {
+
+  def getByBusinessId(businessId: String): F[Either[BusinessAddressErrors, BusinessAddress]]
+
+  def createAddress(businessAddressRequest: CreateBusinessAddressRequest): F[ValidatedNel[SqlErrors, Int]]
+
+  def deleteAddress(businessId: String): F[ValidatedNel[SqlErrors, Int]]
+}
 
 class BusinessAddressServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
                                                                                 businessAddressRepo: BusinessAddressRepositoryAlgebra[F]
@@ -24,7 +33,7 @@ class BusinessAddressServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
     }
   }
 
-  override def createAddress(businessAddressRequest: BusinessAddressRequest): F[ValidatedNel[SqlErrors, Int]] = {
+  override def createAddress(businessAddressRequest: CreateBusinessAddressRequest): F[ValidatedNel[SqlErrors, Int]] = {
     businessAddressRepo.createBusinessAddress(businessAddressRequest)
   }
 

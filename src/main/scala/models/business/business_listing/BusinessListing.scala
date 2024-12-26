@@ -21,7 +21,7 @@ case class BusinessListing(
                           )
 
 object BusinessListing {
-  implicit val businessListingRequestEncoder: Encoder[BusinessListing] = deriveEncoder[BusinessListing]
-  implicit val businessListingRequestDecoder: Decoder[BusinessListing] = deriveDecoder[BusinessListing]
+  implicit val businessListingEncoder: Encoder[BusinessListing] = deriveEncoder[BusinessListing]
+  implicit val businessListingDecoder: Decoder[BusinessListing] = deriveDecoder[BusinessListing]
 }
 

@@ -4,7 +4,7 @@ import cats.data.Validated.Valid
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import models.business.contact_details.BusinessContactDetails
-import models.business.contact_details.requests.BusinessContactDetailsRequest
+import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
 import repository.business.mocks.MockBusinessContactDetailsRepository

@@ -32,11 +32,12 @@ object BusinessAddressRepoFragments {
   }
 
 
-  val insertBusinessAddressTable: fragment.Fragment = {
+  val insertBusinessAddressData: fragment.Fragment = {
     sql"""
         INSERT INTO business_address (
           user_id,
           business_id,
+          business_name,
           building_name,
           floor_number,
           street,
@@ -48,22 +49,13 @@ object BusinessAddressRepoFragments {
           longitude,
           created_at,
           updated_at
-        ) VALUES (
-          'user_id_1',
-          'business_id_1',
-          'business_name_1',
-          'building_name_1',
-          'floor_1',
-          '123 Main Street',
-          'New York',
-          'USA',                         
-          'Manhattan',                   
-          '10001',
-          100.1,
-          -100.1,
-          2025-01-01 00:00:00,
-          2025-01-01 00:00:00
-        );
-    """
+        ) VALUES
+          ('USER001', 'BUS001', 'Tech Innovations', 'Innovation Tower', '5', '123 Tech Street', 'San Francisco', 'USA', 'California', '94105', 37.774929, -122.419416, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('USER002', 'BUS002', 'Global Corp', 'Global Tower', '12', '456 Global Ave', 'New York', 'USA', 'New York', '10001', 40.712776, -74.005974, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('USER003', 'BUS003', 'Green Solutions', 'Eco Center', '3', '789 Greenway Blvd', 'Austin', 'USA', 'Texas', '73301', 30.267153, -97.743057, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('USER004', 'BUS004', 'Retail Experts', 'Market Plaza', '1', '101 Main Street', 'Chicago', 'USA', 'Illinois', '60601', 41.878113, -87.629799, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('USER005', 'BUS005', 'Startup Central', 'Startup Hub', '2', '202 Startup Lane', 'Seattle', 'USA', 'Washington', '98101', 47.606209, -122.332069, '2025-01-01 00:00:00', '2025-01-01 00:00:00');
+      """
   }
+
 }

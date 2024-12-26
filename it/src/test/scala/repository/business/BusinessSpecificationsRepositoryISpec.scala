@@ -5,10 +5,9 @@ import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
 import models.business.adts.PrivateDesk
-import models.business.specifications.BusinessSpecifications
-import models.business.specifications.BusinessAvailability
+import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
 import repositories.business.BusinessSpecificationsRepositoryImpl
-import repository.fragments.business.BusinessSpecsRepoFragments.{createBusinessSpecsTable, resetBusinessSpecsTable}
+import repository.fragments.business.BusinessSpecificationsRepoFragments.{createBusinessSpecsTable, insertBusinessSpecificationsData, resetBusinessSpecsTable}
 import shared.TransactorResource
 import weaver.{GlobalRead, IOSuite, ResourceTag}
 
@@ -21,38 +20,15 @@ class BusinessSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite 
   private def initializeSchema(transactor: TransactorResource): Resource[IO, Unit] =
     Resource.eval(
       createBusinessSpecsTable.update.run.transact(transactor.xa).void *>
-        resetBusinessSpecsTable.update.run.transact(transactor.xa).void
+        resetBusinessSpecsTable.update.run.transact(transactor.xa).void *>
+        insertBusinessSpecificationsData.update.run.transact(transactor.xa).void
     )
-
-  def testBusinessSpecs(id: Option[Int], userId: String, businessId: String): BusinessSpecifications = {
-    BusinessSpecifications(
-      id = id,
-      userId = userId,
-      businessId = businessId,
-      businessName = "build_123",
-      description = "some description about the business",
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-    )
-  }
-
-  private def seedTestSpecs(businessSpecsRepo: BusinessSpecificationsRepositoryImpl[IO]): IO[Unit] = {
-    val users = List(
-      testBusinessSpecs(Some(1), "user_id_1", "business_id_1"),
-      testBusinessSpecs(Some(2), "user_id_2", "business_id_2"),
-      testBusinessSpecs(Some(3), "user_id_3", "business_id_3"),
-      testBusinessSpecs(Some(4), "user_id_4", "business_id_4"),
-      testBusinessSpecs(Some(5), "user_id_5", "business_id_5")
-    )
-    users.traverse(businessSpecsRepo.createSpecs).void
-  }
 
   def sharedResource: Resource[IO, BusinessSpecificationsRepositoryImpl[IO]] = {
     val setup = for {
       transactor <- global.getOrFailR[TransactorResource]()
       businessSpecsRepo = new BusinessSpecificationsRepositoryImpl[IO](transactor.xa)
       createSchemaIfNotPresent <- initializeSchema(transactor)
-      seedTable <- Resource.eval(seedTestSpecs(businessSpecsRepo))
     } yield businessSpecsRepo
 
     setup
@@ -63,16 +39,16 @@ class BusinessSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite 
     val expectedResult =
       BusinessSpecifications(
         id = Some(1),
-        userId = "user_id_1",
-        businessId = "business_id_1",
-        businessName = "build_123",
-        description = "some description about the business",
+        userId = "USER001",
+        businessId = "BUS001",
+        businessName = "business_name_1",
+        description = "some desc1",
         createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
         updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
 
     for {
-      businessSpecsOpt <- businessSpecsRepo.findByBusinessId("business_id_1")
+      businessSpecsOpt <- businessSpecsRepo.findByBusinessId("BUS001")
     } yield expect(businessSpecsOpt == Some(expectedResult))
   }
 }

@@ -11,6 +11,7 @@ import doobie.postgres.implicits.*
 import doobie.util.meta.Meta
 import io.circe.syntax.*
 import models.business.specifications.BusinessSpecifications
+import models.business.specifications.requests.CreateBusinessSpecificationsRequest
 import models.database.*
 
 import java.sql.Timestamp
@@ -20,9 +21,9 @@ trait BusinessSpecificationsRepositoryAlgebra[F[_]] {
 
   def findByBusinessId(businessId: String): F[Option[BusinessSpecifications]]
 
-  def createSpecs(businessSpecifications: BusinessSpecifications): F[ValidatedNel[SqlErrors, Int]]
+  def create(createBusinessSpecificationsRequest: CreateBusinessSpecificationsRequest): F[ValidatedNel[SqlErrors, Int]]
 
-  def deleteSpecifications(businessId: String): F[ValidatedNel[SqlErrors, Int]]
+  def delete(businessId: String): F[ValidatedNel[SqlErrors, Int]]
 }
 
 class BusinessSpecificationsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends BusinessSpecificationsRepositoryAlgebra[F] {
@@ -39,22 +40,18 @@ class BusinessSpecificationsRepositoryImpl[F[_] : Concurrent : Monad](transactor
     findQuery
   }
 
-  override def createSpecs(businessSpecs: BusinessSpecifications): F[ValidatedNel[SqlErrors, Int]] = {
+  override def create(createBusinessSpecificationsRequest: CreateBusinessSpecificationsRequest): F[ValidatedNel[SqlErrors, Int]] = {
     sql"""
       INSERT INTO business_specs (
         user_id,
         business_id,
         business_name,
-        description,
-        created_at,
-        updated_at
+        description
       ) VALUES (
-        ${businessSpecs.userId},
-        ${businessSpecs.businessId},
-        ${businessSpecs.businessName},
-        ${businessSpecs.description},
-        ${businessSpecs.createdAt},
-        ${businessSpecs.updatedAt}
+        ${createBusinessSpecificationsRequest.userId},
+        ${createBusinessSpecificationsRequest.businessId},
+        ${createBusinessSpecificationsRequest.businessName},
+        ${createBusinessSpecificationsRequest.description}
       )
     """
       .update
@@ -77,7 +74,7 @@ class BusinessSpecificationsRepositoryImpl[F[_] : Concurrent : Monad](transactor
       }
   }
 
-  override def deleteSpecifications(businessId: String): F[ValidatedNel[SqlErrors, Int]] = {
+  override def delete(businessId: String): F[ValidatedNel[SqlErrors, Int]] = {
     val deleteQuery: Update0 =
       sql"""
           DELETE FROM business_specs

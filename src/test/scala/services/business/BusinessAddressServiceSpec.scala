@@ -4,11 +4,11 @@ import cats.data.Validated.Valid
 import cats.effect.IO
 import models.business.address.BusinessAddress
 import models.business.address.errors.BusinessAddressNotFound
-import models.business.address.requests.BusinessAddressRequest
+import models.business.address.requests.CreateBusinessAddressRequest
 import repositories.business.BusinessAddressRepositoryAlgebra
 import services.business.address.{BusinessAddressService, BusinessAddressServiceImpl}
 import services.business.mocks.MockBusinessAddressRepository
-import services.constants.BusinessAddressConstants.*
+import services.constants.BusinessAddressServiceConstants.*
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime

@@ -37,7 +37,7 @@ class OfficeSpecificationsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Mon
   override def create(createOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest): F[ValidatedNel[OfficeSpecificationsErrors, Int]] = {
 
     val specificationsCreation: F[ValidatedNel[SqlErrors, Int]] =
-      officeSpecificationsRepo.createSpecs(createOfficeSpecificationsRequest)
+      officeSpecificationsRepo.create(createOfficeSpecificationsRequest)
 
     specificationsCreation.map {
       case Validated.Valid(i) =>

@@ -4,7 +4,7 @@ import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.effect.IO
 import cats.implicits.*
 import models.business.address.BusinessAddress
-import models.business.address.requests.BusinessAddressRequest
+import models.business.address.requests.CreateBusinessAddressRequest
 import models.business.adts.*
 import models.business.business_listing.errors.BusinessListingErrors
 import models.business.business_listing.requests.BusinessListingRequest
@@ -17,7 +17,7 @@ import repositories.business.{BusinessAddressRepositoryAlgebra, BusinessContactD
 import services.SpecBase
 import services.business.business_listing.BusinessListingServiceImpl
 import services.business.mocks.BusinessListingMocks.*
-import services.constants.BusinessListingConstants.*
+import services.constants.BusinessListingServiceConstants.*
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
@@ -30,8 +30,8 @@ object BusinessListingServiceSpec extends SimpleIOSuite with SpecBase {
                          specsResult: IO[ValidatedNel[SqlErrors, Int]]
                        ): BusinessListingServiceImpl[IO] = {
     val addressRepo = new MockBusinessAddressRepository(addressResult)
-    val contactRepo = new MockContactDetailsRepository(contactResult)
-    val specsRepo = new MockSpecificationsRepository(specsResult)
+    val contactRepo = new MockBusinessContactDetailsRepository(contactResult)
+    val specsRepo = new MockBusinessSpecificationsRepository(specsResult)
 
     new BusinessListingServiceImpl[IO](addressRepo, contactRepo, specsRepo)
   }

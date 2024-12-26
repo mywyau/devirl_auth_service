@@ -1,9 +1,9 @@
-package controllers.fragments.business
+package repository.fragments.business
 
 import doobie.implicits.*
 import doobie.util.fragment
 
-object BusinessSpecsRepoFragments {
+object BusinessSpecificationsRepoFragments {
 
   val resetBusinessSpecsTable: fragment.Fragment = {
     sql"TRUNCATE TABLE business_specs RESTART IDENTITY"
@@ -23,7 +23,8 @@ object BusinessSpecsRepoFragments {
     """
   }
 
-  val insertBusinessSpecsTable: fragment.Fragment = {
+
+  val insertBusinessSpecificationsData: fragment.Fragment = {
     sql"""
       INSERT INTO business_specs (
         user_id,
@@ -33,10 +34,12 @@ object BusinessSpecsRepoFragments {
         created_at,
         updated_at
       ) VALUES
-      ('user_id_1','business_id_1','Example Business Name','some description','2025-01-01 00:00:00','2025-01-01 00:00:00'),
-      ('user_id_2','business_id_2','Example Business Name','some description','2025-01-01 00:00:00','2025-01-01 00:00:00');
-     """
+      ('USER001', 'BUS001', 'business_name_1', 'some desc1', '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+      ('USER002', 'BUS002', 'business_name_2', 'some desc2', '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+      ('USER003', 'BUS003', 'business_name_3', 'some desc3', '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+      ('USER004', 'BUS004', 'business_name_4', 'some desc4', '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+      ('USER005', 'BUS005', 'business_name_5', 'some desc5', '2025-01-01 00:00:00', '2025-01-01 00:00:00');
+    """
   }
-
 
 }

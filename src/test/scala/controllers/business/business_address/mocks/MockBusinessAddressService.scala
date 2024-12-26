@@ -5,7 +5,7 @@ import cats.data.ValidatedNel
 import cats.effect.IO
 import models.business.address.BusinessAddress
 import models.business.address.errors.{BusinessAddressErrors, BusinessUserNotFound}
-import models.business.address.requests.BusinessAddressRequest
+import models.business.address.requests.CreateBusinessAddressRequest
 import models.database.SqlErrors
 import services.business.address.BusinessAddressServiceAlgebra
 
@@ -20,7 +20,7 @@ class MockBusinessAddressService(userAddressData: Map[String, BusinessAddress])
     }
   }
 
-  override def createAddress(request: BusinessAddressRequest): IO[ValidatedNel[SqlErrors, Int]] = IO.pure(Valid(1))
+  override def createAddress(request: CreateBusinessAddressRequest): IO[ValidatedNel[SqlErrors, Int]] = IO.pure(Valid(1))
 
 
   override def deleteAddress(businessId: String): IO[ValidatedNel[SqlErrors, Int]] = ???

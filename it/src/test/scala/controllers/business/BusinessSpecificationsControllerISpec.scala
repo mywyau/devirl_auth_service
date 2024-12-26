@@ -5,7 +5,7 @@ import com.comcast.ip4s.{ipv4, port}
 import configuration.models.AppConfig
 import controllers.business.BusinessSpecificationsController
 import controllers.constants.BusinessSpecificationsControllerConstants.*
-import controllers.fragments.business.BusinessSpecsRepoFragments.*
+import controllers.fragments.business.BusinessSpecificationsRepoFragments.*
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.Json
