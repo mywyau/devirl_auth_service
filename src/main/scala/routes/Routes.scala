@@ -3,6 +3,7 @@ package routes
 import cats.NonEmptyParallel
 import cats.effect.*
 import controllers.*
+import controllers.business.{BusinessAddressController, BusinessContactDetailsController, BusinessSpecificationsController}
 import controllers.business_listing.BusinessListingControllerImpl
 import controllers.desk_listing.DeskListingControllerImpl
 import controllers.office.{OfficeAddressController, OfficeContactDetailsController, OfficeSpecificationsController}
@@ -16,7 +17,10 @@ import repositories.business.{BusinessAddressRepository, BusinessContactDetailsR
 import repositories.desk.DeskListingRepository
 import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeSpecificationsRepository}
 import services.*
+import services.business.address.BusinessAddressService
 import services.business.business_listing.BusinessListingService
+import services.business.contact_details.BusinessContactDetailsService
+import services.business.specifications.BusinessSpecificationsService
 import services.desk_listing.DeskListingService
 import services.office.OfficeSpecificationsService
 import services.office.address.OfficeAddressService
@@ -60,6 +64,34 @@ object Routes {
 
     officeSpecificationsController.routes
   }
+
+  def businessAddressRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+
+    val businessAddressRepository = BusinessAddressRepository(transactor)
+    val businessAddressService = BusinessAddressService(businessAddressRepository)
+    val businessAddressController = BusinessAddressController(businessAddressService)
+
+    businessAddressController.routes
+  }
+
+  def businessContactDetailsRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+
+    val businessContactDetailsRepository = BusinessContactDetailsRepository(transactor)
+    val businessContactDetailsService = BusinessContactDetailsService(businessContactDetailsRepository)
+    val businessContactDetailsController = BusinessContactDetailsController(businessContactDetailsService)
+
+    businessContactDetailsController.routes
+  }
+
+  def businessSpecificationsRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+
+    val businessSpecificationsRepository = BusinessSpecificationsRepository(transactor)
+    val businessSpecificationsService = BusinessSpecificationsService(businessSpecificationsRepository)
+    val businessSpecificationsController = BusinessSpecificationsController(businessSpecificationsService)
+
+    businessSpecificationsController.routes
+  }
+
 
   def officeListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {
 

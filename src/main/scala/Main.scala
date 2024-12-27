@@ -48,6 +48,9 @@ object Main extends IOApp {
       officeContactDetailsRoutes <- Resource.pure(officeContactDetailsRoutes(transactor))
       officeSpecificationsRoutes <- Resource.pure(officeSpecificationsRoutes(transactor))
       officeListingRoutes <- Resource.pure(officeListingRoutes(transactor))
+      businessAddressRoutes <- Resource.pure(businessAddressRoutes(transactor))
+      businessContactDetailsRoutes <- Resource.pure(businessContactDetailsRoutes(transactor))
+      businessSpecificationsRoutes <- Resource.pure(businessSpecificationsRoutes(transactor))
       businessListingRoutes <- Resource.pure(businessListingRoutes(transactor))
 
       combinedRoutes = Router(
@@ -57,6 +60,9 @@ object Main extends IOApp {
             officeContactDetailsRoutes <+>
             officeSpecificationsRoutes <+>
             officeListingRoutes <+>
+            businessAddressRoutes <+>
+            businessContactDetailsRoutes <+>
+            businessSpecificationsRoutes <+>
             businessListingRoutes
           )
       )
