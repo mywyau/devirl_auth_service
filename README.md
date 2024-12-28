@@ -2,6 +2,12 @@
 
 This Backend service is responsible for business domain data e.g. businesses, offices and desks.
 
+### Order of setup scripts:
+
+1. ./setup_postgres.sh
+2. ./setup_flyway_migrations.sh
+3. ./setup_app.sh (this can be ran whenever)
+
 ### To run the app
 
 ```
@@ -25,7 +31,13 @@ the shared resources is needed to help WeaverTests locate the shared resources n
 
 ---
 
-### To populate the postgres sql database using flyway
+### To Set up the database
+
+```
+./setup_postgres.sh
+```
+
+### To populate the postgresql database using flyway
 
 Please run the docker compose scripts
 
@@ -36,11 +48,13 @@ Please run the docker compose scripts
 ### To clear down the database
 
 ```
-./clear_down_flyway.sh
+./clear_down_postgres.sh
 ```
 
+### To clear down the flyway container
+
 ```
-./clear_down_postgres.sh
+./clear_down_flyway.sh
 ```
 
 ### To clear down docker container for app and orphans
@@ -50,15 +64,32 @@ docker-compose down --volumes --remove-orphans
 
 ---
 
-### To connect to postgres sql db
+### To connect to postgresql database
 
 ```
 psql -h localhost -p 5432 -U shared_user -d shared_db
 ```
 
+#### App Database Password:
+```
+share
+```
+
+### To connect to TEST postgresql Database
+
+```
+psql -h localhost -p 5432 -U shared_user -d shared_test_db
+```
+
+#### TEST Database Password:
+```
+share
+```
+---
+
 ### Set base search path for schema
 
-only needed if using multiple schemas in the db. At the moment we are using public so no need beforehand 
+••• Only needed if using multiple schemas in the db. At the moment we are using public so no need beforehand 
 accidentally set a new schema in flyway conf
 
 ```
@@ -68,7 +99,7 @@ ALTER ROLE shared_user SET search_path TO share_schema, public;
 
 ### Httpie requests 
 
-We can use httppie instead of curl
+We can use httpie instead of curl to trigger our endpoints. I did have some working bit it was out of date requests.
 
 WIP TODO: add some exmaples to hit our endpoints
 ```
