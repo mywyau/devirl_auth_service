@@ -17,18 +17,20 @@ object OfficeSpecificationsSpec extends SimpleIOSuite {
       id = Some(1),
       businessId = "business_id_1",
       officeId = "office_id_1",
-      officeName = "Modern Workspace",
-      description = "A vibrant office space in the heart of the city, ideal for teams or individuals.",
-      officeType = OpenPlanOffice,
-      numberOfFloors = 3,
-      totalDesks = 3,
-      capacity = 50,
-      amenities = List("Wi-Fi", "Coffee Machine", "Projector", "Whiteboard", "Parking"),
+      officeName = Some("Modern Workspace"),
+      description = Some("A vibrant office space in the heart of the city, ideal for teams or individuals."),
+      officeType = Some(OpenPlanOffice),
+      numberOfFloors = Some(3),
+      totalDesks = Some(3),
+      capacity = Some(50),
+      amenities = Some(List("Wi-Fi", "Coffee Machine", "Projector", "Whiteboard", "Parking")),
       availability =
-        OfficeAvailability(
-          days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-          startTime = LocalTime.of(10, 0, 0),
-          endTime = LocalTime.of(10, 30, 0)
+        Some(
+          OfficeAvailability(
+            days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
+            startTime = LocalTime.of(10, 0, 0),
+            endTime = LocalTime.of(10, 30, 0)
+          )
         ),
       rules = Some("No smoking. Maintain cleanliness."),
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),

@@ -6,7 +6,7 @@ import cats.syntax.all.*
 import controllers.business.{BusinessAddressController, BusinessContactDetailsController, BusinessSpecificationsController}
 import controllers.business_listing.BusinessListingController
 import controllers.desk_listing.DeskListingController
-import controllers.office.{OfficeAddressController, OfficeContactDetailsController,OfficeSpecificationsController}
+import controllers.office.{OfficeAddressController, OfficeContactDetailsController, OfficeSpecificationsController}
 import controllers.office_listing.OfficeListingController
 import doobie.hikari.HikariTransactor
 import doobie.implicits.*
@@ -18,7 +18,7 @@ import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import repositories.business.{BusinessAddressRepository, BusinessContactDetailsRepository, BusinessSpecificationsRepository}
 import repositories.desk.DeskListingRepository
-import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeSpecificationsRepository}
+import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeSpecificationsRepository, OfficeListingRepository}
 import services.business.address.BusinessAddressService
 import services.business.business_listing.BusinessListingService
 import services.business.contact_details.BusinessContactDetailsService
@@ -120,11 +120,8 @@ object TestRoutes {
 
   def officeListingRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
 
-    val officeAddressRepository = OfficeAddressRepository(transactor)
-    val officeContactDetailsRepository = OfficeContactDetailsRepository(transactor)
-    val officeSpecsRepository = OfficeSpecificationsRepository(transactor)
-
-    val officeListingService = OfficeListingService(officeAddressRepository, officeContactDetailsRepository, officeSpecsRepository)
+    val officeListingRepository = OfficeListingRepository(transactor)
+    val officeListingService = OfficeListingService(officeListingRepository)
     val officeListingController = OfficeListingController(officeListingService)
 
     officeListingController.routes

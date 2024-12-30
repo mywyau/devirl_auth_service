@@ -10,7 +10,7 @@ import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.office_listing.requests.OfficeListingRequest
 import models.office.specifications.OfficeAvailability
 import repositories.office.OfficeAddressRepositoryImpl
-import repository.constants.OfficeAddressConstants.*
+import repository.constants.OfficeAddressRepoITConstants.*
 import repository.fragments.OfficeAddressRepoFragments.{createOfficeAddressTable, insertOfficeAddressTable, resetOfficeAddressTable}
 import shared.TransactorResource
 import weaver.{GlobalRead, IOSuite}

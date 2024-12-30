@@ -29,10 +29,10 @@ object OfficeContactDetailsConstants {
       id = id,
       businessId = businessId,
       officeId = office_id,
-      primaryContactFirstName = "Michael",
-      primaryContactLastName = "Yau",
-      contactEmail = "mikey@gmail.com",
-      contactNumber = "07402205071",
+      primaryContactFirstName = Some("Michael"),
+      primaryContactLastName = Some("Yau"),
+      contactEmail = Some("mikey@gmail.com"),
+      contactNumber = Some("07402205071"),
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )

@@ -15,7 +15,7 @@ import org.typelevel.log4cats.Logger
 import repositories.*
 import repositories.business.{BusinessAddressRepository, BusinessContactDetailsRepository, BusinessSpecificationsRepository}
 import repositories.desk.DeskListingRepository
-import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeSpecificationsRepository}
+import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeSpecificationsRepository, OfficeListingRepository}
 import services.*
 import services.business.address.BusinessAddressService
 import services.business.business_listing.BusinessListingService
@@ -95,11 +95,9 @@ object Routes {
 
   def officeListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {
 
-    val officeSpecificationsRepository = OfficeSpecificationsRepository(transactor)
-    val officeAddressRepository = OfficeAddressRepository(transactor)
-    val officeContactDetailsRepository = OfficeContactDetailsRepository(transactor)
+    val officeListingRepository = OfficeListingRepository(transactor)
 
-    val officeListingService = OfficeListingService(officeAddressRepository, officeContactDetailsRepository, officeSpecificationsRepository)
+    val officeListingService = OfficeListingService(officeListingRepository)
     val officeListingController = OfficeListingController(officeListingService)
 
     officeListingController.routes

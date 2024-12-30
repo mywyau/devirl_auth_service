@@ -11,11 +11,7 @@ import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.Json
 import io.circe.syntax.*
-import models.office.address_details.OfficeAddress
-import models.office.adts.*
-import models.office.contact_details.OfficeContactDetails
-import models.office.office_listing.requests.OfficeListingRequest
-import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
+import models.office.office_listing.OfficeListing
 import models.responses.CreatedResponse
 import org.http4s.*
 import org.http4s.Method.*
@@ -53,26 +49,32 @@ class OfficeListingControllerISpec(global: GlobalRead) extends IOSuite {
   }
 
   test(
-    "POST - /pistachio/business/businesses/office/listing/create - " +
+    "POST - /pistachio/business/office/listing/initiate - " +
       "should generate the office listing data for a business in the respective tables, returning Created response"
   ) { (sharedResources, log) =>
 
     val transactor = sharedResources._1.xa
     val client = sharedResources._2.client
 
-    val officeListingRequest: Json = testOfficeListingRequest("office_id_1").asJson
+    val initiateOfficeListingRequest: Json = testInitiateOfficeListingRequest("business_id_1", "office_id_1").asJson
 
     val request =
-      Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/businesses/office/listing/create")
-        .withEntity(officeListingRequest)
+      Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/office/listing/initiate")
+        .withEntity(initiateOfficeListingRequest)
 
-    val expectedOfficeListing = CreatedResponse("Business Office created successfully")
+    val expectedOfficeListing = ""
 
     client.run(request).use { response =>
-      response.as[CreatedResponse].map { body =>
+      response.as[OfficeListing].map { body =>
         expect.all(
           response.status == Status.Created,
-          body == expectedOfficeListing
+          body.officeId == "office_id_1",
+          body.officeAddressDetails.officeId == "office_id_1",
+          body.officeContactDetails.officeId == "office_id_1",
+          body.officeSpecifications.officeId == "office_id_1",
+          body.officeAddressDetails.city == None,
+          body.officeContactDetails.contactNumber == None,
+          body.officeSpecifications.officeType == None
         )
       }
     }

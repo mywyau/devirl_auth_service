@@ -3,7 +3,7 @@ package controllers.office
 import cats.effect.*
 import com.comcast.ip4s.{ipv4, port}
 import configuration.models.AppConfig
-import controllers.constants.OfficeSpecificationsControllerConstants.*
+import controllers.constants.OfficeSpecificationsControllerITConstants.*
 import controllers.fragments.OfficeSpecificationRepoFragments.{createOfficeSpecsTable, insertOfficeSpecificationsTable, resetOfficeSpecsTable}
 import controllers.office.OfficeSpecificationsController
 import doobie.implicits.*

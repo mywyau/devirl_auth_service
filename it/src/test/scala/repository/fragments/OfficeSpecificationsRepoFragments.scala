@@ -55,4 +55,16 @@ object OfficeSpecificationsRepoFragments {
       """
   }
 
+  val initiateOfficeSpecificationData: fragment.Fragment = {
+    sql"""
+        INSERT INTO office_specs (
+          business_id,
+          office_id,
+          created_at,
+          updated_at
+        ) VALUES
+          ('business_id_6', 'office_id_6', '2025-01-01 12:00:00', '2025-01-01 12:00:00');
+    """
+  }
+
 }

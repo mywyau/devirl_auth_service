@@ -3,7 +3,7 @@ package controllers.office
 import cats.effect.*
 import com.comcast.ip4s.{ipv4, port}
 import configuration.models.AppConfig
-import controllers.constants.OfficeContactDetailsControllerConstants.*
+import controllers.constants.OfficeContactDetailsControllerITConstants.*
 import controllers.fragments.OfficeContactDetailsRepoFragments.{createOfficeContactDetailsTable, insertOfficeContactDetailsData, resetOfficeContactDetailsTable}
 import controllers.office.OfficeContactDetailsController
 import doobie.implicits.*

@@ -53,10 +53,10 @@ class OfficeContactDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
         id = Some(1),
         businessId = "BUS12345",
         officeId = "OFF001",
-        primaryContactFirstName = "Alice",
-        primaryContactLastName = "Johnson",
-        contactEmail = "alice.johnson@example.com",
-        contactNumber = "+15551234567",
+        primaryContactFirstName = Some("Alice"),
+        primaryContactLastName = Some("Johnson"),
+        contactEmail = Some("alice.johnson@example.com"),
+        contactNumber = Some("+15551234567"),
         createdAt = LocalDateTime.of(2023, 1, 1, 12, 0, 0),
         updatedAt = LocalDateTime.of(2023, 1, 1, 12, 0, 0)
       )

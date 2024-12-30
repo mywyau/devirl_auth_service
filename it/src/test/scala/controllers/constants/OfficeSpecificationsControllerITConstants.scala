@@ -7,7 +7,7 @@ import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
 
 import java.time.{LocalDateTime, LocalTime}
 
-object OfficeSpecificationsControllerConstants {
+object OfficeSpecificationsControllerITConstants {
 
   def testCreateOfficeSpecificationsRequest(businessId: String, officeId: String): CreateOfficeSpecificationsRequest = {
     CreateOfficeSpecificationsRequest(
@@ -35,18 +35,20 @@ object OfficeSpecificationsControllerConstants {
       id = id,
       businessId = businessId,
       officeId = officeId,
-      officeName = "Downtown Workspace",
-      description = "A modern co-working space located in the heart of downtown.",
-      officeType = PrivateOffice,
-      numberOfFloors = 2,
-      totalDesks = 50,
-      capacity = 100,
-      amenities = List("Wi-Fi", "Coffee Machine", "Meeting Rooms"),
+      officeName = Some("Downtown Workspace"),
+      description = Some("A modern co-working space located in the heart of downtown."),
+      officeType = Some(PrivateOffice),
+      numberOfFloors = Some(2),
+      totalDesks = Some(50),
+      capacity = Some(100),
+      amenities = Some(List("Wi-Fi", "Coffee Machine", "Meeting Rooms")),
       availability =
-        OfficeAvailability(
-          days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-          startTime = LocalTime.of(8, 0, 0),
-          endTime = LocalTime.of(18, 0, 0)
+        Some(
+          OfficeAvailability(
+            days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
+            startTime = LocalTime.of(8, 0, 0),
+            endTime = LocalTime.of(18, 0, 0)
+          )
         ),
       rules = Some("No loud conversations. Keep the desks clean."),
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
@@ -59,18 +61,20 @@ object OfficeSpecificationsControllerConstants {
       id = id,
       businessId = businessId,
       officeId = officeId,
-      officeName = "Suburban Office",
-      description = "A quiet office in the suburbs, perfect for focused work.",
-      officeType = PrivateOffice,
-      numberOfFloors = 1,
-      totalDesks = 20,
-      capacity = 40,
-      amenities = List("Wi-Fi", "Tea", "Parking"),
+      officeName = Some("Suburban Office"),
+      description = Some("A quiet office in the suburbs, perfect for focused work."),
+      officeType = Some(PrivateOffice),
+      numberOfFloors = Some(1),
+      totalDesks = Some(20),
+      capacity = Some(40),
+      amenities = Some(List("Wi-Fi", "Tea", "Parking")),
       availability =
-        OfficeAvailability(
-          days = List("Monday", "Wednesday"),
-          startTime = LocalTime.of(8, 0, 0),
-          endTime = LocalTime.of(18, 0, 0)
+        Some(
+          OfficeAvailability(
+            days = List("Monday", "Wednesday"),
+            startTime = LocalTime.of(8, 0, 0),
+            endTime = LocalTime.of(18, 0, 0)
+          )
         ),
       rules = Some("No pets. Maintain silence."),
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),

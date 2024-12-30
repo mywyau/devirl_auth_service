@@ -23,10 +23,10 @@ case class MockOfficeContactDetailsRepository(ref: Ref[IO, List[OfficeContactDet
           id = Some(1),
           businessId = createOfficeContactDetailsRequest.businessId,
           officeId = createOfficeContactDetailsRequest.officeId,
-          primaryContactFirstName = createOfficeContactDetailsRequest.primaryContactFirstName,
-          primaryContactLastName = createOfficeContactDetailsRequest.primaryContactLastName,
-          contactEmail = createOfficeContactDetailsRequest.contactEmail,
-          contactNumber = createOfficeContactDetailsRequest.contactNumber,
+          primaryContactFirstName = Some(createOfficeContactDetailsRequest.primaryContactFirstName),
+          primaryContactLastName = Some(createOfficeContactDetailsRequest.primaryContactLastName),
+          contactEmail = Some(createOfficeContactDetailsRequest.contactEmail),
+          contactNumber = Some(createOfficeContactDetailsRequest.contactNumber),
           createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
           updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
         ) :: contactDetails

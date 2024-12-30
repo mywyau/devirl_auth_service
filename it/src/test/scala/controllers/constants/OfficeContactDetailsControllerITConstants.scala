@@ -6,7 +6,7 @@ import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
 
 import java.time.LocalDateTime
 
-object OfficeContactDetailsControllerConstants {
+object OfficeContactDetailsControllerITConstants {
 
   def createNewContactDetailsRequest(businessId: String, officeId: String): CreateOfficeContactDetailsRequest =
     CreateOfficeContactDetailsRequest(
@@ -23,10 +23,10 @@ object OfficeContactDetailsControllerConstants {
       id = id,
       businessId = businessId,
       officeId = officeId,
-      primaryContactFirstName = "Alice",
-      primaryContactLastName = "Johnson",
-      contactEmail = "alice.johnson@example.com",
-      contactNumber = "+15551234567",
+      primaryContactFirstName = Some("Alice"),
+      primaryContactLastName = Some("Johnson"),
+      contactEmail = Some("alice.johnson@example.com"),
+      contactNumber = Some("+15551234567"),
       createdAt = LocalDateTime.of(2023, 1, 1, 12, 0, 0),
       updatedAt = LocalDateTime.of(2023, 1, 1, 12, 0, 0)
     )
@@ -36,10 +36,10 @@ object OfficeContactDetailsControllerConstants {
       id = id,
       businessId = businessId,
       officeId = officeId,
-      primaryContactFirstName = "Bob",
-      primaryContactLastName = "Smith",
-      contactEmail = "bob.smith@example.com",
-      contactNumber = "+15557654321",
+      primaryContactFirstName = Some("Bob"),
+      primaryContactLastName = Some("Smith"),
+      contactEmail = Some("bob.smith@example.com"),
+      contactNumber = Some("+15557654321"),
       createdAt = LocalDateTime.of(2023, 2, 1, 15, 30, 0),
       updatedAt = LocalDateTime.of(2023, 2, 1, 15, 30, 0)
     )
@@ -49,10 +49,10 @@ object OfficeContactDetailsControllerConstants {
       id = id,
       businessId = businessId,
       officeId = officeId,
-      primaryContactFirstName = "Carol",
-      primaryContactLastName = "Davis",
-      contactEmail = "carol.davis@example.com",
-      contactNumber = "+15559876543",
+      primaryContactFirstName = Some("Carol"),
+      primaryContactLastName = Some("Davis"),
+      contactEmail = Some("carol.davis@example.com"),
+      contactNumber = Some("+15559876543"),
       createdAt = LocalDateTime.of(2023, 3, 1, 9, 45, 0),
       updatedAt = LocalDateTime.of(2023, 3, 1, 9, 45, 0)
     )

@@ -1,22 +1,16 @@
 package models.office.office_listing
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.circe.{Decoder, Encoder, Json}
-import models.business.adts.DeskType
-import models.business.desk_listing.Availability
+import io.circe.{Decoder, Encoder}
 import models.office.address_details.OfficeAddress
-import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
-
-import java.time.LocalDateTime
+import models.office.contact_details.OfficeContactDetails
+import models.office.specifications.OfficeSpecifications
 
 case class OfficeListing(
-                          id: Option[Int],
                           officeId: String,
-                          officeSpecs: OfficeSpecifications,
-                          addressDetails: OfficeAddress,
-                          availability: OfficeAvailability,
-                          createdAt: LocalDateTime,
-                          updatedAt: LocalDateTime
+                          officeAddressDetails: OfficeAddress,
+                          officeContactDetails: OfficeContactDetails,
+                          officeSpecifications: OfficeSpecifications
                         )
 
 object OfficeListing {

@@ -5,7 +5,7 @@ import models.office.address_details.requests.CreateOfficeAddressRequest
 
 import java.time.LocalDateTime
 
-object OfficeAddressConstants {
+object OfficeAddressRepoITConstants {
 
   def testOfficeAddressRequest(businessId: String, officeId: String): CreateOfficeAddressRequest = {
     CreateOfficeAddressRequest(

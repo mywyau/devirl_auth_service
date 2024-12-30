@@ -25,52 +25,6 @@ class OfficeSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite {
         insertOfficeSpecificationData.update.run.transact(transactor.xa).void
     )
 
-  def testCreateOfficeSpecificationsRequest(businessId: String, officeId: String): CreateOfficeSpecificationsRequest = {
-    CreateOfficeSpecificationsRequest(
-      businessId = businessId,
-      officeId = officeId,
-      officeName = "Modern Workspace",
-      description = "A vibrant office space in the heart of the city, ideal for teams or individuals.",
-      officeType = OpenPlanOffice,
-      numberOfFloors = 3,
-      totalDesks = 3,
-      capacity = 50,
-      amenities = List("Wi-Fi", "Coffee Machine", "Projector", "Whiteboard", "Parking"),
-      availability =
-        OfficeAvailability(
-          days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-          startTime = LocalTime.of(10, 0, 0),
-          endTime = LocalTime.of(10, 30, 0)
-        ),
-      rules = Some("No smoking. Maintain cleanliness.")
-    )
-  }
-
-
-  def testOfficeSpecs(id: Option[Int], businessId: String, officeId: String): OfficeSpecifications = {
-    OfficeSpecifications(
-      id = Some(1),
-      businessId = businessId,
-      officeId = officeId,
-      officeName = "Modern Workspace",
-      description = "A vibrant office space in the heart of the city, ideal for teams or individuals.",
-      officeType = OpenPlanOffice,
-      numberOfFloors = 3,
-      totalDesks = 3,
-      capacity = 50,
-      amenities = List("Wi-Fi", "Coffee Machine", "Projector", "Whiteboard", "Parking"),
-      availability =
-        OfficeAvailability(
-          days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-          startTime = LocalTime.of(10, 0, 0),
-          endTime = LocalTime.of(10, 30, 0)
-        ),
-      rules = Some("No smoking. Maintain cleanliness."),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-    )
-  }
-
   def sharedResource: Resource[IO, OfficeSpecificationsRepositoryImpl[IO]] = {
     val setup = for {
       transactor <- global.getOrFailR[TransactorResource]()
@@ -91,19 +45,19 @@ class OfficeSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite {
           id = Some(1),
           businessId = "BUS001",
           officeId = "OFF001",
-          officeName = "Main Office",
-          description = "Spacious and well-lit office for teams.",
-          officeType = PrivateOffice,
-          numberOfFloors = 2,
-          totalDesks = 20,
-          capacity = 50,
-          amenities = List("WiFi", "Parking"),
+          officeName = Some("Main Office"),
+          description = Some("Spacious and well-lit office for teams."),
+          officeType = Some(PrivateOffice),
+          numberOfFloors = Some(2),
+          totalDesks = Some(20),
+          capacity = Some(50),
+          amenities = Some(List("WiFi", "Parking")),
           availability =
-            OfficeAvailability(
+            Some(OfficeAvailability(
               days = List("Monday", "Friday"),
               startTime = LocalTime.of(9, 0, 0),
               endTime = LocalTime.of(17, 0, 0)
-            ),
+            )),
           rules = Some("No smoking indoors."),
           createdAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0),
           updatedAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0)
@@ -111,7 +65,6 @@ class OfficeSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite {
 
       for {
         officeSpecsOpt <- officeSpecificationsRepo.findByOfficeId("OFF001")
-        //      _ <- IO(println(s"Query Result: $officeSpecsOpt")) // Debug log the result
       } yield expect(officeSpecsOpt == Some(expectedResult))
   }
 }

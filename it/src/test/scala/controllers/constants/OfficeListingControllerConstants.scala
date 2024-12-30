@@ -1,20 +1,14 @@
 package controllers.constants
 
-import cats.effect.*
-import io.circe.Json
-import io.circe.syntax.*
+import models.office.address_details.OfficeAddress
 import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.adts.*
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
-import models.office.office_listing.requests.OfficeListingRequest
+import models.office.office_listing.OfficeListing
+import models.office.office_listing.requests.InitiateOfficeListingRequest
 import models.office.specifications.requests.CreateOfficeSpecificationsRequest
 import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
-import models.responses.CreatedResponse
-import org.http4s.*
-import org.http4s.Method.*
-import org.http4s.circe.*
-import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 
 import java.time.{LocalDateTime, LocalTime}
 
@@ -68,14 +62,67 @@ object OfficeListingControllerConstants {
     )
 
 
-  def testOfficeListingRequest(officeId: String): OfficeListingRequest =
-    OfficeListingRequest(
+  def testInitiateOfficeListingRequest(businessId: String, officeId: String): InitiateOfficeListingRequest =
+    InitiateOfficeListingRequest(
+      businessId = businessId,
       officeId = officeId,
-      createOfficeAddressRequest = testOfficeAddressRequest,
-      createOfficeSpecificationsRequest = testCreateOfficeSpecificationsRequest,
-      createOfficeContactDetailsRequest = testCreateOfficeContactDetailsRequest,
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
+  def officeSpecifications(id: Option[Int], businessId: String, officeId: String): OfficeSpecifications =
+    OfficeSpecifications(
+      id = id,
+      businessId = businessId,
+      officeId = officeId,
+      officeName = None,
+      description = None,
+      officeType = None,
+      numberOfFloors = None,
+      totalDesks = None,
+      capacity = None,
+      amenities = None,
+      availability = None,
+      rules = None,
+      createdAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0)
+    )
+
+  def officeAddress(id: Option[Int], businessId: String, officeId: String): OfficeAddress =
+    OfficeAddress(
+      id = id,
+      businessId = businessId,
+      officeId = officeId,
+      buildingName = None,
+      floorNumber = None,
+      street = None,
+      city = None,
+      country = None,
+      county = None,
+      postcode = None,
+      latitude = None,
+      longitude = None,
+      createdAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0)
+    )
+
+  def testContactDetails(id: Option[Int], businessId: String, officeId: String): OfficeContactDetails =
+    OfficeContactDetails(
+      id = id,
+      businessId = businessId,
+      officeId = officeId,
+      primaryContactFirstName = None,
+      primaryContactLastName = None,
+      contactEmail = None,
+      contactNumber = None,
+      createdAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0),
+      updatedAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0)
+    )
+
+  def testOfficeListing(id: Option[Int], businessId: String, officeId: String): OfficeListing = {
+    OfficeListing(
+      officeId = officeId,
+      officeAddressDetails = officeAddress(id, businessId, officeId),
+      officeSpecifications = officeSpecifications(id, businessId, officeId),
+      officeContactDetails = testContactDetails(id, businessId, officeId)
+    )
+  }
 }
