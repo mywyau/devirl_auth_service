@@ -8,14 +8,13 @@ import controllers.business_listing.BusinessListingControllerImpl
 import controllers.desk_listing.DeskListingControllerImpl
 import controllers.office.{OfficeAddressController, OfficeContactDetailsController, OfficeSpecificationsController}
 import controllers.office_listing.OfficeListingController
-import dev.profunktor.redis4cats.effect.Log
 import doobie.hikari.HikariTransactor
 import org.http4s.HttpRoutes
 import org.typelevel.log4cats.Logger
 import repositories.*
 import repositories.business.{BusinessAddressRepository, BusinessContactDetailsRepository, BusinessSpecificationsRepository}
 import repositories.desk.DeskListingRepository
-import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeSpecificationsRepository, OfficeListingRepository}
+import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeListingRepository, OfficeSpecificationsRepository}
 import services.*
 import services.business.address.BusinessAddressService
 import services.business.business_listing.BusinessListingService
@@ -91,12 +90,10 @@ object Routes {
 
     businessSpecificationsController.routes
   }
-
-
+  
   def officeListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {
 
     val officeListingRepository = OfficeListingRepository(transactor)
-
     val officeListingService = OfficeListingService(officeListingRepository)
     val officeListingController = OfficeListingController(officeListingService)
 

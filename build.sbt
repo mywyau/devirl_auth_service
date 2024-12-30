@@ -21,7 +21,6 @@ lazy val it = (project in file("it"))
     Test / unmanagedSourceDirectories += baseDirectory.value / "src" / "test" / "scala"
   )
 
-
 // Merge strategy for sbt assembly for containerising the app
 import sbtassembly.AssemblyPlugin.autoImport.*
 

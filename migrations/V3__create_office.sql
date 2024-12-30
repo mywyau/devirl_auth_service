@@ -31,7 +31,7 @@ CREATE TABLE office_address (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-DROP TABLE IF EXISTS office_listing;
+DROP TABLE IF EXISTS office_specs;
 
 CREATE TABLE office_specs (
     id SERIAL PRIMARY KEY,

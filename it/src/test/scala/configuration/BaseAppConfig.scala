@@ -1,9 +1,8 @@
 package configuration
 
 import cats.effect.*
-import com.comcast.ip4s.{Host, Port, ipv4, port}
+import com.comcast.ip4s.{Host, Port}
 import configuration.models.*
-import configuration.{ConfigReader, ConfigReaderAlgebra}
 
 trait BaseAppConfig {
 

@@ -157,11 +157,14 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
                                      listingResult: IO[ValidatedNel[SqlErrors, Int]]
                                    ) extends OfficeListingRepositoryAlgebra[IO] {
 
+    override def findAll(): IO[List[OfficeListing]] = ???
+    
     override def findByOfficeId(officeId: String): IO[Option[OfficeListing]] = findByOfficeIdResult
 
     override def initiate(request: InitiateOfficeListingRequest): IO[ValidatedNel[SqlErrors, Int]] = listingResult
 
     override def delete(officeId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
+
   }
 
   def createTestService(

@@ -1,16 +1,16 @@
 package services.office.office_listing
 
-import cats.data.Validated.{Invalid, Valid}
-import cats.data.{Validated, ValidatedNel}
 import cats.effect.Concurrent
 import cats.syntax.all.*
 import cats.{Monad, NonEmptyParallel}
-import models.database.*
+import models.office.office_listing.OfficeListing
 import models.office.office_listing.requests.InitiateOfficeListingRequest
-import models.office.office_listing.{OfficeListing, errors}
+import org.typelevel.log4cats.Logger
 import repositories.office.OfficeListingRepositoryAlgebra
 
 trait OfficeListingServiceAlgebra[F[_]] {
+
+  def findAll(): F[List[OfficeListing]]
 
   def getByOfficeId(officeId: String): F[Option[OfficeListing]]
 
@@ -21,6 +21,10 @@ trait OfficeListingServiceAlgebra[F[_]] {
 class OfficeListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
                                                                               officeListingRepository: OfficeListingRepositoryAlgebra[F],
                                                                             ) extends OfficeListingServiceAlgebra[F] {
+
+  override def findAll(): F[List[OfficeListing]] = {
+    officeListingRepository.findAll()
+  }
 
   override def getByOfficeId(officeId: String): F[Option[OfficeListing]] = {
     officeListingRepository.findByOfficeId(officeId)

@@ -28,10 +28,10 @@ class OfficeAddressControllerImpl[F[_] : Concurrent](
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
     case GET -> Root / "business" / "offices" / "address" / officeId =>
-      logger.debug(s"[OfficeAddressControllerImpl] GET - Office address for officeId: $officeId") *>
+      logger.info(s"[OfficeAddressControllerImpl] GET - Office address for officeId: $officeId") *>
         officeAddressService.getByOfficeId(officeId).flatMap {
           case Right(address) =>
-            logger.info(s"[OfficeAddressControllerImpl] GET - Successfully retrieved office specification") *>
+            logger.info(s"[OfficeAddressControllerImpl] GET - Successfully retrieved office address") *>
               Ok(address.asJson)
           case Left(error) =>
             val errorResponse = ErrorResponse(error.code, error.errorMessage)

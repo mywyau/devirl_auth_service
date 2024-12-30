@@ -1,13 +1,10 @@
 package controllers.office_listing
 
-import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.*
-import models.business.desk_listing.requests.DeskListingRequest
-import models.office.address_details.requests.CreateOfficeAddressRequest
-import models.office.office_listing.requests.{InitiateOfficeListingRequest, OfficeListingRequest}
-import models.responses.{CreatedResponse, ErrorResponse}
+import models.office.office_listing.requests.InitiateOfficeListingRequest
+import models.responses.ErrorResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
@@ -25,6 +22,7 @@ class OfficeListingControllerImpl[F[_] : Concurrent](
   extends Http4sDsl[F] with OfficeListingControllerAlgebra[F] {
 
   implicit val initiateOfficeListingRequestDecoder: EntityDecoder[F, InitiateOfficeListingRequest] = jsonOf[F, InitiateOfficeListingRequest]
+
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
     case req@POST -> Root / "business" / "office" / "listing" / "initiate" =>
@@ -37,6 +35,16 @@ class OfficeListingControllerImpl[F[_] : Concurrent](
             case _ =>
               InternalServerError(ErrorResponse(code = "Code", message = "An error occurred").asJson)
           }
+        }
+
+    case GET -> Root / "business" / "office" / "listing" / "find" / "all" =>
+      logger.info(s"[OfficeListingControllerImpl] GET - Find all office listings") *>
+        officeListingService.findAll().flatMap {
+          case Nil =>
+            BadRequest(ErrorResponse(code = "Code", message = "An error occurred").asJson)
+          case listOfAddresses =>
+            logger.info(s"[OfficeListingControllerImpl] GET - Successfully retrieved all office listings") *>
+              Ok(listOfAddresses.asJson)
         }
   }
 }

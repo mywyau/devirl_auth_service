@@ -48,6 +48,7 @@ INSERT INTO office_address (
     CURRENT_TIMESTAMP
 );
 
+
 INSERT INTO office_specs (
     business_id,
     office_id,
@@ -62,16 +63,28 @@ INSERT INTO office_specs (
     rules
 ) VALUES
 (
-    'BUS001', 'OFF001', 'Downtown Workspace', 'A modern co-working space.', 'co-working', 2, 50, 100,
+    'BUS001',
+    'OFF001',
+    'Downtown Workspace',
+    'A modern co-working space.',
+    'co-working',
+    2,
+    50,
+    100,
     ARRAY['WiFi', 'Coffee', 'Meeting Rooms'],
-    '{"monday": "8:00-18:00", "tuesday": "8:00-18:00"}',
+    '[{"days": ["Monday", "Tuesday"], "startTime": "08:00:00", "endTime": "18:00:00"}]'::JSONB,
     'No loud conversations. Keep the desks clean.'
 ),
 (
-    'BUS002', 'OFF002', 'Suburban Office', 'A quiet office in the suburbs.', 'private', 1, 20, 40,
+    'BUS002',
+    'OFF002',
+    'Suburban Office',
+    'A quiet office in the suburbs.',
+    'private',
+    1,
+    20,
+    40,
     ARRAY['Parking', 'WiFi', 'Tea'],
-    '{"monday": "9:00-17:00", "wednesday": "9:00-17:00"}',
+    '[{"days": ["Monday", "Wednesday"], "startTime": "09:00:00", "endTime": "17:00:00"}]'::JSONB,
     'No pets. Maintain silence.'
 );
-
-

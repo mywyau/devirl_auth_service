@@ -22,6 +22,8 @@ import java.time.LocalDateTime
 
 trait OfficeListingRepositoryAlgebra[F[_]] {
 
+  def findAll(): F[List[OfficeListing]]
+
   def findByOfficeId(officeId: String): F[Option[OfficeListing]]
 
   def initiate(request: InitiateOfficeListingRequest): F[ValidatedNel[SqlErrors, Int]]
@@ -36,6 +38,44 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
     Meta[Timestamp].imap(_.toLocalDateTime)(Timestamp.valueOf)
 
   implicit val officeTypeMeta: Meta[OfficeType] = Meta[String].imap(OfficeType.fromString)(_.toString)
+
+  override def findAll(): F[List[OfficeListing]] = {
+    val fetchOfficeAddressDetails =
+      sql"""
+        SELECT * FROM office_address
+      """.query[OfficeAddress].to[List]
+
+    val fetchOfficeContactDetails =
+      sql"""
+        SELECT * FROM office_contact_details
+      """.query[OfficeContactDetails].to[List]
+
+    val fetchOfficeSpecifications =
+      sql"""
+        SELECT * FROM office_specs
+      """.query[OfficeSpecifications].to[List]
+
+    (
+      for {
+        addressDetails <- fetchOfficeAddressDetails
+        contactDetails <- fetchOfficeContactDetails
+        specifications <- fetchOfficeSpecifications
+      } yield {
+        // Map for quick lookup by officeId
+        val contactMap = contactDetails.map(c => c.officeId -> c).toMap
+        val specsMap = specifications.map(s => s.officeId -> s).toMap
+
+        addressDetails.flatMap { address =>
+          for {
+            contact <- contactMap.get(address.officeId)
+            specs <- specsMap.get(address.officeId)
+          } yield {
+            OfficeListing(address.officeId, address, contact, specs)
+          }
+        }
+      }
+      ).transact(transactor)
+  }
 
   override def findByOfficeId(officeId: String): F[Option[OfficeListing]] = {
     val fetchOfficeAddressDetails =

@@ -1,24 +1,21 @@
 package controllers
 
 import cats.effect.*
-import com.comcast.ip4s.{Host, Port, ipv4, port}
+import com.comcast.ip4s.{Host, Port}
+import configuration.BaseAppConfig
 import configuration.models.*
-import configuration.{BaseAppConfig, ConfigReader, ConfigReaderAlgebra}
 import controllers.TestRoutes.*
 import doobie.*
 import doobie.hikari.HikariTransactor
-import doobie.implicits.*
 import doobie.util.ExecutionContexts
 import org.http4s.*
-import org.http4s.Method.*
 import org.http4s.circe.*
-import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.client.Client
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
-import org.http4s.server.{Router, Server}
-import repository.DatabaseResource.{postgresqlConfigResource, transactorResource}
+import org.http4s.server.Server
+import repository.DatabaseResource.postgresqlConfigResource
 import shared.{HttpClientResource, TransactorResource}
 import weaver.{GlobalResource, GlobalWrite}
 
