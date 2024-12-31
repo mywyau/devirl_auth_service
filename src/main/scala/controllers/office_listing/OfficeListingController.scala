@@ -1,10 +1,11 @@
 package controllers.office_listing
 
+import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.*
 import models.office.office_listing.requests.InitiateOfficeListingRequest
-import models.responses.ErrorResponse
+import models.responses.{DeletedResponse, ErrorResponse}
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
@@ -45,6 +46,17 @@ class OfficeListingControllerImpl[F[_] : Concurrent](
           case listOfAddresses =>
             logger.info(s"[OfficeListingControllerImpl] GET - Successfully retrieved all office listings") *>
               Ok(listOfAddresses.asJson)
+        }
+
+    case DELETE -> Root / "business" / "office" / "listing" / "delete" / officeId =>
+      logger.info(s"[OfficeListingControllerImpl] DELETE - Attempting to delete the office listing for officeId:${officeId}") *>
+        officeListingService.delete(officeId).flatMap {
+          case Valid(contactDetails) =>
+            logger.info(s"[OfficeListingControllerImpl] DELETE - Successfully deleted office listing for $officeId") *>
+              Ok(DeletedResponse("Office listing deleted successfully").asJson)
+          case Invalid(error) =>
+            val errorResponse = ErrorResponse("placeholder error", "some deleted office listing message")
+            BadRequest(errorResponse.asJson)
         }
   }
 }

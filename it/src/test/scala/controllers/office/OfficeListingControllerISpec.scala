@@ -9,6 +9,7 @@ import doobie.implicits.*
 import io.circe.Json
 import io.circe.syntax.*
 import models.office.office_listing.OfficeListing
+import models.responses.DeletedResponse
 import org.http4s.*
 import org.http4s.Method.*
 import org.http4s.circe.*
@@ -47,7 +48,8 @@ class OfficeListingControllerISpec(global: GlobalRead) extends IOSuite {
 
   test(
     "POST - /pistachio/business/office/listing/initiate - should generate the office listing data for a business in the respective tables, returning Created response, " +
-      "and \nGET - /pistachio/business/office/listing/find/all - should retrieve all of the office listings, including the newly created listing"
+      "\nGET - /pistachio/business/office/listing/find/all - should retrieve all of the office listings, including the newly created listing" +
+      "\nDELETE - /pistachio/business/offices/listing/delete/OFF002 - given a office_id, delete the office listing data for given office id, returning OK and Deleted response json"
   ) { (sharedResources, log) =>
 
     val transactor = sharedResources._1.xa
@@ -90,8 +92,21 @@ class OfficeListingControllerISpec(global: GlobalRead) extends IOSuite {
             )
           }
         }
+
+        val request =
+          Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/office/listing/delete/OFF002")
+
+        val expectedBody = DeletedResponse("Office listing deleted successfully")
+
+        client.run(request).use { response =>
+          response.as[DeletedResponse].map { body =>
+            expect.all(
+              response.status == Status.Ok,
+              body == expectedBody
+            )
+          }
+        }
       }
     }
   }
-
 }

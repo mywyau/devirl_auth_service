@@ -1,8 +1,10 @@
 package services.office.office_listing
 
+import cats.data.ValidatedNel
 import cats.effect.Concurrent
 import cats.syntax.all.*
 import cats.{Monad, NonEmptyParallel}
+import models.database.SqlErrors
 import models.office.office_listing.OfficeListing
 import models.office.office_listing.requests.InitiateOfficeListingRequest
 import org.typelevel.log4cats.Logger
@@ -15,6 +17,8 @@ trait OfficeListingServiceAlgebra[F[_]] {
   def getByOfficeId(officeId: String): F[Option[OfficeListing]]
 
   def initiate(request: InitiateOfficeListingRequest): F[Option[OfficeListing]]
+
+  def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
 }
 
 
@@ -41,6 +45,10 @@ class OfficeListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
     }
   }
 
+
+  override def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]] = {
+    officeListingRepository.delete(officeId)
+  }
 
 }
 

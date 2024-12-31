@@ -170,7 +170,46 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
       }
   }
 
-  override def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]] = ???
+
+  override def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]] = {
+    val deleteAddressQuery =
+      sql"""
+           DELETE FROM office_address
+           WHERE office_id = $officeId
+         """.update.run
+
+    val deleteContactDetailsQuery =
+      sql"""
+           DELETE FROM office_contact_details
+           WHERE office_id = $officeId
+         """.update.run
+
+    val deleteSpecificationsQuery =
+      sql"""
+           DELETE FROM office_specs
+           WHERE office_id = $officeId
+         """.update.run
+
+    val combinedQuery = for {
+      addressRows <- deleteAddressQuery
+      contactRows <- deleteContactDetailsQuery
+      specsRows <- deleteSpecificationsQuery
+    } yield addressRows + contactRows + specsRows
+    
+    combinedQuery
+      .transact(transactor)
+      .attempt
+      .map {
+        case Right(affectedRows) =>
+          if (affectedRows == 3)
+            affectedRows.validNel
+          else
+            NotFoundError.invalidNel
+        case Left(ex) =>
+          DeleteError.invalidNel
+      }
+  }
+
 }
 
 
