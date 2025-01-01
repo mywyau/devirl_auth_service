@@ -1,20 +1,18 @@
 
 import cats.NonEmptyParallel
 import cats.effect.*
-import cats.effect.syntax.all.*
 import cats.implicits.*
 import com.comcast.ip4s.*
 import configuration.ConfigReader
+import configuration.models.AppConfig
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
-import fs2.concurrent.Topic
 import middleware.Middleware.throttleMiddleware
 import org.http4s.HttpRoutes
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.Router
 import org.http4s.server.middleware.CORS
-import org.http4s.server.websocket.WebSocketBuilder2
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import routes.Routes.*
@@ -25,15 +23,25 @@ object Main extends IOApp {
 
   implicit def logger[F[_] : Sync]: Logger[F] = Slf4jLogger.getLogger[F]
 
-  def transactorResource[F[_] : Async]: Resource[F, HikariTransactor[F]] = {
-    val dbUrl = s"jdbc:postgresql://${sys.env.getOrElse("DB_HOST", "localhost")}:${sys.env.getOrElse("DB_PORT", "5432")}/${sys.env.getOrElse("DB_NAME", "shared_db")}"
+  def transactorResource[F[_] : Async](appConfig: AppConfig): Resource[F, HikariTransactor[F]] = {
+
+    val postgresqHost =
+      if (appConfig.featureSwitches.useDockerHost) {
+        appConfig.localConfig.postgresqlConfig.dockerHost
+      } else {
+        appConfig.localConfig.postgresqlConfig.host
+      }
+
+    val dbUrl =
+      s"jdbc:postgresql://$postgresqHost:${appConfig.localConfig.postgresqlConfig.port}/${appConfig.localConfig.postgresqlConfig.dbName}"
+
     for {
       ce <- ExecutionContexts.fixedThreadPool(32)
       xa <- HikariTransactor.newHikariTransactor[F](
         driverClassName = "org.postgresql.Driver",
         url = dbUrl,
-        user = sys.env.getOrElse("DB_USER", "shared_user"),
-        pass = sys.env.getOrElse("DB_PASS", "share"),
+        user = appConfig.localConfig.postgresqlConfig.username,
+        pass = appConfig.localConfig.postgresqlConfig.password,
         connectEC = ce
       )
     } yield xa
@@ -99,14 +107,14 @@ object Main extends IOApp {
     val configReader = ConfigReader[IO]
 
     for {
-      appConfig <- configReader.loadAppConfig.handleErrorWith { e =>
+      appConfig: AppConfig <- configReader.loadAppConfig.handleErrorWith { e =>
         IO.raiseError(new RuntimeException(s"Failed to load app configuration: ${e.getMessage}", e))
       }
       _ <- Logger[IO].info(s"Loaded configuration: $appConfig")
       host <- IO.fromOption(Host.fromString(appConfig.localConfig.serverConfig.host))(new RuntimeException("Invalid host in configuration"))
       port <- IO.fromOption(Port.fromInt(appConfig.localConfig.serverConfig.port))(new RuntimeException("Invalid port in configuration"))
       exitCode: ExitCode <-
-        transactorResource[IO].flatMap { transactor =>
+        transactorResource[IO](appConfig).flatMap { transactor =>
 
             val httpRoutesResource: Resource[IO, HttpRoutes[IO]] = createHttpRoutes[IO](transactor)
 

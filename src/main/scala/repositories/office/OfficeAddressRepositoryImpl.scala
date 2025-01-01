@@ -10,8 +10,8 @@ import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import models.database.*
 import models.office.address_details.OfficeAddress
-import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.address_details.errors.OfficeAddressErrors
+import models.office.address_details.requests.{CreateOfficeAddressRequest, UpdateOfficeAddressRequest}
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -21,6 +21,8 @@ trait OfficeAddressRepositoryAlgebra[F[_]] {
   def findByOfficeId(officeId: String): F[Option[OfficeAddress]]
 
   def create(officeAddressRequest: CreateOfficeAddressRequest): F[ValidatedNel[SqlErrors, Int]]
+
+  def update(officeId: String, request: UpdateOfficeAddressRequest): F[ValidatedNel[SqlErrors, Int]]
 
   def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
 
@@ -83,6 +85,37 @@ class OfficeAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
         case Left(e: java.sql.SQLException) =>
           DatabaseError.invalidNel
         case Left(e) =>
+          UnknownError.invalidNel
+      }
+  }
+
+  override def update(officeId: String, request: UpdateOfficeAddressRequest): F[ValidatedNel[SqlErrors, Int]] = {
+    sql"""
+      UPDATE office_address
+      SET
+          building_name = ${request.buildingName},
+          floor_number = ${request.floorNumber},
+          street = ${request.street},
+          city = ${request.city},
+          country = ${request.country},
+          county = ${request.county},
+          postcode = ${request.postcode},
+          latitude = ${request.latitude},
+          longitude = ${request.longitude},
+          updated_at = ${request.updatedAt}
+      WHERE office_id = ${officeId}
+    """.update.run
+      .transact(transactor)
+      .attempt
+      .map {
+        case Right(affectedRows) =>
+          if (affectedRows > 0)
+            affectedRows.validNel
+          else
+            NotFoundError.invalidNel
+        case Left(ex: java.sql.SQLException) =>
+          DatabaseError.invalidNel
+        case Left(ex) =>
           UnknownError.invalidNel
       }
   }

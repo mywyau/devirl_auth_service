@@ -19,6 +19,7 @@ object AppConfigConstants {
   val integrationPostgresqlConfig =
     PostgresqlConfig(
       dbName = "shared_test_db",
+      dockerHost = "N/A",
       host = "localhost",
       port = 5432,
       username = "shared_user",
@@ -27,7 +28,8 @@ object AppConfigConstants {
 
   val containerPostgresqlConfig =
     PostgresqlConfig(
-      dbName = "shared_test_db",
+      dbName = "shared_db",
+      dockerHost = "shared-postgres-container",
       host = "postgresql",
       port = 5432,
       username = "shared_user",

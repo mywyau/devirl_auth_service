@@ -7,6 +7,7 @@ case class ServerConfig(host: String, port: Int)derives ConfigReader
 
 case class PostgresqlConfig(
                              dbName: String,
+                             dockerHost: String,
                              host: String,
                              port: Int,
                              username: String,

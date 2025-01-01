@@ -140,10 +140,14 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
       sql"""
         INSERT INTO office_specs (
           business_id,
-          office_id
+          office_id,
+          office_name,
+          description
         ) VALUES (
           ${request.businessId},
-          ${request.officeId}
+          ${request.officeId},
+          ${request.officeName},
+          ${request.description}
         )
       """
 

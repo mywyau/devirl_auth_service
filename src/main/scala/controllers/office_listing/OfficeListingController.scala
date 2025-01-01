@@ -30,22 +30,42 @@ class OfficeListingControllerImpl[F[_] : Concurrent](
       logger.info(s"[OfficeListingControllerImpl] POST - Initiating office listing") *>
         req.decode[InitiateOfficeListingRequest] { request =>
           officeListingService.initiate(request).flatMap {
-            case Some(listing) =>
+            case Some(officeListingCard) =>
               logger.info(s"[OfficeListingControllerImpl] POST - Successfully created an initial office listing") *>
-                Created(listing.asJson)
+                Created(officeListingCard.asJson)
             case _ =>
-              InternalServerError(ErrorResponse(code = "Code", message = "An error occurred").asJson)
+              InternalServerError(ErrorResponse(code = "CreateFailure", message = "Could not create OfficeListingCard").asJson)
           }
+        }
+
+    case GET -> Root / "business" / "office" / "listing" / "find" / officeId =>
+      logger.info(s"[OfficeListingControllerImpl] GET - Find office listing: $officeId") *>
+        officeListingService.getByOfficeId(officeId).flatMap {
+          case None =>
+            BadRequest(ErrorResponse(code = "GetFailure", message = "Could not find the office listing").asJson)
+          case Some(listing) =>
+            logger.info(s"[OfficeListingControllerImpl] GET - Successfully retrieved the office listing: $officeId") *>
+              Ok(listing.asJson)
         }
 
     case GET -> Root / "business" / "office" / "listing" / "find" / "all" =>
       logger.info(s"[OfficeListingControllerImpl] GET - Find all office listings") *>
         officeListingService.findAll().flatMap {
           case Nil =>
-            BadRequest(ErrorResponse(code = "Code", message = "An error occurred").asJson)
-          case listOfAddresses =>
+            BadRequest(ErrorResponse(code = "GetFailure", message = "Could not find any office listings").asJson)
+          case listings =>
             logger.info(s"[OfficeListingControllerImpl] GET - Successfully retrieved all office listings") *>
-              Ok(listOfAddresses.asJson)
+              Ok(listings.asJson)
+        }
+
+    case GET -> Root / "business" / "office" / "listing" / "cards" / "find" / "all" =>
+      logger.info(s"[OfficeListingControllerImpl] GET - Find all office listing card details") *>
+        officeListingService.findAllListingCardDetails().flatMap {
+          case Nil =>
+            BadRequest(ErrorResponse(code = "GetFailure", message = "Could not find any office card details").asJson)
+          case listingCards =>
+            logger.info(s"[OfficeListingControllerImpl] GET - Successfully retrieved all office listing card details") *>
+              Ok(listingCards.asJson)
         }
 
     case DELETE -> Root / "business" / "office" / "listing" / "delete" / officeId =>

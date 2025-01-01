@@ -8,7 +8,7 @@ import cats.{Monad, NonEmptyParallel}
 import models.database.*
 import models.office.address_details.OfficeAddress
 import models.office.address_details.errors.*
-import models.office.address_details.requests.CreateOfficeAddressRequest
+import models.office.address_details.requests.{CreateOfficeAddressRequest, UpdateOfficeAddressRequest}
 import repositories.office.OfficeAddressRepositoryAlgebra
 
 
@@ -17,6 +17,8 @@ trait OfficeAddressServiceAlgebra[F[_]] {
   def getByOfficeId(officeId: String): F[Either[OfficeAddressErrors, OfficeAddress]]
 
   def create(officeAddress: CreateOfficeAddressRequest): F[ValidatedNel[OfficeAddressErrors, Int]]
+
+  def update(officeId: String, officeAddress: UpdateOfficeAddressRequest): F[ValidatedNel[OfficeAddressErrors, Int]]
 
   def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
 }
@@ -50,6 +52,25 @@ class OfficeAddressServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
     }.handleErrorWith { e =>
       Concurrent[F].pure(AddressDatabaseError.invalidNel)
     }
+  }
+
+  override def update(officeId: String, request: UpdateOfficeAddressRequest): F[ValidatedNel[OfficeAddressErrors, Int]] = {
+
+    val updateAddress: F[ValidatedNel[SqlErrors, Int]] =
+      officeAddressRepo.update(officeId, request)
+
+    updateAddress.map {
+      case Validated.Valid(addressId) =>
+        Valid(1)
+      case addressResult =>
+        val errors =
+          List(addressResult.toEither.left.getOrElse(Nil))
+        OfficeAddressNotCreated.invalidNel
+    }.handleErrorWith { e =>
+      Concurrent[F].pure(AddressDatabaseError.invalidNel)
+    }
+
+
   }
 
   override def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]] = {

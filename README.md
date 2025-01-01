@@ -105,3 +105,19 @@ WIP TODO: add some exmaples to hit our endpoints
 ```
 http POST http://localhost:1010/pistachio/business/offices/address/create Content-Type:application/json businessId="BUS12345" officeId="OFF12345" buildingName="Example Building" floorNumber="12" street="123 Example Street" city="Example City" country="Example Country" county="Example County" postcode="12345" latitude:=12.345678 longitude:=-98.765432
 ```
+
+
+http PUT http://localhost:1010/pistachio/business/offices/address/OFF-3fc560b7-c039-4267-9de3-023a10077a5f \
+buildingName="New Building" \
+floorNumber=3 \
+street="123 Main St" \
+city="ExampleCity" \
+country="ExampleCountry" \
+county="ExampleCounty" \
+postcode="12345" \
+latitude=12.34 \
+longitude=56.78 \
+updatedAt="2025-01-01T12:00:00"
+
+
+http GET http://localhost:1010/pistachio/business/office/listing/find/OFF-5fb33a0e-04c7-45fe-96ec-981d27cb4b84

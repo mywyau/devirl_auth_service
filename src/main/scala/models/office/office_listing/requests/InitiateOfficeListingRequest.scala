@@ -14,7 +14,9 @@ import java.time.LocalDateTime
 
 case class InitiateOfficeListingRequest(
                                            businessId: String,
-                                           officeId: String
+                                           officeId: String,
+                                           officeName: String,
+                                           description: String,
                                          )
 
 object InitiateOfficeListingRequest {
