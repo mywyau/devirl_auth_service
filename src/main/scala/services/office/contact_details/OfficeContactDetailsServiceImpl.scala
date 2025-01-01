@@ -8,7 +8,7 @@ import cats.{Monad, NonEmptyParallel}
 import models.database.SqlErrors
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.errors.*
-import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
+import models.office.contact_details.requests.{CreateOfficeContactDetailsRequest, UpdateOfficeContactDetailsRequest}
 import repositories.office.OfficeContactDetailsRepositoryAlgebra
 
 
@@ -17,6 +17,8 @@ trait OfficeContactDetailsServiceAlgebra[F[_]] {
   def getByOfficeId(officeId: String): F[Either[OfficeContactDetailsErrors, OfficeContactDetails]]
 
   def create(createOfficeContactDetailsRequest: CreateOfficeContactDetailsRequest): F[cats.data.ValidatedNel[OfficeContactDetailsErrors, Int]]
+
+  def update(officeId: String, officeAddress: UpdateOfficeContactDetailsRequest): F[ValidatedNel[OfficeContactDetailsErrors, Int]]
 
   def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
 
@@ -43,6 +45,23 @@ class OfficeContactDetailsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Mon
     contactDetailsCreation.map {
       case Validated.Valid(i) =>
         Valid(i)
+      case contactDetailsResult =>
+        val errors =
+          List(contactDetailsResult.toEither.left.getOrElse(Nil))
+        OfficeContactDetailsNotCreated.invalidNel
+    }.handleErrorWith { e =>
+      Concurrent[F].pure(OfficeContactDetailsDatabaseError.invalidNel)
+    }
+  }
+
+  override def update(officeId: String, request: UpdateOfficeContactDetailsRequest): F[ValidatedNel[OfficeContactDetailsErrors, Int]] = {
+
+    val updateContactDetails: F[ValidatedNel[SqlErrors, Int]] =
+      officeContactDetailsRepo.update(officeId, request)
+
+    updateContactDetails.map {
+      case Validated.Valid(addressId) =>
+        Valid(1)
       case contactDetailsResult =>
         val errors =
           List(contactDetailsResult.toEither.left.getOrElse(Nil))

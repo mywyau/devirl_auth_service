@@ -4,9 +4,10 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
+import models.office.specifications.requests.UpdateOfficeSpecificationsRequest
 import models.office.specifications.OfficeSpecifications
 import models.office.specifications.requests.CreateOfficeSpecificationsRequest
-import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse}
+import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse, UpdatedResponse}
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
@@ -23,6 +24,7 @@ class OfficeSpecificationsControllerImpl[F[_] : Concurrent](
   extends Http4sDsl[F] with OfficeSpecificationsControllerAlgebra[F] {
 
   implicit val createOfficeSpecificationsRequestDecoder: EntityDecoder[F, CreateOfficeSpecificationsRequest] = jsonOf[F, CreateOfficeSpecificationsRequest]
+  implicit val updateOfficeSpecificationsRequestRequestDecoder: EntityDecoder[F, UpdateOfficeSpecificationsRequest] = jsonOf[F, UpdateOfficeSpecificationsRequest]
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
@@ -38,21 +40,37 @@ class OfficeSpecificationsControllerImpl[F[_] : Concurrent](
         }
 
     case req@POST -> Root / "business" / "offices" / "specifications" / "create" =>
-      logger.info(s"[OfficeListingControllerImpl] POST - Creating office listing") *>
+      logger.info(s"[OfficeSpecificationsControllerImpl] POST - Creating office listing") *>
         req.decode[CreateOfficeSpecificationsRequest] { request =>
           officeSpecificationsService.create(request).flatMap {
             case Valid(listing) =>
-              logger.info(s"[OfficeListingControllerImpl] POST - Successfully created a office specifications") *>
+              logger.info(s"[OfficeSpecificationsControllerImpl] POST - Successfully created a office specifications") *>
                 Created(CreatedResponse("Office specifications created successfully").asJson)
             case _ =>
               InternalServerError(ErrorResponse(code = "Code", message = "An error occurred").asJson)
           }
         }
 
+    case req@PUT -> Root / "business" / "offices" / "specifications" / "update" / officeId =>
+      logger.info(s"[OfficeSpecificationsControllerImpl] PUT - Updating office specifications with ID: $officeId") *>
+        req.decode[UpdateOfficeSpecificationsRequest] { request =>
+          officeSpecificationsService.update(officeId, request).flatMap {
+            case Valid(updatedAddress) =>
+              logger.info(s"[OfficeSpecificationsControllerImpl] PUT - Successfully updated office specifications for ID: $officeId") *>
+                Ok(UpdatedResponse("Office specifications updated successfully").asJson)
+            case Invalid(errors) =>
+              logger.warn(s"[OfficeSpecificationsControllerImpl] PUT - Validation failed for office specifications update: ${errors.toList}") *>
+                BadRequest(ErrorResponse(code = "VALIDATION_ERROR", message = errors.toList.mkString(", ")).asJson)
+            case _ =>
+              logger.error(s"[OfficeSpecificationsControllerImpl] PUT - Error updating office specifications for ID: $officeId") *>
+                InternalServerError(ErrorResponse(code = "SERVER_ERROR", message = "An error occurred").asJson)
+          }
+        }
+
     case DELETE -> Root / "business" / "offices" / "specifications" / officeId =>
       logger.info(s"[OfficeAddressControllerImpl] DELETE - Attempting to delete the office specifications") *>
         officeSpecificationsService.delete(officeId).flatMap {
-          case Valid(address) =>
+          case Valid(specifications) =>
             logger.info(s"[OfficeAddressControllerImpl] DELETE - Successfully deleted office specifications for $officeId") *>
               Ok(DeletedResponse("Office specifications deleted successfully").asJson)
           case Invalid(error) =>

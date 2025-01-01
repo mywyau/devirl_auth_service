@@ -12,8 +12,8 @@ import doobie.util.meta.Meta
 import io.circe.syntax.*
 import models.database.*
 import models.office.adts.OfficeType
-import models.office.specifications.requests.CreateOfficeSpecificationsRequest
 import models.office.specifications.OfficeSpecifications
+import models.office.specifications.requests.{CreateOfficeSpecificationsRequest, UpdateOfficeSpecificationsRequest}
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -23,6 +23,8 @@ trait OfficeSpecificationsRepositoryAlgebra[F[_]] {
   def findByOfficeId(officeId: String): F[Option[OfficeSpecifications]]
 
   def create(createOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest): F[ValidatedNel[SqlErrors, Int]]
+
+  def update(officeId: String, request: UpdateOfficeSpecificationsRequest): F[ValidatedNel[SqlErrors, Int]]
 
   def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
 
@@ -88,6 +90,37 @@ class OfficeSpecificationsRepositoryImpl[F[_] : Concurrent : Monad](transactor: 
         case Left(e: java.sql.SQLException) =>
           DatabaseError.invalidNel
         case Left(e) =>
+          UnknownError.invalidNel
+      }
+  }
+
+  override def update(officeId: String, request: UpdateOfficeSpecificationsRequest): F[ValidatedNel[SqlErrors, Int]] = {
+    sql"""
+      UPDATE office_specs
+      SET
+        office_name = ${request.officeName},
+        description = ${request.description},
+        office_type = ${request.officeType},
+        number_of_floors = ${request.numberOfFloors},
+        total_desks = ${request.totalDesks},
+        capacity = ${request.capacity},
+        amenities = ${request.amenities},
+        availability = ${request.availability}::jsonb,
+        rules = ${request.rules},
+        updated_at = ${request.updatedAt}
+      WHERE office_id = $officeId
+    """.update.run
+      .transact(transactor)
+      .attempt
+      .map {
+        case Right(affectedRows) =>
+          if (affectedRows > 0)
+            affectedRows.validNel
+          else
+            NotFoundError.invalidNel
+        case Left(ex: java.sql.SQLException) =>
+          DatabaseError.invalidNel
+        case Left(ex) =>
           UnknownError.invalidNel
       }
   }

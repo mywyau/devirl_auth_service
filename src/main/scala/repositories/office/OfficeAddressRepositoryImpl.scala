@@ -10,7 +10,6 @@ import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import models.database.*
 import models.office.address_details.OfficeAddress
-import models.office.address_details.errors.OfficeAddressErrors
 import models.office.address_details.requests.{CreateOfficeAddressRequest, UpdateOfficeAddressRequest}
 
 import java.sql.Timestamp

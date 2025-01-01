@@ -1,6 +1,6 @@
 package services.office.address
 
-import cats.data.Validated.{Invalid, Valid}
+import cats.data.Validated.Valid
 import cats.data.{Validated, ValidatedNel}
 import cats.effect.Concurrent
 import cats.implicits.*
@@ -69,8 +69,6 @@ class OfficeAddressServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
     }.handleErrorWith { e =>
       Concurrent[F].pure(AddressDatabaseError.invalidNel)
     }
-
-
   }
 
   override def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]] = {

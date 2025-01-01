@@ -20,6 +20,8 @@ trait OfficeListingServiceAlgebra[F[_]] {
   def initiate(request: InitiateOfficeListingRequest): F[Option[OfficeListingCard]]
 
   def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
+  
+  def deleteByBusinessId(businessId: String): F[ValidatedNel[SqlErrors, Int]]
 }
 
 
@@ -57,6 +59,11 @@ class OfficeListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
   override def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]] = {
     officeListingRepository.delete(officeId)
   }
+
+  override def deleteByBusinessId(officeId: String): F[ValidatedNel[SqlErrors, Int]] = {
+    officeListingRepository.delete(officeId)
+  }
+
 
   override def findAllListingCardDetails(): F[List[OfficeListingCard]] = {
     for {

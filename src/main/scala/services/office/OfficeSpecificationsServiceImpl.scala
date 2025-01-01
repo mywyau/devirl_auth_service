@@ -1,29 +1,33 @@
 package services.office
 
-import cats.data.Validated.{Invalid, Valid}
+import cats.data.Validated.Valid
 import cats.data.{Validated, ValidatedNel}
 import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
-import models.office.specifications.requests.CreateOfficeSpecificationsRequest
+import models.database.SqlErrors
+import models.office.address_details.errors.OfficeAddressErrors
+import models.office.address_details.requests.UpdateOfficeAddressRequest
 import models.office.specifications.OfficeSpecifications
 import models.office.specifications.errors.*
-import models.database.SqlErrors
+import models.office.specifications.requests.{CreateOfficeSpecificationsRequest, UpdateOfficeSpecificationsRequest}
 import repositories.office.OfficeSpecificationsRepositoryAlgebra
 
 trait OfficeSpecificationsServiceAlgebra[F[_]] {
 
   def getByOfficeId(officeId: String): F[Either[OfficeSpecificationsErrors, OfficeSpecifications]]
 
-  def create(createOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest): F[cats.data.ValidatedNel[OfficeSpecificationsErrors, Int]]
+  def create(createOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest): F[ValidatedNel[OfficeSpecificationsErrors, Int]]
+
+  def update(officeId: String, officeSpecifications: UpdateOfficeSpecificationsRequest): F[ValidatedNel[OfficeSpecificationsErrors, Int]]
 
   def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
 }
 
 
 class OfficeSpecificationsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
-                                                                                       officeSpecificationsRepo: OfficeSpecificationsRepositoryAlgebra[F]
-                                                                                     ) extends OfficeSpecificationsServiceAlgebra[F] {
+                                                                                     officeSpecificationsRepo: OfficeSpecificationsRepositoryAlgebra[F]
+                                                                                   ) extends OfficeSpecificationsServiceAlgebra[F] {
 
   override def getByOfficeId(officeId: String): F[Either[OfficeSpecificationsErrors, OfficeSpecifications]] = {
     officeSpecificationsRepo.findByOfficeId(officeId).flatMap {
@@ -45,6 +49,23 @@ class OfficeSpecificationsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Mon
       case officeSpecificationsResult =>
         val errors =
           List(officeSpecificationsResult.toEither.left.getOrElse(Nil))
+        OfficeSpecificationsNotCreated.invalidNel
+    }.handleErrorWith { e =>
+      Concurrent[F].pure(OfficeSpecificationsDatabaseError.invalidNel)
+    }
+  }
+
+  override def update(officeId: String, request: UpdateOfficeSpecificationsRequest): F[ValidatedNel[OfficeSpecificationsErrors, Int]] = {
+
+    val updateSpecifications: F[ValidatedNel[SqlErrors, Int]] =
+      officeSpecificationsRepo.update(officeId, request)
+
+    updateSpecifications.map {
+      case Valid(specificationsId) =>
+        Valid(1)
+      case result =>
+        val errors =
+          List(result.toEither.left.getOrElse(Nil))
         OfficeSpecificationsNotCreated.invalidNel
     }.handleErrorWith { e =>
       Concurrent[F].pure(OfficeSpecificationsDatabaseError.invalidNel)

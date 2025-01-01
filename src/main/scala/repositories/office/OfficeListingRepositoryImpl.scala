@@ -13,6 +13,7 @@ import models.database.*
 import models.office.address_details.OfficeAddress
 import models.office.adts.OfficeType
 import models.office.contact_details.OfficeContactDetails
+import models.office.contact_details.requests.UpdateOfficeContactDetailsRequest
 import models.office.office_listing.OfficeListing
 import models.office.office_listing.requests.InitiateOfficeListingRequest
 import models.office.specifications.OfficeSpecifications
@@ -29,6 +30,8 @@ trait OfficeListingRepositoryAlgebra[F[_]] {
   def initiate(request: InitiateOfficeListingRequest): F[ValidatedNel[SqlErrors, Int]]
 
   def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
+
+  def deleteByBusinessId(businessId: String): F[ValidatedNel[SqlErrors, Int]]
 
 }
 
@@ -174,7 +177,6 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
       }
   }
 
-
   override def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]] = {
     val deleteAddressQuery =
       sql"""
@@ -199,7 +201,46 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
       contactRows <- deleteContactDetailsQuery
       specsRows <- deleteSpecificationsQuery
     } yield addressRows + contactRows + specsRows
-    
+
+    combinedQuery
+      .transact(transactor)
+      .attempt
+      .map {
+        case Right(affectedRows) =>
+          if (affectedRows == 3)
+            affectedRows.validNel
+          else
+            NotFoundError.invalidNel
+        case Left(ex) =>
+          DeleteError.invalidNel
+      }
+  }
+
+  override def deleteByBusinessId(businessId: String): F[ValidatedNel[SqlErrors, Int]] = {
+    val deleteAddressQuery =
+      sql"""
+           DELETE FROM office_address
+           WHERE business_id = $businessId
+         """.update.run
+
+    val deleteContactDetailsQuery =
+      sql"""
+           DELETE FROM office_contact_details
+           WHERE business_id = $businessId
+         """.update.run
+
+    val deleteSpecificationsQuery =
+      sql"""
+           DELETE FROM office_specs
+           WHERE business_id = $businessId
+         """.update.run
+
+    val combinedQuery = for {
+      addressRows <- deleteAddressQuery
+      contactRows <- deleteContactDetailsQuery
+      specsRows <- deleteSpecificationsQuery
+    } yield addressRows + contactRows + specsRows
+
     combinedQuery
       .transact(transactor)
       .attempt

@@ -11,7 +11,7 @@ import doobie.util.meta.Meta
 import models.database.*
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.errors.OfficeContactDetailsErrors
-import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
+import models.office.contact_details.requests.{CreateOfficeContactDetailsRequest, UpdateOfficeContactDetailsRequest}
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -21,6 +21,8 @@ trait OfficeContactDetailsRepositoryAlgebra[F[_]] {
   def findByOfficeId(officeId: String): F[Option[OfficeContactDetails]]
 
   def create(createOfficeContactDetailsRequest: CreateOfficeContactDetailsRequest): F[ValidatedNel[SqlErrors, Int]]
+
+  def update(officeId: String, request: UpdateOfficeContactDetailsRequest): F[ValidatedNel[SqlErrors, Int]]
 
   def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
 }
@@ -75,6 +77,33 @@ class OfficeContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: 
           UnknownError.invalidNel
       }
   }
+
+  override def update(officeId: String, request: UpdateOfficeContactDetailsRequest): F[ValidatedNel[SqlErrors, Int]] = {
+    sql"""
+       UPDATE office_contact_details
+       SET
+          primary_contact_first_name = ${request.primaryContactFirstName},
+          primary_contact_last_name = ${request.primaryContactLastName},
+          contact_email = ${request.contactEmail},
+          contact_number = ${request.contactNumber},
+          updated_at = ${request.updatedAt}
+       WHERE office_id = $officeId
+     """.update.run
+      .transact(transactor)
+      .attempt
+      .map {
+        case Right(affectedRows) =>
+          if (affectedRows > 0)
+            affectedRows.validNel
+          else
+            NotFoundError.invalidNel
+        case Left(ex: java.sql.SQLException) =>
+          DatabaseError.invalidNel
+        case Left(ex) =>
+          UnknownError.invalidNel
+      }
+  }
+
 
   override def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]] = {
     val deleteQuery: Update0 =

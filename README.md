@@ -106,7 +106,6 @@ WIP TODO: add some exmaples to hit our endpoints
 http POST http://localhost:1010/pistachio/business/offices/address/create Content-Type:application/json businessId="BUS12345" officeId="OFF12345" buildingName="Example Building" floorNumber="12" street="123 Example Street" city="Example City" country="Example Country" county="Example County" postcode="12345" latitude:=12.345678 longitude:=-98.765432
 ```
 
-
 http PUT http://localhost:1010/pistachio/business/offices/address/OFF-3fc560b7-c039-4267-9de3-023a10077a5f \
 buildingName="New Building" \
 floorNumber=3 \
@@ -121,3 +120,44 @@ updatedAt="2025-01-01T12:00:00"
 
 
 http GET http://localhost:1010/pistachio/business/office/listing/find/OFF-5fb33a0e-04c7-45fe-96ec-981d27cb4b84
+
+http PUT http://localhost:1010/pistachio/business/offices/contact/details/update/OFF-9573ca68-737e-47c2-97f1-c639c7b0daca \
+primaryContactFirstName="Mikey" \
+primaryContactLastName="Yau" \
+contactEmail="mikey@gmail.com" \
+contactNumber="07402205071" \
+updatedAt="2025-01-01T12:00:00"
+
+
+
+### TODO: WIP
+```
+
+http PUT http://localhost:1010/pistachio/business/offices/specifications/update/OFF-3fc560b7-c039-4267-9de3-023a10077a5f \
+officeName="Downtown Workspace"\
+description="A modern co-working space"\
+officeType="PrivateOffice"\
+numberOfFloors=3\
+totalDesks=3 \
+capacity=100 \
+amenities=50,\
+availability="100,\
+rules="ARRAY['WiFi', 'Coffee', 'Meeting Rooms'],\
+updatedAt="2025-01-01T12:00:00"
+
+
+http PUT http://localhost:1010/pistachio/business/offices/specifications/update/OFF-9573ca68-737e-47c2-97f1-c639c7b0daca \
+Content-Type:application/json \
+officeName="Downtown Workspace" \
+description="A modern and spacious office" \
+officeType="PrivateOffice" \
+numberOfFloors:=3 \
+totalDesks:=120 \
+capacity:=150 \
+amenities:='["WiFi", "Conference Rooms", "Parking"]' \
+availability:='{"days": ["Monday", "Wednesday"], "startTime": "09:00:00", "endTime": "17:00:00"}' \
+rules="No smoking inside the building" \
+updatedAt="2025-01-01T12:00:00"
+
+
+```
