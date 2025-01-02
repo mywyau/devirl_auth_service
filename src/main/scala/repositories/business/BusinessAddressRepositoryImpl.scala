@@ -9,7 +9,7 @@ import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import models.business.address.BusinessAddress
-import models.business.address.requests.CreateBusinessAddressRequest
+import models.business.address.requests.{CreateBusinessAddressRequest, UpdateBusinessAddressRequest}
 import models.database.*
 
 import java.sql.Timestamp
@@ -21,6 +21,8 @@ trait BusinessAddressRepositoryAlgebra[F[_]] {
   def findByBusinessId(businessId: String): F[Option[BusinessAddress]]
 
   def createBusinessAddress(request: CreateBusinessAddressRequest): F[ValidatedNel[SqlErrors, Int]]
+
+  def update(businessId: String, request: UpdateBusinessAddressRequest): F[ValidatedNel[SqlErrors, Int]]
 
   def deleteBusinessAddress(businessId: String): F[ValidatedNel[SqlErrors, Int]]
 }
@@ -85,6 +87,37 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
         case Left(e: java.sql.SQLException) =>
           DatabaseError.invalidNel
         case Left(e) =>
+          UnknownError.invalidNel
+      }
+  }
+
+  override def update(businessId: String, request: UpdateBusinessAddressRequest): F[ValidatedNel[SqlErrors, Int]] = {
+    sql"""
+      UPDATE business_address
+      SET
+          building_name = ${request.buildingName},
+          floor_number = ${request.floorNumber},
+          street = ${request.street},
+          city = ${request.city},
+          country = ${request.country},
+          county = ${request.county},
+          postcode = ${request.postcode},
+          latitude = ${request.latitude},
+          longitude = ${request.longitude},
+          updated_at = ${request.updatedAt}
+      WHERE business_id = ${businessId}
+    """.update.run
+      .transact(transactor)
+      .attempt
+      .map {
+        case Right(affectedRows) =>
+          if (affectedRows > 0)
+            affectedRows.validNel
+          else
+            NotFoundError.invalidNel
+        case Left(ex: java.sql.SQLException) =>
+          DatabaseError.invalidNel
+        case Left(ex) =>
           UnknownError.invalidNel
       }
   }

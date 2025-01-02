@@ -8,10 +8,9 @@ import doobie.*
 import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
-import models.database.*
-import models.business.contact_details.errors.BusinessContactDetailsErrors
 import models.business.contact_details.BusinessContactDetails
-import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
+import models.business.contact_details.requests.{CreateBusinessContactDetailsRequest, UpdateBusinessContactDetailsRequest}
+import models.database.*
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -21,6 +20,8 @@ trait BusinessContactDetailsRepositoryAlgebra[F[_]] {
   def findByBusinessId(businessId: String): F[Option[BusinessContactDetails]]
 
   def create(createBusinessContactDetailsRequest: CreateBusinessContactDetailsRequest): F[ValidatedNel[SqlErrors, Int]]
+
+  def update(businessId: String, request: UpdateBusinessContactDetailsRequest): F[ValidatedNel[SqlErrors, Int]]
 
   def delete(businessId: String): F[ValidatedNel[SqlErrors, Int]]
 }
@@ -76,6 +77,35 @@ class BusinessContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor
         case Left(e: java.sql.SQLException) =>
           DatabaseError.invalidNel
         case Left(e) =>
+          UnknownError.invalidNel
+      }
+  }
+
+
+  override def update(businessId: String, request: UpdateBusinessContactDetailsRequest): F[ValidatedNel[SqlErrors, Int]] = {
+    sql"""
+      UPDATE business_contact_details
+      SET
+        business_name = ${request.businessName},
+        primary_contact_first_name = ${request.primaryContactFirstName},
+        primary_contact_last_name = ${request.primaryContactLastName},
+        contact_email = ${request.contactEmail},
+        contact_number = ${request.contactNumber},
+        website_url = ${request.websiteUrl},
+        updated_at = ${request.updatedAt}
+      WHERE business_id = $businessId
+    """.update.run
+      .transact(transactor)
+      .attempt
+      .map {
+        case Right(affectedRows) =>
+          if (affectedRows > 0)
+            affectedRows.validNel
+          else
+            NotFoundError.invalidNel
+        case Left(ex: java.sql.SQLException) =>
+          DatabaseError.invalidNel
+        case Left(ex) =>
           UnknownError.invalidNel
       }
   }

@@ -6,7 +6,8 @@ import cats.implicits.*
 import io.circe.syntax.EncoderOps
 import models.business.specifications.BusinessSpecifications
 import models.business.specifications.requests.CreateBusinessSpecificationsRequest
-import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse}
+import models.business.specifications.requests.UpdateBusinessSpecificationsRequest
+import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse, UpdatedResponse}
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
@@ -23,6 +24,7 @@ class BusinessSpecificationsControllerImpl[F[_] : Concurrent](
   extends Http4sDsl[F] with BusinessSpecificationsControllerAlgebra[F] {
 
   implicit val createBusinessSpecificationsRequestDecoder: EntityDecoder[F, CreateBusinessSpecificationsRequest] = jsonOf[F, CreateBusinessSpecificationsRequest]
+  implicit val updateBusinessSpecificationsRequestDecoder: EntityDecoder[F, UpdateBusinessSpecificationsRequest] = jsonOf[F, UpdateBusinessSpecificationsRequest]
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
@@ -38,22 +40,38 @@ class BusinessSpecificationsControllerImpl[F[_] : Concurrent](
         }
 
     case req@POST -> Root / "business" / "businesses" / "specifications" / "create" =>
-      logger.info(s"[BusinessListingControllerImpl] POST - Creating business listing") *>
+      logger.info(s"[BusinessSpecificationsControllerImpl] POST - Creating business listing") *>
         req.decode[CreateBusinessSpecificationsRequest] { request =>
           businessSpecificationsService.create(request).flatMap {
             case Valid(listing) =>
-              logger.info(s"[BusinessListingControllerImpl] POST - Successfully created a business specifications") *>
+              logger.info(s"[BusinessSpecificationsControllerImpl] POST - Successfully created a business specifications") *>
                 Created(CreatedResponse("Business specifications created successfully").asJson)
             case _ =>
               InternalServerError(ErrorResponse(code = "Code", message = "An error occurred").asJson)
           }
         }
 
+    case req@PUT -> Root / "business" / "businesses" / "specifications" / "update" / businessId =>
+      logger.info(s"[BusinessSpecificationsControllerImpl] PUT - Updating business specifications with ID: $businessId") *>
+        req.decode[UpdateBusinessSpecificationsRequest] { request =>
+          businessSpecificationsService.update(businessId, request).flatMap {
+            case Valid(updatedAddress) =>
+              logger.info(s"[BusinessSpecificationsControllerImpl] PUT - Successfully updated business specifications for ID: $businessId") *>
+                Ok(UpdatedResponse("Business specifications updated successfully").asJson)
+            case Invalid(errors) =>
+              logger.warn(s"[BusinessSpecificationsControllerImpl] PUT - Validation failed for business specifications update: ${errors.toList}") *>
+                BadRequest(ErrorResponse(code = "VALIDATION_ERROR", message = errors.toList.mkString(", ")).asJson)
+            case _ =>
+              logger.error(s"[BusinessSpecificationsControllerImpl] PUT - Error updating business specifications for ID: $businessId") *>
+                InternalServerError(ErrorResponse(code = "SERVER_ERROR", message = "An error occurred").asJson)
+          }
+        }
+
     case DELETE -> Root / "business" / "businesses" / "specifications" / businessId =>
-      logger.info(s"[BusinessAddressControllerImpl] DELETE - Attempting to delete the business specifications") *>
+      logger.info(s"[BusinessSpecificationsControllerImpl] DELETE - Attempting to delete the business specifications") *>
         businessSpecificationsService.delete(businessId).flatMap {
           case Valid(address) =>
-            logger.info(s"[BusinessAddressControllerImpl] DELETE - Successfully deleted business specifications for $businessId") *>
+            logger.info(s"[BusinessSpecificationsControllerImpl] DELETE - Successfully deleted business specifications for $businessId") *>
               Ok(DeletedResponse("Business specifications deleted successfully").asJson)
           case Invalid(error) =>
             val errorResponse = ErrorResponse("placeholder error", "some deleted business specifications message")

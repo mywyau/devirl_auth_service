@@ -6,12 +6,12 @@ import io.circe.parser.decode
 import io.circe.syntax.*
 import io.circe.{Decoder, Encoder}
 
-import java.time.LocalDateTime
+import java.time.LocalTime
 
 case class BusinessAvailability(
                                  days: List[String],
-                                 startTime: LocalDateTime,
-                                 endTime: LocalDateTime
+                                 startTime: LocalTime,
+                                 endTime: LocalTime
                                )
 
 

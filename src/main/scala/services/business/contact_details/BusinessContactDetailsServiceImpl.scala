@@ -1,13 +1,13 @@
 package services.business.contact_details
 
-import cats.data.Validated.{Invalid, Valid}
+import cats.data.Validated.Valid
 import cats.data.{Validated, ValidatedNel}
 import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.business.contact_details.BusinessContactDetails
-import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
 import models.business.contact_details.errors.*
+import models.business.contact_details.requests.{CreateBusinessContactDetailsRequest, UpdateBusinessContactDetailsRequest}
 import models.database.SqlErrors
 import repositories.business.BusinessContactDetailsRepositoryAlgebra
 
@@ -17,6 +17,8 @@ trait BusinessContactDetailsServiceAlgebra[F[_]] {
   def getContactDetailsByBusinessId(businessId: String): F[Either[BusinessContactDetailsErrors, BusinessContactDetails]]
 
   def create(businessContactDetails: CreateBusinessContactDetailsRequest): F[ValidatedNel[BusinessContactDetailsErrors, Int]]
+
+  def update(businessId: String, request: UpdateBusinessContactDetailsRequest): F[ValidatedNel[BusinessContactDetailsErrors, Int]]
 
   def delete(businessId: String): F[ValidatedNel[SqlErrors, Int]]
 
@@ -49,6 +51,23 @@ class BusinessContactDetailsServiceImpl[F[_] : Concurrent : NonEmptyParallel : M
         BusinessContactDetailsNotCreated.invalidNel
     }.handleErrorWith { e =>
       Concurrent[F].pure(BusinessContactDetailsDatabaseError.invalidNel)
+    }
+  }
+
+  override def update(businessId: String, request: UpdateBusinessContactDetailsRequest): F[ValidatedNel[BusinessContactDetailsErrors, Int]] = {
+
+    val updateContactDetails: F[ValidatedNel[SqlErrors, Int]] =
+      businessContactDetailsRepo.update(businessId, request)
+
+    updateContactDetails.map {
+      case Valid(contactDetailsId) =>
+        Valid(1)
+      case contactDetailsResult =>
+        val errors =
+          List(contactDetailsResult.toEither.left.getOrElse(Nil))
+        BusinessContactDetailsNotFound.invalidNel
+    }.handleErrorWith { e =>
+      Concurrent[F].pure(BusinessContactDetailsNotFound.invalidNel)
     }
   }
 

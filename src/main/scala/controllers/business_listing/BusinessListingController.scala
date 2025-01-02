@@ -1,44 +1,89 @@
 package controllers.business_listing
 
-import cats.data.Validated.Valid
-import cats.effect.{Concurrent, IO}
+import cats.data.Validated.{Invalid, Valid}
+import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.*
-import models.business.business_listing.requests.BusinessListingRequest
-import models.responses.{CreatedResponse, ErrorResponse}
+import models.business.business_listing.requests.InitiateBusinessListingRequest
+import models.responses.{DeletedResponse, ErrorResponse}
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
 import org.typelevel.log4cats.Logger
-import services.*
 import services.business.business_listing.BusinessListingServiceAlgebra
 
-trait BusinessListingController[F[_]] {
+
+trait BusinessListingControllerAlgebra[F[_]] {
   def routes: HttpRoutes[F]
 }
 
-class BusinessListingControllerImpl[F[_] : Concurrent](businessService: BusinessListingServiceAlgebra[F])(implicit logger: Logger[F])
-  extends BusinessListingController[F] with Http4sDsl[F] {
+class BusinessListingControllerImpl[F[_] : Concurrent](
+                                                      businessListingService: BusinessListingServiceAlgebra[F]
+                                                    )(implicit logger: Logger[F])
+  extends Http4sDsl[F] with BusinessListingControllerAlgebra[F] {
 
-  implicit val businessListingRequestDecoder: EntityDecoder[F, BusinessListingRequest] = jsonOf[F, BusinessListingRequest]
+  implicit val initiateBusinessListingRequestDecoder: EntityDecoder[F, InitiateBusinessListingRequest] = jsonOf[F, InitiateBusinessListingRequest]
 
-  override val routes: HttpRoutes[F] = HttpRoutes.of[F] {
-    case req@POST -> Root / "business" / "businesses" / "listing" / "create" =>
-      logger.info(s"[BusinessListingControllerImpl] POST - Creating business listing") *>
-        req.decode[BusinessListingRequest] { request =>
-          businessService.createBusiness(request).flatMap {
-            case Valid(listing) =>
-              logger.info(s"[BusinessListingControllerImpl] POST - Successfully created a business listing") *>
-                Created(CreatedResponse("Business created successfully").asJson)
+  val routes: HttpRoutes[F] = HttpRoutes.of[F] {
+
+    case req@POST -> Root / "business" / "businesses" / "listing" / "initiate" =>
+      logger.info(s"[BusinessListingControllerImpl] POST - Initiating business listing") *>
+        req.decode[InitiateBusinessListingRequest] { request =>
+          businessListingService.initiate(request).flatMap {
+            case Some(businessListingCard) =>
+              logger.info(s"[BusinessListingControllerImpl] POST - Successfully created an initial business listing") *>
+                Created(businessListingCard.asJson)
             case _ =>
-              InternalServerError(ErrorResponse(code = "Code", message = "An error occurred").asJson)
+              InternalServerError(ErrorResponse(code = "CreateFailure", message = "Could not create BusinessListingCard").asJson)
           }
+        }
+
+    case GET -> Root / "business" / "businesses" / "listing" / "find" / businessId =>
+      logger.info(s"[BusinessListingControllerImpl] GET - Find business listing: $businessId") *>
+        businessListingService.getByBusinessId(businessId).flatMap {
+          case None =>
+            BadRequest(ErrorResponse(code = "GetFailure", message = "Could not find the business listing").asJson)
+          case Some(listing) =>
+            logger.info(s"[BusinessListingControllerImpl] GET - Successfully retrieved the business listing: $businessId") *>
+              Ok(listing.asJson)
+        }
+
+    case GET -> Root / "business" / "businesses" / "listing" / "find" / "all" =>
+      logger.info(s"[BusinessListingControllerImpl] GET - Find all business listings") *>
+        businessListingService.findAll().flatMap {
+          case Nil =>
+            BadRequest(ErrorResponse(code = "GetFailure", message = "Could not find any business listings").asJson)
+          case listings =>
+            logger.info(s"[BusinessListingControllerImpl] GET - Successfully retrieved all business listings") *>
+              Ok(listings.asJson)
+        }
+
+    case GET -> Root / "business" / "businesses" / "listing" / "cards" / "find" / "all" =>
+      logger.info(s"[BusinessListingControllerImpl] GET - Find all business listing card details") *>
+        businessListingService.findAllListingCardDetails().flatMap {
+          case Nil =>
+            BadRequest(ErrorResponse(code = "GetFailure", message = "Could not find any business card details").asJson)
+          case listingCards =>
+            logger.info(s"[BusinessListingControllerImpl] GET - Successfully retrieved all business listing card details") *>
+              Ok(listingCards.asJson)
+        }
+
+    case DELETE -> Root / "business" / "businesses" / "listing" / "delete" / businessId =>
+      logger.info(s"[BusinessListingControllerImpl] DELETE - Attempting to delete the business listing for businessId:${businessId}") *>
+        businessListingService.delete(businessId).flatMap {
+          case Valid(contactDetails) =>
+            logger.info(s"[BusinessListingControllerImpl] DELETE - Successfully deleted business listing for $businessId") *>
+              Ok(DeletedResponse("Business listing deleted successfully").asJson)
+          case Invalid(error) =>
+            val errorResponse = ErrorResponse("placeholder error", "some deleted business listing message")
+            BadRequest(errorResponse.asJson)
         }
   }
 }
 
 object BusinessListingController {
-  def apply[F[_] : Concurrent : Logger](businessService: BusinessListingServiceAlgebra[F]): BusinessListingController[F] =
-    new BusinessListingControllerImpl[F](businessService)
+  def apply[F[_] : Concurrent](
+                                businessListingService: BusinessListingServiceAlgebra[F]
+                              )(implicit logger: Logger[F]): BusinessListingControllerAlgebra[F] =
+    new BusinessListingControllerImpl[F](businessListingService)
 }
-

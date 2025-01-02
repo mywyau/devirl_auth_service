@@ -1,12 +1,13 @@
 package services.business.address
 
-import cats.data.ValidatedNel
+import cats.data.Validated.Valid
+import cats.data.{Validated, ValidatedNel}
 import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.business.address.BusinessAddress
 import models.business.address.errors.*
-import models.business.address.requests.CreateBusinessAddressRequest
+import models.business.address.requests.{CreateBusinessAddressRequest, UpdateBusinessAddressRequest}
 import models.database.SqlErrors
 import repositories.business.BusinessAddressRepositoryAlgebra
 
@@ -16,6 +17,8 @@ trait BusinessAddressServiceAlgebra[F[_]] {
   def getByBusinessId(businessId: String): F[Either[BusinessAddressErrors, BusinessAddress]]
 
   def createAddress(businessAddressRequest: CreateBusinessAddressRequest): F[ValidatedNel[SqlErrors, Int]]
+
+  def update(businessId: String, request: UpdateBusinessAddressRequest): F[ValidatedNel[BusinessAddressErrors, Int]]
 
   def deleteAddress(businessId: String): F[ValidatedNel[SqlErrors, Int]]
 }
@@ -35,6 +38,23 @@ class BusinessAddressServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
 
   override def createAddress(businessAddressRequest: CreateBusinessAddressRequest): F[ValidatedNel[SqlErrors, Int]] = {
     businessAddressRepo.createBusinessAddress(businessAddressRequest)
+  }
+
+  override def update(businessId: String, request: UpdateBusinessAddressRequest): F[ValidatedNel[BusinessAddressErrors, Int]] = {
+
+    val updateAddress: F[ValidatedNel[SqlErrors, Int]] =
+      businessAddressRepo.update(businessId, request)
+
+    updateAddress.map {
+      case Valid(addressId) =>
+        Valid(1)
+      case addressResult =>
+        val errors =
+          List(addressResult.toEither.left.getOrElse(Nil))
+        BusinessAddressNotFound.invalidNel
+    }.handleErrorWith { e =>
+      Concurrent[F].pure(BusinessAddressNotFound.invalidNel)
+    }
   }
 
   override def deleteAddress(businessId: String): F[ValidatedNel[SqlErrors, Int]] = {

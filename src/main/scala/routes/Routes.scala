@@ -4,7 +4,7 @@ import cats.NonEmptyParallel
 import cats.effect.*
 import controllers.*
 import controllers.business.{BusinessAddressController, BusinessContactDetailsController, BusinessSpecificationsController}
-import controllers.business_listing.BusinessListingControllerImpl
+import controllers.business_listing.{BusinessListingController, BusinessListingControllerImpl}
 import controllers.desk_listing.DeskListingControllerImpl
 import controllers.office.{OfficeAddressController, OfficeContactDetailsController, OfficeSpecificationsController}
 import controllers.office_listing.OfficeListingController
@@ -12,7 +12,7 @@ import doobie.hikari.HikariTransactor
 import org.http4s.HttpRoutes
 import org.typelevel.log4cats.Logger
 import repositories.*
-import repositories.business.{BusinessAddressRepository, BusinessContactDetailsRepository, BusinessSpecificationsRepository}
+import repositories.business.{BusinessAddressRepository, BusinessContactDetailsRepository, BusinessListingRepository, BusinessSpecificationsRepository}
 import repositories.desk.DeskListingRepository
 import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeListingRepository, OfficeSpecificationsRepository}
 import services.*
@@ -102,12 +102,10 @@ object Routes {
 
   def businessListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {
 
-    val businessSpecsRepository = BusinessSpecificationsRepository(transactor)
-    val businessAddressRepository = BusinessAddressRepository(transactor)
-    val businessContactDetailsRepository = BusinessContactDetailsRepository(transactor)
+    val businessListingRepository = BusinessListingRepository(transactor)
 
-    val businessListingService = BusinessListingService(businessAddressRepository, businessContactDetailsRepository, businessSpecsRepository)
-    val businessListingController = new BusinessListingControllerImpl[F](businessListingService)
+    val businessListingService = BusinessListingService(businessListingRepository)
+    val businessListingController = BusinessListingController(businessListingService)
 
     businessListingController.routes
   }

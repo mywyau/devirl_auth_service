@@ -119,7 +119,7 @@ longitude=56.78 \
 updatedAt="2025-01-01T12:00:00"
 
 
-http GET http://localhost:1010/pistachio/business/office/listing/find/OFF-5fb33a0e-04c7-45fe-96ec-981d27cb4b84
+http GET http://localhost:1010/pistachio/business/businesses/listing/cards/find/all
 
 http PUT http://localhost:1010/pistachio/business/offices/contact/details/update/OFF-9573ca68-737e-47c2-97f1-c639c7b0daca \
 primaryContactFirstName="Mikey" \

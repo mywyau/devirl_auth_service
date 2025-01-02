@@ -14,6 +14,7 @@ case class CreateBusinessSpecificationsRequest(
                                                 businessId: String,
                                                 businessName: String,
                                                 description: String,
+                                                availability: BusinessAvailability
                                               )
 
 object CreateBusinessSpecificationsRequest {

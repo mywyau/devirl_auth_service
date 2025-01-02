@@ -1,13 +1,13 @@
 package services.business.specifications
 
-import cats.data.Validated.{Invalid, Valid}
+import cats.data.Validated.Valid
 import cats.data.{Validated, ValidatedNel}
 import cats.effect.Concurrent
 import cats.implicits.*
 import cats.{Monad, NonEmptyParallel}
 import models.business.specifications.BusinessSpecifications
 import models.business.specifications.errors.*
-import models.business.specifications.requests.CreateBusinessSpecificationsRequest
+import models.business.specifications.requests.{CreateBusinessSpecificationsRequest, UpdateBusinessSpecificationsRequest}
 import models.database.SqlErrors
 import repositories.business.BusinessSpecificationsRepositoryAlgebra
 
@@ -16,6 +16,8 @@ trait BusinessSpecificationsServiceAlgebra[F[_]] {
   def getByBusinessId(businessId: String): F[Either[BusinessSpecificationsErrors, BusinessSpecifications]]
 
   def create(createBusinessSpecificationsRequest: CreateBusinessSpecificationsRequest): F[cats.data.ValidatedNel[BusinessSpecificationsErrors, Int]]
+
+  def update(businessId: String, request: UpdateBusinessSpecificationsRequest): F[ValidatedNel[BusinessSpecificationsErrors, Int]]
 
   def delete(businessId: String): F[ValidatedNel[SqlErrors, Int]]
 }
@@ -45,6 +47,23 @@ class BusinessSpecificationsServiceImpl[F[_] : Concurrent : NonEmptyParallel : M
       case businessSpecificationsResult =>
         val errors =
           List(businessSpecificationsResult.toEither.left.getOrElse(Nil))
+        BusinessSpecificationsNotCreated.invalidNel
+    }.handleErrorWith { e =>
+      Concurrent[F].pure(BusinessSpecificationsDatabaseError.invalidNel)
+    }
+  }
+
+  override def update(businessId: String, request: UpdateBusinessSpecificationsRequest): F[ValidatedNel[BusinessSpecificationsErrors, Int]] = {
+
+    val updateSpecifications: F[ValidatedNel[SqlErrors, Int]] =
+      businessSpecificationsRepo.update(businessId, request)
+
+    updateSpecifications.map {
+      case Valid(specificationsId) =>
+        Valid(1)
+      case result =>
+        val errors =
+          List(result.toEither.left.getOrElse(Nil))
         BusinessSpecificationsNotCreated.invalidNel
     }.handleErrorWith { e =>
       Concurrent[F].pure(BusinessSpecificationsDatabaseError.invalidNel)

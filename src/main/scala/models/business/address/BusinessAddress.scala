@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 case class BusinessAddress(
                             id: Option[Int],
                             userId: String,
-                            businessId: Option[String],
+                            businessId: String,
                             businessName: Option[String],
                             buildingName: Option[String],
                             floorNumber: Option[String],

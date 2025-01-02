@@ -1,23 +1,16 @@
 package models.business.business_listing
 
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.circe.{Decoder, Encoder, Json}
+import io.circe.{Decoder, Encoder}
 import models.business.address.BusinessAddress
-import models.business.adts.DeskType
-import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
-import models.business.desk_listing.Availability
-
-import java.time.LocalDateTime
+import models.business.contact_details.BusinessContactDetails
+import models.business.specifications.BusinessSpecifications
 
 case class BusinessListing(
-                            id: Option[Int],
-                            userId: String,
                             businessId: String,
-                            businessSpecs: BusinessSpecifications,
                             addressDetails: BusinessAddress,
-                            availability: BusinessAvailability,
-                            createdAt: LocalDateTime,
-                            updatedAt: LocalDateTime
+                            businessContactDetails: BusinessContactDetails,
+                            businessSpecs: BusinessSpecifications
                           )
 
 object BusinessListing {

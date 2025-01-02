@@ -62,7 +62,9 @@ class OfficeListingControllerImpl[F[_] : Concurrent](
       logger.info(s"[OfficeListingControllerImpl] GET - Find all office listing card details") *>
         officeListingService.findAllListingCardDetails().flatMap {
           case Nil =>
-            BadRequest(ErrorResponse(code = "GetFailure", message = "Could not find any office card details").asJson)
+            // Return an empty JSON list instead of a BadRequest error
+            logger.info(s"[OfficeListingControllerImpl] GET - No office listing card details found, returning empty list") *>
+              Ok(List.empty.asJson)
           case listingCards =>
             logger.info(s"[OfficeListingControllerImpl] GET - Successfully retrieved all office listing card details") *>
               Ok(listingCards.asJson)

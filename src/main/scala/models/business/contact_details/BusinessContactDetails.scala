@@ -10,12 +10,12 @@ case class BusinessContactDetails(
                                    id: Option[Int],
                                    userId: String,
                                    businessId: String,
-                                   businessName: String,
-                                   primaryContactFirstName: String,
-                                   primaryContactLastName: String,
-                                   contactEmail: String,
-                                   contactNumber: String,
-                                   websiteUrl: String,
+                                   businessName: Option[String],
+                                   primaryContactFirstName: Option[String],
+                                   primaryContactLastName: Option[String],
+                                   contactEmail: Option[String],
+                                   contactNumber: Option[String],
+                                   websiteUrl: Option[String],
                                    createdAt: LocalDateTime,
                                    updatedAt: LocalDateTime
                                  )

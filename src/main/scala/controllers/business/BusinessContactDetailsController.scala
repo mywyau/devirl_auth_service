@@ -4,9 +4,10 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
+import models.business.contact_details.requests.UpdateBusinessContactDetailsRequest
 import models.business.contact_details.BusinessContactDetails
 import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
-import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse}
+import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse, UpdatedResponse}
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
@@ -23,6 +24,7 @@ class BusinessContactDetailsControllerImpl[F[_] : Concurrent](
   extends Http4sDsl[F] with BusinessContactDetailsControllerAlgebra[F] {
 
   implicit val createBusinessContactDetailsRequestDecoder: EntityDecoder[F, CreateBusinessContactDetailsRequest] = jsonOf[F, CreateBusinessContactDetailsRequest]
+  implicit val updateBusinessContactDetailsRequestRequestDecoder: EntityDecoder[F, UpdateBusinessContactDetailsRequest] = jsonOf[F, UpdateBusinessContactDetailsRequest]
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
@@ -46,6 +48,22 @@ class BusinessContactDetailsControllerImpl[F[_] : Concurrent](
                 Created(CreatedResponse("Business contact details created successfully").asJson)
             case _ =>
               InternalServerError(ErrorResponse(code = "Code", message = "An error occurred").asJson)
+          }
+        }
+
+    case req@PUT -> Root / "business" / "businesses" / "contact" / "details" / "update" / businessId =>
+      logger.info(s"[BusinessContactDetailsControllerImpl] PUT - Updating business contactDetails with ID: $businessId") *>
+        req.decode[UpdateBusinessContactDetailsRequest] { request =>
+          businessContactDetailsService.update(businessId, request).flatMap {
+            case Valid(updatedContactDetails) =>
+              logger.info(s"[BusinessContactDetailsControllerImpl] PUT - Successfully updated business contactDetails for ID: $businessId") *>
+                Ok(UpdatedResponse("Business contactDetails updated successfully").asJson)
+            case Invalid(errors) =>
+              logger.warn(s"[BusinessContactDetailsControllerImpl] PUT - Validation failed for business contactDetails update: ${errors.toList}") *>
+                BadRequest(ErrorResponse(code = "VALIDATION_ERROR", message = errors.toList.mkString(", ")).asJson)
+            case _ =>
+              logger.error(s"[BusinessContactDetailsControllerImpl] PUT - Error updating business contactDetails for ID: $businessId") *>
+                InternalServerError(ErrorResponse(code = "SERVER_ERROR", message = "An error occurred").asJson)
           }
         }
 

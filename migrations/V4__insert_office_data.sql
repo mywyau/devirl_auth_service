@@ -72,7 +72,7 @@ INSERT INTO office_specs (
     50,
     100,
     ARRAY['WiFi', 'Coffee', 'Meeting Rooms'],
-    '[{"days": ["Monday", "Tuesday"], "startTime": "08:00:00", "endTime": "18:00:00"}]'::JSONB,
+    '{"days": ["Monday", "Tuesday"], "startTime": "08:00:00", "endTime": "18:00:00"}'::JSONB,
     'No loud conversations. Keep the desks clean.'
 ),
 (
@@ -85,6 +85,6 @@ INSERT INTO office_specs (
     20,
     40,
     ARRAY['Parking', 'WiFi', 'Tea'],
-    '[{"days": ["Monday", "Wednesday"], "startTime": "09:00:00", "endTime": "17:00:00"}]'::JSONB,
+    '{"days": ["Monday", "Wednesday"], "startTime": "09:00:00", "endTime": "17:00:00"}'::JSONB,
     'No pets. Maintain silence.'
 );
