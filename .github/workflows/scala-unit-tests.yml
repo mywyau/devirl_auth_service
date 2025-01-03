@@ -1,0 +1,41 @@
+name: Pistachio Unit and Integration Tests
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  unit-tests:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11 # Specify the Java version required for your project
+          distribution: 'adopt'
+
+      - name: Cache SBT
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.ivy2/cache
+            ~/.sbt
+            ~/.m2
+          key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
+          restore-keys: |
+            ${{ runner.os }}-sbt-
+
+      - name: Install Dependencies
+        run: sbt update
+
+      - name: Run Unit Tests
+        run: sbt test
+
+      - name: Run Integration Tests
+        run: sbt it/test  

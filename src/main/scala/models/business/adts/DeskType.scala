@@ -1,6 +1,7 @@
 package models.business.adts
 
-import io.circe.{Decoder, Encoder}
+import io.circe.Decoder
+import io.circe.Encoder
 
 sealed trait DeskType
 

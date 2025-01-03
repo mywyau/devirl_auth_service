@@ -1,22 +1,20 @@
-
-import cats.NonEmptyParallel
 import cats.effect.*
 import cats.implicits.*
+import cats.NonEmptyParallel
 import com.comcast.ip4s.*
-import configuration.ConfigReader
 import configuration.models.AppConfig
+import configuration.ConfigReader
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
 import middleware.Middleware.throttleMiddleware
-import org.http4s.HttpRoutes
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
-import org.http4s.server.Router
 import org.http4s.server.middleware.CORS
-import org.typelevel.log4cats.Logger
+import org.http4s.server.Router
+import org.http4s.HttpRoutes
 import org.typelevel.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.Logger
 import routes.Routes.*
-
 import scala.concurrent.duration.DurationInt
 
 object Main extends IOApp {
@@ -35,10 +33,12 @@ object Main extends IOApp {
     val dbUrl =
       s"jdbc:postgresql://$postgresqHost:${appConfig.localConfig.postgresqlConfig.port}/${appConfig.localConfig.postgresqlConfig.dbName}"
 
+    val driverClassName = "org.postgresql.Driver"
+
     for {
       ce <- ExecutionContexts.fixedThreadPool(32)
       xa <- HikariTransactor.newHikariTransactor[F](
-        driverClassName = "org.postgresql.Driver",
+        driverClassName = driverClassName,
         url = dbUrl,
         user = appConfig.localConfig.postgresqlConfig.username,
         pass = appConfig.localConfig.postgresqlConfig.password,
@@ -48,8 +48,8 @@ object Main extends IOApp {
   }
 
   def createHttpRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async](
-                                                                                 transactor: HikariTransactor[F]
-                                                                               ): Resource[F, HttpRoutes[F]] = {
+    transactor: HikariTransactor[F]
+  ): Resource[F, HttpRoutes[F]] =
     for {
       deskListingRoutes <- Resource.pure(deskListingRoutes(transactor))
       officeAddressRoutes <- Resource.pure(officeAddressRoutes(transactor))
@@ -72,12 +72,11 @@ object Main extends IOApp {
             businessContactDetailsRoutes <+>
             businessSpecificationsRoutes <+>
             businessListingRoutes
-          )
+        )
       )
 
       // Wrap combined routes with CORS middleware
-      corsRoutes = CORS.policy
-        .withAllowOriginAll
+      corsRoutes = CORS.policy.withAllowOriginAll
         .withAllowCredentials(false)
         .withAllowHeadersAll
         .withMaxAge(1.day)
@@ -86,13 +85,12 @@ object Main extends IOApp {
       // Apply throttle middleware
       throttledRoutes <- Resource.eval(throttleMiddleware(corsRoutes))
     } yield throttledRoutes
-  }
 
   def createServer[F[_] : Async](
-                                  host: Host,
-                                  port: Port,
-                                  httpRoutes: HttpRoutes[F]
-                                ): Resource[F, Unit] = {
+    host: Host,
+    port: Port,
+    httpRoutes: HttpRoutes[F]
+  ): Resource[F, Unit] =
     EmberServerBuilder
       .default[F]
       .withHost(host)
@@ -100,7 +98,6 @@ object Main extends IOApp {
       .withHttpApp(httpRoutes.orNotFound)
       .build
       .void
-  }
 
   override def run(args: List[String]): IO[ExitCode] = {
 
@@ -114,7 +111,8 @@ object Main extends IOApp {
       host <- IO.fromOption(Host.fromString(appConfig.localConfig.serverConfig.host))(new RuntimeException("Invalid host in configuration"))
       port <- IO.fromOption(Port.fromInt(appConfig.localConfig.serverConfig.port))(new RuntimeException("Invalid port in configuration"))
       exitCode: ExitCode <-
-        transactorResource[IO](appConfig).flatMap { transactor =>
+        transactorResource[IO](appConfig)
+          .flatMap { transactor =>
 
             val httpRoutesResource: Resource[IO, HttpRoutes[IO]] = createHttpRoutes[IO](transactor)
 
@@ -125,10 +123,9 @@ object Main extends IOApp {
                 httpRoutes
               )
             }
-          }.use(_ => IO.never)
+          }
+          .use(_ => IO.never)
           .as(ExitCode.Success)
-    } yield {
-      exitCode
-    }
+    } yield exitCode
   }
 }

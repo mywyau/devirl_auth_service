@@ -55,7 +55,7 @@ class OfficeListingRepositoryISpec(global: GlobalRead) extends IOSuite {
 
   test(".initiate() - should return the office listing if business_id exists for a previously created office listing") { officeListingRepo =>
 
-    val request = InitiateOfficeListingRequest("business_id_2", "office_id_2")
+    val request = InitiateOfficeListingRequest("business_id_2", "office_id_2", "Office Name", "some desc")
 
     for {
       officeListingOpt <- officeListingRepo.initiate(request)

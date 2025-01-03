@@ -24,12 +24,12 @@ object BusinessContactDetailsServiceConstants {
       id = Some(1),
       userId = userId,
       businessId = businessId,
-      businessName = "MikeyCorp",
-      primaryContactFirstName = "Michael",
-      primaryContactLastName = "Yau",
-      contactEmail = "mike@gmail.com",
-      contactNumber = "07402205071",
-      websiteUrl = "mikey.com",
+      businessName = Some("MikeyCorp"),
+      primaryContactFirstName = Some("Michael"),
+      primaryContactLastName = Some("Yau"),
+      contactEmail = Some("mike@gmail.com"),
+      contactNumber = Some("07402205071"),
+      websiteUrl = Some("mikey.com"),
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )

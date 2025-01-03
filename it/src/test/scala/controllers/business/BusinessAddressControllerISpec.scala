@@ -58,7 +58,7 @@ class BusinessAddressControllerISpec(global: GlobalRead) extends IOSuite {
     val request =
       Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/businesses/address/details/business_id_1")
 
-    val expectedBusinessAddress = testBusinessAddress(Some(1), "user_id_1", Some("business_id_1"))
+    val expectedBusinessAddress = testBusinessAddress(Some(1), "user_id_1", "business_id_1")
 
     client.run(request).use { response =>
       response.as[BusinessAddress].map { body =>
@@ -78,7 +78,7 @@ class BusinessAddressControllerISpec(global: GlobalRead) extends IOSuite {
     val transactor = transactorResource._1.xa
     val client = transactorResource._2.client
 
-    val businessAddressRequest: Json = testBusinessAddressRequest("user_id_3", Some("business_id_3")).asJson
+    val businessAddressRequest: Json = testBusinessAddressRequest("user_id_3", "business_id_3").asJson
 
     val request =
       Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/businesses/address/details/create")

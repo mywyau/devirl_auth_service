@@ -121,6 +121,8 @@ updatedAt="2025-01-01T12:00:00"
 
 http GET http://localhost:1010/pistachio/business/businesses/listing/cards/find/all
 
+http GET http://localhost:1010/pistachio/business/office/listing/cards/find/all/BUS-4d50bd78-fe03-4dcd-a9ab-b2dabe7e9bd3
+
 http PUT http://localhost:1010/pistachio/business/offices/contact/details/update/OFF-9573ca68-737e-47c2-97f1-c639c7b0daca \
 primaryContactFirstName="Mikey" \
 primaryContactLastName="Yau" \

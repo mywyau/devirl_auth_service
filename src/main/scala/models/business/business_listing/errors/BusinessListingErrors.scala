@@ -1,6 +1,7 @@
 package models.business.business_listing.errors
 
-import io.circe.{Decoder, Encoder}
+import io.circe.Decoder
+import io.circe.Encoder
 
 sealed trait BusinessListingErrors {
   val code: String
@@ -34,7 +35,6 @@ case object BusinessUserNotFound extends BusinessListingErrors:
 case object BusinessDatabaseError extends BusinessListingErrors:
   override val code: String = this.toString
   override val errorMessage: String = "BusinessDatabaseError"
-
 
 object BusinessListingErrors {
 

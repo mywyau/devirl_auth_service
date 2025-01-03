@@ -1,30 +1,29 @@
 package repositories.business
 
-import cats.Monad
 import cats.data.ValidatedNel
 import cats.effect.Concurrent
 import cats.syntax.all.*
+import cats.Monad
 import doobie.*
 import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
-import models.business.address.BusinessAddress
-import models.business.address.requests.{CreateBusinessAddressRequest, UpdateBusinessAddressRequest}
-import models.database.*
-
 import java.sql.Timestamp
 import java.time.LocalDateTime
-
+import models.business.address.requests.CreateBusinessAddressRequest
+import models.business.address.requests.UpdateBusinessAddressRequest
+import models.business.address.BusinessAddress
+import models.database.*
 
 trait BusinessAddressRepositoryAlgebra[F[_]] {
 
   def findByBusinessId(businessId: String): F[Option[BusinessAddress]]
 
-  def createBusinessAddress(request: CreateBusinessAddressRequest): F[ValidatedNel[SqlErrors, Int]]
+  def createBusinessAddress(request: CreateBusinessAddressRequest): F[ValidatedNel[DatabaseErrors, Int]]
 
-  def update(businessId: String, request: UpdateBusinessAddressRequest): F[ValidatedNel[SqlErrors, Int]]
+  def update(businessId: String, request: UpdateBusinessAddressRequest): F[ValidatedNel[DatabaseErrors, Int]]
 
-  def deleteBusinessAddress(businessId: String): F[ValidatedNel[SqlErrors, Int]]
+  def deleteBusinessAddress(businessId: String): F[ValidatedNel[DatabaseErrors, Int]]
 }
 
 class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends BusinessAddressRepositoryAlgebra[F] {
@@ -34,14 +33,11 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
 
   override def findByBusinessId(businessId: String): F[Option[BusinessAddress]] = {
     val findQuery: F[Option[BusinessAddress]] =
-      sql"SELECT * FROM business_address WHERE business_id = $businessId"
-        .query[BusinessAddress]
-        .option
-        .transact(transactor)
+      sql"SELECT * FROM business_address WHERE business_id = $businessId".query[BusinessAddress].option.transact(transactor)
     findQuery
   }
 
-  override def createBusinessAddress(request: CreateBusinessAddressRequest): F[ValidatedNel[SqlErrors, Int]] = {
+  override def createBusinessAddress(request: CreateBusinessAddressRequest): F[ValidatedNel[DatabaseErrors, Int]] =
     sql"""
       INSERT INTO business_address (
         user_id,
@@ -71,27 +67,22 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
         ${request.latitude},
         ${request.longitude}
         )
-    """.update
-      .run
-      .transact(transactor)
-      .attempt
-      .map {
-        case Right(rowsAffected) =>
-          if (rowsAffected == 1) {
-            rowsAffected.validNel
-          } else {
-            InsertionFailed.invalidNel
-          }
-        case Left(e: java.sql.SQLIntegrityConstraintViolationException) =>
-          ConstraintViolation.invalidNel
-        case Left(e: java.sql.SQLException) =>
-          DatabaseError.invalidNel
-        case Left(e) =>
-          UnknownError.invalidNel
-      }
-  }
+    """.update.run.transact(transactor).attempt.map {
+      case Right(rowsAffected) =>
+        if (rowsAffected == 1) {
+          rowsAffected.validNel
+        } else {
+          InsertionFailed.invalidNel
+        }
+      case Left(e: java.sql.SQLIntegrityConstraintViolationException) =>
+        ConstraintViolation.invalidNel
+      case Left(e: java.sql.SQLException) =>
+        DatabaseError.invalidNel
+      case Left(e) =>
+        UnknownError(e.getMessage).invalidNel
+    }
 
-  override def update(businessId: String, request: UpdateBusinessAddressRequest): F[ValidatedNel[SqlErrors, Int]] = {
+  override def update(businessId: String, request: UpdateBusinessAddressRequest): F[ValidatedNel[DatabaseErrors, Int]] =
     sql"""
       UPDATE business_address
       SET
@@ -106,49 +97,38 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
           longitude = ${request.longitude},
           updated_at = ${request.updatedAt}
       WHERE business_id = ${businessId}
-    """.update.run
-      .transact(transactor)
-      .attempt
-      .map {
-        case Right(affectedRows) =>
-          if (affectedRows > 0)
-            affectedRows.validNel
-          else
-            NotFoundError.invalidNel
-        case Left(ex: java.sql.SQLException) =>
-          DatabaseError.invalidNel
-        case Left(ex) =>
-          UnknownError.invalidNel
-      }
-  }
+    """.update.run.transact(transactor).attempt.map {
+      case Right(affectedRows) =>
+        if (affectedRows > 0)
+          affectedRows.validNel
+        else
+          NotFoundError.invalidNel
+      case Left(ex: java.sql.SQLException) =>
+        DatabaseError.invalidNel
+      case Left(ex) =>
+        UnknownError(ex.getMessage).invalidNel
+    }
 
-  override def deleteBusinessAddress(businessId: String): F[ValidatedNel[SqlErrors, Int]] = {
+  override def deleteBusinessAddress(businessId: String): F[ValidatedNel[DatabaseErrors, Int]] = {
     val deleteQuery: Update0 =
       sql"""
         DELETE FROM business_address
         WHERE business_id = $businessId
       """.update
 
-    deleteQuery
-      .run
-      .transact(transactor)
-      .attempt
-      .map {
-        case Right(affectedRows) =>
-          if (affectedRows > 0)
-            affectedRows.validNel
-          else
-            NotFoundError.invalidNel
-        case Left(ex) =>
-          DeleteError.invalidNel
-      }
+    deleteQuery.run.transact(transactor).attempt.map {
+      case Right(affectedRows) =>
+        if (affectedRows > 0)
+          affectedRows.validNel
+        else
+          NotFoundError.invalidNel
+      case Left(ex) =>
+        DeleteError.invalidNel
+    }
   }
 }
 
-
 object BusinessAddressRepository {
-  def apply[F[_] : Concurrent : Monad](
-                                        transactor: Transactor[F]
-                                      ): BusinessAddressRepositoryImpl[F] =
+  def apply[F[_] : Concurrent : Monad](transactor: Transactor[F]): BusinessAddressRepositoryImpl[F] =
     new BusinessAddressRepositoryImpl[F](transactor)
 }

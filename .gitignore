@@ -7,9 +7,15 @@ hs_err_pid*
 /target
 /it/target
 /project/target
+/project/metals.sbt
+/project/.bloop
+/project/project/
 .bsp
 .idea/
 .idea
+.vscode
+.metals
+.bloop
 
 
 /shared/target

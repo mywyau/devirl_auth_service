@@ -1,6 +1,7 @@
 package models.business.contact_details.errors
 
-import io.circe.{Decoder, Encoder}
+import io.circe.Decoder
+import io.circe.Encoder
 
 sealed trait BusinessContactDetailsErrors {
   val code: String
@@ -46,7 +47,6 @@ case object BusinessPostcodeInvalidFormat extends BusinessContactDetailsErrors:
 case object BusinessUserNotFound extends BusinessContactDetailsErrors:
   override val code: String = this.toString
   override val errorMessage: String = "user was not found"
-
 
 object BusinessContactDetailsErrors {
 

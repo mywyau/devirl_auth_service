@@ -1,32 +1,32 @@
 package controllers.business_listing
 
-import cats.data.Validated.{Invalid, Valid}
+import cats.data.Validated.Invalid
+import cats.data.Validated.Valid
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.*
 import models.business.business_listing.requests.InitiateBusinessListingRequest
-import models.responses.{DeletedResponse, ErrorResponse}
+import models.responses.DeletedResponse
+import models.responses.ErrorResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
 import org.typelevel.log4cats.Logger
 import services.business.business_listing.BusinessListingServiceAlgebra
 
-
 trait BusinessListingControllerAlgebra[F[_]] {
   def routes: HttpRoutes[F]
 }
 
-class BusinessListingControllerImpl[F[_] : Concurrent](
-                                                      businessListingService: BusinessListingServiceAlgebra[F]
-                                                    )(implicit logger: Logger[F])
-  extends Http4sDsl[F] with BusinessListingControllerAlgebra[F] {
+class BusinessListingControllerImpl[F[_] : Concurrent](businessListingService: BusinessListingServiceAlgebra[F])(implicit logger: Logger[F])
+    extends Http4sDsl[F]
+    with BusinessListingControllerAlgebra[F] {
 
   implicit val initiateBusinessListingRequestDecoder: EntityDecoder[F, InitiateBusinessListingRequest] = jsonOf[F, InitiateBusinessListingRequest]
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
-    case req@POST -> Root / "business" / "businesses" / "listing" / "initiate" =>
+    case req @ POST -> Root / "business" / "businesses" / "listing" / "initiate" =>
       logger.info(s"[BusinessListingControllerImpl] POST - Initiating business listing") *>
         req.decode[InitiateBusinessListingRequest] { request =>
           businessListingService.initiate(request).flatMap {
@@ -82,8 +82,6 @@ class BusinessListingControllerImpl[F[_] : Concurrent](
 }
 
 object BusinessListingController {
-  def apply[F[_] : Concurrent](
-                                businessListingService: BusinessListingServiceAlgebra[F]
-                              )(implicit logger: Logger[F]): BusinessListingControllerAlgebra[F] =
+  def apply[F[_] : Concurrent](businessListingService: BusinessListingServiceAlgebra[F])(implicit logger: Logger[F]): BusinessListingControllerAlgebra[F] =
     new BusinessListingControllerImpl[F](businessListingService)
 }

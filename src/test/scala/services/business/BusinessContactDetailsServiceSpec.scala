@@ -5,7 +5,7 @@ import cats.data.ValidatedNel
 import cats.effect.IO
 import models.business.contact_details.BusinessContactDetails
 import models.business.contact_details.errors.BusinessContactDetailsNotFound
-import models.database.SqlErrors
+import models.database.DatabaseErrors
 import repositories.business.BusinessContactDetailsRepositoryAlgebra
 import services.business.contact_details.BusinessContactDetailsService
 import services.business.mocks.MockBusinessContactDetailsRepository

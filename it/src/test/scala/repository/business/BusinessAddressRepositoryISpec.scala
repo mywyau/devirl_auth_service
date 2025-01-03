@@ -27,7 +27,7 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
         insertBusinessAddressData.update.run.transact(transactor.xa).void
     )
 
-  def testBusinessAddressRequest(userId: String, businessId: Option[String]): CreateBusinessAddressRequest = {
+  def testBusinessAddressRequest(userId: String, businessId: String): CreateBusinessAddressRequest = {
     CreateBusinessAddressRequest(
       userId = userId,
       businessId = businessId,
@@ -60,7 +60,7 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
       BusinessAddress(
         id = Some(1),
         userId = "USER001",
-        businessId = Some("BUS001"),
+        businessId = "BUS001",
         businessName = Some("Tech Innovations"),
         buildingName = Some("Innovation Tower"),
         floorNumber = Some("5"),
@@ -90,7 +90,7 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
       BusinessAddress(
         id = Some(2),
         userId = userId,
-        businessId = Some(businessId),
+        businessId = businessId,
         businessName = Some("Global Corp"),
         buildingName = Some("Global Tower"),
         floorNumber = Some("12"),

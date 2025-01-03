@@ -1,6 +1,7 @@
 package models.office.contact_details.errors
 
-import io.circe.{Decoder, Encoder}
+import io.circe.Decoder
+import io.circe.Encoder
 
 sealed trait OfficeContactDetailsErrors {
   val code: String
@@ -46,7 +47,6 @@ case object OfficePostcodeInvalidFormat extends OfficeContactDetailsErrors:
 case object OfficeUserNotFound extends OfficeContactDetailsErrors:
   override val code: String = this.toString
   override val errorMessage: String = "user was not found"
-
 
 object OfficeContactDetailsErrors {
 

@@ -3,7 +3,7 @@ package services.office.contact_details
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.ValidatedNel
 import cats.effect.IO
-import models.database.SqlErrors
+import models.database.DatabaseErrors
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.errors.OfficeContactDetailsNotFound
 import repositories.office.OfficeContactDetailsRepositoryAlgebra

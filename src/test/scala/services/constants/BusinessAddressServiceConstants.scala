@@ -21,7 +21,7 @@ import java.time.LocalDateTime
 
 object BusinessAddressServiceConstants {
 
-  def testBusinessAddressRequest(userId: String, businessId: Option[String]): CreateBusinessAddressRequest =
+  def testBusinessAddressRequest(userId: String, businessId: String): CreateBusinessAddressRequest =
     CreateBusinessAddressRequest(
       userId = userId,
       businessId = businessId,
@@ -37,7 +37,7 @@ object BusinessAddressServiceConstants {
       longitude = Some(-100.1)
     )
 
-  def testBusinessAddress(id: Option[Int], userId: String, businessId: Option[String]): BusinessAddress =
+  def testBusinessAddress(id: Option[Int], userId: String, businessId: String): BusinessAddress =
     BusinessAddress(
       id = id,
       userId = userId,

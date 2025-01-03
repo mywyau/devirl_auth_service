@@ -1,13 +1,17 @@
 package controllers.office
 
-import cats.data.Validated.{Invalid, Valid}
+import cats.data.Validated.Invalid
+import cats.data.Validated.Valid
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
+import models.office.specifications.requests.CreateOfficeSpecificationsRequest
 import models.office.specifications.requests.UpdateOfficeSpecificationsRequest
 import models.office.specifications.OfficeSpecifications
-import models.office.specifications.requests.CreateOfficeSpecificationsRequest
-import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse, UpdatedResponse}
+import models.responses.CreatedResponse
+import models.responses.DeletedResponse
+import models.responses.ErrorResponse
+import models.responses.UpdatedResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
@@ -18,10 +22,9 @@ trait OfficeSpecificationsControllerAlgebra[F[_]] {
   def routes: HttpRoutes[F]
 }
 
-class OfficeSpecificationsControllerImpl[F[_] : Concurrent](
-                                                             officeSpecificationsService: OfficeSpecificationsServiceAlgebra[F]
-                                                           )(implicit logger: Logger[F])
-  extends Http4sDsl[F] with OfficeSpecificationsControllerAlgebra[F] {
+class OfficeSpecificationsControllerImpl[F[_] : Concurrent](officeSpecificationsService: OfficeSpecificationsServiceAlgebra[F])(implicit logger: Logger[F])
+    extends Http4sDsl[F]
+    with OfficeSpecificationsControllerAlgebra[F] {
 
   implicit val createOfficeSpecificationsRequestDecoder: EntityDecoder[F, CreateOfficeSpecificationsRequest] = jsonOf[F, CreateOfficeSpecificationsRequest]
   implicit val updateOfficeSpecificationsRequestRequestDecoder: EntityDecoder[F, UpdateOfficeSpecificationsRequest] = jsonOf[F, UpdateOfficeSpecificationsRequest]
@@ -39,7 +42,7 @@ class OfficeSpecificationsControllerImpl[F[_] : Concurrent](
             BadRequest(errorResponse.asJson)
         }
 
-    case req@POST -> Root / "business" / "offices" / "specifications" / "create" =>
+    case req @ POST -> Root / "business" / "offices" / "specifications" / "create" =>
       logger.info(s"[OfficeSpecificationsControllerImpl] POST - Creating office listing") *>
         req.decode[CreateOfficeSpecificationsRequest] { request =>
           officeSpecificationsService.create(request).flatMap {
@@ -51,13 +54,13 @@ class OfficeSpecificationsControllerImpl[F[_] : Concurrent](
           }
         }
 
-    case req@PUT -> Root / "business" / "offices" / "specifications" / "update" / officeId =>
+    case req @ PUT -> Root / "business" / "offices" / "specifications" / "update" / officeId =>
       logger.info(s"[OfficeSpecificationsControllerImpl] PUT - Updating office specifications with ID: $officeId") *>
         req.decode[UpdateOfficeSpecificationsRequest] { request =>
           officeSpecificationsService.update(officeId, request).flatMap {
             case Valid(updatedAddress) =>
               logger.info(s"[OfficeSpecificationsControllerImpl] PUT - Successfully updated office specifications for ID: $officeId") *>
-                Ok(UpdatedResponse("Office specifications updated successfully").asJson)
+                Ok(UpdatedResponse("Update_Success", "Office specifications updated successfully").asJson)
             case Invalid(errors) =>
               logger.warn(s"[OfficeSpecificationsControllerImpl] PUT - Validation failed for office specifications update: ${errors.toList}") *>
                 BadRequest(ErrorResponse(code = "VALIDATION_ERROR", message = errors.toList.mkString(", ")).asJson)
@@ -81,8 +84,6 @@ class OfficeSpecificationsControllerImpl[F[_] : Concurrent](
 }
 
 object OfficeSpecificationsController {
-  def apply[F[_] : Concurrent](
-                                officeSpecificationsService: OfficeSpecificationsServiceAlgebra[F]
-                              )(implicit logger: Logger[F]): OfficeSpecificationsControllerAlgebra[F] =
+  def apply[F[_] : Concurrent](officeSpecificationsService: OfficeSpecificationsServiceAlgebra[F])(implicit logger: Logger[F]): OfficeSpecificationsControllerAlgebra[F] =
     new OfficeSpecificationsControllerImpl[F](officeSpecificationsService)
 }

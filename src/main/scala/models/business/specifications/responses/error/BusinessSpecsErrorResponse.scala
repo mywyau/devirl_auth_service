@@ -1,7 +1,9 @@
 package models.business.specifications.responses.error
 
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto.deriveDecoder
+import io.circe.generic.semiauto.deriveEncoder
+import io.circe.Decoder
+import io.circe.Encoder
 
 case class BusinessSpecsErrorResponse(code: String, message: String)
 

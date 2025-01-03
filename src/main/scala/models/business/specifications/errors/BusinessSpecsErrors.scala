@@ -1,6 +1,7 @@
 package models.business.specifications.errors
 
-import io.circe.{Decoder, Encoder}
+import io.circe.Decoder
+import io.circe.Encoder
 
 sealed trait BusinessSpecificationsErrors {
   val code: String
@@ -12,12 +13,12 @@ case object BusinessSpecificationsNotFound extends BusinessSpecificationsErrors:
   override val errorMessage: String = "specifications was not found"
 
 case object BusinessSpecificationsNotCreated extends BusinessSpecificationsErrors:
-    override val code: String = this.toString
-    override val errorMessage: String = "specifications was not found"
+  override val code: String = this.toString
+  override val errorMessage: String = "specifications was not found"
 
 case object BusinessSpecificationsDatabaseError extends BusinessSpecificationsErrors:
-    override val code: String = this.toString
-    override val errorMessage: String = "BusinessSpecifications DatabaseError"
+  override val code: String = this.toString
+  override val errorMessage: String = "BusinessSpecifications DatabaseError"
 
 case object BusinessSpecificationsEmptyStringField extends BusinessSpecificationsErrors:
   override val code: String = this.toString
@@ -30,7 +31,6 @@ case object BusinessSpecificationsInvalidFormat extends BusinessSpecificationsEr
 case object BusinessSpecificationsUserNotFound extends BusinessSpecificationsErrors:
   override val code: String = this.toString
   override val errorMessage: String = "user was not found"
-
 
 object BusinessSpecificationsErrors {
 

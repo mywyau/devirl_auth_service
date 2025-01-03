@@ -1,18 +1,18 @@
 package models.business.specifications.requests
 
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto.deriveDecoder
+import io.circe.generic.semiauto.deriveEncoder
+import io.circe.Decoder
+import io.circe.Encoder
+import java.time.LocalDateTime
 import models.business.specifications.BusinessAvailability
 
-import java.time.LocalDateTime
-
-
 case class UpdateBusinessSpecificationsRequest(
-                                                businessName: String,
-                                                description: String,
-                                                availability: BusinessAvailability,
-                                                updatedAt: LocalDateTime
-                                              )
+  businessName: String,
+  description: String,
+  availability: BusinessAvailability,
+  updatedAt: LocalDateTime
+)
 
 object UpdateBusinessSpecificationsRequest {
   implicit val updateBusinessSpecificationsRequestEncoder: Encoder[UpdateBusinessSpecificationsRequest] = deriveEncoder[UpdateBusinessSpecificationsRequest]

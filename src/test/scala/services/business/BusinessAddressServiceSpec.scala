@@ -17,7 +17,7 @@ object BusinessAddressServiceSpec extends SimpleIOSuite {
 
   test(".getByBusinessId() - when there is an existing business address details given a businessId should return the correct address details - Right(address)") {
 
-    val existingAddressForUser = testBusinessAddress(Some(1), "userId_1", Some("businessId_1"))
+    val existingAddressForUser = testBusinessAddress(Some(1), "userId_1", "businessId_1")
 
     val mockBusinessAddressRepository = new MockBusinessAddressRepository(Map("businessId_1" -> existingAddressForUser))
     val service = new BusinessAddressServiceImpl[IO](mockBusinessAddressRepository)
@@ -31,7 +31,7 @@ object BusinessAddressServiceSpec extends SimpleIOSuite {
 
   test(".getByBusinessId() - when there are no existing business address details given a businessId should return Left(AddressNotFound)") {
 
-    val existingAddressForUser = testBusinessAddress(Some(1), "userId_1", Some("businessId_1"))
+    val existingAddressForUser = testBusinessAddress(Some(1), "userId_1", "businessId_1")
 
     val mockBusinessAddressRepository = new MockBusinessAddressRepository(Map())
     val service = new BusinessAddressServiceImpl[IO](mockBusinessAddressRepository)
@@ -45,7 +45,7 @@ object BusinessAddressServiceSpec extends SimpleIOSuite {
 
   test(".created() - when given a BusinessAddress successfully create the address") {
 
-    val testAddressRequest = testBusinessAddressRequest("userId_1", Some("businessId_1"))
+    val testAddressRequest = testBusinessAddressRequest("userId_1", "businessId_1")
 
     val mockBusinessAddressRepository = new MockBusinessAddressRepository(Map())
     val service = BusinessAddressService(mockBusinessAddressRepository)

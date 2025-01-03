@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS office_details;
 
 CREATE TABLE office_contact_details (
     id BIGSERIAL PRIMARY KEY,
-    business_id VARCHAR(255) NOT NULL UNIQUE,
+    business_id VARCHAR(255) NOT NULL,
     office_id VARCHAR(255) NOT NULL UNIQUE,
     primary_contact_first_name VARCHAR(255),
     primary_contact_last_name VARCHAR(255),
@@ -16,7 +16,7 @@ DROP TABLE IF EXISTS office_address;
 
 CREATE TABLE office_address (
     id BIGSERIAL PRIMARY KEY,
-    business_id VARCHAR(255) NOT NULL UNIQUE,
+    business_id VARCHAR(255) NOT NULL,
     office_id VARCHAR(255) NOT NULL UNIQUE,
     building_name VARCHAR(255),
     floor_number VARCHAR(50),
@@ -33,9 +33,9 @@ CREATE TABLE office_address (
 
 DROP TABLE IF EXISTS office_specs;
 
-CREATE TABLE office_specs (
+CREATE TABLE office_specifications (
     id SERIAL PRIMARY KEY,
-    business_id VARCHAR(255) NOT NULL UNIQUE,
+    business_id VARCHAR(255) NOT NULL,
     office_id VARCHAR(255) NOT NULL UNIQUE,
     office_name VARCHAR(255),
     description TEXT,

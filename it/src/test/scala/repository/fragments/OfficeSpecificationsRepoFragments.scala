@@ -6,12 +6,12 @@ import doobie.util.fragment
 object OfficeSpecificationsRepoFragments {
 
   val resetOfficeSpecsTable: fragment.Fragment = {
-    sql"TRUNCATE TABLE office_specs RESTART IDENTITY"
+    sql"TRUNCATE TABLE office_specifications RESTART IDENTITY"
   }
 
   val createOfficeSpecsTable: fragment.Fragment = {
     sql"""
-      CREATE TABLE IF NOT EXISTS office_specs (
+      CREATE TABLE IF NOT EXISTS office_specifications (
         id SERIAL PRIMARY KEY,
         business_id VARCHAR(255),
         office_id VARCHAR(255),
@@ -32,7 +32,7 @@ object OfficeSpecificationsRepoFragments {
 
   val insertOfficeSpecificationData: doobie.Fragment = {
     sql"""
-        INSERT INTO office_specs (
+        INSERT INTO office_specifications (
           business_id,
           office_id,
           office_name,
@@ -57,7 +57,7 @@ object OfficeSpecificationsRepoFragments {
 
   val initiateOfficeSpecificationData: fragment.Fragment = {
     sql"""
-        INSERT INTO office_specs (
+        INSERT INTO office_specifications (
           business_id,
           office_id,
           created_at,

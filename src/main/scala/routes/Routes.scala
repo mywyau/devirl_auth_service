@@ -1,30 +1,41 @@
 package routes
 
-import cats.NonEmptyParallel
 import cats.effect.*
+import cats.NonEmptyParallel
 import controllers.*
-import controllers.business.{BusinessAddressController, BusinessContactDetailsController, BusinessSpecificationsController}
-import controllers.business_listing.{BusinessListingController, BusinessListingControllerImpl}
+import controllers.business.BusinessAddressController
+import controllers.business.BusinessContactDetailsController
+import controllers.business.BusinessSpecificationsController
+import controllers.business_listing.BusinessListingController
+import controllers.business_listing.BusinessListingControllerImpl
 import controllers.desk_listing.DeskListingControllerImpl
-import controllers.office.{OfficeAddressController, OfficeContactDetailsController, OfficeSpecificationsController}
+import controllers.office.OfficeAddressController
+import controllers.office.OfficeContactDetailsController
+import controllers.office.OfficeSpecificationsController
 import controllers.office_listing.OfficeListingController
 import doobie.hikari.HikariTransactor
 import org.http4s.HttpRoutes
 import org.typelevel.log4cats.Logger
 import repositories.*
-import repositories.business.{BusinessAddressRepository, BusinessContactDetailsRepository, BusinessListingRepository, BusinessSpecificationsRepository}
+import repositories.business.BusinessAddressRepository
+import repositories.business.BusinessContactDetailsRepository
+import repositories.business.BusinessListingRepository
+import repositories.business.BusinessSpecificationsRepository
 import repositories.desk.DeskListingRepository
-import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeListingRepository, OfficeSpecificationsRepository}
+import repositories.office.OfficeAddressRepository
+import repositories.office.OfficeContactDetailsRepository
+import repositories.office.OfficeListingRepository
+import repositories.office.OfficeSpecificationsRepository
 import services.*
 import services.business.address.BusinessAddressService
 import services.business.business_listing.BusinessListingService
 import services.business.contact_details.BusinessContactDetailsService
 import services.business.specifications.BusinessSpecificationsService
 import services.desk_listing.DeskListingService
-import services.office.OfficeSpecificationsService
 import services.office.address.OfficeAddressService
 import services.office.contact_details.OfficeContactDetailsService
 import services.office.office_listing.OfficeListingService
+import services.office.OfficeSpecificationsService
 
 object Routes {
 
@@ -90,7 +101,7 @@ object Routes {
 
     businessSpecificationsController.routes
   }
-  
+
   def officeListingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {
 
     val officeListingRepository = OfficeListingRepository(transactor)

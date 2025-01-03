@@ -1,5 +1,5 @@
 ThisBuild / version := "0.1.0-SNAPSHOT"
-ThisBuild / scalaVersion := "3.3.0"
+ThisBuild / scalaVersion := "3.3.4"
 ThisBuild / parallelExecution := true
 
 lazy val root = (project in file("."))
@@ -20,6 +20,8 @@ lazy val it = (project in file("it"))
     scalaSource := baseDirectory.value / "src" / "test" / "scala",
     Test / unmanagedSourceDirectories += baseDirectory.value / "src" / "test" / "scala"
   )
+
+enablePlugins(ScalafmtPlugin)
 
 // Merge strategy for sbt assembly for containerising the app
 import sbtassembly.AssemblyPlugin.autoImport.*

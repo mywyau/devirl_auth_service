@@ -1,13 +1,17 @@
 package controllers.business
 
-import cats.data.Validated.{Invalid, Valid}
+import cats.data.Validated.Invalid
+import cats.data.Validated.Valid
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
-import models.business.specifications.BusinessSpecifications
 import models.business.specifications.requests.CreateBusinessSpecificationsRequest
 import models.business.specifications.requests.UpdateBusinessSpecificationsRequest
-import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse, UpdatedResponse}
+import models.business.specifications.BusinessSpecifications
+import models.responses.CreatedResponse
+import models.responses.DeletedResponse
+import models.responses.ErrorResponse
+import models.responses.UpdatedResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
@@ -18,10 +22,9 @@ trait BusinessSpecificationsControllerAlgebra[F[_]] {
   def routes: HttpRoutes[F]
 }
 
-class BusinessSpecificationsControllerImpl[F[_] : Concurrent](
-                                                               businessSpecificationsService: BusinessSpecificationsServiceAlgebra[F]
-                                                             )(implicit logger: Logger[F])
-  extends Http4sDsl[F] with BusinessSpecificationsControllerAlgebra[F] {
+class BusinessSpecificationsControllerImpl[F[_] : Concurrent](businessSpecificationsService: BusinessSpecificationsServiceAlgebra[F])(implicit logger: Logger[F])
+    extends Http4sDsl[F]
+    with BusinessSpecificationsControllerAlgebra[F] {
 
   implicit val createBusinessSpecificationsRequestDecoder: EntityDecoder[F, CreateBusinessSpecificationsRequest] = jsonOf[F, CreateBusinessSpecificationsRequest]
   implicit val updateBusinessSpecificationsRequestDecoder: EntityDecoder[F, UpdateBusinessSpecificationsRequest] = jsonOf[F, UpdateBusinessSpecificationsRequest]
@@ -39,7 +42,7 @@ class BusinessSpecificationsControllerImpl[F[_] : Concurrent](
             BadRequest(errorResponse.asJson)
         }
 
-    case req@POST -> Root / "business" / "businesses" / "specifications" / "create" =>
+    case req @ POST -> Root / "business" / "businesses" / "specifications" / "create" =>
       logger.info(s"[BusinessSpecificationsControllerImpl] POST - Creating business listing") *>
         req.decode[CreateBusinessSpecificationsRequest] { request =>
           businessSpecificationsService.create(request).flatMap {
@@ -51,13 +54,13 @@ class BusinessSpecificationsControllerImpl[F[_] : Concurrent](
           }
         }
 
-    case req@PUT -> Root / "business" / "businesses" / "specifications" / "update" / businessId =>
+    case req @ PUT -> Root / "business" / "businesses" / "specifications" / "update" / businessId =>
       logger.info(s"[BusinessSpecificationsControllerImpl] PUT - Updating business specifications with ID: $businessId") *>
         req.decode[UpdateBusinessSpecificationsRequest] { request =>
           businessSpecificationsService.update(businessId, request).flatMap {
             case Valid(updatedAddress) =>
               logger.info(s"[BusinessSpecificationsControllerImpl] PUT - Successfully updated business specifications for ID: $businessId") *>
-                Ok(UpdatedResponse("Business specifications updated successfully").asJson)
+                Ok(UpdatedResponse("Update_Success","Business specifications updated successfully").asJson)
             case Invalid(errors) =>
               logger.warn(s"[BusinessSpecificationsControllerImpl] PUT - Validation failed for business specifications update: ${errors.toList}") *>
                 BadRequest(ErrorResponse(code = "VALIDATION_ERROR", message = errors.toList.mkString(", ")).asJson)
@@ -81,8 +84,6 @@ class BusinessSpecificationsControllerImpl[F[_] : Concurrent](
 }
 
 object BusinessSpecificationsController {
-  def apply[F[_] : Concurrent](
-                                businessSpecificationsService: BusinessSpecificationsServiceAlgebra[F]
-                              )(implicit logger: Logger[F]): BusinessSpecificationsControllerAlgebra[F] =
+  def apply[F[_] : Concurrent](businessSpecificationsService: BusinessSpecificationsServiceAlgebra[F])(implicit logger: Logger[F]): BusinessSpecificationsControllerAlgebra[F] =
     new BusinessSpecificationsControllerImpl[F](businessSpecificationsService)
 }

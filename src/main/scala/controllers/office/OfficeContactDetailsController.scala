@@ -1,12 +1,17 @@
 package controllers.office
 
-import cats.data.Validated.{Invalid, Valid}
+import cats.data.Validated.Invalid
+import cats.data.Validated.Valid
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
+import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
+import models.office.contact_details.requests.UpdateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetails
-import models.office.contact_details.requests.{CreateOfficeContactDetailsRequest, UpdateOfficeContactDetailsRequest}
-import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse, UpdatedResponse}
+import models.responses.CreatedResponse
+import models.responses.DeletedResponse
+import models.responses.ErrorResponse
+import models.responses.UpdatedResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
@@ -17,10 +22,9 @@ trait OfficeContactDetailsControllerAlgebra[F[_]] {
   def routes: HttpRoutes[F]
 }
 
-class OfficeContactDetailsControllerImpl[F[_] : Concurrent](
-                                                             officeContactDetailsService: OfficeContactDetailsServiceAlgebra[F]
-                                                           )(implicit logger: Logger[F])
-  extends Http4sDsl[F] with OfficeContactDetailsControllerAlgebra[F] {
+class OfficeContactDetailsControllerImpl[F[_] : Concurrent](officeContactDetailsService: OfficeContactDetailsServiceAlgebra[F])(implicit logger: Logger[F])
+    extends Http4sDsl[F]
+    with OfficeContactDetailsControllerAlgebra[F] {
 
   implicit val createOfficeContactDetailsRequestDecoder: EntityDecoder[F, CreateOfficeContactDetailsRequest] = jsonOf[F, CreateOfficeContactDetailsRequest]
   implicit val updateOfficeContactDetailsRequestDecoder: EntityDecoder[F, UpdateOfficeContactDetailsRequest] = jsonOf[F, UpdateOfficeContactDetailsRequest]
@@ -38,7 +42,7 @@ class OfficeContactDetailsControllerImpl[F[_] : Concurrent](
             BadRequest(errorResponse.asJson)
         }
 
-    case req@POST -> Root / "business" / "offices" / "contact" / "details" / "create" =>
+    case req @ POST -> Root / "business" / "offices" / "contact" / "details" / "create" =>
       logger.info(s"[OfficeContactDetailsControllerImpl] POST - Creating office listing") *>
         req.decode[CreateOfficeContactDetailsRequest] { request =>
           officeContactDetailsService.create(request).flatMap {
@@ -50,13 +54,13 @@ class OfficeContactDetailsControllerImpl[F[_] : Concurrent](
           }
         }
 
-    case req@PUT -> Root / "business" / "offices" / "contact" / "details" / "update" / officeId =>
+    case req @ PUT -> Root / "business" / "offices" / "contact" / "details" / "update" / officeId =>
       logger.info(s"[OfficeContactDetailsControllerImpl] PUT - Updating office contact details with ID: $officeId") *>
         req.decode[UpdateOfficeContactDetailsRequest] { request =>
           officeContactDetailsService.update(officeId, request).flatMap {
             case Valid(updatedAddress) =>
               logger.info(s"[OfficeContactDetailsControllerImpl] PUT - Successfully updated office contact details for ID: $officeId") *>
-                Ok(UpdatedResponse("Office contact details updated successfully").asJson)
+                Ok(UpdatedResponse("Update_Success", "Office contact details updated successfully").asJson)
             case Invalid(errors) =>
               logger.warn(s"[OfficeContactDetailsControllerImpl] PUT - Validation failed for office contact details update: ${errors.toList}") *>
                 BadRequest(ErrorResponse(code = "VALIDATION_ERROR", message = errors.toList.mkString(", ")).asJson)
@@ -80,8 +84,6 @@ class OfficeContactDetailsControllerImpl[F[_] : Concurrent](
 }
 
 object OfficeContactDetailsController {
-  def apply[F[_] : Concurrent](
-                                officeContactDetailsService: OfficeContactDetailsServiceAlgebra[F]
-                              )(implicit logger: Logger[F]): OfficeContactDetailsControllerAlgebra[F] =
+  def apply[F[_] : Concurrent](officeContactDetailsService: OfficeContactDetailsServiceAlgebra[F])(implicit logger: Logger[F]): OfficeContactDetailsControllerAlgebra[F] =
     new OfficeContactDetailsControllerImpl[F](officeContactDetailsService)
 }

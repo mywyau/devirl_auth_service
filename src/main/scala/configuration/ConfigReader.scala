@@ -1,7 +1,8 @@
 package configuration
 
 import cats.effect.Sync
-import configuration.models.{AppConfig, ServicesConfig}
+import configuration.models.AppConfig
+import configuration.models.ServicesConfig
 import pureconfig.ConfigSource
 
 trait ConfigReaderAlgebra[F[_]] {
@@ -17,10 +18,8 @@ class ConfigReaderImpl[F[_] : Sync] extends ConfigReaderAlgebra[F] {
     }
 }
 
-
 object ConfigReader {
 
-  def apply[F[_] : Sync]: ConfigReaderAlgebra[F] = {
+  def apply[F[_] : Sync]: ConfigReaderAlgebra[F] =
     new ConfigReaderImpl
-  }
 }

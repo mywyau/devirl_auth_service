@@ -14,7 +14,7 @@ object BusinessAddressRepositoryConstants {
   def createMockRepo(initialUsers: List[BusinessAddress]): IO[MockBusinessAddressRepository] =
     Ref.of[IO, List[BusinessAddress]](initialUsers).map(MockBusinessAddressRepository.apply)
 
-  def testCreateBusinessAddressRequest(userId: String, businessId: Option[String]): CreateBusinessAddressRequest =
+  def testCreateBusinessAddressRequest(userId: String, businessId: String): CreateBusinessAddressRequest =
     CreateBusinessAddressRequest(
       userId = userId,
       businessId = businessId,
@@ -30,7 +30,7 @@ object BusinessAddressRepositoryConstants {
       longitude = Some(-100.1)
     )
 
-  def testAddress(id: Option[Int], userId: String, businessId: Option[String]): BusinessAddress =
+  def testAddress(id: Option[Int], userId: String, businessId: String): BusinessAddress =
     BusinessAddress(
       id = id,
       userId = userId,

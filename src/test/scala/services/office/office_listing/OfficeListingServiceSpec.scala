@@ -1,22 +1,29 @@
 package services.office.office_listing
 
-import cats.data.{Validated, ValidatedNel}
+import cats.data.Validated
+import cats.data.ValidatedNel
 import cats.effect.IO
 import cats.implicits.*
 import models.database.*
-import models.office.address_details.OfficeAddress
+import models.office.address_details.OfficeAddressPartial
 import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.adts.*
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
 import models.office.office_listing.OfficeListing
-import models.office.office_listing.requests.{InitiateOfficeListingRequest, OfficeListingRequest}
+import models.office.office_listing.OfficeListingCard
+import models.office.office_listing.requests.InitiateOfficeListingRequest
+import models.office.office_listing.requests.OfficeListingRequest
+import models.office.specifications.OfficeAvailability
+import models.office.specifications.OfficeSpecifications
 import models.office.specifications.requests.CreateOfficeSpecificationsRequest
-import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
 import repositories.office.OfficeListingRepositoryAlgebra
 import weaver.SimpleIOSuite
 
-import java.time.{LocalDateTime, LocalTime}
+import java.time.LocalDateTime
+import java.time.LocalTime
+import models.office.contact_details.OfficeContactDetailsPartial
+import models.office.specifications.OfficeSpecificationsPartial
 
 object OfficeListingServiceSpec extends SimpleIOSuite {
 
@@ -88,27 +95,23 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
 
-  def officeSpecifications(id: Option[Int], businessId: String, officeId: String): OfficeSpecifications =
-    OfficeSpecifications(
-      id = id,
+  def testOfficeSpecificationsPartial(businessId: String, officeId: String): OfficeSpecificationsPartial =
+    OfficeSpecificationsPartial(
       businessId = businessId,
       officeId = officeId,
-      officeName = None,
-      description = None,
+      officeName = Some("some office"),
+      description = Some("some desc"),
       officeType = None,
       numberOfFloors = None,
       totalDesks = None,
       capacity = None,
       amenities = None,
       availability = None,
-      rules = None,
-      createdAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0)
+      rules = None
     )
 
-  def officeAddress(id: Option[Int], businessId: String, officeId: String): OfficeAddress =
-    OfficeAddress(
-      id = id,
+  def testOfficeAddressPartial(businessId: String, officeId: String): OfficeAddressPartial =
+    OfficeAddressPartial(
       businessId = businessId,
       officeId = officeId,
       buildingName = None,
@@ -119,30 +122,25 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
       county = None,
       postcode = None,
       latitude = None,
-      longitude = None,
-      createdAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0)
+      longitude = None
     )
 
-  def testContactDetails(id: Option[Int], businessId: String, officeId: String): OfficeContactDetails =
-    OfficeContactDetails(
-      id = id,
+  def testContactDetailsPartial(businessId: String, officeId: String): OfficeContactDetailsPartial =
+    OfficeContactDetailsPartial(
       businessId = businessId,
       officeId = officeId,
       primaryContactFirstName = None,
       primaryContactLastName = None,
       contactEmail = None,
-      contactNumber = None,
-      createdAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0)
+      contactNumber = None
     )
 
-  def testOfficeListing(id: Option[Int], businessId: String, officeId: String): OfficeListing = {
+  def testOfficeListing(businessId: String, officeId: String): OfficeListing = {
     OfficeListing(
       officeId = officeId,
-      officeAddressDetails = officeAddress(id, businessId, officeId),
-      officeSpecifications = officeSpecifications(id, businessId, officeId),
-      officeContactDetails = testContactDetails(id, businessId, officeId)
+      officeAddressDetails = testOfficeAddressPartial(businessId, officeId),
+      officeContactDetails = testContactDetailsPartial(businessId, officeId),
+      officeSpecifications = testOfficeSpecificationsPartial(businessId, officeId),
     )
   }
 
@@ -150,26 +148,31 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
     InitiateOfficeListingRequest(
       businessId = businessId,
       officeId = officeId,
+      officeName = "some office",
+      description = "some desc"
     )
 
   class MockOfficeListingRepository(
                                      findByOfficeIdResult: IO[Option[OfficeListing]],
-                                     listingResult: IO[ValidatedNel[SqlErrors, Int]]
+                                     listingResult: IO[ValidatedNel[DatabaseErrors, Int]]
                                    ) extends OfficeListingRepositoryAlgebra[IO] {
 
-    override def findAll(): IO[List[OfficeListing]] = ???
+
+    override def findAll(businessId: String): IO[List[OfficeListing]] = ???
+
+    override def deleteByBusinessId(businessId: String): IO[ValidatedNel[DatabaseErrors, Int]] = ???
     
     override def findByOfficeId(officeId: String): IO[Option[OfficeListing]] = findByOfficeIdResult
 
-    override def initiate(request: InitiateOfficeListingRequest): IO[ValidatedNel[SqlErrors, Int]] = listingResult
+    override def initiate(request: InitiateOfficeListingRequest): IO[ValidatedNel[DatabaseErrors, Int]] = listingResult
 
-    override def delete(officeId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
+    override def delete(officeId: String): IO[ValidatedNel[DatabaseErrors, Int]] = ???
 
   }
 
   def createTestService(
                          findByOfficeIdResult: IO[Option[OfficeListing]],
-                         listingResult: IO[ValidatedNel[SqlErrors, Int]]
+                         listingResult: IO[ValidatedNel[DatabaseErrors, Int]]
                        ): OfficeListingServiceImpl[IO] = {
 
     val listingRepo = new MockOfficeListingRepository(findByOfficeIdResult, listingResult)
@@ -178,12 +181,21 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
 
   test("initiate - all repositories succeed") {
     val service = createTestService(
-      IO.pure(Some(testOfficeListing(Some(1), "business_id_1", "office_id_1"))),
+      IO.pure(
+        Some(testOfficeListing("business_id_1", "office_id_1"))
+        ),
       IO.pure(Validated.valid(1))
     )
 
     val request = testInitiateOfficeListingRequest("business_id_1", "office_id_1")
-    val expectedResult = testOfficeListing(Some(1), "business_id_1", "office_id_1")
+
+    val expectedResult =     
+      OfficeListingCard(
+      businessId = "business_id_1",
+      officeId = "office_id_1",
+      officeName = "some office",
+      description = "some desc"
+    )
 
     for {
       result <- service.initiate(request)
@@ -198,26 +210,10 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
       )
 
     val request = testInitiateOfficeListingRequest("business_id_1", "office_id_1")
-    val expectedResult = testOfficeListing(Some(1), "business_id_1", "office_id_1")
+    val expectedResult = testOfficeListing("business_id_1", "office_id_1")
 
     for {
       result <- service.initiate(request)
     } yield expect(result == None)
   }
-
-// TODO: Fix tests
-//  test("initiate - unexpected exception during repository operation") {
-//    val service =
-//      createTestService(
-//        IO.pure(None),
-//        IO.raiseError(new RuntimeException("Unexpected database error"))
-//      )
-//
-//    val request = testInitiateOfficeListingRequest("business_id_1", "office_id_1")
-//    val expectedResult = testOfficeListing(Some(1), "business_id_1", "office_id_1")
-//
-//    for {
-//      result <- service.initiate(request)
-//    } yield expect(result == None)
-//  }
 }

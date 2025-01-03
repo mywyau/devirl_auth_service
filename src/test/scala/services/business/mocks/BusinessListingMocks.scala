@@ -1,58 +1,107 @@
 package services.business.mocks
 
+import java.time.LocalDateTime
 import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.effect.IO
-import cats.implicits.*
 import models.business.address.BusinessAddress
-import models.business.address.requests.CreateBusinessAddressRequest
-import models.business.adts.*
-import models.business.business_listing.errors.BusinessListingErrors
-import models.business.business_listing.requests.BusinessListingRequest
 import models.business.contact_details.BusinessContactDetails
-import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
-import models.business.specifications.requests.CreateBusinessSpecificationsRequest
-import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
-import models.database.*
-import org.typelevel.log4cats.SelfAwareStructuredLogger
-import org.typelevel.log4cats.slf4j.Slf4jLogger
-import repositories.business.{BusinessAddressRepositoryAlgebra, BusinessContactDetailsRepositoryAlgebra, BusinessSpecificationsRepositoryAlgebra}
-import services.business.business_listing.BusinessListingServiceImpl
-import weaver.SimpleIOSuite
+import models.business.specifications.BusinessAvailability
+import models.business.business_listing.BusinessListing
+import models.database.DatabaseErrors
+import models.database.DatabaseError
+import repositories.business.BusinessListingRepositoryAlgebra
+import java.time.LocalTime
+import models.business.specifications.BusinessSpecifications
+import models.business.business_listing.requests.InitiateBusinessListingRequest
+
 
 object BusinessListingMocks {
 
-  class MockBusinessAddressRepository(
-                                       addressResult: IO[ValidatedNel[SqlErrors, Int]]
-                                     ) extends BusinessAddressRepositoryAlgebra[IO] {
+  val mockBusinessAddress: BusinessAddress = BusinessAddress(
+    id = Some(1),
+    userId = "user-123",
+    businessId = "business-001",
+    businessName = Some("Test Business"),
+    buildingName = Some("Test Building"),
+    floorNumber = Some("5"),
+    street = Some("123 Test Street"),
+    city = Some("Test City"),
+    country = Some("Test Country"),
+    county = Some("Test County"),
+    postcode = Some("12345"),
+    latitude = Some(BigDecimal(51.5074)),
+    longitude = Some(BigDecimal(-0.1278)),
+    createdAt = LocalDateTime.now(),
+    updatedAt = LocalDateTime.now()
+  )
 
-    override def findByBusinessId(userId: String): IO[Option[BusinessAddress]] = ???
+  val mockBusinessContactDetails: BusinessContactDetails = BusinessContactDetails(
+    id = Some(1),
+    userId = "user-123",
+    businessId = "business-001",
+    businessName = Some("Test Business"),
+    primaryContactFirstName = Some("John"),
+    primaryContactLastName = Some("Doe"),
+    contactEmail = Some("contact@testbusiness.com"),
+    contactNumber = Some("+1234567890"),
+    websiteUrl = Some("https://testbusiness.com"),
+    createdAt = LocalDateTime.now(),
+    updatedAt = LocalDateTime.now()
+  )
 
-    override def createBusinessAddress(businessAddress: CreateBusinessAddressRequest): IO[ValidatedNel[SqlErrors, Int]] = addressResult
+  val mockBusinessAvailability: BusinessAvailability =
+     BusinessAvailability(
+    days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
+    startTime = LocalTime.of(9,0,0),
+    endTime = LocalTime.of(17,0,0)
+  )
 
-    override def deleteBusinessAddress(businessId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
-  }
+  val mockBusinessSpecifications: BusinessSpecifications = BusinessSpecifications(
+    id = Some(1),
+    userId = "user-123",
+    businessId = "business-001",
+    businessName = Some("Test Business"),
+    description = Some("A test business providing exemplary services."),
+    availability = Some(mockBusinessAvailability),
+    createdAt = LocalDateTime.now(),
+    updatedAt = LocalDateTime.now()
+  )
 
-  class MockBusinessContactDetailsRepository(
-                                              contactResult: IO[ValidatedNel[SqlErrors, Int]]
-                                            ) extends BusinessContactDetailsRepositoryAlgebra[IO] {
+  val mockBusinessListings: List[BusinessListing] = List(
+    BusinessListing(
+      businessId = "business-001",
+      addressDetails = mockBusinessAddress,
+      businessContactDetails = mockBusinessContactDetails,
+      businessSpecs = mockBusinessSpecifications
+    ),
+    BusinessListing(
+      businessId = "business-002",
+      addressDetails = mockBusinessAddress.copy(businessId = "business-002", businessName = Some("Second Business")),
+      businessContactDetails = mockBusinessContactDetails.copy(businessId = "business-002", contactEmail = Some("contact2@testbusiness.com")),
+      businessSpecs = mockBusinessSpecifications.copy(businessId = "business-002", description = Some("Another business."))
+    )
+  )
 
-    override def findByBusinessId(businessId: String): IO[Option[BusinessContactDetails]] = ???
+  val mockSqlSuccess: ValidatedNel[DatabaseErrors, Int] = Validated.Valid(1)
+  val mockSqlError: ValidatedNel[DatabaseErrors, Int] = Validated.Invalid(NonEmptyList.one(DatabaseError))
 
-    override def create(createBusinessContactDetailsRequest: CreateBusinessContactDetailsRequest): IO[ValidatedNel[SqlErrors, Int]] = contactResult
+  // Mock repository implementation
+  class MockBusinessListingRepository() extends BusinessListingRepositoryAlgebra[IO] {
 
-    override def delete(businessId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
-  }
+    override def findAll(): IO[List[BusinessListing]] = IO.pure(mockBusinessListings)
 
-  class MockBusinessSpecificationsRepository(
-                                              specsResult: IO[ValidatedNel[SqlErrors, Int]]
-                                            ) extends BusinessSpecificationsRepositoryAlgebra[IO] {
+    override def findByBusinessId(businessId: String): IO[Option[BusinessListing]] =
+      IO.pure(mockBusinessListings.find(_.businessId == businessId))
 
-    override def findByBusinessId(businessId: String): IO[Option[BusinessSpecifications]] = ???
+    override def initiate(request: InitiateBusinessListingRequest): IO[ValidatedNel[DatabaseErrors, Int]] =
+      IO.pure(mockSqlSuccess)
 
-    override def create(createBusinessSpecificationsRequest: CreateBusinessSpecificationsRequest): IO[ValidatedNel[SqlErrors, Int]] = specsResult
+    override def delete(businessId: String): IO[ValidatedNel[DatabaseErrors, Int]] =
+      if (mockBusinessListings.exists(_.businessId == businessId)) IO.pure(mockSqlSuccess)
+      else IO.pure(mockSqlError)
 
-    override def delete(businessId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
-
-
+    override def deleteByUserId(userId: String): IO[ValidatedNel[DatabaseErrors, Int]] =
+      if (userId == "user-123") IO.pure(mockSqlSuccess)
+      else IO.pure(mockSqlError)
   }
 }

@@ -6,9 +6,10 @@ import models.business.address.requests.CreateBusinessAddressRequest
 import models.business.adts.*
 import models.business.business_listing.requests.BusinessListingRequest
 import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
+import models.business.specifications.BusinessAvailability
 import models.business.specifications.requests.CreateBusinessSpecificationsRequest
 
-import java.time.LocalDateTime
+import java.time.{LocalDateTime, LocalTime}
 
 object BusinessListingControllerConstants {
 
@@ -17,13 +18,18 @@ object BusinessListingControllerConstants {
       userId = "user_id_1",
       businessId = "business_id_1",
       businessName = "Modern Workspace",
-      description = "A vibrant business space in the heart of the city, ideal for teams or individuals."
+      description = "A vibrant business space in the heart of the city, ideal for teams or individuals.",
+      availability = BusinessAvailability(
+        days = List("Monday", "Tuesday"),
+        startTime = LocalTime.of(10, 0, 0),
+        endTime = LocalTime.of(10, 30, 0)
+      )
     )
 
   val testCreateBusinessAddressRequest: CreateBusinessAddressRequest =
     CreateBusinessAddressRequest(
       userId = "user_id_1",
-      businessId = Some("business_id_1"),
+      businessId = "business_id_1",
       businessName = Some("MikeyCorp"),
       buildingName = Some("BusinessListingControllerISpec Building"),
       floorNumber = Some("floor 1"),

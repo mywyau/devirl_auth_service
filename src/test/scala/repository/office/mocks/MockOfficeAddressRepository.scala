@@ -1,26 +1,32 @@
 package repository.office.mocks
 
 import cats.data.Validated.validNel
+import cats.data.Validated.Valid
 import cats.data.ValidatedNel
-import cats.effect.IO
 import cats.effect.kernel.Ref
-import models.database.SqlErrors
-import models.office.address_details.OfficeAddress
+import cats.effect.IO
+import java.time.LocalDateTime
+import models.database.*
+import models.database.DatabaseErrors
+import models.database.DatabaseSuccess
 import models.office.address_details.requests.CreateOfficeAddressRequest
+import models.office.address_details.requests.UpdateOfficeAddressRequest
+import models.office.address_details.OfficeAddressPartial
 import repositories.office.OfficeAddressRepositoryAlgebra
 
-import java.time.LocalDateTime
+case class MockOfficeAddressRepository(ref: Ref[IO, List[OfficeAddressPartial]]) extends OfficeAddressRepositoryAlgebra[IO] {
 
-case class MockOfficeAddressRepository(ref: Ref[IO, List[OfficeAddress]]) extends OfficeAddressRepositoryAlgebra[IO] {
+  override def deleteAllByBusinessId(businessId: String): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = IO(Valid(DeleteSuccess))
 
-  override def findByOfficeId(officeId: String): IO[Option[OfficeAddress]] =
+  override def update(officeId: String, request: UpdateOfficeAddressRequest): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = IO(Valid(UpdateSuccess))
+
+  override def findByOfficeId(officeId: String): IO[Option[OfficeAddressPartial]] =
     ref.get.map(_.find(_.officeId == officeId))
 
-  override def create(officeAddressRequest: CreateOfficeAddressRequest): IO[ValidatedNel[SqlErrors, Int]] =
+  override def create(officeAddressRequest: CreateOfficeAddressRequest): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
     ref.modify { address =>
       val updatedList =
-        OfficeAddress(
-          id = Some(1),
+        OfficeAddressPartial(
           businessId = officeAddressRequest.businessId,
           officeId = officeAddressRequest.officeId,
           buildingName = officeAddressRequest.buildingName,
@@ -31,13 +37,11 @@ case class MockOfficeAddressRepository(ref: Ref[IO, List[OfficeAddress]]) extend
           county = officeAddressRequest.county,
           postcode = officeAddressRequest.postcode,
           latitude = officeAddressRequest.latitude,
-          longitude = officeAddressRequest.longitude,
-          createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-          updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+          longitude = officeAddressRequest.longitude
         )
           :: address
-      (updatedList, validNel(1))
+      (updatedList, validNel(CreateSuccess))
     }
 
-  override def delete(officeId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
+  override def delete(officeId: String): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = IO(Valid(DeleteSuccess))
 }

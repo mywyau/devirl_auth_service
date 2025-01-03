@@ -3,16 +3,12 @@ package controllers.constants
 import cats.effect.*
 import models.business.address.BusinessAddress
 import models.business.address.requests.CreateBusinessAddressRequest
-import models.business.adts.*
-import models.business.business_listing.requests.BusinessListingRequest
-import models.business.contact_details.BusinessContactDetails
-import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
 
 import java.time.LocalDateTime
 
 object BusinessAddressControllerConstants {
 
-  def testBusinessAddress(id: Option[Int], userId: String, businessId: Option[String]): BusinessAddress = {
+  def testBusinessAddress(id: Option[Int], userId: String, businessId: String): BusinessAddress = {
     BusinessAddress(
       id = id,
       userId = userId,
@@ -32,7 +28,7 @@ object BusinessAddressControllerConstants {
     )
   }
 
-  def testBusinessAddressRequest(userId: String, businessId: Option[String]): CreateBusinessAddressRequest = {
+  def testBusinessAddressRequest(userId: String, businessId: String): CreateBusinessAddressRequest = {
     CreateBusinessAddressRequest(
       userId = userId,
       businessId = businessId,

@@ -16,12 +16,12 @@ object BusinessContactDetailsSpec extends SimpleIOSuite {
       id = Some(1),
       userId = "user_id_1",
       businessId = "business_id_1",
-      businessName = "mikey_corp",
-      primaryContactFirstName = "Mikey",
-      primaryContactLastName = "Yau",
-      contactEmail = "mikey5922@gmail.com",
-      contactNumber = "07402205071",
-      websiteUrl = "mikey5922.com",
+      businessName = Some("mikey_corp"),
+      primaryContactFirstName = Some("Mikey"),
+      primaryContactLastName = Some("Yau"),
+      contactEmail = Some("mikey5922@gmail.com"),
+      contactNumber = Some("07402205071"),
+      websiteUrl = Some("mikey5922.com"),
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )

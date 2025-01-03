@@ -7,8 +7,9 @@ import controllers.fragments.OfficeContactDetailsRepoFragments.*
 import controllers.fragments.OfficeSpecificationRepoFragments.*
 import doobie.implicits.*
 import io.circe.Json
-import io.circe.syntax.*
+import io.circe.syntax.* 
 import models.office.office_listing.OfficeListing
+import models.office.office_listing.OfficeListingCard
 import models.responses.DeletedResponse
 import org.http4s.*
 import org.http4s.Method.*
@@ -55,8 +56,12 @@ class OfficeListingControllerISpec(global: GlobalRead) extends IOSuite {
     val transactor = sharedResources._1.xa
     val client = sharedResources._2.client
 
+    val businessId = "business_id_1"
+    val officeId = "office_id_1"
+
+
     val initiateOfficeListingRequest: Json =
-      testInitiateOfficeListingRequest("business_id_1", "office_id_1").asJson
+      testInitiateOfficeListingRequest(businessId, officeId).asJson
 
     // Step 1: Make the POST request to create the office listing
     val createRequest =
@@ -64,37 +69,30 @@ class OfficeListingControllerISpec(global: GlobalRead) extends IOSuite {
         .withEntity(initiateOfficeListingRequest)
 
     client.run(createRequest).use { createResponse =>
-      createResponse.as[OfficeListing].flatMap { createdOfficeListing =>
+      createResponse.as[OfficeListingCard].flatMap { createdOfficeListing =>
         expect.all(
           createResponse.status == Status.Created,
-          createdOfficeListing.officeId == "office_id_1",
-          createdOfficeListing.officeAddressDetails.officeId == "office_id_1",
-          createdOfficeListing.officeContactDetails.officeId == "office_id_1",
-          createdOfficeListing.officeSpecifications.officeId == "office_id_1",
-          createdOfficeListing.officeAddressDetails.city.isEmpty,
-          createdOfficeListing.officeContactDetails.contactNumber.isEmpty,
-          createdOfficeListing.officeSpecifications.officeType.isEmpty
+          createdOfficeListing.businessId == businessId,
+          createdOfficeListing.officeId == officeId,
+          createdOfficeListing.officeName == "some office name",
+          createdOfficeListing.description == "some desc",
         )
 
         // Step 2: Make the GET request to verify all listings include the newly created one
         val findAllRequest =
-          Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/office/listing/find/all")
+          Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/office/listing/cards/find/all")
 
         client.run(findAllRequest).use { findAllResponse =>
-          findAllResponse.as[List[OfficeListing]].map { allListings =>
+          findAllResponse.as[List[OfficeListingCard]].map { allCards =>
             expect.all(
               findAllResponse.status == Status.Ok,
-              allListings.exists(_.officeId == createdOfficeListing.officeId),
-              allListings.size == 3,
-              allListings.find(_.officeId == "office_id_1").flatMap(_.officeAddressDetails.city).isEmpty,
-              allListings.find(_.officeId == "office_id_1").flatMap(_.officeContactDetails.contactNumber).isEmpty,
-              allListings.find(_.officeId == "office_id_1").flatMap(_.officeSpecifications.officeType).isEmpty,
+              allCards.size == 1
             )
           }
         }
 
         val request =
-          Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/office/listing/delete/OFF002")
+          Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/office/listing/delete/office_id_1")
 
         val expectedBody = DeletedResponse("Office listing deleted successfully")
 

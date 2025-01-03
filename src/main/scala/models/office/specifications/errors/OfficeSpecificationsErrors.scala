@@ -1,6 +1,7 @@
 package models.office.specifications.errors
 
-import io.circe.{Decoder, Encoder}
+import io.circe.Decoder
+import io.circe.Encoder
 
 sealed trait OfficeSpecificationsErrors {
   val code: String
@@ -16,9 +17,8 @@ case object OfficeSpecificationsNotCreated extends OfficeSpecificationsErrors:
   override val errorMessage: String = "office specifications was not created"
 
 case object OfficeSpecificationsDatabaseError extends OfficeSpecificationsErrors:
-    override val code: String = this.toString
-    override val errorMessage: String = "office specifications database error"
-
+  override val code: String = this.toString
+  override val errorMessage: String = "office specifications database error"
 
 object OfficeSpecificationsErrors {
 

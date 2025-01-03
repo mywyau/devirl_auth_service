@@ -6,6 +6,8 @@ import models.business.contact_details.requests.CreateBusinessContactDetailsRequ
 import models.business.specifications.requests.CreateBusinessSpecificationsRequest
 
 import java.time.LocalDateTime
+import models.business.specifications.BusinessAvailability
+import java.time.LocalTime
 
 
 object BusinessListingServiceConstants {
@@ -13,7 +15,7 @@ object BusinessListingServiceConstants {
   val testCreateBusinessAddressRequest: CreateBusinessAddressRequest =
     CreateBusinessAddressRequest(
       userId = "user_id_1",
-      businessId = Some("business_id_1"),
+      businessId = "business_id_1",
       businessName = Some("businessCorp"),
       buildingName = Some("build_123"),
       floorNumber = Some("floor 1"),
@@ -26,12 +28,18 @@ object BusinessListingServiceConstants {
       longitude = Some(-100.1)
     )
 
+
   val testCreateBusinessSpecificationsRequest: CreateBusinessSpecificationsRequest =
     CreateBusinessSpecificationsRequest(
       userId = "user_id_1",
       businessId = "business_id_1",
       businessName = "Modern Workspace",
-      description = "A vibrant business space in the heart of the city, ideal for teams or individuals."
+      description = "A vibrant business space in the heart of the city, ideal for teams or individuals.",
+      availability = BusinessAvailability(
+        days = List("Monday", "Tuesday"),
+        startTime = LocalTime.of(10, 0, 0),
+        endTime = LocalTime.of(10, 30, 0)
+      )
     )
 
   val testCreateBusinessContactDetailsRequest =

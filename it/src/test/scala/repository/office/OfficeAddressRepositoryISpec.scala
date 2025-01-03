@@ -7,6 +7,7 @@ import doobie.implicits.*
 import models.business.adts.PrivateDesk
 import models.office.address_details.OfficeAddress
 import models.office.address_details.requests.CreateOfficeAddressRequest
+import models.office.address_details.requests.UpdateOfficeAddressRequest
 import models.office.office_listing.requests.OfficeListingRequest
 import models.office.specifications.OfficeAvailability
 import repositories.office.OfficeAddressRepositoryImpl
@@ -16,6 +17,8 @@ import shared.TransactorResource
 import weaver.{GlobalRead, IOSuite}
 
 import java.time.LocalDateTime
+import models.database.UpdateSuccess
+import cats.data.Validated.Valid
 
 class OfficeAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
 
@@ -41,11 +44,38 @@ class OfficeAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
 
   test(".findByBusinessId() - should return the office address if business_id exists for a previously created office address") { officeAddressRepo =>
 
-    val expectedResult = testOfficeAddress(Some(1), "business_id_1", "office_id_1")
+    val expectedResult = testOfficeAddressPartial("business_id_1", "office_id_1")
 
     for {
       officeAddressOpt <- officeAddressRepo.findByOfficeId("office_id_1")
-      //      _ <- IO(println(s"Query Result: $officeAddressOpt")) // Debug log the result
     } yield expect(officeAddressOpt == Some(expectedResult))
+  }
+
+  test(".update() - should return the office address if business_id exists for a previously created office address") { officeAddressRepo =>
+
+    val businessId = "business_id_6"
+    val officeId = "office_id_6"
+
+    val createRequest = createInitialOfficeAddress(businessId, officeId)
+
+    val request = {
+      UpdateOfficeAddressRequest(
+        buildingName = Some("Empire State Building"),
+        floorNumber = Some("5th Floor"),
+        street = Some("123 Main Street"),
+        city = Some("New York"),
+        country = Some("USA"),
+        county = Some("Manhattan"),
+        postcode = Some("10001"),
+        latitude = Some(40.748817),
+        longitude = Some(-73.985428),
+        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      )
+    }
+
+    for {
+      officeAddressOpt <- officeAddressRepo.create(createRequest)
+      officeAddressOpt <- officeAddressRepo.update(officeId, request)
+    } yield expect(officeAddressOpt == Valid(UpdateSuccess))
   }
 }

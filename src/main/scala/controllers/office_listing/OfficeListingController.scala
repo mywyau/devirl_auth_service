@@ -1,32 +1,30 @@
 package controllers.office_listing
 
-import cats.data.Validated.{Invalid, Valid}
+import cats.data.Validated.Invalid
+import cats.data.Validated.Valid
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.*
 import models.office.office_listing.requests.InitiateOfficeListingRequest
-import models.responses.{DeletedResponse, ErrorResponse}
+import models.responses.DeletedResponse
+import models.responses.ErrorResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
 import org.typelevel.log4cats.Logger
 import services.office.office_listing.OfficeListingServiceAlgebra
 
-
 trait OfficeListingControllerAlgebra[F[_]] {
   def routes: HttpRoutes[F]
 }
 
-class OfficeListingControllerImpl[F[_] : Concurrent](
-                                                      officeListingService: OfficeListingServiceAlgebra[F]
-                                                    )(implicit logger: Logger[F])
-  extends Http4sDsl[F] with OfficeListingControllerAlgebra[F] {
+class OfficeListingControllerImpl[F[_] : Concurrent](officeListingService: OfficeListingServiceAlgebra[F])(implicit logger: Logger[F]) extends Http4sDsl[F] with OfficeListingControllerAlgebra[F] {
 
   implicit val initiateOfficeListingRequestDecoder: EntityDecoder[F, InitiateOfficeListingRequest] = jsonOf[F, InitiateOfficeListingRequest]
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
-    case req@POST -> Root / "business" / "office" / "listing" / "initiate" =>
+    case req @ POST -> Root / "business" / "office" / "listing" / "initiate" =>
       logger.info(s"[OfficeListingControllerImpl] POST - Initiating office listing") *>
         req.decode[InitiateOfficeListingRequest] { request =>
           officeListingService.initiate(request).flatMap {
@@ -48,9 +46,9 @@ class OfficeListingControllerImpl[F[_] : Concurrent](
               Ok(listing.asJson)
         }
 
-    case GET -> Root / "business" / "office" / "listing" / "find" / "all" =>
+    case GET -> Root / "business" / "office" / "listing" / "find" / "all" / businessId =>
       logger.info(s"[OfficeListingControllerImpl] GET - Find all office listings") *>
-        officeListingService.findAll().flatMap {
+        officeListingService.findAll(businessId).flatMap {
           case Nil =>
             BadRequest(ErrorResponse(code = "GetFailure", message = "Could not find any office listings").asJson)
           case listings =>
@@ -58,9 +56,9 @@ class OfficeListingControllerImpl[F[_] : Concurrent](
               Ok(listings.asJson)
         }
 
-    case GET -> Root / "business" / "office" / "listing" / "cards" / "find" / "all" =>
+    case GET -> Root / "business" / "office" / "listing" / "cards" / "find" / "all" / businessId =>
       logger.info(s"[OfficeListingControllerImpl] GET - Find all office listing card details") *>
-        officeListingService.findAllListingCardDetails().flatMap {
+        officeListingService.findAllListingCardDetails(businessId).flatMap {
           case Nil =>
             // Return an empty JSON list instead of a BadRequest error
             logger.info(s"[OfficeListingControllerImpl] GET - No office listing card details found, returning empty list") *>
@@ -84,8 +82,6 @@ class OfficeListingControllerImpl[F[_] : Concurrent](
 }
 
 object OfficeListingController {
-  def apply[F[_] : Concurrent](
-                                officeListingService: OfficeListingServiceAlgebra[F]
-                              )(implicit logger: Logger[F]): OfficeListingControllerAlgebra[F] =
+  def apply[F[_] : Concurrent](officeListingService: OfficeListingServiceAlgebra[F])(implicit logger: Logger[F]): OfficeListingControllerAlgebra[F] =
     new OfficeListingControllerImpl[F](officeListingService)
 }

@@ -1,20 +1,18 @@
 package repositories.desk
 
-import cats.Monad
 import cats.effect.Concurrent
+import cats.Monad
 import doobie.*
 import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.postgres.implicits.*
 import doobie.util.meta.Meta
 import io.circe.syntax.*
+import java.sql.Timestamp
+import java.time.LocalDateTime
 import models.business.adts.DeskType
 import models.business.desk_listing.requests.DeskListingRequest
 import models.business.desk_listing.service.DeskListing
-
-import java.sql.Timestamp
-import java.time.LocalDateTime
-
 
 trait DeskListingRepositoryAlgebra[F[_]] {
 
@@ -23,18 +21,18 @@ trait DeskListingRepositoryAlgebra[F[_]] {
   def findByUserId(userId: String): F[Option[DeskListing]]
 
   def updateDesk(
-                  id: Option[Int],
-                  business_id: String,
-                  workspace_id: String,
-                  title: String,
-                  description: Option[String],
-                  desk_type: DeskType,
-                  price_per_hour: BigDecimal,
-                  price_per_day: BigDecimal,
-                  rules: Option[String],
-                  created_at: LocalDateTime,
-                  updated_at: LocalDateTime
-                ): F[Option[DeskListing]]
+    id: Option[Int],
+    business_id: String,
+    workspace_id: String,
+    title: String,
+    description: Option[String],
+    desk_type: DeskType,
+    price_per_hour: BigDecimal,
+    price_per_day: BigDecimal,
+    rules: Option[String],
+    created_at: LocalDateTime,
+    updated_at: LocalDateTime
+  ): F[Option[DeskListing]]
 }
 
 class DeskListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends DeskListingRepositoryAlgebra[F] {
@@ -43,15 +41,13 @@ class DeskListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
 
   implicit val deskTypeMeta: Meta[DeskType] = Meta[String].imap(DeskType.fromString)(_.toString)
 
-  override def findByUserId(business_id: String): F[Option[DeskListing]] = {
+  override def findByUserId(business_id: String): F[Option[DeskListing]] =
     sql"SELECT * FROM desk_listings WHERE business_id = $business_id"
       .query[DeskListing] // Ensure implicit Read[DeskListing] is available
       .option
       .transact(transactor)
-  }
 
-
-  override def createDeskToRent(deskListing: DeskListingRequest): F[Int] = {
+  override def createDeskToRent(deskListing: DeskListingRequest): F[Int] =
     sql"""
          INSERT INTO desk_listings (
            business_id,
@@ -82,25 +78,21 @@ class DeskListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
          ${deskListing.created_at},
          ${deskListing.updated_at}
          )
-       """
-      .update
-      .run
-      .transact(transactor)
-  }
+       """.update.run.transact(transactor)
 
   override def updateDesk(
-                           id: Option[Int],
-                           business_id: String,
-                           workspace_id: String,
-                           title: String,
-                           description: Option[String],
-                           desk_type: DeskType,
-                           price_per_hour: BigDecimal,
-                           price_per_day: BigDecimal,
-                           rules: Option[String],
-                           created_at: LocalDateTime,
-                           updated_at: LocalDateTime
-                         ): F[Option[DeskListing]] = ???
+    id: Option[Int],
+    business_id: String,
+    workspace_id: String,
+    title: String,
+    description: Option[String],
+    desk_type: DeskType,
+    price_per_hour: BigDecimal,
+    price_per_day: BigDecimal,
+    rules: Option[String],
+    created_at: LocalDateTime,
+    updated_at: LocalDateTime
+  ): F[Option[DeskListing]] = ???
 
   //  override def updateDesk(
   //                           id: Option[Int],
@@ -158,10 +150,7 @@ class DeskListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
 
 }
 
-
 object DeskListingRepository {
-  def apply[F[_] : Concurrent : Monad](
-                                        transactor: Transactor[F]
-                                      ): DeskListingRepositoryImpl[F] =
+  def apply[F[_] : Concurrent : Monad](transactor: Transactor[F]): DeskListingRepositoryImpl[F] =
     new DeskListingRepositoryImpl[F](transactor)
 }

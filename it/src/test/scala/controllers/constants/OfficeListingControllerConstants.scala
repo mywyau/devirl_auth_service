@@ -1,16 +1,20 @@
 package controllers.constants
 
-import models.office.address_details.OfficeAddress
+import java.time.LocalDateTime
+import java.time.LocalTime
 import models.office.address_details.requests.CreateOfficeAddressRequest
+import models.office.address_details.OfficeAddress
+import models.office.address_details.OfficeAddressPartial
 import models.office.adts.*
-import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
-import models.office.office_listing.OfficeListing
+import models.office.contact_details.OfficeContactDetails
+import models.office.contact_details.OfficeContactDetailsPartial
 import models.office.office_listing.requests.InitiateOfficeListingRequest
+import models.office.office_listing.OfficeListing
 import models.office.specifications.requests.CreateOfficeSpecificationsRequest
-import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
-
-import java.time.{LocalDateTime, LocalTime}
+import models.office.specifications.OfficeAvailability
+import models.office.specifications.OfficeSpecifications
+import models.office.specifications.OfficeSpecificationsPartial
 
 object OfficeListingControllerConstants {
 
@@ -61,34 +65,16 @@ object OfficeListingControllerConstants {
       contactNumber = "07402205071"
     )
 
-
   def testInitiateOfficeListingRequest(businessId: String, officeId: String): InitiateOfficeListingRequest =
     InitiateOfficeListingRequest(
       businessId = businessId,
       officeId = officeId,
+      officeName = "some office name",
+      description = "some desc"
     )
 
-  def officeSpecifications(id: Option[Int], businessId: String, officeId: String): OfficeSpecifications =
-    OfficeSpecifications(
-      id = id,
-      businessId = businessId,
-      officeId = officeId,
-      officeName = None,
-      description = None,
-      officeType = None,
-      numberOfFloors = None,
-      totalDesks = None,
-      capacity = None,
-      amenities = None,
-      availability = None,
-      rules = None,
-      createdAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0)
-    )
-
-  def officeAddress(id: Option[Int], businessId: String, officeId: String): OfficeAddress =
-    OfficeAddress(
-      id = id,
+  def testOfficeAddressPartial(businessId: String, officeId: String): OfficeAddressPartial =
+    OfficeAddressPartial(
       businessId = businessId,
       officeId = officeId,
       buildingName = None,
@@ -99,30 +85,39 @@ object OfficeListingControllerConstants {
       county = None,
       postcode = None,
       latitude = None,
-      longitude = None,
-      createdAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0)
+      longitude = None
     )
 
-  def testContactDetails(id: Option[Int], businessId: String, officeId: String): OfficeContactDetails =
-    OfficeContactDetails(
-      id = id,
+  def testOfficeContactDetailsPartial(businessId: String, officeId: String): OfficeContactDetailsPartial =
+    OfficeContactDetailsPartial(
       businessId = businessId,
       officeId = officeId,
       primaryContactFirstName = None,
       primaryContactLastName = None,
       contactEmail = None,
-      contactNumber = None,
-      createdAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 12, 0, 0)
+      contactNumber = None
     )
 
-  def testOfficeListing(id: Option[Int], businessId: String, officeId: String): OfficeListing = {
+  def testOfficeSpecificationsPartial(businessId: String, officeId: String) =
+    OfficeSpecificationsPartial(
+      businessId = businessId,
+      officeId = officeId,
+      officeName = None,
+      description = None,
+      officeType = None,
+      numberOfFloors = None,
+      totalDesks = None,
+      capacity = None,
+      amenities = None,
+      availability = None,
+      rules = None
+    )
+
+  def testOfficeListing(id: Option[Int], businessId: String, officeId: String): OfficeListing =
     OfficeListing(
       officeId = officeId,
-      officeAddressDetails = officeAddress(id, businessId, officeId),
-      officeSpecifications = officeSpecifications(id, businessId, officeId),
-      officeContactDetails = testContactDetails(id, businessId, officeId)
+      officeAddressDetails = testOfficeAddressPartial(businessId, officeId),
+      officeContactDetails = testOfficeContactDetailsPartial(businessId, officeId),
+      officeSpecifications = testOfficeSpecificationsPartial(businessId, officeId)
     )
-  }
 }

@@ -6,13 +6,15 @@ import cats.effect.IO
 import models.business.specifications.BusinessSpecifications
 import models.business.specifications.errors.BusinessSpecificationsNotFound
 import models.business.specifications.requests.CreateBusinessSpecificationsRequest
-import models.database.SqlErrors
+import models.database.DatabaseErrors
 import repositories.business.BusinessSpecificationsRepositoryAlgebra
 import services.business.mocks.MockBusinessSpecificationsRepository
 import services.business.specifications.BusinessSpecificationsService
 import weaver.SimpleIOSuite
 
 import java.time.LocalDateTime
+import models.business.specifications.BusinessAvailability
+import java.time.LocalTime
 
 object BusinessSpecificationsServiceSpec extends SimpleIOSuite {
 
@@ -24,7 +26,12 @@ object BusinessSpecificationsServiceSpec extends SimpleIOSuite {
       userId = userId,
       businessId = businessId,
       businessName = "MikeyCorp",
-      description = "Some description"
+      description = "Some description",
+      availability = BusinessAvailability(
+        days = List("Monday", "Tuesday"),
+        startTime = LocalTime.of(10, 0, 0),
+        endTime = LocalTime.of(10, 30, 0)
+      )
     )
 
   def testSpecifications(
@@ -36,8 +43,13 @@ object BusinessSpecificationsServiceSpec extends SimpleIOSuite {
       id = Some(1),
       userId = userId,
       businessId = businessId,
-      businessName = "MikeyCorp",
-      description = "Some description",
+      businessName = Some("MikeyCorp"),
+      description = Some("Some description"),
+      availability = Some(BusinessAvailability(
+        days = List("Monday", "Tuesday"),
+        startTime = LocalTime.of(10, 0, 0),
+        endTime = LocalTime.of(10, 30, 0)
+      )),
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )

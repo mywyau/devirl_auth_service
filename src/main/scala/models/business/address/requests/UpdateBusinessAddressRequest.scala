@@ -1,23 +1,23 @@
 package models.business.address.requests
 
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.circe.{Decoder, Encoder}
-
+import io.circe.generic.semiauto.deriveDecoder
+import io.circe.generic.semiauto.deriveEncoder
+import io.circe.Decoder
+import io.circe.Encoder
 import java.time.LocalDateTime
 
-
 case class UpdateBusinessAddressRequest(
-                                         buildingName: Option[String],
-                                         floorNumber: Option[String],
-                                         street: Option[String],
-                                         city: Option[String],
-                                         country: Option[String],
-                                         county: Option[String],
-                                         postcode: Option[String],
-                                         latitude: Option[BigDecimal],
-                                         longitude: Option[BigDecimal],
-                                         updatedAt: LocalDateTime
-                                       )
+  buildingName: Option[String],
+  floorNumber: Option[String],
+  street: Option[String],
+  city: Option[String],
+  country: Option[String],
+  county: Option[String],
+  postcode: Option[String],
+  latitude: Option[BigDecimal],
+  longitude: Option[BigDecimal],
+  updatedAt: LocalDateTime
+)
 
 object UpdateBusinessAddressRequest {
   implicit val createOfficeAddressRequestEncoder: Encoder[UpdateBusinessAddressRequest] = deriveEncoder[UpdateBusinessAddressRequest]

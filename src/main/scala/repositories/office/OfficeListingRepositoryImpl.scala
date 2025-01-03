@@ -11,27 +11,29 @@ import doobie.postgres.implicits.*
 import doobie.util.meta.Meta
 import models.database.*
 import models.office.address_details.OfficeAddress
+import models.office.address_details.OfficeAddressPartial
 import models.office.adts.OfficeType
 import models.office.contact_details.OfficeContactDetails
+import models.office.contact_details.OfficeContactDetailsPartial
 import models.office.contact_details.requests.UpdateOfficeContactDetailsRequest
 import models.office.office_listing.OfficeListing
 import models.office.office_listing.requests.InitiateOfficeListingRequest
-import models.office.specifications.OfficeSpecifications
+import models.office.specifications.OfficeSpecificationsPartial
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
 trait OfficeListingRepositoryAlgebra[F[_]] {
 
-  def findAll(): F[List[OfficeListing]]
+  def findAll(businessId: String): F[List[OfficeListing]]
 
   def findByOfficeId(officeId: String): F[Option[OfficeListing]]
 
-  def initiate(request: InitiateOfficeListingRequest): F[ValidatedNel[SqlErrors, Int]]
+  def initiate(request: InitiateOfficeListingRequest): F[ValidatedNel[DatabaseErrors, Int]]
 
-  def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]]
+  def delete(officeId: String): F[ValidatedNel[DatabaseErrors, Int]]
 
-  def deleteByBusinessId(businessId: String): F[ValidatedNel[SqlErrors, Int]]
+  def deleteByBusinessId(businessId: String): F[ValidatedNel[DatabaseErrors, Int]]
 
 }
 
@@ -42,81 +44,119 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
 
   implicit val officeTypeMeta: Meta[OfficeType] = Meta[String].imap(OfficeType.fromString)(_.toString)
 
-  override def findAll(): F[List[OfficeListing]] = {
-    val fetchOfficeAddressDetails =
+  override def findAll(businessId: String): F[List[OfficeListing]] = {
+    val fetchAllOfficeDetails =
       sql"""
-        SELECT * FROM office_address
-      """.query[OfficeAddress].to[List]
+      SELECT 
+          oa.business_id AS oa_business_id,
+          oa.office_id AS oa_office_id,
+          oa.building_name AS oa_building_name,
+          oa.floor_number AS oa_floor_number,
+          oa.street AS oa_street,
+          oa.city AS oa_city,
+          oa.country AS oa_country,
+          oa.county AS oa_county,
+          oa.postcode AS oa_postcode,
+          oa.latitude AS oa_latitude,
+          oa.longitude AS oa_longitude,
 
-    val fetchOfficeContactDetails =
-      sql"""
-        SELECT * FROM office_contact_details
-      """.query[OfficeContactDetails].to[List]
+          ocd.business_id AS ocd_business_id,
+          ocd.office_id AS ocd_office_id,
+          ocd.primary_contact_first_name AS ocd_primary_contact_first_name,
+          ocd.primary_contact_last_name AS ocd_primary_contact_last_name,
+          ocd.contact_email AS ocd_contact_email,
+          ocd.contact_number AS ocd_contact_number,
 
-    val fetchOfficeSpecifications =
-      sql"""
-        SELECT * FROM office_specs
-      """.query[OfficeSpecifications].to[List]
+          os.business_id AS os_business_id,
+          os.office_id AS os_office_id,
+          os.office_name AS os_office_name,
+          os.description AS os_description,
+          os.office_type AS os_office_type,
+          os.number_of_floors AS os_number_of_floors,
+          os.total_desks AS os_total_desks,
+          os.capacity AS os_capacity,
+          os.amenities AS os_amenities,
+          os.availability AS os_availability,
+          os.rules AS os_rules
+      FROM office_address oa
+      LEFT JOIN office_contact_details ocd ON oa.office_id = ocd.office_id
+      LEFT JOIN office_specifications os ON oa.office_id = os.office_id
+      WHERE oa.business_id = $businessId
+    """.query[(OfficeAddressPartial, OfficeContactDetailsPartial, OfficeSpecificationsPartial)]
+        .to[List]
 
-    (
-      for {
-        addressDetails <- fetchOfficeAddressDetails
-        contactDetails <- fetchOfficeContactDetails
-        specifications <- fetchOfficeSpecifications
-      } yield {
-        // Map for quick lookup by officeId
-        val contactMap = contactDetails.map(c => c.officeId -> c).toMap
-        val specsMap = specifications.map(s => s.officeId -> s).toMap
-
-        addressDetails.flatMap { address =>
-          for {
-            contact <- contactMap.get(address.officeId)
-            specs <- specsMap.get(address.officeId)
-          } yield {
-            OfficeListing(address.officeId, address, contact, specs)
-          }
+    fetchAllOfficeDetails
+      .map { results =>
+        results.map { case (address, contact, specs) =>
+          OfficeListing(
+            officeId = address.officeId,
+            officeAddressDetails = address,
+            officeContactDetails = contact,
+            officeSpecifications = specs
+          )
         }
       }
-      ).transact(transactor)
+      .transact(transactor)
   }
 
   override def findByOfficeId(officeId: String): F[Option[OfficeListing]] = {
-    val fetchOfficeAddressDetails =
+    val fetchOfficeDetails =
       sql"""
-        SELECT * FROM office_address WHERE office_id = $officeId
-      """.query[OfficeAddress]
-        .option
+        SELECT 
+          oa.business_id AS oa_business_id,
+          oa.office_id AS oa_office_id,
+          oa.building_name AS oa_building_name,
+          oa.floor_number AS oa_floor_number,
+          oa.street AS oa_street,
+          oa.city AS oa_city,
+          oa.country AS oa_country,
+          oa.county AS oa_county,
+          oa.postcode AS oa_postcode,
+          oa.latitude AS oa_latitude,
+          oa.longitude AS oa_longitude,
 
-    val fetchOfficeContactDetails =
-      sql"""
-        SELECT * FROM office_contact_details WHERE office_id = $officeId
-      """.query[OfficeContactDetails]
-        .option
+          ocd.business_id AS ocd_business_id,
+          ocd.office_id AS ocd_office_id,
+          ocd.primary_contact_first_name AS ocd_primary_contact_first_name,
+          ocd.primary_contact_last_name AS ocd_primary_contact_last_name,
+          ocd.contact_email AS ocd_contact_email,
+          ocd.contact_number AS ocd_contact_number,
 
-    val fetchOfficeSpecifications = {
-      sql"""
-        SELECT * FROM office_specs WHERE office_id = $officeId
-      """.query[OfficeSpecifications]
-        .option
-    }
-    (
-      for {
-        addressDetails <- fetchOfficeAddressDetails
-        contactDetails <- fetchOfficeContactDetails
-        specifications <- fetchOfficeSpecifications
-      } yield {
-        (addressDetails, contactDetails, specifications) match {
-          case (Some(address), Some(contact), Some(specs)) =>
-            Some(OfficeListing(officeId, address, contact, specs))
-          case _ =>
-            None
-        }
+          os.business_id AS os_business_id,
+          os.office_id AS os_office_id,
+          os.office_name AS os_office_name,
+          os.description AS os_description,
+          os.office_type AS os_office_type,
+          os.number_of_floors AS os_number_of_floors,
+          os.total_desks AS os_total_desks,
+          os.capacity AS os_capacity,
+          os.amenities AS os_amenities,
+          os.availability AS os_availability,
+          os.rules AS os_rules
+      FROM office_address oa
+      LEFT JOIN office_contact_details ocd ON oa.office_id = ocd.office_id
+      LEFT JOIN office_specifications os ON oa.office_id = os.office_id
+      WHERE oa.office_id = $officeId
+    """.query[(OfficeAddressPartial, OfficeContactDetailsPartial, OfficeSpecificationsPartial)].option
+
+    fetchOfficeDetails
+      .map {
+        case Some((address, contact, specs)) =>
+          Some(
+            OfficeListing(
+              officeId = address.officeId,
+              officeAddressDetails = address,
+              officeContactDetails = contact,
+              officeSpecifications = specs
+            )
+          )
+        case None =>
+          None
       }
-      ).transact(transactor)
+      .transact(transactor)
   }
 
-
-  override def initiate(request: InitiateOfficeListingRequest): F[ValidatedNel[SqlErrors, Int]] = {
+  override def initiate(request: InitiateOfficeListingRequest): F[ValidatedNel[DatabaseErrors, Int]] = {
     val insertOfficeListing =
       sql"""
         INSERT INTO office_address (
@@ -141,7 +181,7 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
 
     val insertBusinessDetails =
       sql"""
-        INSERT INTO office_specs (
+        INSERT INTO office_specifications (
           business_id,
           office_id,
           office_name,
@@ -158,26 +198,23 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
       rowsOfficeListing <- insertOfficeListing.update.run
       rowsOfficeDetails <- insertOfficeDetails.update.run
       rowsBusinessDetails <- insertBusinessDetails.update.run
-    } yield rowsOfficeListing + rowsOfficeDetails + rowsBusinessDetails)
-      .transact(transactor)
-      .attempt
-      .map {
-        case Right(totalRows) =>
-          if (totalRows == 3) {
-            totalRows.validNel
-          } else {
-            InsertionFailed.invalidNel
-          }
-        case Left(e: java.sql.SQLIntegrityConstraintViolationException) =>
-          ConstraintViolation.invalidNel
-        case Left(e: java.sql.SQLException) =>
-          DatabaseError.invalidNel
-        case Left(e) =>
-          UnknownError.invalidNel
-      }
+    } yield rowsOfficeListing + rowsOfficeDetails + rowsBusinessDetails).transact(transactor).attempt.map {
+      case Right(totalRows) =>
+        if (totalRows == 3) {
+          totalRows.validNel
+        } else {
+          InsertionFailed.invalidNel
+        }
+      case Left(e: java.sql.SQLIntegrityConstraintViolationException) =>
+        ConstraintViolation.invalidNel
+      case Left(e: java.sql.SQLException) =>
+        DatabaseError.invalidNel
+      case Left(e) =>
+        UnknownError(e.getMessage).invalidNel
+    }
   }
 
-  override def delete(officeId: String): F[ValidatedNel[SqlErrors, Int]] = {
+  override def delete(officeId: String): F[ValidatedNel[DatabaseErrors, Int]] = {
     val deleteAddressQuery =
       sql"""
            DELETE FROM office_address
@@ -192,7 +229,7 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
 
     val deleteSpecificationsQuery =
       sql"""
-           DELETE FROM office_specs
+           DELETE FROM office_specifications
            WHERE office_id = $officeId
          """.update.run
 
@@ -202,21 +239,18 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
       specsRows <- deleteSpecificationsQuery
     } yield addressRows + contactRows + specsRows
 
-    combinedQuery
-      .transact(transactor)
-      .attempt
-      .map {
-        case Right(affectedRows) =>
-          if (affectedRows == 3)
-            affectedRows.validNel
-          else
-            NotFoundError.invalidNel
-        case Left(ex) =>
-          DeleteError.invalidNel
-      }
+    combinedQuery.transact(transactor).attempt.map {
+      case Right(affectedRows) =>
+        if (affectedRows == 3)
+          affectedRows.validNel
+        else
+          NotFoundError.invalidNel
+      case Left(ex) =>
+        DeleteError.invalidNel
+    }
   }
 
-  override def deleteByBusinessId(businessId: String): F[ValidatedNel[SqlErrors, Int]] = {
+  override def deleteByBusinessId(businessId: String): F[ValidatedNel[DatabaseErrors, Int]] = {
     val deleteAddressQuery =
       sql"""
            DELETE FROM office_address
@@ -231,7 +265,7 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
 
     val deleteSpecificationsQuery =
       sql"""
-           DELETE FROM office_specs
+           DELETE FROM office_specifications
            WHERE business_id = $businessId
          """.update.run
 
@@ -241,26 +275,20 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
       specsRows <- deleteSpecificationsQuery
     } yield addressRows + contactRows + specsRows
 
-    combinedQuery
-      .transact(transactor)
-      .attempt
-      .map {
-        case Right(affectedRows) =>
-          if (affectedRows == 3)
-            affectedRows.validNel
-          else
-            NotFoundError.invalidNel
-        case Left(ex) =>
-          DeleteError.invalidNel
-      }
+    combinedQuery.transact(transactor).attempt.map {
+      case Right(affectedRows) =>
+        if (affectedRows == 3)
+          affectedRows.validNel
+        else
+          NotFoundError.invalidNel
+      case Left(ex) =>
+        DeleteError.invalidNel
+    }
   }
 
 }
 
-
 object OfficeListingRepository {
-  def apply[F[_] : Concurrent : Monad](
-                                        transactor: Transactor[F]
-                                      ): OfficeListingRepositoryAlgebra[F] =
+  def apply[F[_] : Concurrent : Monad](transactor: Transactor[F]): OfficeListingRepositoryAlgebra[F] =
     new OfficeListingRepositoryImpl[F](transactor)
 }

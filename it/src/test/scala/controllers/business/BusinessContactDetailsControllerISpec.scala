@@ -13,7 +13,7 @@ import models.business.adts.*
 import models.business.contact_details.BusinessContactDetails
 import models.business.contact_details.errors.*
 import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
-import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
+import models.business.specifications.{BusinessSpecifications}
 import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse}
 import org.http4s.*
 import org.http4s.Method.*

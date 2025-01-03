@@ -16,9 +16,9 @@ import org.http4s.HttpRoutes
 import org.http4s.server.Router
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import repositories.business.{BusinessAddressRepository, BusinessContactDetailsRepository, BusinessSpecificationsRepository}
+import repositories.business.{BusinessAddressRepository, BusinessContactDetailsRepository, BusinessListingRepository, BusinessSpecificationsRepository}
 import repositories.desk.DeskListingRepository
-import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeSpecificationsRepository, OfficeListingRepository}
+import repositories.office.{OfficeAddressRepository, OfficeContactDetailsRepository, OfficeListingRepository, OfficeSpecificationsRepository}
 import services.business.address.BusinessAddressService
 import services.business.business_listing.BusinessListingService
 import services.business.contact_details.BusinessContactDetailsService
@@ -68,11 +68,9 @@ object TestRoutes {
 
   def businessListingRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
 
-    val businessAddressRepository = BusinessAddressRepository(transactor)
-    val businessContactDetailsRepository = BusinessContactDetailsRepository(transactor)
-    val businessSpecificationsRepository = BusinessSpecificationsRepository(transactor)
+    val businessListingRepository = BusinessListingRepository(transactor)
 
-    val businessListingService = BusinessListingService(businessAddressRepository, businessContactDetailsRepository, businessSpecificationsRepository)
+    val businessListingService = BusinessListingService(businessListingRepository)
     val businessListingController = BusinessListingController(businessListingService)
 
     businessListingController.routes

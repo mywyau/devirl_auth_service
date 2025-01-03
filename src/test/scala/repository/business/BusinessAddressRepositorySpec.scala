@@ -13,7 +13,7 @@ object BusinessAddressRepositorySpec extends SimpleIOSuite {
 
   test(".findByBusinessId() - should return an address if business_id_1 exists") {
 
-    val existingAddressForUser = testAddress(Some(1), "user_id_1", Some("business_id_1"))
+    val existingAddressForUser = testAddress(Some(1), "user_id_1", "business_id_1")
 
     for {
       mockRepo <- createMockRepo(List(existingAddressForUser))
@@ -30,8 +30,8 @@ object BusinessAddressRepositorySpec extends SimpleIOSuite {
 
   test(".createBusinessAddress() - when given a valid business address should insert an address into the postgres db") {
 
-    val testBusinessAddressRequest: CreateBusinessAddressRequest = testCreateBusinessAddressRequest("user_id_2", Some("business_id_2"))
-    val testAddressForUser2: BusinessAddress = testAddress(Some(1), "user_id_2", Some("business_id_2"))
+    val testBusinessAddressRequest: CreateBusinessAddressRequest = testCreateBusinessAddressRequest("user_id_2", "business_id_2")
+    val testAddressForUser2: BusinessAddress = testAddress(Some(1), "user_id_2", "business_id_2")
 
     for {
       mockRepo <- createMockRepo(List())
@@ -45,7 +45,7 @@ object BusinessAddressRepositorySpec extends SimpleIOSuite {
 
   test(".deleteBusinessAddress() - when given a valid businessId should delete the business address details") {
 
-    val existingAddressForUser: BusinessAddress = testAddress(Some(1), "user_id_3", Some("business_id_3"))
+    val existingAddressForUser: BusinessAddress = testAddress(Some(1), "user_id_3", "business_id_3")
 
     for {
       mockRepo <- createMockRepo(List(existingAddressForUser))

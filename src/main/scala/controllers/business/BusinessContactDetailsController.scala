@@ -1,13 +1,17 @@
 package controllers.business
 
-import cats.data.Validated.{Invalid, Valid}
+import cats.data.Validated.Invalid
+import cats.data.Validated.Valid
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
+import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
 import models.business.contact_details.requests.UpdateBusinessContactDetailsRequest
 import models.business.contact_details.BusinessContactDetails
-import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
-import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse, UpdatedResponse}
+import models.responses.CreatedResponse
+import models.responses.DeletedResponse
+import models.responses.ErrorResponse
+import models.responses.UpdatedResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
@@ -18,10 +22,9 @@ trait BusinessContactDetailsControllerAlgebra[F[_]] {
   def routes: HttpRoutes[F]
 }
 
-class BusinessContactDetailsControllerImpl[F[_] : Concurrent](
-                                                               businessContactDetailsService: BusinessContactDetailsServiceAlgebra[F]
-                                                             )(implicit logger: Logger[F])
-  extends Http4sDsl[F] with BusinessContactDetailsControllerAlgebra[F] {
+class BusinessContactDetailsControllerImpl[F[_] : Concurrent](businessContactDetailsService: BusinessContactDetailsServiceAlgebra[F])(implicit logger: Logger[F])
+    extends Http4sDsl[F]
+    with BusinessContactDetailsControllerAlgebra[F] {
 
   implicit val createBusinessContactDetailsRequestDecoder: EntityDecoder[F, CreateBusinessContactDetailsRequest] = jsonOf[F, CreateBusinessContactDetailsRequest]
   implicit val updateBusinessContactDetailsRequestRequestDecoder: EntityDecoder[F, UpdateBusinessContactDetailsRequest] = jsonOf[F, UpdateBusinessContactDetailsRequest]
@@ -39,7 +42,7 @@ class BusinessContactDetailsControllerImpl[F[_] : Concurrent](
             NotFound(errorResponse.asJson)
         }
 
-    case req@POST -> Root / "business" / "businesses" / "contact" / "details" / "create" =>
+    case req @ POST -> Root / "business" / "businesses" / "contact" / "details" / "create" =>
       logger.info(s"[BusinessContactControllerImpl] POST - Creating business listing") *>
         req.decode[CreateBusinessContactDetailsRequest] { request =>
           businessContactDetailsService.create(request).flatMap {
@@ -51,13 +54,13 @@ class BusinessContactDetailsControllerImpl[F[_] : Concurrent](
           }
         }
 
-    case req@PUT -> Root / "business" / "businesses" / "contact" / "details" / "update" / businessId =>
+    case req @ PUT -> Root / "business" / "businesses" / "contact" / "details" / "update" / businessId =>
       logger.info(s"[BusinessContactDetailsControllerImpl] PUT - Updating business contactDetails with ID: $businessId") *>
         req.decode[UpdateBusinessContactDetailsRequest] { request =>
           businessContactDetailsService.update(businessId, request).flatMap {
             case Valid(updatedContactDetails) =>
               logger.info(s"[BusinessContactDetailsControllerImpl] PUT - Successfully updated business contactDetails for ID: $businessId") *>
-                Ok(UpdatedResponse("Business contactDetails updated successfully").asJson)
+                Ok(UpdatedResponse("Update_Success", "Business contactDetails updated successfully").asJson)
             case Invalid(errors) =>
               logger.warn(s"[BusinessContactDetailsControllerImpl] PUT - Validation failed for business contactDetails update: ${errors.toList}") *>
                 BadRequest(ErrorResponse(code = "VALIDATION_ERROR", message = errors.toList.mkString(", ")).asJson)
@@ -81,8 +84,6 @@ class BusinessContactDetailsControllerImpl[F[_] : Concurrent](
 }
 
 object BusinessContactDetailsController {
-  def apply[F[_] : Concurrent](
-                                businessContactDetailsService: BusinessContactDetailsServiceAlgebra[F]
-                              )(implicit logger: Logger[F]): BusinessContactDetailsControllerAlgebra[F] =
+  def apply[F[_] : Concurrent](businessContactDetailsService: BusinessContactDetailsServiceAlgebra[F])(implicit logger: Logger[F]): BusinessContactDetailsControllerAlgebra[F] =
     new BusinessContactDetailsControllerImpl[F](businessContactDetailsService)
 }

@@ -11,10 +11,9 @@ class BusinessAddressValidationServiceImpl[F[_] : Concurrent] extends BusinessAd
     if (field.length >= min && field.length <= max) field.valid
     else List(error).invalid
 
-  private def validateNonEmpty(field: String, error: BusinessAddressErrors): Validated[List[BusinessAddressErrors], String] = {
+  private def validateNonEmpty(field: String, error: BusinessAddressErrors): Validated[List[BusinessAddressErrors], String] =
     if (field.trim.nonEmpty) field.valid
     else List(error).invalid
-  }
 
   private def validatePattern(field: String, regex: String, error: BusinessAddressErrors): Validated[List[BusinessAddressErrors], String] =
     if (field.matches(regex)) field.valid
@@ -30,21 +29,19 @@ class BusinessAddressValidationServiceImpl[F[_] : Concurrent] extends BusinessAd
     validatePattern(name, nameRegex, error)
   }
 
-  override def validateStreet(streetName: String): Validated[List[BusinessAddressErrors], String] = {
+  override def validateStreet(streetName: String): Validated[List[BusinessAddressErrors], String] =
     (
       validateNonEmpty(streetName, BusinessEmptyStringField),
       validateLength(streetName, 3, 200, BusinessStreetLengthError),
       validateStreetFormat(streetName, BusinessInvalidFormat)
     ).tupled.map(_ => streetName)
-  }
 
-  override def validateCounty(county: String): Validated[List[BusinessAddressErrors], String] = {
+  override def validateCounty(county: String): Validated[List[BusinessAddressErrors], String] =
     (
       validateNonEmpty(county, BusinessEmptyStringField),
       validateLength(county, 2, 200, BusinessCountyLengthError),
       validateCityOrCountyName(county, BusinessInvalidFormat)
     ).tupled.map(_ => county)
-  }
 
   override def validatePostcode(postcode: String): Validated[List[BusinessAddressErrors], String] = {
     val postcodeRegex = "^[A-Z0-9 ]{5,10}$"

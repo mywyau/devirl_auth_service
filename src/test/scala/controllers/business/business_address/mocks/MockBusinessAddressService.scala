@@ -6,12 +6,16 @@ import cats.effect.IO
 import models.business.address.BusinessAddress
 import models.business.address.errors.{BusinessAddressErrors, BusinessUserNotFound}
 import models.business.address.requests.CreateBusinessAddressRequest
-import models.database.SqlErrors
+import models.database.DatabaseErrors
 import services.business.address.BusinessAddressServiceAlgebra
+import models.business.address.requests.UpdateBusinessAddressRequest
 
 
 class MockBusinessAddressService(userAddressData: Map[String, BusinessAddress])
   extends BusinessAddressServiceAlgebra[IO] {
+
+
+  override def update(businessId: String, request: UpdateBusinessAddressRequest): IO[ValidatedNel[BusinessAddressErrors, Int]] = ???
 
   override def getByBusinessId(businessId: String): IO[Either[BusinessAddressErrors, BusinessAddress]] = {
     userAddressData.get(businessId) match {
@@ -20,8 +24,8 @@ class MockBusinessAddressService(userAddressData: Map[String, BusinessAddress])
     }
   }
 
-  override def createAddress(request: CreateBusinessAddressRequest): IO[ValidatedNel[SqlErrors, Int]] = IO.pure(Valid(1))
+  override def createAddress(request: CreateBusinessAddressRequest): IO[ValidatedNel[DatabaseErrors, Int]] = IO.pure(Valid(1))
 
 
-  override def deleteAddress(businessId: String): IO[ValidatedNel[SqlErrors, Int]] = ???
+  override def deleteAddress(businessId: String): IO[ValidatedNel[DatabaseErrors, Int]] = ???
 }

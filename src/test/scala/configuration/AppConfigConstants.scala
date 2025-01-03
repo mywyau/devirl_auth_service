@@ -30,7 +30,7 @@ object AppConfigConstants {
     PostgresqlConfig(
       dbName = "shared_db",
       dockerHost = "shared-postgres-container",
-      host = "postgresql",
+      host = "localhost",
       port = 5432,
       username = "shared_user",
       password = "share"
@@ -51,7 +51,7 @@ object AppConfigConstants {
 
   val featureSwitches = {
     FeatureSwitches(
-      useDockerHost = true
+      useDockerHost = false
     )
   }
 

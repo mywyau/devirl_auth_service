@@ -11,13 +11,17 @@ import models.database.*
 import repositories.business.BusinessAddressRepositoryAlgebra
 
 import java.time.LocalDateTime
+import models.business.address.requests.UpdateBusinessAddressRequest
 
 case class MockBusinessAddressRepository(ref: Ref[IO, List[BusinessAddress]]) extends BusinessAddressRepositoryAlgebra[IO] {
+
+  override def update(businessId: String, request: UpdateBusinessAddressRequest): IO[ValidatedNel[DatabaseErrors, Int]] = ???
+
 
   override def findByBusinessId(businessId: String): IO[Option[BusinessAddress]] =
     ref.get.map(_.find(_.businessId.contains(businessId)))
 
-  override def createBusinessAddress(request: CreateBusinessAddressRequest): IO[ValidatedNel[SqlErrors, Int]] =
+  override def createBusinessAddress(request: CreateBusinessAddressRequest): IO[ValidatedNel[DatabaseErrors, Int]] =
     ref.modify(addresses => (
       BusinessAddress(
         Some(1),
@@ -41,7 +45,7 @@ case class MockBusinessAddressRepository(ref: Ref[IO, List[BusinessAddress]]) ex
     )
 
 
-  override def deleteBusinessAddress(businessId: String): IO[ValidatedNel[SqlErrors, Int]] =
+  override def deleteBusinessAddress(businessId: String): IO[ValidatedNel[DatabaseErrors, Int]] =
     ref.modify { addresses =>
       val (remainingAddresses, deletedCount) = addresses.partition(!_.businessId.contains(businessId)) match {
         case (remaining, deleted) if deleted.nonEmpty => (remaining, Valid(deleted.size))

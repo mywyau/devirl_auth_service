@@ -1,6 +1,7 @@
 package models.business.desk_listing.errors
 
-import io.circe.{Decoder, Encoder}
+import io.circe.Decoder
+import io.circe.Encoder
 
 sealed trait DeskListingErrors {
   val code: String
@@ -24,9 +25,8 @@ case object BusinessUserNotFound extends DeskListingErrors:
   override val errorMessage: String = "user was not found"
 
 case object DatabaseError extends DeskListingErrors:
-    override val code: String = this.toString
-    override val errorMessage: String = "DatabaseError"
-
+  override val code: String = this.toString
+  override val errorMessage: String = "DatabaseError"
 
 object DeskListingErrors {
 

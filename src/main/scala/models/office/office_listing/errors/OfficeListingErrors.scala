@@ -1,6 +1,7 @@
 package models.office.office_listing.errors
 
-import io.circe.{Decoder, Encoder}
+import io.circe.Decoder
+import io.circe.Encoder
 
 sealed trait OfficeListingErrors {
   val code: String
@@ -34,7 +35,6 @@ case object OfficeUserNotFound extends OfficeListingErrors:
 case object OfficeDatabaseError extends OfficeListingErrors:
   override val code: String = this.toString
   override val errorMessage: String = "OfficeDatabaseError"
-
 
 object OfficeListingErrors {
 

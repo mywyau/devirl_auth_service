@@ -1,13 +1,28 @@
 package repository.constants
 
-import models.office.address_details.OfficeAddress
-import models.office.address_details.requests.CreateOfficeAddressRequest
-
 import java.time.LocalDateTime
+import models.office.address_details.requests.CreateOfficeAddressRequest
+import models.office.address_details.OfficeAddress
+import models.office.address_details.OfficeAddressPartial
 
 object OfficeAddressRepoITConstants {
 
-  def testOfficeAddressRequest(businessId: String, officeId: String): CreateOfficeAddressRequest = {
+  def createInitialOfficeAddress(businessId: String, officeId: String): CreateOfficeAddressRequest =
+    CreateOfficeAddressRequest(
+      businessId = businessId,
+      officeId = officeId,
+      buildingName = None,
+      floorNumber = None,
+      street = None,
+      city = None,
+      country = None,
+      county = None,
+      postcode = None,
+      latitude = None,
+      longitude = None
+    )
+
+  def testOfficeAddressRequest(businessId: String, officeId: String): CreateOfficeAddressRequest =
     CreateOfficeAddressRequest(
       businessId = businessId,
       officeId = officeId,
@@ -21,11 +36,9 @@ object OfficeAddressRepoITConstants {
       latitude = Some(40.748817),
       longitude = Some(-73.985428)
     )
-  }
 
-  def testOfficeAddress(id: Option[Int], businessId: String, officeId: String): OfficeAddress = {
-    OfficeAddress(
-      id = id,
+  def testOfficeAddressPartial(businessId: String, officeId: String): OfficeAddressPartial =
+    OfficeAddressPartial(
       businessId = businessId,
       officeId = officeId,
       buildingName = Some("Empire State Building"),
@@ -36,10 +49,7 @@ object OfficeAddressRepoITConstants {
       county = Some("Manhattan"),
       postcode = Some("10001"),
       latitude = Some(40.748817),
-      longitude = Some(-73.985428),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      longitude = Some(-73.985428)
     )
-  }
 
 }

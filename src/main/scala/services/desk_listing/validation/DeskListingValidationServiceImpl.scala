@@ -11,10 +11,9 @@ class DeskListingValidationServiceImpl[F[_] : Concurrent] extends DeskListingVal
     if (field.length >= min && field.length <= max) field.valid
     else List(error).invalid
 
-  private def validateNonEmpty(field: String, error: DeskListingErrors): Validated[List[DeskListingErrors], String] = {
+  private def validateNonEmpty(field: String, error: DeskListingErrors): Validated[List[DeskListingErrors], String] =
     if (field.trim.nonEmpty) field.valid
     else List(error).invalid
-  }
 
   private def validatePattern(field: String, regex: String, error: DeskListingErrors): Validated[List[DeskListingErrors], String] =
     if (field.matches(regex)) field.valid
@@ -30,21 +29,19 @@ class DeskListingValidationServiceImpl[F[_] : Concurrent] extends DeskListingVal
     validatePattern(name, nameRegex, error)
   }
 
-  override def validateStreet(streetName: String): Validated[List[DeskListingErrors], String] = {
+  override def validateStreet(streetName: String): Validated[List[DeskListingErrors], String] =
     (
       validateNonEmpty(streetName, BusinessEmptyStringField),
       validateLength(streetName, 3, 200, DeskListingNotFound),
       validateStreetFormat(streetName, BusinessInvalidFormat)
     ).tupled.map(_ => streetName)
-  }
 
-  override def validateCounty(county: String): Validated[List[DeskListingErrors], String] = {
+  override def validateCounty(county: String): Validated[List[DeskListingErrors], String] =
     (
       validateNonEmpty(county, BusinessEmptyStringField),
       validateLength(county, 2, 200, DeskListingNotFound),
       validateCityOrCountyName(county, BusinessInvalidFormat)
     ).tupled.map(_ => county)
-  }
 
   override def validatePostcode(postcode: String): Validated[List[DeskListingErrors], String] = {
     val postcodeRegex = "^[A-Z0-9 ]{5,10}$"

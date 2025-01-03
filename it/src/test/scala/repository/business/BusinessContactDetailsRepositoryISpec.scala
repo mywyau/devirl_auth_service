@@ -37,23 +37,25 @@ class BusinessContactDetailsRepositoryISpec(global: GlobalRead) extends IOSuite 
 
   test(".findByBusinessId() - should return the business contact details if business_id exists for a previously created business contact details") { businessContactDetailsRepo =>
 
+    val businessId = "BUS001"
+
     val expectedResult =
       BusinessContactDetails(
         id = Some(1),
         userId = "USER001",
-        businessId = "BUS001",
-        businessName = "business_name_1",
-        primaryContactFirstName = "Bob1",
-        primaryContactLastName = "Smith",
-        contactEmail = "bob1@gmail.com",
-        contactNumber = "07402205071",
-        websiteUrl = "bobs_axes.com",
+        businessId = businessId,
+        businessName = Some("business_name_1"),
+        primaryContactFirstName = Some("Bob1"),
+        primaryContactLastName = Some("Smith"),
+        contactEmail = Some("bob1@gmail.com"),
+        contactNumber = Some("07402205071"),
+        websiteUrl = Some("bobs_axes.com"),
         createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
         updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
       )
 
     for {
-      businessContactDetailsOpt <- businessContactDetailsRepo.findByBusinessId("BUS001")
+      businessContactDetailsOpt <- businessContactDetailsRepo.findByBusinessId(businessId)
     } yield expect(businessContactDetailsOpt == Some(expectedResult))
   }
 }

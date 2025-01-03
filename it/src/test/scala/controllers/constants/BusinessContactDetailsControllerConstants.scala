@@ -27,12 +27,12 @@ object BusinessContactDetailsControllerConstants {
       id = id,
       userId = userId,
       businessId = businessId,
-      businessName = "Example Business Name",
-      primaryContactFirstName = "John",
-      primaryContactLastName = "Doe",
-      contactEmail = "johndoe@example.com",
-      contactNumber = "123-456-7890",
-      websiteUrl = "https://example.com",
+      businessName = Some("Example Business Name"),
+      primaryContactFirstName = Some("John"),
+      primaryContactLastName = Some("Doe"),
+      contactEmail = Some("johndoe@example.com"),
+      contactNumber = Some("123-456-7890"),
+      websiteUrl = Some("https://example.com"),
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )

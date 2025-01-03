@@ -1,11 +1,16 @@
 package controllers.business
 
-import cats.data.Validated.{Invalid, Valid}
+import cats.data.Validated.Invalid
+import cats.data.Validated.Valid
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
-import models.business.address.requests.{CreateBusinessAddressRequest, UpdateBusinessAddressRequest}
-import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse, UpdatedResponse}
+import models.business.address.requests.CreateBusinessAddressRequest
+import models.business.address.requests.UpdateBusinessAddressRequest
+import models.responses.CreatedResponse
+import models.responses.DeletedResponse
+import models.responses.ErrorResponse
+import models.responses.UpdatedResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
@@ -16,10 +21,9 @@ trait BusinessAddressControllerAlgebra[F[_]] {
   def routes: HttpRoutes[F]
 }
 
-class BusinessAddressControllerImpl[F[_] : Concurrent](
-                                                        businessAddressService: BusinessAddressServiceAlgebra[F]
-                                                      )(implicit logger: Logger[F])
-  extends Http4sDsl[F] with BusinessAddressControllerAlgebra[F] {
+class BusinessAddressControllerImpl[F[_] : Concurrent](businessAddressService: BusinessAddressServiceAlgebra[F])(implicit logger: Logger[F])
+    extends Http4sDsl[F]
+    with BusinessAddressControllerAlgebra[F] {
 
   implicit val businessAddressRequestRequestDecoder: EntityDecoder[F, CreateBusinessAddressRequest] = jsonOf[F, CreateBusinessAddressRequest]
   implicit val updateBusinessAddressRequestDecoder: EntityDecoder[F, UpdateBusinessAddressRequest] = jsonOf[F, UpdateBusinessAddressRequest]
@@ -37,7 +41,7 @@ class BusinessAddressControllerImpl[F[_] : Concurrent](
             BadRequest(errorResponse.asJson)
         }
 
-    case req@POST -> Root / "business" / "businesses" / "address" / "details" / "create" =>
+    case req @ POST -> Root / "business" / "businesses" / "address" / "details" / "create" =>
       logger.info(s"[BusinessAddressControllerImpl] POST - Creating business address") *>
         req.decode[CreateBusinessAddressRequest] { request =>
           businessAddressService.createAddress(request).flatMap {
@@ -49,13 +53,13 @@ class BusinessAddressControllerImpl[F[_] : Concurrent](
           }
         }
 
-    case req@PUT -> Root / "business" / "businesses" / "address" / "details" / "update" /businessId =>
+    case req @ PUT -> Root / "business" / "businesses" / "address" / "details" / "update" / businessId =>
       logger.info(s"[BusinessAddressControllerImpl] PUT - Updating business address with ID: $businessId") *>
         req.decode[UpdateBusinessAddressRequest] { request =>
           businessAddressService.update(businessId, request).flatMap {
             case Valid(updatedAddress) =>
               logger.info(s"[BusinessAddressControllerImpl] PUT - Successfully updated business address for ID: $businessId") *>
-                Ok(UpdatedResponse("Business address updated successfully").asJson)
+                Ok(UpdatedResponse("Update_Success", "Business address updated successfully").asJson)
             case Invalid(errors) =>
               logger.warn(s"[BusinessAddressControllerImpl] PUT - Validation failed for business address update: ${errors.toList}") *>
                 BadRequest(ErrorResponse(code = "VALIDATION_ERROR", message = errors.toList.mkString(", ")).asJson)
@@ -79,8 +83,6 @@ class BusinessAddressControllerImpl[F[_] : Concurrent](
 }
 
 object BusinessAddressController {
-  def apply[F[_] : Concurrent](
-                                businessAddressService: BusinessAddressServiceAlgebra[F]
-                              )(implicit logger: Logger[F]): BusinessAddressControllerAlgebra[F] =
+  def apply[F[_] : Concurrent](businessAddressService: BusinessAddressServiceAlgebra[F])(implicit logger: Logger[F]): BusinessAddressControllerAlgebra[F] =
     new BusinessAddressControllerImpl[F](businessAddressService)
 }

@@ -49,7 +49,7 @@ INSERT INTO office_address (
 );
 
 
-INSERT INTO office_specs (
+INSERT INTO office_specifications (
     business_id,
     office_id,
     office_name,
@@ -67,7 +67,7 @@ INSERT INTO office_specs (
     'OFF001',
     'Downtown Workspace',
     'A modern co-working space.',
-    'co-working',
+    'PrivateOffice',
     2,
     50,
     100,
@@ -80,7 +80,7 @@ INSERT INTO office_specs (
     'OFF002',
     'Suburban Office',
     'A quiet office in the suburbs.',
-    'private',
+    'PrivateOffice',
     1,
     20,
     40,

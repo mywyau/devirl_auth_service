@@ -9,7 +9,7 @@ object BusinessAddressControllerConstants {
     BusinessAddress(
       id = Some(1),
       userId = "user_1",
-      businessId = Some("business1"),
+      businessId = "business1",
       businessName = Some("mikeyCorp"),
       buildingName = Some("building 1"),
       floorNumber = Some("floor 1"),
