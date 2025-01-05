@@ -1,10 +1,13 @@
 package repository.office
 
 import cats.data.Validated.Valid
-import cats.effect.{IO, Resource}
+import cats.effect.IO
+import cats.effect.Resource
 import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
+import models.database.CreateSuccess
+import models.database.DeleteSuccess
 import models.office.office_listing.requests.InitiateOfficeListingRequest
 import repositories.office.OfficeListingRepositoryImpl
 import repository.constants.OfficeListingRepoITConstants.*
@@ -12,10 +15,10 @@ import repository.fragments.OfficeAddressRepoFragments.*
 import repository.fragments.OfficeContactDetailsRepoFragments.*
 import repository.fragments.OfficeSpecificationsRepoFragments.*
 import shared.TransactorResource
-import weaver.{GlobalRead, IOSuite}
+import weaver.GlobalRead
+import weaver.IOSuite
 
 import java.time.LocalDateTime
-import models.database.CreateSuccess
 
 class OfficeListingRepositoryISpec(global: GlobalRead) extends IOSuite {
 
@@ -61,5 +64,17 @@ class OfficeListingRepositoryISpec(global: GlobalRead) extends IOSuite {
     for {
       officeListingOpt <- officeListingRepo.initiate(request)
     } yield expect(officeListingOpt == Valid(CreateSuccess))
+  }
+
+  test(".delete() - should delete the office listing if office_id exists for a previously created office listing") { officeListingRepo =>
+
+    val businessId = "business_id_6"
+
+    val createRequest = InitiateOfficeListingRequest("business_id_6", "business_id_6", "Office 6", "some desc 6")
+
+    for {
+      createResult <- officeListingRepo.initiate(createRequest)
+      deleteResult <- officeListingRepo.delete(businessId)
+    } yield expect(deleteResult == Valid(DeleteSuccess))
   }
 }

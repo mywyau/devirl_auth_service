@@ -88,7 +88,7 @@ class BusinessSpecificationsRepositoryImpl[F[_] : Concurrent : Monad](transactor
         SET
         business_name = ${request.businessName},
         description = ${request.description},
-        availability = ${request.availability.asJson.noSpaces},
+        availability = ${request.availability.asJson.noSpaces}::jsonb,
         updated_at = ${request.updatedAt}
         WHERE business_id = $businessId
       """.update.run

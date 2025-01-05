@@ -92,7 +92,6 @@ class BusinessContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor
     sql"""
       UPDATE business_contact_details
       SET
-        business_name = ${request.businessName},
         primary_contact_first_name = ${request.primaryContactFirstName},
         primary_contact_last_name = ${request.primaryContactLastName},
         contact_email = ${request.contactEmail},

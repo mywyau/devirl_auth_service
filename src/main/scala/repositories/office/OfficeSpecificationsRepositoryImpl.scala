@@ -112,7 +112,7 @@ class OfficeSpecificationsRepositoryImpl[F[_] : Concurrent : Monad](transactor: 
         total_desks = ${request.totalDesks},
         capacity = ${request.capacity},
         amenities = ${request.amenities},
-        availability = ${request.availability},
+        availability = ${request.availability}::jsonb,
         rules = ${request.rules},
         updated_at = ${request.updatedAt}
       WHERE office_id = $officeId

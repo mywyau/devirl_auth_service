@@ -19,21 +19,22 @@ import repository.constants.OfficeAddressRepoITConstants.*
 import repository.fragments.OfficeAddressRepoFragments.createOfficeAddressTable
 import repository.fragments.OfficeAddressRepoFragments.insertOfficeAddressTable
 import repository.fragments.OfficeAddressRepoFragments.resetOfficeAddressTable
+import repository.fragments.OfficeAddressRepoFragments.sameBusinessIdData
 import shared.TransactorResource
 import weaver.GlobalRead
 import weaver.IOSuite
 
 import java.time.LocalDateTime
 
-class OfficeAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
-
+class DeleteAllOfficeAddressRepoISpec(global: GlobalRead) extends IOSuite {
+  
   type Res = OfficeAddressRepositoryImpl[IO]
 
   private def initializeSchema(transactor: TransactorResource): Resource[IO, Unit] =
     Resource.eval(
       createOfficeAddressTable.update.run.transact(transactor.xa).void *>
         resetOfficeAddressTable.update.run.transact(transactor.xa).void *>
-        insertOfficeAddressTable.update.run.transact(transactor.xa).void
+        sameBusinessIdData.update.run.transact(transactor.xa).void
     )
 
   def sharedResource: Resource[IO, OfficeAddressRepositoryImpl[IO]] = {
@@ -47,48 +48,12 @@ class OfficeAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
     setup
   }
 
-  test(".findByBusinessId() - should return the office address if business_id exists for a previously created office address") { officeAddressRepo =>
+  test(".deleteAllByBusinessId() - should delete multiple offices for the same business_id - i.e. business_id_1") { officeAddressRepo =>
 
     val expectedResult = testOfficeAddressPartial("business_id_1", "office_id_1")
 
     for {
-      officeAddressOpt <- officeAddressRepo.findByOfficeId("office_id_1")
-    } yield expect(officeAddressOpt == Some(expectedResult))
-  }
-
-  test(".update() - should return UpdateSucess and update the office address if office_id exists for a previously created office address") { officeAddressRepo =>
-
-    val businessId = "business_id_6"
-    val officeId = "office_id_6"
-
-    val createRequest = createInitialOfficeAddress(businessId, officeId)
-
-    val request =
-      UpdateOfficeAddressRequest(
-        buildingName = Some("Empire State Building"),
-        floorNumber = Some("5th Floor"),
-        street = Some("123 Main Street"),
-        city = Some("New York"),
-        country = Some("USA"),
-        county = Some("Manhattan"),
-        postcode = Some("10001"),
-        latitude = Some(40.748817),
-        longitude = Some(-73.985428),
-        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
-      )
-
-    for {
-      officeAddressOpt <- officeAddressRepo.create(createRequest)
-      officeAddressOpt <- officeAddressRepo.update(officeId, request)
-    } yield expect(officeAddressOpt == Valid(UpdateSuccess))
-  }
-
-  test(".delete() - should delete the office address for office_id_2 if it exists for a previously created office address") { officeAddressRepo =>
-
-    val officeId = "office_id_2"
-
-    for {
-      result <- officeAddressRepo.delete(officeId)
+      result <- officeAddressRepo.deleteAllByBusinessId("business_id_1")
     } yield expect(result == Valid(DeleteSuccess))
   }
 }

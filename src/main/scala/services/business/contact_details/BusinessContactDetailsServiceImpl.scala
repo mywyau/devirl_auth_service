@@ -48,8 +48,8 @@ class BusinessContactDetailsServiceImpl[F[_] : Concurrent : NonEmptyParallel : M
 
     contactDetailsCreation
       .map {
-        case Validated.Valid(i) =>
-          Valid(i)
+        case Validated.Valid(result) =>
+          Valid(result)
         case contactDetailsResult =>
           val errors =
             List(contactDetailsResult.toEither.left.getOrElse(Nil))

@@ -56,6 +56,31 @@ object OfficeAddressRepoFragments {
     """
   }
 
+    val sameBusinessIdData: fragment.Fragment = {
+    sql"""
+        INSERT INTO office_address (
+          business_id,
+          office_id,
+          building_name,
+          floor_number,
+          street,
+          city,
+          country,
+          county,
+          postcode,
+          latitude,
+          longitude,
+          created_at,
+          updated_at
+        ) VALUES
+          ('business_id_1', 'office_id_1', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('business_id_1', 'office_id_2', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('business_id_1', 'office_id_3', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('business_id_1', 'office_id_4', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('business_id_5', 'office_id_5', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00');
+    """
+  }
+
   val initiateOfficeAddressData: fragment.Fragment = {
     sql"""
         INSERT INTO office_address (
