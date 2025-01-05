@@ -55,9 +55,9 @@ object OfficeListingRepoITConstants {
   def testOfficeListing(id: Option[Int], businessId: String, officeId: String): OfficeListing =
     OfficeListing(
       officeId = officeId,
-      officeAddressDetails = testOfficeAddressPartial(businessId, officeId),
-      officeSpecifications = testOfficeSpecificationsPartial(businessId, officeId),
-      officeContactDetails = testContactDetailPartial(businessId, officeId)
+      addressDetails = testOfficeAddressPartial(businessId, officeId),
+      specifications = testOfficeSpecificationsPartial(businessId, officeId),
+      contactDetails = testContactDetailPartial(businessId, officeId)
     )
 
 }

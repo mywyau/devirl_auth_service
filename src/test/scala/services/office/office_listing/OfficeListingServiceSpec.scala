@@ -4,26 +4,25 @@ import cats.data.Validated
 import cats.data.ValidatedNel
 import cats.effect.IO
 import cats.implicits.*
-import models.database.*
-import models.office.address_details.OfficeAddressPartial
-import models.office.address_details.requests.CreateOfficeAddressRequest
-import models.office.adts.*
-import models.office.contact_details.OfficeContactDetails
-import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
-import models.office.office_listing.OfficeListing
-import models.office.office_listing.OfficeListingCard
-import models.office.office_listing.requests.InitiateOfficeListingRequest
-import models.office.office_listing.requests.OfficeListingRequest
-import models.office.specifications.OfficeAvailability
-import models.office.specifications.OfficeSpecifications
-import models.office.specifications.requests.CreateOfficeSpecificationsRequest
-import repositories.office.OfficeListingRepositoryAlgebra
-import weaver.SimpleIOSuite
-
 import java.time.LocalDateTime
 import java.time.LocalTime
+import models.database.*
+import models.office.address_details.requests.CreateOfficeAddressRequest
+import models.office.address_details.OfficeAddressPartial
+import models.office.adts.*
+import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
+import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.OfficeContactDetailsPartial
+import models.office.office_listing.requests.InitiateOfficeListingRequest
+import models.office.office_listing.requests.OfficeListingRequest
+import models.office.office_listing.OfficeListing
+import models.office.office_listing.OfficeListingCard
+import models.office.specifications.requests.CreateOfficeSpecificationsRequest
+import models.office.specifications.OfficeAvailability
+import models.office.specifications.OfficeSpecifications
 import models.office.specifications.OfficeSpecificationsPartial
+import repositories.office.OfficeListingRepositoryAlgebra
+import weaver.SimpleIOSuite
 
 object OfficeListingServiceSpec extends SimpleIOSuite {
 
@@ -38,12 +37,11 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
       totalDesks = 3,
       capacity = 50,
       amenities = List("Wi-Fi", "Coffee Machine", "Projector", "Whiteboard", "Parking"),
-      availability =
-        OfficeAvailability(
-          days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-          startTime = LocalTime.of(10, 0, 0),
-          endTime = LocalTime.of(10, 30, 0)
-        ),
+      availability = OfficeAvailability(
+        days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
+        startTime = LocalTime.of(10, 0, 0),
+        endTime = LocalTime.of(10, 30, 0)
+      ),
       rules = Some("No smoking. Maintain cleanliness.")
     )
 
@@ -82,7 +80,7 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
       primaryContactFirstName = "Michael",
       primaryContactLastName = "Yau",
       contactEmail = "mike@gmail.com",
-      contactNumber = "07402205071",
+      contactNumber = "07402205071"
     )
 
   val officeListingRequest =
@@ -135,14 +133,13 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
       contactNumber = None
     )
 
-  def testOfficeListing(businessId: String, officeId: String): OfficeListing = {
+  def testOfficeListing(businessId: String, officeId: String): OfficeListing =
     OfficeListing(
       officeId = officeId,
-      officeAddressDetails = testOfficeAddressPartial(businessId, officeId),
-      officeContactDetails = testContactDetailsPartial(businessId, officeId),
-      officeSpecifications = testOfficeSpecificationsPartial(businessId, officeId),
+      addressDetails = testOfficeAddressPartial(businessId, officeId),
+      contactDetails = testContactDetailsPartial(businessId, officeId),
+      specifications = testOfficeSpecificationsPartial(businessId, officeId)
     )
-  }
 
   def testInitiateOfficeListingRequest(businessId: String, officeId: String): InitiateOfficeListingRequest =
     InitiateOfficeListingRequest(
@@ -153,27 +150,26 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
     )
 
   class MockOfficeListingRepository(
-                                     findByOfficeIdResult: IO[Option[OfficeListing]],
-                                     listingResult: IO[ValidatedNel[DatabaseErrors, Int]]
-                                   ) extends OfficeListingRepositoryAlgebra[IO] {
-
+    findByOfficeIdResult: IO[Option[OfficeListing]],
+    listingResult: IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
+  ) extends OfficeListingRepositoryAlgebra[IO] {
 
     override def findAll(businessId: String): IO[List[OfficeListing]] = ???
 
-    override def deleteByBusinessId(businessId: String): IO[ValidatedNel[DatabaseErrors, Int]] = ???
-    
     override def findByOfficeId(officeId: String): IO[Option[OfficeListing]] = findByOfficeIdResult
 
-    override def initiate(request: InitiateOfficeListingRequest): IO[ValidatedNel[DatabaseErrors, Int]] = listingResult
+    override def initiate(request: InitiateOfficeListingRequest): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = listingResult
 
-    override def delete(officeId: String): IO[ValidatedNel[DatabaseErrors, Int]] = ???
+    override def delete(officeId: String): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = ???
+
+    override def deleteByBusinessId(businessId: String): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = ???
 
   }
 
   def createTestService(
-                         findByOfficeIdResult: IO[Option[OfficeListing]],
-                         listingResult: IO[ValidatedNel[DatabaseErrors, Int]]
-                       ): OfficeListingServiceImpl[IO] = {
+    findByOfficeIdResult: IO[Option[OfficeListing]],
+    listingResult: IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
+  ): OfficeListingServiceImpl[IO] = {
 
     val listingRepo = new MockOfficeListingRepository(findByOfficeIdResult, listingResult)
     new OfficeListingServiceImpl[IO](listingRepo)
@@ -183,19 +179,19 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
     val service = createTestService(
       IO.pure(
         Some(testOfficeListing("business_id_1", "office_id_1"))
-        ),
-      IO.pure(Validated.valid(1))
+      ),
+      IO.pure(Validated.valid(CreateSuccess))
     )
 
     val request = testInitiateOfficeListingRequest("business_id_1", "office_id_1")
 
-    val expectedResult =     
+    val expectedResult =
       OfficeListingCard(
-      businessId = "business_id_1",
-      officeId = "office_id_1",
-      officeName = "some office",
-      description = "some desc"
-    )
+        businessId = "business_id_1",
+        officeId = "office_id_1",
+        officeName = "some office",
+        description = "some desc"
+      )
 
     for {
       result <- service.initiate(request)
@@ -206,7 +202,7 @@ object OfficeListingServiceSpec extends SimpleIOSuite {
     val service =
       createTestService(
         IO.pure(None),
-        IO.pure(Validated.invalidNel(ConstraintViolation)),
+        IO.pure(Validated.invalidNel(ConstraintViolation))
       )
 
     val request = testInitiateOfficeListingRequest("business_id_1", "office_id_1")

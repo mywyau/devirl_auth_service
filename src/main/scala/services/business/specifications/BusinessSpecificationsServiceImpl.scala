@@ -10,42 +10,46 @@ import cats.NonEmptyParallel
 import models.business.specifications.errors.*
 import models.business.specifications.requests.CreateBusinessSpecificationsRequest
 import models.business.specifications.requests.UpdateBusinessSpecificationsRequest
-import models.business.specifications.BusinessSpecifications
+import models.business.specifications.BusinessSpecificationsPartial
 import models.database.DatabaseErrors
 import repositories.business.BusinessSpecificationsRepositoryAlgebra
+import models.database.DatabaseSuccess
+import models.database.CreateSuccess
 
 trait BusinessSpecificationsServiceAlgebra[F[_]] {
 
-  def getByBusinessId(businessId: String): F[Either[BusinessSpecificationsErrors, BusinessSpecifications]]
+  def getByBusinessId(businessId: String): F[Either[BusinessSpecificationsErrors, BusinessSpecificationsPartial]]
 
-  def create(createBusinessSpecificationsRequest: CreateBusinessSpecificationsRequest): F[cats.data.ValidatedNel[BusinessSpecificationsErrors, Int]]
+  def create(createBusinessSpecificationsRequest: CreateBusinessSpecificationsRequest): F[cats.data.ValidatedNel[BusinessSpecificationsErrors, DatabaseSuccess]]
 
-  def update(businessId: String, request: UpdateBusinessSpecificationsRequest): F[ValidatedNel[BusinessSpecificationsErrors, Int]]
+  def update(businessId: String, request: UpdateBusinessSpecificationsRequest): F[ValidatedNel[BusinessSpecificationsErrors, DatabaseSuccess]]
 
-  def delete(businessId: String): F[ValidatedNel[DatabaseErrors, Int]]
+  def delete(businessId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 }
 
 class BusinessSpecificationsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
   businessSpecificationsRepo: BusinessSpecificationsRepositoryAlgebra[F]
 ) extends BusinessSpecificationsServiceAlgebra[F] {
 
-  override def getByBusinessId(businessId: String): F[Either[BusinessSpecificationsErrors, BusinessSpecifications]] =
-    businessSpecificationsRepo.findByBusinessId(businessId).flatMap {
-      case Some(user) =>
-        Concurrent[F].pure(Right(user))
-      case None =>
-        Concurrent[F].pure(Left(BusinessSpecificationsNotFound))
-    }
+  override def getByBusinessId(businessId: String): F[Either[BusinessSpecificationsErrors, BusinessSpecificationsPartial]] =
+    businessSpecificationsRepo
+      .findByBusinessId(businessId)
+      .flatMap {
+        case Some(user) =>
+          Concurrent[F].pure(Right(user))
+        case None =>
+          Concurrent[F].pure(Left(BusinessSpecificationsNotFound))
+      }
 
-  override def create(createBusinessSpecificationsRequest: CreateBusinessSpecificationsRequest): F[ValidatedNel[BusinessSpecificationsErrors, Int]] = {
+  override def create(createBusinessSpecificationsRequest: CreateBusinessSpecificationsRequest): F[ValidatedNel[BusinessSpecificationsErrors, DatabaseSuccess]] = {
 
-    val specificationsCreation: F[ValidatedNel[DatabaseErrors, Int]] =
+    val specificationsCreation =
       businessSpecificationsRepo.create(createBusinessSpecificationsRequest)
 
     specificationsCreation
       .map {
-        case Validated.Valid(i) =>
-          Valid(i)
+        case Valid(response) =>
+          Valid(response)
         case businessSpecificationsResult =>
           val errors =
             List(businessSpecificationsResult.toEither.left.getOrElse(Nil))
@@ -56,15 +60,15 @@ class BusinessSpecificationsServiceImpl[F[_] : Concurrent : NonEmptyParallel : M
       }
   }
 
-  override def update(businessId: String, request: UpdateBusinessSpecificationsRequest): F[ValidatedNel[BusinessSpecificationsErrors, Int]] = {
+  override def update(businessId: String, request: UpdateBusinessSpecificationsRequest): F[ValidatedNel[BusinessSpecificationsErrors, DatabaseSuccess]] = {
 
-    val updateSpecifications: F[ValidatedNel[DatabaseErrors, Int]] =
+    val updateSpecifications =
       businessSpecificationsRepo.update(businessId, request)
 
     updateSpecifications
       .map {
         case Valid(specificationsId) =>
-          Valid(1)
+          Valid(CreateSuccess)
         case result =>
           val errors =
             List(result.toEither.left.getOrElse(Nil))
@@ -75,7 +79,7 @@ class BusinessSpecificationsServiceImpl[F[_] : Concurrent : NonEmptyParallel : M
       }
   }
 
-  override def delete(businessId: String): F[ValidatedNel[DatabaseErrors, Int]] =
+  override def delete(businessId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
     businessSpecificationsRepo.delete(businessId)
 }
 

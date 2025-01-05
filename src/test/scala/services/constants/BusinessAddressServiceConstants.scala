@@ -1,23 +1,28 @@
 package services.constants
 
-import cats.data.{NonEmptyList, Validated, ValidatedNel}
+import cats.data.NonEmptyList
+import cats.data.Validated
+import cats.data.ValidatedNel
 import cats.effect.IO
 import cats.implicits.*
-import models.business.address.BusinessAddress
+import java.time.LocalDateTime
 import models.business.address.requests.CreateBusinessAddressRequest
+import models.business.address.BusinessAddress
+import models.business.address.BusinessAddressPartial
 import models.business.adts.*
 import models.business.business_listing.errors.BusinessListingErrors
 import models.business.business_listing.requests.BusinessListingRequest
 import models.business.contact_details.BusinessContactDetails
-import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
+import models.business.specifications.BusinessAvailability
+import models.business.specifications.BusinessSpecifications
 import models.database.*
-import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import repositories.business.{BusinessAddressRepositoryAlgebra, BusinessContactDetailsRepositoryAlgebra, BusinessSpecificationsRepositoryAlgebra}
+import org.typelevel.log4cats.SelfAwareStructuredLogger
+import repositories.business.BusinessAddressRepositoryAlgebra
+import repositories.business.BusinessContactDetailsRepositoryAlgebra
+import repositories.business.BusinessSpecificationsRepositoryAlgebra
 import services.business.business_listing.BusinessListingServiceImpl
 import weaver.SimpleIOSuite
-
-import java.time.LocalDateTime
 
 object BusinessAddressServiceConstants {
 
@@ -37,12 +42,10 @@ object BusinessAddressServiceConstants {
       longitude = Some(-100.1)
     )
 
-  def testBusinessAddress(id: Option[Int], userId: String, businessId: String): BusinessAddress =
-    BusinessAddress(
-      id = id,
+  def testBusinessAddress(userId: String, businessId: String): BusinessAddressPartial =
+    BusinessAddressPartial(
       userId = userId,
       businessId = businessId,
-      businessName = Some("mikeyCorp"),
       buildingName = Some("building name"),
       floorNumber = Some("floor 1"),
       street = Some("1 Canton Street"),
@@ -51,9 +54,7 @@ object BusinessAddressServiceConstants {
       county = Some("County 1"),
       postcode = Some("CF3 3NJ"),
       latitude = Some(100.1),
-      longitude = Some(-100.1),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      longitude = Some(-100.1)
     )
 
 }

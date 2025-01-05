@@ -8,11 +8,12 @@ import models.business.address.requests.CreateBusinessAddressRequest
 import repository.business.mocks.MockBusinessAddressRepository
 
 import java.time.LocalDateTime
+import models.business.address.BusinessAddressPartial
 
 object BusinessAddressRepositoryConstants {
 
-  def createMockRepo(initialUsers: List[BusinessAddress]): IO[MockBusinessAddressRepository] =
-    Ref.of[IO, List[BusinessAddress]](initialUsers).map(MockBusinessAddressRepository.apply)
+  def createMockRepo(initialUsers: List[BusinessAddressPartial]): IO[MockBusinessAddressRepository] =
+    Ref.of[IO, List[BusinessAddressPartial]](initialUsers).map(MockBusinessAddressRepository.apply)
 
   def testCreateBusinessAddressRequest(userId: String, businessId: String): CreateBusinessAddressRequest =
     CreateBusinessAddressRequest(
@@ -30,12 +31,10 @@ object BusinessAddressRepositoryConstants {
       longitude = Some(-100.1)
     )
 
-  def testAddress(id: Option[Int], userId: String, businessId: String): BusinessAddress =
-    BusinessAddress(
-      id = id,
+  def testAddress(userId: String, businessId: String): BusinessAddressPartial =
+    BusinessAddressPartial(
       userId = userId,
       businessId = businessId,
-      businessName = Some("mikeyCorp"),
       buildingName = Some("building 1"),
       floorNumber = Some("floor 1"),
       street = Some("1 Canton Street"),
@@ -44,9 +43,7 @@ object BusinessAddressRepositoryConstants {
       county = Some("County 1"),
       postcode = Some("CF3 3NJ"),
       latitude = Some(100.1),
-      longitude = Some(-100.1),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      longitude = Some(-100.1)
     )
 
 

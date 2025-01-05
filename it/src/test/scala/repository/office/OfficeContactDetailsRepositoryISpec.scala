@@ -1,18 +1,23 @@
 package repository.office
 
-import cats.effect.{IO, Resource}
+import cats.effect.IO
+import cats.effect.Resource
 import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
-import models.business.adts.PrivateDesk
-import models.office.contact_details.OfficeContactDetails
-import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
-import repositories.office.OfficeContactDetailsRepositoryImpl
-import repository.fragments.OfficeContactDetailsRepoFragments.{createOfficeContactDetailsTable, insertOfficeContactDetailsData, resetOfficeContactDetailsTable}
-import shared.TransactorResource
-import weaver.{GlobalRead, IOSuite, ResourceTag}
-
 import java.time.LocalDateTime
+import models.business.adts.PrivateDesk
+import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
+import models.office.contact_details.OfficeContactDetails
+import models.office.contact_details.OfficeContactDetailsPartial
+import repositories.office.OfficeContactDetailsRepositoryImpl
+import repository.fragments.OfficeContactDetailsRepoFragments.createOfficeContactDetailsTable
+import repository.fragments.OfficeContactDetailsRepoFragments.insertOfficeContactDetailsData
+import repository.fragments.OfficeContactDetailsRepoFragments.resetOfficeContactDetailsTable
+import shared.TransactorResource
+import weaver.GlobalRead
+import weaver.IOSuite
+import weaver.ResourceTag
 
 class OfficeContactDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
 
@@ -25,7 +30,7 @@ class OfficeContactDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
         insertOfficeContactDetailsData.update.run.transact(transactor.xa).void
     )
 
-  def testCreateOfficeContactDetailsRequest(businessId: String, officeId: String): CreateOfficeContactDetailsRequest = {
+  def testCreateOfficeContactDetailsRequest(businessId: String, officeId: String): CreateOfficeContactDetailsRequest =
     CreateOfficeContactDetailsRequest(
       businessId = businessId,
       officeId = officeId,
@@ -34,7 +39,6 @@ class OfficeContactDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
       contactEmail = "mike@gmail.com",
       contactNumber = "07402205071"
     )
-  }
 
   def sharedResource: Resource[IO, OfficeContactDetailsRepositoryImpl[IO]] = {
     val setup = for {
@@ -49,16 +53,13 @@ class OfficeContactDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
   test(".findByOfficeId() - should return the office ContactDetails if office_id exists for a previously created office ContactDetails") { officeContactDetailsRepo =>
 
     val expectedResult =
-      OfficeContactDetails(
-        id = Some(1),
+      OfficeContactDetailsPartial(
         businessId = "BUS12345",
         officeId = "OFF001",
         primaryContactFirstName = Some("Alice"),
         primaryContactLastName = Some("Johnson"),
         contactEmail = Some("alice.johnson@example.com"),
-        contactNumber = Some("+15551234567"),
-        createdAt = LocalDateTime.of(2023, 1, 1, 12, 0, 0),
-        updatedAt = LocalDateTime.of(2023, 1, 1, 12, 0, 0)
+        contactNumber = Some("+15551234567")
       )
 
     for {

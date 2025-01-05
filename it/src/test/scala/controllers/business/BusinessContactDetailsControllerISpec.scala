@@ -30,6 +30,7 @@ import shared.{HttpClientResource, TransactorResource}
 import weaver.*
 
 import java.time.LocalDateTime
+import models.business.contact_details.BusinessContactDetailsPartial
 
 class BusinessContactDetailsControllerISpec(global: GlobalRead) extends IOSuite {
 
@@ -60,10 +61,10 @@ class BusinessContactDetailsControllerISpec(global: GlobalRead) extends IOSuite 
     val request =
       Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/businesses/contact/details/business_id_1")
 
-    val expectedBusinessContactDetails = testBusinessContactDetails(Some(1), "user_id_1", "business_id_1")
+    val expectedBusinessContactDetails = testBusinessContactDetails("user_id_1", "business_id_1")
 
     client.run(request).use { response =>
-      response.as[BusinessContactDetails].map { body =>
+      response.as[BusinessContactDetailsPartial].map { body =>
         expect.all(
           response.status == Status.Ok,
           body == expectedBusinessContactDetails

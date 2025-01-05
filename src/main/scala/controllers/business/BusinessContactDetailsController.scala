@@ -33,7 +33,7 @@ class BusinessContactDetailsControllerImpl[F[_] : Concurrent](businessContactDet
 
     case GET -> Root / "business" / "businesses" / "contact" / "details" / businessId =>
       logger.debug(s"[BusinessContactDetailsControllerImpl] GET - Business contactDetails details for businessId: $businessId") *>
-        businessContactDetailsService.getContactDetailsByBusinessId(businessId).flatMap {
+        businessContactDetailsService.getByBusinessId(businessId).flatMap {
           case Right(contactDetails) =>
             logger.info(s"[BusinessContactDetailsControllerImpl] GET - Successfully retrieved business contact details") *>
               Ok(contactDetails.asJson)

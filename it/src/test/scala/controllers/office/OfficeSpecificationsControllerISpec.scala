@@ -28,6 +28,7 @@ import shared.{HttpClientResource, TransactorResource}
 import weaver.*
 
 import java.time.LocalDateTime
+import models.office.specifications.OfficeSpecificationsPartial
 
 class OfficeSpecificationsControllerISpec(global: GlobalRead) extends IOSuite {
 
@@ -58,10 +59,10 @@ class OfficeSpecificationsControllerISpec(global: GlobalRead) extends IOSuite {
     val request =
       Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/offices/specifications/OFF001")
 
-    val expectedOfficeSpecifications = testOfficeSpecs1(Some(1), "BUS001", "OFF001")
+    val expectedOfficeSpecifications = testOfficeSpecs1("BUS001", "OFF001")
 
     client.run(request).use { response =>
-      response.as[OfficeSpecifications].map { body =>
+      response.as[OfficeSpecificationsPartial].map { body =>
         expect.all(
           response.status == Status.Ok,
           body == expectedOfficeSpecifications

@@ -1,17 +1,22 @@
 package repository.business
 
-import cats.effect.{IO, Resource}
+import cats.effect.IO
+import cats.effect.Resource
 import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
+import java.time.LocalDateTime
 import models.business.adts.PrivateDesk
 import models.business.contact_details.BusinessContactDetails
+import models.business.contact_details.BusinessContactDetailsPartial
 import repositories.business.BusinessContactDetailsRepositoryImpl
-import repository.fragments.business.BusinessContactDetailsRepoFragments.{createBusinessContactDetailsTable, insertBusinessContactDetailsData, resetBusinessContactDetailsTable}
+import repository.fragments.business.BusinessContactDetailsRepoFragments.createBusinessContactDetailsTable
+import repository.fragments.business.BusinessContactDetailsRepoFragments.insertBusinessContactDetailsData
+import repository.fragments.business.BusinessContactDetailsRepoFragments.resetBusinessContactDetailsTable
 import shared.TransactorResource
-import weaver.{GlobalRead, IOSuite, ResourceTag}
-
-import java.time.LocalDateTime
+import weaver.GlobalRead
+import weaver.IOSuite
+import weaver.ResourceTag
 
 class BusinessContactDetailsRepositoryISpec(global: GlobalRead) extends IOSuite {
 
@@ -23,7 +28,6 @@ class BusinessContactDetailsRepositoryISpec(global: GlobalRead) extends IOSuite 
         resetBusinessContactDetailsTable.update.run.transact(transactor.xa).void *>
         insertBusinessContactDetailsData.update.run.transact(transactor.xa).void
     )
-
 
   def sharedResource: Resource[IO, BusinessContactDetailsRepositoryImpl[IO]] = {
     val setup = for {
@@ -40,18 +44,14 @@ class BusinessContactDetailsRepositoryISpec(global: GlobalRead) extends IOSuite 
     val businessId = "BUS001"
 
     val expectedResult =
-      BusinessContactDetails(
-        id = Some(1),
+      BusinessContactDetailsPartial(
         userId = "USER001",
         businessId = businessId,
-        businessName = Some("business_name_1"),
         primaryContactFirstName = Some("Bob1"),
         primaryContactLastName = Some("Smith"),
         contactEmail = Some("bob1@gmail.com"),
         contactNumber = Some("07402205071"),
-        websiteUrl = Some("bobs_axes.com"),
-        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        websiteUrl = Some("bobs_axes.com")
       )
 
     for {

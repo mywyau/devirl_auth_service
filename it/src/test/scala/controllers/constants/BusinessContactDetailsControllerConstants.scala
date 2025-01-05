@@ -3,8 +3,10 @@ package controllers.constants
 import cats.effect.*
 import models.business.adts.*
 import models.business.contact_details.BusinessContactDetails
+import models.business.contact_details.BusinessContactDetailsPartial
 import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
-import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
+import models.business.specifications.BusinessAvailability
+import models.business.specifications.BusinessSpecifications
 
 import java.time.LocalDateTime
 
@@ -22,18 +24,14 @@ object BusinessContactDetailsControllerConstants {
       websiteUrl = "https://example.com"
     )
 
-  def testBusinessContactDetails(id: Option[Int], userId: String, businessId: String): BusinessContactDetails =
-    BusinessContactDetails(
-      id = id,
+  def testBusinessContactDetails(userId: String, businessId: String): BusinessContactDetailsPartial =
+    BusinessContactDetailsPartial(
       userId = userId,
       businessId = businessId,
-      businessName = Some("Example Business Name"),
       primaryContactFirstName = Some("John"),
       primaryContactLastName = Some("Doe"),
       contactEmail = Some("johndoe@example.com"),
       contactNumber = Some("123-456-7890"),
-      websiteUrl = Some("https://example.com"),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      websiteUrl = Some("https://example.com")
     )
 }

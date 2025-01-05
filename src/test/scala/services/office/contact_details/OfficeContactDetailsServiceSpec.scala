@@ -12,12 +12,13 @@ import weaver.SimpleIOSuite
 import services.constants.OfficeContactDetailsServiceConstants.*
 
 import java.time.LocalDateTime
+import models.database.CreateSuccess
 
 object OfficeContactDetailsServiceSpec extends SimpleIOSuite {
 
   test(
     ".getByOfficeId() - " +
-      "when there is an existing OfficeContactDetails given a office_id_1 should return the correct ContactDetails - Right(ContactDetails)"
+      "when there is an existing OfficeContactDetails given a office_id_1 should return the correct ContactDetailsPartial - Right(ContactDetails)"
   ) {
 
     val existingContactDetailsForUser = testOfficeContactDetails(Some(1), "business__id_1", "office_id_1")
@@ -37,8 +38,6 @@ object OfficeContactDetailsServiceSpec extends SimpleIOSuite {
       "when there are no existing OfficeContactDetails given a office_id should return Left(ContactDetailsNotFound)"
   ) {
 
-    val existingContactDetailsForUser = testOfficeContactDetails(Some(1), "business__id_1", "office_id_1")
-
     val mockOfficeContactDetailsRepository = new MockOfficeContactDetailsRepository(Map())
     val service = new OfficeContactDetailsServiceImpl[IO](mockOfficeContactDetailsRepository)
 
@@ -52,7 +51,6 @@ object OfficeContactDetailsServiceSpec extends SimpleIOSuite {
   test(".create() - when given a OfficeContactDetails successfully create the ContactDetails") {
 
     val testCreateRequest = testCreateOfficeContactDetailsRequest("business__id_1", "office_id_1")
-    val testData = testOfficeContactDetails(Some(1), "business__id_1", "office_id_1")
 
     val mockOfficeContactDetailsRepository = new MockOfficeContactDetailsRepository(Map())
     val service = OfficeContactDetailsService(mockOfficeContactDetailsRepository)
@@ -60,7 +58,7 @@ object OfficeContactDetailsServiceSpec extends SimpleIOSuite {
     for {
       result <- service.create(testCreateRequest)
     } yield {
-      expect(result == Valid(1))
+      expect(result == Valid(CreateSuccess))
     }
   }
 }

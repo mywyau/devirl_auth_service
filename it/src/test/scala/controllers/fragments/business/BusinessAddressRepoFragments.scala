@@ -15,7 +15,6 @@ object BusinessAddressRepoFragments {
           id BIGSERIAL PRIMARY KEY,
           user_id VARCHAR(255) NOT NULL UNIQUE,
           business_id VARCHAR(255) NOT NULL UNIQUE,
-          business_name VARCHAR(255),
           building_name VARCHAR(255),
           floor_number VARCHAR(255),
           street VARCHAR(255),
@@ -37,7 +36,6 @@ object BusinessAddressRepoFragments {
         INSERT INTO business_address (
             user_id,
             business_id,
-            business_name,
             building_name,
             floor_number,
             street,
@@ -50,8 +48,8 @@ object BusinessAddressRepoFragments {
             created_at,
             updated_at
         ) VALUES
-        ('user_id_1','business_id_1','business_name_1','building_name_1','floor_1','123 Main Street','New York','USA','Manhattan','10001',100.1,-100.1,'2025-01-01 00:00:00','2025-01-01 00:00:00'),
-        ('user_id_2','business_id_2','business_name_2','building_name_2','floor_2','123 Main Street','New York','USA','Manhattan','10001',100.1,-100.1,'2025-01-01 00:00:00','2025-01-01 00:00:00');
+        ('user_id_1','business_id_1', 'building_name_1', 'floor_1', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+        ('user_id_2','business_id_2', 'building_name_2', 'floor_2', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00');
       """
   }
 }

@@ -36,7 +36,9 @@ object BusinessSpecificationsErrors {
 
   def fromString(str: String): BusinessSpecificationsErrors =
     str match {
-      case "BusinessSpecificationsNotFound" => BusinessSpecificationsNotFound
+      case "BusinessSpecificationsNotFound" => BusinessSpecificationsNotFound 
+      case "BusinessSpecificationsNotCreated" => BusinessSpecificationsNotCreated 
+      case "BusinessSpecificationsDatabaseError" => BusinessSpecificationsDatabaseError
       case "BusinessSpecificationsUserNotFound" => BusinessSpecificationsUserNotFound
       case "BusinessSpecificationsEmptyStringField" => BusinessSpecificationsEmptyStringField
       case "BusinessSpecificationsInvalidFormat" => BusinessSpecificationsInvalidFormat
@@ -46,6 +48,8 @@ object BusinessSpecificationsErrors {
   implicit val businessSpecificationsErrorsEncoder: Encoder[BusinessSpecificationsErrors] =
     Encoder.encodeString.contramap {
       case BusinessSpecificationsNotFound => "BusinessSpecificationsNotFound"
+      case BusinessSpecificationsNotCreated => "BusinessSpecificationsNotCreated"
+      case BusinessSpecificationsDatabaseError => "BusinessSpecificationsDatabaseError"
       case BusinessSpecificationsUserNotFound => "BusinessSpecificationsUserNotFound"
       case BusinessSpecificationsEmptyStringField => "BusinessSpecificationsEmptyStringField"
       case BusinessSpecificationsInvalidFormat => "BusinessSpecificationsInvalidFormat"
@@ -54,6 +58,8 @@ object BusinessSpecificationsErrors {
   implicit val businessSpecificationsErrorsDecoder: Decoder[BusinessSpecificationsErrors] =
     Decoder.decodeString.emap {
       case "BusinessSpecificationsNotFound" => Right(BusinessSpecificationsNotFound)
+      case "BusinessSpecificationsNotCreated" => Right(BusinessSpecificationsNotCreated)
+      case "BusinessSpecificationsDatabaseError" => Right(BusinessSpecificationsDatabaseError)
       case "BusinessSpecificationsUserNotFound" => Right(BusinessSpecificationsUserNotFound)
       case "BusinessSpecificationsEmptyStringField" => Right(BusinessSpecificationsEmptyStringField)
       case "BusinessSpecificationsInvalidFormat" => Right(BusinessSpecificationsInvalidFormat)

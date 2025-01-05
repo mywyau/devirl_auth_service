@@ -11,18 +11,21 @@ import models.business.contact_details.errors.*
 import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
 import models.business.contact_details.requests.UpdateBusinessContactDetailsRequest
 import models.business.contact_details.BusinessContactDetails
+import models.business.contact_details.BusinessContactDetailsPartial
+import models.database.CreateSuccess
 import models.database.DatabaseErrors
+import models.database.DatabaseSuccess
 import repositories.business.BusinessContactDetailsRepositoryAlgebra
 
 trait BusinessContactDetailsServiceAlgebra[F[_]] {
 
-  def getContactDetailsByBusinessId(businessId: String): F[Either[BusinessContactDetailsErrors, BusinessContactDetails]]
+  def getByBusinessId(businessId: String): F[Either[BusinessContactDetailsErrors, BusinessContactDetailsPartial]]
 
-  def create(businessContactDetails: CreateBusinessContactDetailsRequest): F[ValidatedNel[BusinessContactDetailsErrors, Int]]
+  def create(businessContactDetails: CreateBusinessContactDetailsRequest): F[ValidatedNel[BusinessContactDetailsErrors, DatabaseSuccess]]
 
-  def update(businessId: String, request: UpdateBusinessContactDetailsRequest): F[ValidatedNel[BusinessContactDetailsErrors, Int]]
+  def update(businessId: String, request: UpdateBusinessContactDetailsRequest): F[ValidatedNel[BusinessContactDetailsErrors, DatabaseSuccess]]
 
-  def delete(businessId: String): F[ValidatedNel[DatabaseErrors, Int]]
+  def delete(businessId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
 }
 
@@ -30,7 +33,7 @@ class BusinessContactDetailsServiceImpl[F[_] : Concurrent : NonEmptyParallel : M
   businessContactDetailsRepo: BusinessContactDetailsRepositoryAlgebra[F]
 ) extends BusinessContactDetailsServiceAlgebra[F] {
 
-  override def getContactDetailsByBusinessId(businessId: String): F[Either[BusinessContactDetailsErrors, BusinessContactDetails]] =
+  override def getByBusinessId(businessId: String): F[Either[BusinessContactDetailsErrors, BusinessContactDetailsPartial]] =
     businessContactDetailsRepo.findByBusinessId(businessId).flatMap {
       case Some(user) =>
         Concurrent[F].pure(Right(user))
@@ -38,9 +41,9 @@ class BusinessContactDetailsServiceImpl[F[_] : Concurrent : NonEmptyParallel : M
         Concurrent[F].pure(Left(BusinessContactDetailsNotFound))
     }
 
-  override def create(businessContactDetails: CreateBusinessContactDetailsRequest): F[ValidatedNel[BusinessContactDetailsErrors, Int]] = {
+  override def create(businessContactDetails: CreateBusinessContactDetailsRequest): F[ValidatedNel[BusinessContactDetailsErrors, DatabaseSuccess]] = {
 
-    val contactDetailsCreation: F[ValidatedNel[DatabaseErrors, Int]] =
+    val contactDetailsCreation: F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
       businessContactDetailsRepo.create(businessContactDetails)
 
     contactDetailsCreation
@@ -57,15 +60,15 @@ class BusinessContactDetailsServiceImpl[F[_] : Concurrent : NonEmptyParallel : M
       }
   }
 
-  override def update(businessId: String, request: UpdateBusinessContactDetailsRequest): F[ValidatedNel[BusinessContactDetailsErrors, Int]] = {
+  override def update(businessId: String, request: UpdateBusinessContactDetailsRequest): F[ValidatedNel[BusinessContactDetailsErrors, DatabaseSuccess]] = {
 
-    val updateContactDetails: F[ValidatedNel[DatabaseErrors, Int]] =
+    val updateContactDetails: F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
       businessContactDetailsRepo.update(businessId, request)
 
     updateContactDetails
       .map {
         case Valid(contactDetailsId) =>
-          Valid(1)
+          Valid(CreateSuccess)
         case contactDetailsResult =>
           val errors =
             List(contactDetailsResult.toEither.left.getOrElse(Nil))
@@ -76,7 +79,7 @@ class BusinessContactDetailsServiceImpl[F[_] : Concurrent : NonEmptyParallel : M
       }
   }
 
-  override def delete(businessId: String): F[ValidatedNel[DatabaseErrors, Int]] =
+  override def delete(businessId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
     businessContactDetailsRepo.delete(businessId)
 }
 

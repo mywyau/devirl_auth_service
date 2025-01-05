@@ -1,20 +1,26 @@
 package repository.business
 
 import cats.data.Validated.Valid
-import cats.effect.{IO, Resource}
+import cats.effect.IO
+import cats.effect.Resource
 import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
-import models.business.address.BusinessAddress
+import java.time.LocalDateTime
 import models.business.address.requests.CreateBusinessAddressRequest
+import models.business.address.BusinessAddress
+import models.business.address.BusinessAddressPartial
 import models.business.adts.PrivateDesk
 import models.business.specifications.BusinessAvailability
+import models.database.DeleteSuccess
 import repositories.business.BusinessAddressRepositoryImpl
-import repository.fragments.business.BusinessAddressRepoFragments.{createBusinessAddressTable, insertBusinessAddressData, resetBusinessAddressTable}
+import repository.fragments.business.BusinessAddressRepoFragments.createBusinessAddressTable
+import repository.fragments.business.BusinessAddressRepoFragments.insertBusinessAddressData
+import repository.fragments.business.BusinessAddressRepoFragments.resetBusinessAddressTable
 import shared.TransactorResource
-import weaver.{GlobalRead, IOSuite, ResourceTag}
-
-import java.time.LocalDateTime
+import weaver.GlobalRead
+import weaver.IOSuite
+import weaver.ResourceTag
 
 class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
 
@@ -27,7 +33,7 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
         insertBusinessAddressData.update.run.transact(transactor.xa).void
     )
 
-  def testBusinessAddressRequest(userId: String, businessId: String): CreateBusinessAddressRequest = {
+  def testBusinessAddressRequest(userId: String, businessId: String): CreateBusinessAddressRequest =
     CreateBusinessAddressRequest(
       userId = userId,
       businessId = businessId,
@@ -42,7 +48,6 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
       latitude = Some(100.1),
       longitude = Some(-100.1)
     )
-  }
 
   def sharedResource: Resource[IO, BusinessAddressRepositoryImpl[IO]] = {
     val setup = for {
@@ -57,11 +62,9 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
   test(".findByBusinessId() - should find and return the business address if business_id exists for a previously created business address") { businessAddressRepo =>
 
     val expectedResult =
-      BusinessAddress(
-        id = Some(1),
+      BusinessAddressPartial(
         userId = "USER001",
         businessId = "BUS001",
-        businessName = Some("Tech Innovations"),
         buildingName = Some("Innovation Tower"),
         floorNumber = Some("5"),
         street = Some("123 Tech Street"),
@@ -70,14 +73,11 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
         county = Some("California"),
         postcode = Some("94105"),
         latitude = Some(37.774929),
-        longitude = Some(-122.419416),
-        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        longitude = Some(-122.419416)
       )
 
     for {
       businessAddressOpt <- businessAddressRepo.findByBusinessId("BUS001")
-      //      _ <- IO(println(s"Query Result: $businessAddressOpt")) // Debug log the result
     } yield expect(businessAddressOpt == Some(expectedResult))
   }
 
@@ -87,11 +87,9 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
     val businessId = "BUS002"
 
     val expectedResult =
-      BusinessAddress(
-        id = Some(2),
+      BusinessAddressPartial(
         userId = userId,
         businessId = businessId,
-        businessName = Some("Global Corp"),
         buildingName = Some("Global Tower"),
         floorNumber = Some("12"),
         street = Some("456 Global Ave"),
@@ -100,18 +98,16 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
         county = Some("New York"),
         postcode = Some("10001"),
         latitude = Some(40.712776),
-        longitude = Some(-74.005974),
-        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        longitude = Some(-74.005974)
       )
 
     for {
       firstFindResult <- businessAddressRepo.findByBusinessId(businessId)
-      deleteResult <- businessAddressRepo.deleteBusinessAddress(businessId)
+      deleteResult <- businessAddressRepo.delete(businessId)
       afterDeletionFindResult <- businessAddressRepo.findByBusinessId(businessId)
     } yield expect.all(
       firstFindResult == Some(expectedResult),
-      deleteResult == Valid(1),
+      deleteResult == Valid(DeleteSuccess),
       afterDeletionFindResult == None
     )
   }

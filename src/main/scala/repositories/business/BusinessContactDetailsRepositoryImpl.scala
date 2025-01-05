@@ -1,29 +1,33 @@
 package repositories.business
 
+import cats.Monad
 import cats.data.ValidatedNel
 import cats.effect.Concurrent
 import cats.syntax.all.*
-import cats.Monad
 import doobie.*
 import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
-import java.sql.Timestamp
-import java.time.LocalDateTime
+import models.business.contact_details.BusinessContactDetails
+import models.business.contact_details.BusinessContactDetailsPartial
 import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
 import models.business.contact_details.requests.UpdateBusinessContactDetailsRequest
-import models.business.contact_details.BusinessContactDetails
 import models.database.*
+
+import java.sql.Timestamp
+import java.time.LocalDateTime
 
 trait BusinessContactDetailsRepositoryAlgebra[F[_]] {
 
-  def findByBusinessId(businessId: String): F[Option[BusinessContactDetails]]
+  def findByBusinessId(businessId: String): F[Option[BusinessContactDetailsPartial]]
 
-  def create(createBusinessContactDetailsRequest: CreateBusinessContactDetailsRequest): F[ValidatedNel[DatabaseErrors, Int]]
+  def create(request: CreateBusinessContactDetailsRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
-  def update(businessId: String, request: UpdateBusinessContactDetailsRequest): F[ValidatedNel[DatabaseErrors, Int]]
+  def update(businessId: String, request: UpdateBusinessContactDetailsRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
-  def delete(businessId: String): F[ValidatedNel[DatabaseErrors, Int]]
+  def delete(businessId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
+
+  def deleteAllByUserId(userId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 }
 
 class BusinessContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends BusinessContactDetailsRepositoryAlgebra[F] {
@@ -31,18 +35,29 @@ class BusinessContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor
   implicit val localDateTimeMeta: Meta[LocalDateTime] =
     Meta[Timestamp].imap(_.toLocalDateTime)(Timestamp.valueOf)
 
-  override def findByBusinessId(businessId: String): F[Option[BusinessContactDetails]] = {
-    val findQuery: F[Option[BusinessContactDetails]] =
-      sql"SELECT * FROM business_contact_details WHERE business_id = $businessId".query[BusinessContactDetails].option.transact(transactor)
+  override def findByBusinessId(businessId: String): F[Option[BusinessContactDetailsPartial]] = {
+    val findQuery: F[Option[BusinessContactDetailsPartial]] =
+      sql"""
+         SELECT 
+             user_id,
+             business_id,
+             primary_contact_first_name,
+             primary_contact_last_name,
+             contact_email,
+             contact_number,
+             website_url
+         FROM business_contact_details
+         WHERE business_id = $businessId
+       """.query[BusinessContactDetailsPartial].option.transact(transactor)
+
     findQuery
   }
 
-  override def create(createBusinessContactDetailsRequest: CreateBusinessContactDetailsRequest): F[ValidatedNel[DatabaseErrors, Int]] =
+  override def create(createBusinessContactDetailsRequest: CreateBusinessContactDetailsRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
     sql"""
       INSERT INTO business_contact_details (
         user_id,
         business_id,
-        business_name,
         primary_contact_first_name,
         primary_contact_last_name,
         contact_email,
@@ -51,29 +66,29 @@ class BusinessContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor
       ) VALUES (
         ${createBusinessContactDetailsRequest.userId},
         ${createBusinessContactDetailsRequest.businessId},
-        ${createBusinessContactDetailsRequest.businessName},
         ${createBusinessContactDetailsRequest.primaryContactFirstName},
         ${createBusinessContactDetailsRequest.primaryContactLastName},
         ${createBusinessContactDetailsRequest.contactEmail},
         ${createBusinessContactDetailsRequest.contactNumber},
         ${createBusinessContactDetailsRequest.websiteUrl}
       )
-    """.update.run.transact(transactor).attempt.map {
-      case Right(rowsAffected) =>
-        if (rowsAffected == 1) {
-          rowsAffected.validNel
-        } else {
-          InsertionFailed.invalidNel
-        }
-      case Left(e: java.sql.SQLIntegrityConstraintViolationException) =>
-        ConstraintViolation.invalidNel
-      case Left(e: java.sql.SQLException) =>
-        DatabaseError.invalidNel
-      case Left(e) =>
-        UnknownError(e.getMessage).invalidNel
-    }
+    """.update.run
+      .transact(transactor)
+      .attempt
+      .map {
+        case Right(affectedRows) if affectedRows == 1 =>
+          CreateSuccess.validNel
+        case Left(e: java.sql.SQLIntegrityConstraintViolationException) =>
+          ConstraintViolation.invalidNel
+        case Left(e: java.sql.SQLException) =>
+          DatabaseError.invalidNel
+        case Left(ex) =>
+          UnknownError(s"Unexpected error: ${ex.getMessage}").invalidNel
+        case _ =>
+          UnexpectedResultError.invalidNel
+      }
 
-  override def update(businessId: String, request: UpdateBusinessContactDetailsRequest): F[ValidatedNel[DatabaseErrors, Int]] =
+  override def update(businessId: String, request: UpdateBusinessContactDetailsRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
     sql"""
       UPDATE business_contact_details
       SET
@@ -85,19 +100,29 @@ class BusinessContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor
         website_url = ${request.websiteUrl},
         updated_at = ${request.updatedAt}
       WHERE business_id = $businessId
-    """.update.run.transact(transactor).attempt.map {
-      case Right(affectedRows) =>
-        if (affectedRows > 0)
-          affectedRows.validNel
-        else
+    """.update.run
+      .transact(transactor)
+      .attempt
+      .map {
+        case Right(affectedRows) if affectedRows == 1 =>
+          UpdateSuccess.validNel
+        case Right(affectedRows) if affectedRows == 0 =>
           NotFoundError.invalidNel
-      case Left(ex: java.sql.SQLException) =>
-        DatabaseError.invalidNel
-      case Left(ex) =>
-        UnknownError(ex.getMessage).invalidNel
-    }
+        case Left(ex: java.sql.SQLException) if ex.getSQLState == "23503" =>
+          ForeignKeyViolationError.invalidNel // Foreign key constraint violation
+        case Left(ex: java.sql.SQLException) if ex.getSQLState == "08001" =>
+          DatabaseConnectionError.invalidNel // Database connection issue
+        case Left(ex: java.sql.SQLException) if ex.getSQLState == "22001" =>
+          DataTooLongError.invalidNel // Data length exceeds column limit
+        case Left(ex: java.sql.SQLException) =>
+          SqlExecutionError(ex.getMessage).invalidNel // General SQL execution error
+        case Left(ex) =>
+          UnknownError(s"Unexpected error: ${ex.getMessage}").invalidNel
+        case _ =>
+          UnexpectedResultError.invalidNel
+      }
 
-  override def delete(businessId: String): F[ValidatedNel[DatabaseErrors, Int]] = {
+  override def delete(businessId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = {
     val deleteQuery: Update0 =
       sql"""
         DELETE FROM business_contact_details
@@ -105,13 +130,45 @@ class BusinessContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor
       """.update
 
     deleteQuery.run.transact(transactor).attempt.map {
-      case Right(affectedRows) =>
-        if (affectedRows > 0)
-          affectedRows.validNel
-        else
-          NotFoundError.invalidNel
+      case Right(affectedRows) if affectedRows == 1 =>
+        DeleteSuccess.validNel
+      case Right(affectedRows) if affectedRows == 0 =>
+        NotFoundError.invalidNel
+      case Left(ex: java.sql.SQLException) if ex.getSQLState == "23503" =>
+        ForeignKeyViolationError.invalidNel
+      case Left(ex: java.sql.SQLException) if ex.getSQLState == "08001" =>
+        DatabaseConnectionError.invalidNel
+      case Left(ex: java.sql.SQLException) =>
+        SqlExecutionError(ex.getMessage).invalidNel
       case Left(ex) =>
-        DeleteError.invalidNel
+        UnknownError(s"Unexpected error: ${ex.getMessage}").invalidNel
+      case _ =>
+        UnexpectedResultError.invalidNel
+    }
+  }
+
+  override def deleteAllByUserId(userId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = {
+    val deleteQuery: Update0 =
+      sql"""
+         DELETE FROM business_contact_details
+         WHERE user_id = $userId
+       """.update
+
+    deleteQuery.run.transact(transactor).attempt.map {
+      case Right(affectedRows) if affectedRows > 0 =>
+        DeleteSuccess.validNel
+      case Right(affectedRows) if affectedRows == 0 =>
+        NotFoundError.invalidNel
+      case Left(ex: java.sql.SQLException) if ex.getSQLState == "23503" =>
+        ForeignKeyViolationError.invalidNel
+      case Left(ex: java.sql.SQLException) if ex.getSQLState == "08001" =>
+        DatabaseConnectionError.invalidNel
+      case Left(ex: java.sql.SQLException) =>
+        SqlExecutionError(ex.getMessage).invalidNel
+      case Left(ex) =>
+        UnknownError(s"Unexpected error: ${ex.getMessage}").invalidNel
+      case _ =>
+        UnexpectedResultError.invalidNel
     }
   }
 

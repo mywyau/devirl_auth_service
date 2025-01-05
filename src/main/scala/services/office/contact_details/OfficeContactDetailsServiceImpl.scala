@@ -9,29 +9,30 @@ import cats.implicits.*
 import cats.Monad
 import cats.NonEmptyParallel
 import models.database.DatabaseErrors
+import models.database.DatabaseSuccess
 import models.office.contact_details.errors.*
 import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
 import models.office.contact_details.requests.UpdateOfficeContactDetailsRequest
-import models.office.contact_details.OfficeContactDetails
+import models.office.contact_details.OfficeContactDetailsPartial
 import repositories.office.OfficeContactDetailsRepositoryAlgebra
+import models.database.CreateSuccess
 
 trait OfficeContactDetailsServiceAlgebra[F[_]] {
 
-  def getByOfficeId(officeId: String): F[Either[OfficeContactDetailsErrors, OfficeContactDetails]]
+  def getByOfficeId(officeId: String): F[Either[OfficeContactDetailsErrors, OfficeContactDetailsPartial]]
 
-  def create(createOfficeContactDetailsRequest: CreateOfficeContactDetailsRequest): F[cats.data.ValidatedNel[OfficeContactDetailsErrors, Int]]
+  def create(createOfficeContactDetailsRequest: CreateOfficeContactDetailsRequest): F[cats.data.ValidatedNel[OfficeContactDetailsErrors, DatabaseSuccess]]
 
-  def update(officeId: String, officeAddress: UpdateOfficeContactDetailsRequest): F[ValidatedNel[OfficeContactDetailsErrors, Int]]
+  def update(officeId: String, officeAddress: UpdateOfficeContactDetailsRequest): F[ValidatedNel[OfficeContactDetailsErrors, DatabaseSuccess]]
 
-  def delete(officeId: String): F[ValidatedNel[DatabaseErrors, Int]]
-
+  def delete(officeId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 }
 
 class OfficeContactDetailsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
   officeContactDetailsRepo: OfficeContactDetailsRepositoryAlgebra[F]
 ) extends OfficeContactDetailsServiceAlgebra[F] {
 
-  override def getByOfficeId(officeId: String): F[Either[OfficeContactDetailsErrors, OfficeContactDetails]] =
+  override def getByOfficeId(officeId: String): F[Either[OfficeContactDetailsErrors, OfficeContactDetailsPartial]] =
     officeContactDetailsRepo.findByOfficeId(officeId).flatMap {
       case Some(user) =>
         Concurrent[F].pure(Right(user))
@@ -39,9 +40,9 @@ class OfficeContactDetailsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Mon
         Concurrent[F].pure(Left(OfficeContactDetailsNotFound))
     }
 
-  override def create(createOfficeContactDetailsRequest: CreateOfficeContactDetailsRequest): F[ValidatedNel[OfficeContactDetailsErrors, Int]] = {
+  override def create(createOfficeContactDetailsRequest: CreateOfficeContactDetailsRequest): F[ValidatedNel[OfficeContactDetailsErrors, DatabaseSuccess]] = {
 
-    val contactDetailsCreation: F[ValidatedNel[DatabaseErrors, Int]] =
+    val contactDetailsCreation =
       officeContactDetailsRepo.create(createOfficeContactDetailsRequest)
 
     contactDetailsCreation
@@ -58,15 +59,15 @@ class OfficeContactDetailsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Mon
       }
   }
 
-  override def update(officeId: String, request: UpdateOfficeContactDetailsRequest): F[ValidatedNel[OfficeContactDetailsErrors, Int]] = {
+  override def update(officeId: String, request: UpdateOfficeContactDetailsRequest): F[ValidatedNel[OfficeContactDetailsErrors, DatabaseSuccess]] = {
 
-    val updateContactDetails: F[ValidatedNel[DatabaseErrors, Int]] =
+    val updateContactDetails =
       officeContactDetailsRepo.update(officeId, request)
 
     updateContactDetails
       .map {
         case Validated.Valid(addressId) =>
-          Valid(1)
+          Valid(CreateSuccess)
         case contactDetailsResult =>
           val errors =
             List(contactDetailsResult.toEither.left.getOrElse(Nil))
@@ -77,7 +78,7 @@ class OfficeContactDetailsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Mon
       }
   }
 
-  override def delete(officeId: String): F[ValidatedNel[DatabaseErrors, Int]] =
+  override def delete(officeId: String) =
     officeContactDetailsRepo.delete(officeId)
 }
 

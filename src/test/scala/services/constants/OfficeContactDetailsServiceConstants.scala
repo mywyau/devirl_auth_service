@@ -3,29 +3,26 @@ package services.constants
 import cats.data.Validated.Valid
 import cats.data.ValidatedNel
 import cats.effect.IO
-import models.database.DatabaseErrors
-import models.office.contact_details.OfficeContactDetails
+import java.time.LocalDateTime
+import models.database.*
 import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
+import models.office.contact_details.requests.UpdateOfficeContactDetailsRequest
+import models.office.contact_details.OfficeContactDetails
+import models.office.contact_details.OfficeContactDetailsPartial
 import repositories.office.OfficeContactDetailsRepositoryAlgebra
 import repository.business.mocks.MockBusinessContactDetailsRepository
 import repository.office.mocks.MockOfficeContactDetailsRepository
 
-import java.time.LocalDateTime
-import models.office.contact_details.requests.UpdateOfficeContactDetailsRequest
-
 object OfficeContactDetailsServiceConstants {
 
-  def testOfficeContactDetails(id: Option[Int], businessId: String, office_id: String): OfficeContactDetails =
-    OfficeContactDetails(
-      id = Some(1),
+  def testOfficeContactDetails(id: Option[Int], businessId: String, office_id: String): OfficeContactDetailsPartial =
+    OfficeContactDetailsPartial(
       businessId = businessId,
       officeId = office_id,
       primaryContactFirstName = Some("Michael"),
       primaryContactLastName = Some("Yau"),
       contactEmail = Some("mike@gmail.com"),
-      contactNumber = Some("07402205071"),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      contactNumber = Some("07402205071")
     )
 
   def testCreateOfficeContactDetailsRequest(businessId: String, office_id: String): CreateOfficeContactDetailsRequest =
@@ -39,19 +36,20 @@ object OfficeContactDetailsServiceConstants {
     )
 
   class MockOfficeContactDetailsRepository(
-                                            existingOfficeContactDetails: Map[String, OfficeContactDetails] = Map.empty
-                                          ) extends OfficeContactDetailsRepositoryAlgebra[IO] {
+    existingOfficeContactDetailsPartial: Map[String, OfficeContactDetailsPartial] = Map.empty
+  ) extends OfficeContactDetailsRepositoryAlgebra[IO] {
 
+    def showAllUsers: IO[Map[String, OfficeContactDetailsPartial]] = IO.pure(existingOfficeContactDetailsPartial)
 
-    override def update(officeId: String, request: UpdateOfficeContactDetailsRequest): IO[ValidatedNel[DatabaseErrors, Int]] = ???
+    override def findByOfficeId(officeId: String): IO[Option[OfficeContactDetailsPartial]] = IO.pure(existingOfficeContactDetailsPartial.get(officeId))
 
-    def showAllUsers: IO[Map[String, OfficeContactDetails]] = IO.pure(existingOfficeContactDetails)
+    override def update(officeId: String, request: UpdateOfficeContactDetailsRequest): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = ???
 
-    override def findByOfficeId(officeId: String): IO[Option[OfficeContactDetails]] = IO.pure(existingOfficeContactDetails.get(officeId))
+    override def create(createOfficeContactDetailsRequest: CreateOfficeContactDetailsRequest): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = IO(Valid(CreateSuccess))
 
-    override def create(createOfficeContactDetailsRequest: CreateOfficeContactDetailsRequest): IO[ValidatedNel[DatabaseErrors, Int]] = IO(Valid(1))
+    override def delete(officeId: String): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = ???
 
-    override def delete(officeId: String): IO[ValidatedNel[DatabaseErrors, Int]] = ???
+    override def deleteAllByBusinessId(businessId: String): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = ???
   }
 
 }

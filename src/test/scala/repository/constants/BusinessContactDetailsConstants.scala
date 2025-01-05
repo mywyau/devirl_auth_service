@@ -8,29 +8,22 @@ import models.business.contact_details.requests.CreateBusinessContactDetailsRequ
 import repository.business.mocks.MockBusinessContactDetailsRepository
 
 import java.time.LocalDateTime
+import models.business.contact_details.BusinessContactDetailsPartial
 
 object BusinessContactDetailsConstants {
 
-  def createMockBusinessContactDetailsRepo(initialUsers: List[BusinessContactDetails]): IO[MockBusinessContactDetailsRepository] =
-    Ref.of[IO, List[BusinessContactDetails]](initialUsers).map(MockBusinessContactDetailsRepository.apply)
+  def createMockBusinessContactDetailsRepo(initialUsers: List[BusinessContactDetailsPartial]): IO[MockBusinessContactDetailsRepository] =
+    Ref.of[IO, List[BusinessContactDetailsPartial]](initialUsers).map(MockBusinessContactDetailsRepository.apply)
 
-  def testContactDetails(
-                          id: Option[Int],
-                          userId: String,
-                          businessId: String
-                        ): BusinessContactDetails =
-    BusinessContactDetails(
-      id = id,
+  def testContactDetails(userId: String,businessId: String): BusinessContactDetailsPartial =
+    BusinessContactDetailsPartial(
       userId = userId,
       businessId = businessId,
-      businessName = Some("mikeyCorp"),
       primaryContactFirstName = Some("Michael"),
       primaryContactLastName = Some("Yau"),
       contactEmail = Some("mikey@gmail.com"),
       contactNumber = Some("07402205071"),
-      websiteUrl = Some("mikey.com"),
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      websiteUrl = Some("mikey.com")
     )
 
   def testCreateBusinessContactDetailsRequest(

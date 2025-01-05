@@ -5,11 +5,10 @@ import cats.effect.Resource
 import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
-import java.time.LocalDateTime
-import java.time.LocalTime
 import models.business.adts.PrivateDesk
 import models.business.specifications.BusinessAvailability
 import models.business.specifications.BusinessSpecifications
+import models.business.specifications.BusinessSpecificationsPartial
 import repositories.business.BusinessSpecificationsRepositoryImpl
 import repository.fragments.business.BusinessSpecificationsRepoFragments.createBusinessSpecsTable
 import repository.fragments.business.BusinessSpecificationsRepoFragments.insertBusinessSpecificationsData
@@ -18,6 +17,9 @@ import shared.TransactorResource
 import weaver.GlobalRead
 import weaver.IOSuite
 import weaver.ResourceTag
+
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 class BusinessSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite {
 
@@ -46,8 +48,7 @@ class BusinessSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite 
     val businessId = "BUS001"
 
     val expectedResult =
-      BusinessSpecifications(
-        id = Some(1),
+      BusinessSpecificationsPartial(
         userId = userId,
         businessId = businessId,
         businessName = Some("business_name_1"),
@@ -58,9 +59,7 @@ class BusinessSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite 
             startTime = LocalTime.of(9, 0, 0),
             endTime = LocalTime.of(17, 0, 0)
           )
-        ),
-        createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        )
       )
 
     for {

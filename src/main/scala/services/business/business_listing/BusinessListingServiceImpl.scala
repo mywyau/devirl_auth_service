@@ -9,6 +9,7 @@ import models.business.business_listing.requests.InitiateBusinessListingRequest
 import models.business.business_listing.BusinessListing
 import models.business.business_listing.BusinessListingCard
 import models.database.DatabaseErrors
+import models.database.DatabaseSuccess
 import repositories.business.BusinessListingRepositoryAlgebra
 
 trait BusinessListingServiceAlgebra[F[_]] {
@@ -21,9 +22,9 @@ trait BusinessListingServiceAlgebra[F[_]] {
 
   def initiate(request: InitiateBusinessListingRequest): F[Option[BusinessListingCard]]
 
-  def delete(businessId: String): F[ValidatedNel[DatabaseErrors, Int]]
+  def delete(businessId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
-  def deleteByBusinessId(businessId: String): F[ValidatedNel[DatabaseErrors, Int]]
+  def deleteByUserId(userId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 }
 
 class BusinessListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
@@ -38,21 +39,15 @@ class BusinessListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
 
   override def initiate(request: InitiateBusinessListingRequest): F[Option[BusinessListingCard]] =
     for {
-      createdListing: ValidatedNel[DatabaseErrors, Int] <- businessListingRepository.initiate(request)
+      createdListing: ValidatedNel[DatabaseErrors, DatabaseSuccess] <- businessListingRepository.initiate(request)
       foundListing: Option[BusinessListing] <- businessListingRepository.findByBusinessId(request.businessId)
     } yield foundListing.map(details =>
       BusinessListingCard(
         businessId = details.businessId,
-        businessName = details.businessSpecs.businessName.getOrElse(""),
-        description = details.businessSpecs.description.getOrElse("")
+        businessName = details.specifications.businessName.getOrElse(""),
+        description = details.specifications.description.getOrElse("")
       )
     )
-
-  override def delete(businessId: String): F[ValidatedNel[DatabaseErrors, Int]] =
-    businessListingRepository.delete(businessId)
-
-  override def deleteByBusinessId(businessId: String): F[ValidatedNel[DatabaseErrors, Int]] =
-    businessListingRepository.delete(businessId)
 
   override def findAllListingCardDetails(): F[List[BusinessListingCard]] =
     for {
@@ -61,12 +56,17 @@ class BusinessListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
         allListings.map(details =>
           BusinessListingCard(
             businessId = details.businessId,
-            businessName = details.businessSpecs.businessName.getOrElse(""),
-            description = details.businessSpecs.description.getOrElse("")
+            businessName = details.specifications.businessName.getOrElse(""),
+            description = details.specifications.description.getOrElse("")
           )
         )
     } yield createCardDetails
 
+  override def delete(businessId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
+    businessListingRepository.delete(businessId)
+
+  override def deleteByUserId(userId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
+    businessListingRepository.deleteByUserId(userId)
 }
 
 object BusinessListingService {

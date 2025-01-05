@@ -28,6 +28,7 @@ import shared.{HttpClientResource, TransactorResource}
 import weaver.*
 
 import java.time.LocalDateTime
+import models.business.specifications.BusinessSpecificationsPartial
 
 class BusinessSpecificationsControllerISpec(global: GlobalRead) extends IOSuite {
 
@@ -61,7 +62,7 @@ class BusinessSpecificationsControllerISpec(global: GlobalRead) extends IOSuite 
     val expectedBusinessSpecifications = testBusinessSpecs
 
     client.run(request).use { response =>
-      response.as[BusinessSpecifications].map { body =>
+      response.as[BusinessSpecificationsPartial].map { body =>
         expect.all(
           response.status == Status.Ok,
           body == expectedBusinessSpecifications

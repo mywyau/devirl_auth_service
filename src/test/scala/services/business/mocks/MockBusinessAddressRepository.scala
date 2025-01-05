@@ -3,30 +3,33 @@ package services.business.mocks
 import cats.data.Validated.Valid
 import cats.data.ValidatedNel
 import cats.effect.IO
-import models.business.address.BusinessAddress
+import java.time.LocalDateTime
 import models.business.address.errors.BusinessAddressNotFound
 import models.business.address.requests.CreateBusinessAddressRequest
+import models.business.address.requests.UpdateBusinessAddressRequest
+import models.business.address.BusinessAddress
+import models.business.address.BusinessAddressPartial
+import models.database.CreateSuccess
 import models.database.DatabaseErrors
+import models.database.DatabaseSuccess
 import repositories.business.BusinessAddressRepositoryAlgebra
-import services.business.address.{BusinessAddressService, BusinessAddressServiceImpl}
+import services.business.address.BusinessAddressService
+import services.business.address.BusinessAddressServiceImpl
 import weaver.SimpleIOSuite
 
-import java.time.LocalDateTime
-import models.business.address.requests.UpdateBusinessAddressRequest
-
-
 class MockBusinessAddressRepository(
-                                     existingBusinessAddress: Map[String, BusinessAddress] = Map.empty
-                                   ) extends BusinessAddressRepositoryAlgebra[IO] {
+  existingBusinessAddress: Map[String, BusinessAddressPartial] = Map.empty
+) extends BusinessAddressRepositoryAlgebra[IO] {
 
+  def showAllUsers: IO[Map[String, BusinessAddressPartial]] = IO.pure(existingBusinessAddress)
 
-  override def update(businessId: String, request: UpdateBusinessAddressRequest): IO[ValidatedNel[DatabaseErrors, Int]] = ???
+  override def findByBusinessId(businessId: String): IO[Option[BusinessAddressPartial]] = IO.pure(existingBusinessAddress.get(businessId))
 
-  def showAllUsers: IO[Map[String, BusinessAddress]] = IO.pure(existingBusinessAddress)
+  override def create(request: CreateBusinessAddressRequest): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = IO.pure(Valid(CreateSuccess))
 
-  override def findByBusinessId(businessId: String): IO[Option[BusinessAddress]] = IO.pure(existingBusinessAddress.get(businessId))
+  override def update(businessId: String, request: UpdateBusinessAddressRequest): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = ???
 
-  override def createBusinessAddress(request: CreateBusinessAddressRequest): IO[ValidatedNel[DatabaseErrors, Int]] = IO.pure(Valid(1))
+  override def delete(businessId: String): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = ???
 
-  override def deleteBusinessAddress(businessId: String): IO[ValidatedNel[DatabaseErrors, Int]] = ???
+  override def deleteAllByUserId(userId: String): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = ???
 }

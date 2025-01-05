@@ -4,11 +4,17 @@ import io.circe.generic.semiauto.deriveDecoder
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.Decoder
 import io.circe.Encoder
-import models.business.address.BusinessAddress
-import models.business.contact_details.BusinessContactDetails
-import models.business.specifications.BusinessSpecifications
+import models.business.address.BusinessAddressPartial
+import models.business.contact_details.BusinessContactDetailsPartial
+import models.business.specifications.BusinessSpecificationsPartial
 
-case class BusinessListing(businessId: String, addressDetails: BusinessAddress, businessContactDetails: BusinessContactDetails, businessSpecs: BusinessSpecifications)
+case class BusinessListing(
+  userId: String,
+  businessId: String,
+  addressDetails: BusinessAddressPartial,
+  contactDetails: BusinessContactDetailsPartial,
+  specifications: BusinessSpecificationsPartial
+)
 
 object BusinessListing {
   implicit val businessListingEncoder: Encoder[BusinessListing] = deriveEncoder[BusinessListing]

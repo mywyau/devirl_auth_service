@@ -1,14 +1,15 @@
 package services.office.office_listing
 
-import cats.Monad
-import cats.NonEmptyParallel
 import cats.data.ValidatedNel
 import cats.effect.Concurrent
 import cats.syntax.all.*
+import cats.Monad
+import cats.NonEmptyParallel
 import models.database.DatabaseErrors
+import models.database.DatabaseSuccess
+import models.office.office_listing.requests.InitiateOfficeListingRequest
 import models.office.office_listing.OfficeListing
 import models.office.office_listing.OfficeListingCard
-import models.office.office_listing.requests.InitiateOfficeListingRequest
 import repositories.office.OfficeListingRepositoryAlgebra
 
 trait OfficeListingServiceAlgebra[F[_]] {
@@ -21,9 +22,9 @@ trait OfficeListingServiceAlgebra[F[_]] {
 
   def initiate(request: InitiateOfficeListingRequest): F[Option[OfficeListingCard]]
 
-  def delete(officeId: String): F[ValidatedNel[DatabaseErrors, Int]]
+  def delete(officeId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
-  def deleteByBusinessId(businessId: String): F[ValidatedNel[DatabaseErrors, Int]]
+  def deleteByBusinessId(businessId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 }
 
 class OfficeListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
@@ -38,36 +39,35 @@ class OfficeListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
 
   override def initiate(request: InitiateOfficeListingRequest): F[Option[OfficeListingCard]] =
     for {
-      createdListing: ValidatedNel[DatabaseErrors, Int] <- officeListingRepository.initiate(request)
+      createdListing: ValidatedNel[DatabaseErrors, DatabaseSuccess] <- officeListingRepository.initiate(request)
       foundListing: Option[OfficeListing] <- officeListingRepository.findByOfficeId(request.officeId)
     } yield foundListing.map(details =>
       OfficeListingCard(
-        businessId = details.officeSpecifications.businessId,
-        officeId = details.officeSpecifications.officeId,
-        officeName = details.officeSpecifications.officeName.getOrElse(""),
-        description = details.officeSpecifications.description.getOrElse("")
+        businessId = details.specifications.businessId,
+        officeId = details.specifications.officeId,
+        officeName = details.specifications.officeName.getOrElse(""),
+        description = details.specifications.description.getOrElse("")
       )
     )
-
-  override def delete(officeId: String): F[ValidatedNel[DatabaseErrors, Int]] =
-    officeListingRepository.delete(officeId)
-
-  override def deleteByBusinessId(officeId: String): F[ValidatedNel[DatabaseErrors, Int]] =
-    officeListingRepository.delete(officeId)
 
   override def findAllListingCardDetails(businessId: String): F[List[OfficeListingCard]] =
     for {
       allListings: List[OfficeListing] <- officeListingRepository.findAll(businessId)
       createCardDetails: List[OfficeListingCard] = allListings.map(details =>
         OfficeListingCard(
-          businessId = details.officeSpecifications.businessId,
-          officeId = details.officeSpecifications.officeId,
-          officeName = details.officeSpecifications.officeName.getOrElse(""),
-          description = details.officeSpecifications.description.getOrElse("")
+          businessId = details.specifications.businessId,
+          officeId = details.specifications.officeId,
+          officeName = details.specifications.officeName.getOrElse(""),
+          description = details.specifications.description.getOrElse("")
         )
       )
     } yield createCardDetails
 
+  override def delete(officeId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
+    officeListingRepository.delete(officeId)
+
+  override def deleteByBusinessId(officeId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
+    officeListingRepository.deleteByBusinessId(officeId)
 }
 
 object OfficeListingService {

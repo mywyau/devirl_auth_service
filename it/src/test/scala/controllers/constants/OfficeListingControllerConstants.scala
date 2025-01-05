@@ -116,8 +116,8 @@ object OfficeListingControllerConstants {
   def testOfficeListing(id: Option[Int], businessId: String, officeId: String): OfficeListing =
     OfficeListing(
       officeId = officeId,
-      officeAddressDetails = testOfficeAddressPartial(businessId, officeId),
-      officeContactDetails = testOfficeContactDetailsPartial(businessId, officeId),
-      officeSpecifications = testOfficeSpecificationsPartial(businessId, officeId)
+      addressDetails = testOfficeAddressPartial(businessId, officeId),
+      contactDetails = testOfficeContactDetailsPartial(businessId, officeId),
+      specifications = testOfficeSpecificationsPartial(businessId, officeId)
     )
 }

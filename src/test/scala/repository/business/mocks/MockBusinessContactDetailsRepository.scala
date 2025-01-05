@@ -2,42 +2,41 @@ package repository.business.mocks
 
 import cats.data.Validated.validNel
 import cats.data.ValidatedNel
-import cats.effect.IO
 import cats.effect.kernel.Ref
-import models.business.contact_details.BusinessContactDetails
+import cats.effect.IO
+import java.time.LocalDateTime
 import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
+import models.business.contact_details.requests.UpdateBusinessContactDetailsRequest
+import models.business.contact_details.BusinessContactDetails
+import models.business.contact_details.BusinessContactDetailsPartial
+import models.database.CreateSuccess
 import models.database.DatabaseErrors
+import models.database.DatabaseSuccess
 import repositories.business.BusinessContactDetailsRepositoryAlgebra
 
-import java.time.LocalDateTime
-import models.business.contact_details.requests.UpdateBusinessContactDetailsRequest
+case class MockBusinessContactDetailsRepository(ref: Ref[IO, List[BusinessContactDetailsPartial]]) extends BusinessContactDetailsRepositoryAlgebra[IO] {
 
-case class MockBusinessContactDetailsRepository(ref: Ref[IO, List[BusinessContactDetails]]) extends BusinessContactDetailsRepositoryAlgebra[IO] {
-
-  override def update(businessId: String, request: UpdateBusinessContactDetailsRequest): IO[ValidatedNel[DatabaseErrors, Int]] = ???
-
-
-  override def findByBusinessId(businessId: String): IO[Option[BusinessContactDetails]] =
+  override def findByBusinessId(businessId: String): IO[Option[BusinessContactDetailsPartial]] =
     ref.get.map(_.find(_.businessId == businessId))
 
-  override def create(createBusinessContactDetailsRequest: CreateBusinessContactDetailsRequest): IO[ValidatedNel[DatabaseErrors, Int]] =
-    ref.modify { (contactDetails: List[BusinessContactDetails]) =>
+  override def create(createBusinessContactDetailsRequest: CreateBusinessContactDetailsRequest): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
+    ref.modify { (contactDetails: List[BusinessContactDetailsPartial]) =>
       val updatedList =
-        BusinessContactDetails(
-          id = Some(1),
+        BusinessContactDetailsPartial(
           userId = createBusinessContactDetailsRequest.userId,
           businessId = createBusinessContactDetailsRequest.businessId,
-          businessName = Some(createBusinessContactDetailsRequest.businessName),
           primaryContactFirstName = Some(createBusinessContactDetailsRequest.primaryContactFirstName),
           primaryContactLastName = Some(createBusinessContactDetailsRequest.primaryContactLastName),
           contactEmail = Some(createBusinessContactDetailsRequest.contactEmail),
           contactNumber = Some(createBusinessContactDetailsRequest.contactNumber),
-          websiteUrl = Some(createBusinessContactDetailsRequest.websiteUrl),
-          createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-          updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
+          websiteUrl = Some(createBusinessContactDetailsRequest.websiteUrl)
         ) :: contactDetails
-      (updatedList, validNel(1))
+      (updatedList, validNel(CreateSuccess))
     }
 
-  override def delete(businessId: String): IO[ValidatedNel[DatabaseErrors, Int]] = ???
+  override def update(businessId: String, request: UpdateBusinessContactDetailsRequest): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = ???
+
+  override def delete(businessId: String): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = ???
+
+  override def deleteAllByUserId(userId: String): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = ???
 }

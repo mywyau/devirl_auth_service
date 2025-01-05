@@ -1,13 +1,13 @@
 package repository.business
 
 import cats.data.Validated.Valid
-import models.business.contact_details.BusinessContactDetails
+import java.time.LocalDateTime
 import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
+import models.business.contact_details.BusinessContactDetails
 import repository.business.mocks.MockBusinessContactDetailsRepository
 import repository.constants.BusinessContactDetailsConstants.*
 import weaver.SimpleIOSuite
-
-import java.time.LocalDateTime
+import models.database.CreateSuccess
 
 object BusinessContactDetailsRepositorySpec extends SimpleIOSuite {
 
@@ -16,7 +16,7 @@ object BusinessContactDetailsRepositorySpec extends SimpleIOSuite {
     val userId = "user_id_1"
     val businessId = "business_id_1"
 
-    val existingContactDetailsForUser: BusinessContactDetails = testContactDetails(Some(1), userId, businessId)
+    val existingContactDetailsForUser = testContactDetails(userId, businessId)
 
     for {
       mockBusinessContactDetailsRepo <- createMockBusinessContactDetailsRepo(List(existingContactDetailsForUser))
@@ -37,16 +37,16 @@ object BusinessContactDetailsRepositorySpec extends SimpleIOSuite {
     val userId = "user_id_1"
     val businessId = "business_id_1"
 
-    val testContactDetailsForUser: BusinessContactDetails = testContactDetails(Some(1), userId, businessId)
     val testCreateRequest: CreateBusinessContactDetailsRequest = testCreateBusinessContactDetailsRequest(userId, businessId)
+    val expectedContactDetails = testContactDetails(userId, businessId)
 
     for {
       mockBusinessContactDetailsRepo <- createMockBusinessContactDetailsRepo(List())
       result <- mockBusinessContactDetailsRepo.create(testCreateRequest)
       findInsertedContactDetails <- mockBusinessContactDetailsRepo.findByBusinessId(businessId)
     } yield expect.all(
-      result == Valid(1),
-      findInsertedContactDetails == Some(testContactDetailsForUser)
+      result == Valid(CreateSuccess),
+      findInsertedContactDetails == Some(expectedContactDetails)
     )
   }
 }

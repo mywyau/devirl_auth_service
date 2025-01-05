@@ -12,9 +12,9 @@ import models.office.contact_details.OfficeContactDetailsPartial
 
 case class OfficeListing(
   officeId: String,
-  officeAddressDetails: OfficeAddressPartial,
-  officeContactDetails: OfficeContactDetailsPartial,
-  officeSpecifications: OfficeSpecificationsPartial
+  addressDetails: OfficeAddressPartial,
+  contactDetails: OfficeContactDetailsPartial,
+  specifications: OfficeSpecificationsPartial
 )
 
 object OfficeListing {

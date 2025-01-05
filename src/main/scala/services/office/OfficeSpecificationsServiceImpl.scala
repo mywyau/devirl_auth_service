@@ -8,28 +8,32 @@ import cats.implicits.*
 import cats.Monad
 import cats.NonEmptyParallel
 import models.database.DatabaseErrors
+import models.database.DatabaseSuccess
 import models.office.address_details.errors.OfficeAddressErrors
 import models.office.address_details.requests.UpdateOfficeAddressRequest
 import models.office.specifications.errors.*
 import models.office.specifications.requests.CreateOfficeSpecificationsRequest
 import models.office.specifications.requests.UpdateOfficeSpecificationsRequest
-import models.office.specifications.OfficeSpecifications
+import models.office.specifications.OfficeSpecificationsPartial
 import repositories.office.OfficeSpecificationsRepositoryAlgebra
+import models.database.CreateSuccess
 
 trait OfficeSpecificationsServiceAlgebra[F[_]] {
 
-  def getByOfficeId(officeId: String): F[Either[OfficeSpecificationsErrors, OfficeSpecifications]]
+  def getByOfficeId(officeId: String): F[Either[OfficeSpecificationsErrors, OfficeSpecificationsPartial]]
 
-  def create(createOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest): F[ValidatedNel[OfficeSpecificationsErrors, Int]]
+  def create(createOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest): F[ValidatedNel[OfficeSpecificationsErrors, DatabaseSuccess]]
 
-  def update(officeId: String, officeSpecifications: UpdateOfficeSpecificationsRequest): F[ValidatedNel[OfficeSpecificationsErrors, Int]]
+  def update(officeId: String, officeSpecifications: UpdateOfficeSpecificationsRequest): F[ValidatedNel[OfficeSpecificationsErrors, DatabaseSuccess]]
 
-  def delete(officeId: String): F[ValidatedNel[DatabaseErrors, Int]]
+  def delete(officeId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 }
 
-class OfficeSpecificationsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](officeSpecificationsRepo: OfficeSpecificationsRepositoryAlgebra[F]) extends OfficeSpecificationsServiceAlgebra[F] {
+class OfficeSpecificationsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
+  officeSpecificationsRepo: OfficeSpecificationsRepositoryAlgebra[F]
+) extends OfficeSpecificationsServiceAlgebra[F] {
 
-  override def getByOfficeId(officeId: String): F[Either[OfficeSpecificationsErrors, OfficeSpecifications]] =
+  override def getByOfficeId(officeId: String): F[Either[OfficeSpecificationsErrors, OfficeSpecificationsPartial]] =
     officeSpecificationsRepo.findByOfficeId(officeId).flatMap {
       case Some(user) =>
         Concurrent[F].pure(Right(user))
@@ -37,9 +41,9 @@ class OfficeSpecificationsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Mon
         Concurrent[F].pure(Left(OfficeSpecificationsNotFound))
     }
 
-  override def create(createOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest): F[ValidatedNel[OfficeSpecificationsErrors, Int]] = {
+  override def create(createOfficeSpecificationsRequest: CreateOfficeSpecificationsRequest): F[ValidatedNel[OfficeSpecificationsErrors, DatabaseSuccess]] = {
 
-    val specificationsCreation: F[ValidatedNel[DatabaseErrors, Int]] =
+    val specificationsCreation =
       officeSpecificationsRepo.create(createOfficeSpecificationsRequest)
 
     specificationsCreation
@@ -56,15 +60,15 @@ class OfficeSpecificationsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Mon
       }
   }
 
-  override def update(officeId: String, request: UpdateOfficeSpecificationsRequest): F[ValidatedNel[OfficeSpecificationsErrors, Int]] = {
+  override def update(officeId: String, request: UpdateOfficeSpecificationsRequest): F[ValidatedNel[OfficeSpecificationsErrors, DatabaseSuccess]] = {
 
-    val updateSpecifications: F[ValidatedNel[DatabaseErrors, Int]] =
+    val updateSpecifications =
       officeSpecificationsRepo.update(officeId, request)
 
     updateSpecifications
       .map {
         case Valid(specificationsId) =>
-          Valid(1)
+          Valid(CreateSuccess)
         case result =>
           val errors =
             List(result.toEither.left.getOrElse(Nil))
@@ -75,7 +79,7 @@ class OfficeSpecificationsServiceImpl[F[_] : Concurrent : NonEmptyParallel : Mon
       }
   }
 
-  override def delete(officeId: String): F[ValidatedNel[DatabaseErrors, Int]] =
+  override def delete(officeId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
     officeSpecificationsRepo.delete(officeId)
 }
 

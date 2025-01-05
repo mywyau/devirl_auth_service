@@ -15,6 +15,7 @@ import shared.TransactorResource
 import weaver.{GlobalRead, IOSuite}
 
 import java.time.LocalDateTime
+import models.database.CreateSuccess
 
 class OfficeListingRepositoryISpec(global: GlobalRead) extends IOSuite {
 
@@ -59,6 +60,6 @@ class OfficeListingRepositoryISpec(global: GlobalRead) extends IOSuite {
 
     for {
       officeListingOpt <- officeListingRepo.initiate(request)
-    } yield expect(officeListingOpt == Valid(3))
+    } yield expect(officeListingOpt == Valid(CreateSuccess))
   }
 }

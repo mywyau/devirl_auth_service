@@ -71,7 +71,7 @@ class BusinessAddressControllerImpl[F[_] : Concurrent](businessAddressService: B
 
     case DELETE -> Root / "business" / "businesses" / "address" / "details" / businessId =>
       logger.info(s"[BusinessAddressControllerImpl] DELETE - Attempting to delete business address") *>
-        businessAddressService.deleteAddress(businessId).flatMap {
+        businessAddressService.delete(businessId).flatMap {
           case Valid(address) =>
             logger.info(s"[BusinessAddressControllerImpl] DELETE - Successfully deleted business address for $businessId") *>
               Ok(DeletedResponse("Business address details deleted successfully").asJson)

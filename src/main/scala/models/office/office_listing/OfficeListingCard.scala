@@ -5,7 +5,12 @@ import io.circe.generic.semiauto.deriveEncoder
 import io.circe.Decoder
 import io.circe.Encoder
 
-case class OfficeListingCard(businessId: String, officeId: String, officeName: String, description: String)
+case class OfficeListingCard(
+  businessId: String,
+  officeId: String,
+  officeName: String,
+  description: String
+)
 
 object OfficeListingCard {
   implicit val officeListingCardEncoder: Encoder[OfficeListingCard] = deriveEncoder[OfficeListingCard]

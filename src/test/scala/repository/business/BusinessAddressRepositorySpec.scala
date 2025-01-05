@@ -8,12 +8,14 @@ import models.business.address.requests.CreateBusinessAddressRequest
 import repository.business.mocks.MockBusinessAddressRepository
 import repository.constants.BusinessAddressRepositoryConstants.*
 import weaver.SimpleIOSuite
+import models.database.CreateSuccess
+import models.database.DeleteSuccess
 
 object BusinessAddressRepositorySpec extends SimpleIOSuite {
 
   test(".findByBusinessId() - should return an address if business_id_1 exists") {
 
-    val existingAddressForUser = testAddress(Some(1), "user_id_1", "business_id_1")
+    val existingAddressForUser = testAddress("user_id_1", "business_id_1")
 
     for {
       mockRepo <- createMockRepo(List(existingAddressForUser))
@@ -31,30 +33,30 @@ object BusinessAddressRepositorySpec extends SimpleIOSuite {
   test(".createBusinessAddress() - when given a valid business address should insert an address into the postgres db") {
 
     val testBusinessAddressRequest: CreateBusinessAddressRequest = testCreateBusinessAddressRequest("user_id_2", "business_id_2")
-    val testAddressForUser2: BusinessAddress = testAddress(Some(1), "user_id_2", "business_id_2")
+    val testAddressForUser2 = testAddress("user_id_2", "business_id_2")
 
     for {
       mockRepo <- createMockRepo(List())
-      result <- mockRepo.createBusinessAddress(testBusinessAddressRequest)
+      result <- mockRepo.create(testBusinessAddressRequest)
       findInsertedAddress <- mockRepo.findByBusinessId("business_id_2")
     } yield expect.all(
-      result == Valid(1),
+      result == Valid(CreateSuccess),
       findInsertedAddress == Some(testAddressForUser2)
     )
   }
 
-  test(".deleteBusinessAddress() - when given a valid businessId should delete the business address details") {
+  test(".delete() - when given a valid businessId should delete the business address details") {
 
-    val existingAddressForUser: BusinessAddress = testAddress(Some(1), "user_id_3", "business_id_3")
+    val existingAddressForUser = testAddress("user_id_3", "business_id_3")
 
     for {
       mockRepo <- createMockRepo(List(existingAddressForUser))
       findInitiallyCreatedAddress <- mockRepo.findByBusinessId("business_id_3")
-      result <- mockRepo.deleteBusinessAddress("business_id_3")
+      result <- mockRepo.delete("business_id_3")
       findInsertedAddress <- mockRepo.findByBusinessId("business_id_3")
     } yield expect.all(
       findInitiallyCreatedAddress == Some(existingAddressForUser),
-      result == Valid(1),
+      result == Valid(DeleteSuccess),
       findInsertedAddress == None
     )
   }

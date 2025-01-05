@@ -1,31 +1,37 @@
 package controllers.office
 
 import cats.effect.*
-import com.comcast.ip4s.{ipv4, port}
+import com.comcast.ip4s.ipv4
+import com.comcast.ip4s.port
 import configuration.models.AppConfig
 import controllers.constants.OfficeContactDetailsControllerITConstants.*
-import controllers.fragments.OfficeContactDetailsRepoFragments.{createOfficeContactDetailsTable, insertOfficeContactDetailsData, resetOfficeContactDetailsTable}
+import controllers.fragments.OfficeContactDetailsRepoFragments.createOfficeContactDetailsTable
+import controllers.fragments.OfficeContactDetailsRepoFragments.insertOfficeContactDetailsData
+import controllers.fragments.OfficeContactDetailsRepoFragments.resetOfficeContactDetailsTable
 import controllers.office.OfficeContactDetailsController
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
-import io.circe.Json
 import io.circe.syntax.*
+import io.circe.Json
+import java.time.LocalDateTime
 import models.office.adts.*
 import models.office.contact_details.OfficeContactDetails
-import models.responses.{CreatedResponse, DeletedResponse}
+import models.office.contact_details.OfficeContactDetailsPartial
+import models.responses.CreatedResponse
+import models.responses.DeletedResponse
 import org.http4s.*
-import org.http4s.Method.*
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
-import org.http4s.server.{Router, Server}
-import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.http4s.server.Router
+import org.http4s.server.Server
+import org.http4s.Method.*
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import shared.{HttpClientResource, TransactorResource}
+import org.typelevel.log4cats.SelfAwareStructuredLogger
+import shared.HttpClientResource
+import shared.TransactorResource
 import weaver.*
-
-import java.time.LocalDateTime
 
 class OfficeContactDetailsControllerISpec(global: GlobalRead) extends IOSuite {
 
@@ -33,7 +39,7 @@ class OfficeContactDetailsControllerISpec(global: GlobalRead) extends IOSuite {
 
   type Res = (TransactorResource, HttpClientResource)
 
-  def sharedResource: Resource[IO, Res] = {
+  def sharedResource: Resource[IO, Res] =
     for {
       transactor <- global.getOrFailR[TransactorResource]()
       _ <- Resource.eval(
@@ -43,7 +49,6 @@ class OfficeContactDetailsControllerISpec(global: GlobalRead) extends IOSuite {
       )
       client <- global.getOrFailR[HttpClientResource]()
     } yield (transactor, client)
-  }
 
   test(
     "GET - /pistachio/business/offices/contact/details/OFF001 - " +
@@ -56,10 +61,10 @@ class OfficeContactDetailsControllerISpec(global: GlobalRead) extends IOSuite {
     val request =
       Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/offices/contact/details/OFF001")
 
-    val expectedOfficeContactDetails = aliceContactDetails(Some(1), "BUS12345", "OFF001")
+    val expectedOfficeContactDetails = aliceContactDetails("BUS12345", "OFF001")
 
     client.run(request).use { response =>
-      response.as[OfficeContactDetails].map { body =>
+      response.as[OfficeContactDetailsPartial].map { body =>
         expect.all(
           response.status == Status.Ok,
           body == expectedOfficeContactDetails

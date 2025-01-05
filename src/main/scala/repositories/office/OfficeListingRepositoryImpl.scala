@@ -1,27 +1,26 @@
 package repositories.office
 
-import cats.Monad
 import cats.data.ValidatedNel
 import cats.effect.Concurrent
 import cats.syntax.all.*
+import cats.Monad
 import doobie.*
 import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.postgres.implicits.*
 import doobie.util.meta.Meta
+import java.sql.Timestamp
+import java.time.LocalDateTime
 import models.database.*
 import models.office.address_details.OfficeAddress
 import models.office.address_details.OfficeAddressPartial
 import models.office.adts.OfficeType
+import models.office.contact_details.requests.UpdateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.OfficeContactDetailsPartial
-import models.office.contact_details.requests.UpdateOfficeContactDetailsRequest
-import models.office.office_listing.OfficeListing
 import models.office.office_listing.requests.InitiateOfficeListingRequest
+import models.office.office_listing.OfficeListing
 import models.office.specifications.OfficeSpecificationsPartial
-
-import java.sql.Timestamp
-import java.time.LocalDateTime
 
 trait OfficeListingRepositoryAlgebra[F[_]] {
 
@@ -29,11 +28,11 @@ trait OfficeListingRepositoryAlgebra[F[_]] {
 
   def findByOfficeId(officeId: String): F[Option[OfficeListing]]
 
-  def initiate(request: InitiateOfficeListingRequest): F[ValidatedNel[DatabaseErrors, Int]]
+  def initiate(request: InitiateOfficeListingRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
-  def delete(officeId: String): F[ValidatedNel[DatabaseErrors, Int]]
+  def delete(officeId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
-  def deleteByBusinessId(businessId: String): F[ValidatedNel[DatabaseErrors, Int]]
+  def deleteByBusinessId(businessId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
 }
 
@@ -90,9 +89,9 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
         results.map { case (address, contact, specs) =>
           OfficeListing(
             officeId = address.officeId,
-            officeAddressDetails = address,
-            officeContactDetails = contact,
-            officeSpecifications = specs
+            addressDetails = address,
+            contactDetails = contact,
+            specifications = specs
           )
         }
       }
@@ -145,9 +144,9 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
           Some(
             OfficeListing(
               officeId = address.officeId,
-              officeAddressDetails = address,
-              officeContactDetails = contact,
-              officeSpecifications = specs
+              addressDetails = address,
+              contactDetails = contact,
+              specifications = specs
             )
           )
         case None =>
@@ -156,7 +155,7 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
       .transact(transactor)
   }
 
-  override def initiate(request: InitiateOfficeListingRequest): F[ValidatedNel[DatabaseErrors, Int]] = {
+  override def initiate(request: InitiateOfficeListingRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = {
     val insertOfficeListing =
       sql"""
         INSERT INTO office_address (
@@ -198,23 +197,24 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
       rowsOfficeListing <- insertOfficeListing.update.run
       rowsOfficeDetails <- insertOfficeDetails.update.run
       rowsBusinessDetails <- insertBusinessDetails.update.run
-    } yield rowsOfficeListing + rowsOfficeDetails + rowsBusinessDetails).transact(transactor).attempt.map {
-      case Right(totalRows) =>
-        if (totalRows == 3) {
-          totalRows.validNel
-        } else {
-          InsertionFailed.invalidNel
-        }
+    } yield rowsOfficeListing + rowsOfficeDetails + rowsBusinessDetails)
+      .transact(transactor)
+      .attempt
+      .map {
+       case Right(affectedRows) if affectedRows == 3 =>
+        CreateSuccess.validNel
       case Left(e: java.sql.SQLIntegrityConstraintViolationException) =>
         ConstraintViolation.invalidNel
       case Left(e: java.sql.SQLException) =>
         DatabaseError.invalidNel
-      case Left(e) =>
-        UnknownError(e.getMessage).invalidNel
-    }
+      case Left(ex) =>
+        UnknownError(s"Unexpected error: ${ex.getMessage}").invalidNel
+      case _ =>
+        UnexpectedResultError.invalidNel
+      }
   }
 
-  override def delete(officeId: String): F[ValidatedNel[DatabaseErrors, Int]] = {
+  override def delete(officeId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = {
     val deleteAddressQuery =
       sql"""
            DELETE FROM office_address
@@ -240,17 +240,24 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
     } yield addressRows + contactRows + specsRows
 
     combinedQuery.transact(transactor).attempt.map {
-      case Right(affectedRows) =>
-        if (affectedRows == 3)
-          affectedRows.validNel
-        else
-          NotFoundError.invalidNel
+      case Right(affectedRows) if affectedRows == 3 =>
+        DeleteSuccess.validNel
+      case Right(affectedRows) if affectedRows < 3 =>
+        NotFoundError.invalidNel
+      case Left(ex: java.sql.SQLException) if ex.getSQLState == "23503" =>
+        ForeignKeyViolationError.invalidNel
+      case Left(ex: java.sql.SQLException) if ex.getSQLState == "08001" =>
+        DatabaseConnectionError.invalidNel
+      case Left(ex: java.sql.SQLException) =>
+        SqlExecutionError(ex.getMessage).invalidNel
       case Left(ex) =>
-        DeleteError.invalidNel
+        UnknownError(s"Unexpected error: ${ex.getMessage}").invalidNel
+      case _ =>
+        UnexpectedResultError.invalidNel
     }
   }
 
-  override def deleteByBusinessId(businessId: String): F[ValidatedNel[DatabaseErrors, Int]] = {
+  override def deleteByBusinessId(businessId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = {
     val deleteAddressQuery =
       sql"""
            DELETE FROM office_address
@@ -276,13 +283,20 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
     } yield addressRows + contactRows + specsRows
 
     combinedQuery.transact(transactor).attempt.map {
-      case Right(affectedRows) =>
-        if (affectedRows == 3)
-          affectedRows.validNel
-        else
-          NotFoundError.invalidNel
+      case Right(affectedRows) if affectedRows > 0 =>
+        DeleteSuccess.validNel
+      case Right(affectedRows) if affectedRows == 0 =>
+        NotFoundError.invalidNel
+      case Left(ex: java.sql.SQLException) if ex.getSQLState == "23503" =>
+        ForeignKeyViolationError.invalidNel
+      case Left(ex: java.sql.SQLException) if ex.getSQLState == "08001" =>
+        DatabaseConnectionError.invalidNel
+      case Left(ex: java.sql.SQLException) =>
+        SqlExecutionError(ex.getMessage).invalidNel
       case Left(ex) =>
-        DeleteError.invalidNel
+        UnknownError(s"Unexpected error: ${ex.getMessage}").invalidNel
+      case _ =>
+        UnexpectedResultError.invalidNel
     }
   }
 

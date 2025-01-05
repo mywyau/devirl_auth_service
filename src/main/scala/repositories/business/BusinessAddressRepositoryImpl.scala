@@ -13,17 +13,20 @@ import java.time.LocalDateTime
 import models.business.address.requests.CreateBusinessAddressRequest
 import models.business.address.requests.UpdateBusinessAddressRequest
 import models.business.address.BusinessAddress
+import models.business.address.BusinessAddressPartial
 import models.database.*
 
 trait BusinessAddressRepositoryAlgebra[F[_]] {
 
-  def findByBusinessId(businessId: String): F[Option[BusinessAddress]]
+  def findByBusinessId(businessId: String): F[Option[BusinessAddressPartial]]
 
-  def createBusinessAddress(request: CreateBusinessAddressRequest): F[ValidatedNel[DatabaseErrors, Int]]
+  def create(request: CreateBusinessAddressRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
-  def update(businessId: String, request: UpdateBusinessAddressRequest): F[ValidatedNel[DatabaseErrors, Int]]
+  def update(businessId: String, request: UpdateBusinessAddressRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
-  def deleteBusinessAddress(businessId: String): F[ValidatedNel[DatabaseErrors, Int]]
+  def delete(businessId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
+
+  def deleteAllByUserId(userId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 }
 
 class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends BusinessAddressRepositoryAlgebra[F] {
@@ -31,18 +34,33 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
   implicit val localDateTimeMeta: Meta[LocalDateTime] =
     Meta[Timestamp].imap(_.toLocalDateTime)(Timestamp.valueOf)
 
-  override def findByBusinessId(businessId: String): F[Option[BusinessAddress]] = {
-    val findQuery: F[Option[BusinessAddress]] =
-      sql"SELECT * FROM business_address WHERE business_id = $businessId".query[BusinessAddress].option.transact(transactor)
+  override def findByBusinessId(businessId: String): F[Option[BusinessAddressPartial]] = {
+    val findQuery: F[Option[BusinessAddressPartial]] =
+      sql"""
+         SELECT 
+             user_id,
+             business_id,
+             building_name,
+             floor_number,
+             street,
+             city,
+             country,
+             county,
+             postcode,
+             latitude,
+             longitude
+         FROM business_address
+         WHERE business_id = $businessId
+       """.query[BusinessAddressPartial].option.transact(transactor)
+
     findQuery
   }
 
-  override def createBusinessAddress(request: CreateBusinessAddressRequest): F[ValidatedNel[DatabaseErrors, Int]] =
+  override def create(request: CreateBusinessAddressRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
     sql"""
       INSERT INTO business_address (
         user_id,
         business_id,
-        business_name,
         building_name,
         floor_number,
         street,
@@ -56,7 +74,6 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
       VALUES (
         ${request.userId},
         ${request.businessId},
-        ${request.businessName},
         ${request.buildingName},
         ${request.floorNumber},
         ${request.street},
@@ -67,22 +84,23 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
         ${request.latitude},
         ${request.longitude}
         )
-    """.update.run.transact(transactor).attempt.map {
-      case Right(rowsAffected) =>
-        if (rowsAffected == 1) {
-          rowsAffected.validNel
-        } else {
-          InsertionFailed.invalidNel
-        }
-      case Left(e: java.sql.SQLIntegrityConstraintViolationException) =>
-        ConstraintViolation.invalidNel
-      case Left(e: java.sql.SQLException) =>
-        DatabaseError.invalidNel
-      case Left(e) =>
-        UnknownError(e.getMessage).invalidNel
-    }
+    """.update.run
+      .transact(transactor)
+      .attempt
+      .map {
+        case Right(affectedRows) if affectedRows == 1 =>
+          CreateSuccess.validNel
+        case Left(e: java.sql.SQLIntegrityConstraintViolationException) =>
+          ConstraintViolation.invalidNel
+        case Left(e: java.sql.SQLException) =>
+          DatabaseError.invalidNel
+        case Left(ex) =>
+          UnknownError(s"Unexpected error: ${ex.getMessage}").invalidNel
+        case _ =>
+          UnexpectedResultError.invalidNel
+      }
 
-  override def update(businessId: String, request: UpdateBusinessAddressRequest): F[ValidatedNel[DatabaseErrors, Int]] =
+  override def update(businessId: String, request: UpdateBusinessAddressRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
     sql"""
       UPDATE business_address
       SET
@@ -97,19 +115,29 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
           longitude = ${request.longitude},
           updated_at = ${request.updatedAt}
       WHERE business_id = ${businessId}
-    """.update.run.transact(transactor).attempt.map {
-      case Right(affectedRows) =>
-        if (affectedRows > 0)
-          affectedRows.validNel
-        else
+    """.update.run
+      .transact(transactor)
+      .attempt
+      .map {
+        case Right(affectedRows) if affectedRows == 1 =>
+          UpdateSuccess.validNel
+        case Right(affectedRows) if affectedRows == 0 =>
           NotFoundError.invalidNel
-      case Left(ex: java.sql.SQLException) =>
-        DatabaseError.invalidNel
-      case Left(ex) =>
-        UnknownError(ex.getMessage).invalidNel
-    }
+        case Left(ex: java.sql.SQLException) if ex.getSQLState == "23503" =>
+          ForeignKeyViolationError.invalidNel // Foreign key constraint violation
+        case Left(ex: java.sql.SQLException) if ex.getSQLState == "08001" =>
+          DatabaseConnectionError.invalidNel // Database connection issue
+        case Left(ex: java.sql.SQLException) if ex.getSQLState == "22001" =>
+          DataTooLongError.invalidNel // Data length exceeds column limit
+        case Left(ex: java.sql.SQLException) =>
+          SqlExecutionError(ex.getMessage).invalidNel // General SQL execution error
+        case Left(ex) =>
+          UnknownError(s"Unexpected error: ${ex.getMessage}").invalidNel
+        case _ =>
+          UnexpectedResultError.invalidNel
+      }
 
-  override def deleteBusinessAddress(businessId: String): F[ValidatedNel[DatabaseErrors, Int]] = {
+  override def delete(businessId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = {
     val deleteQuery: Update0 =
       sql"""
         DELETE FROM business_address
@@ -117,13 +145,45 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
       """.update
 
     deleteQuery.run.transact(transactor).attempt.map {
-      case Right(affectedRows) =>
-        if (affectedRows > 0)
-          affectedRows.validNel
-        else
-          NotFoundError.invalidNel
+      case Right(affectedRows) if affectedRows == 1 =>
+        DeleteSuccess.validNel
+      case Right(affectedRows) if affectedRows == 0 =>
+        NotFoundError.invalidNel
+      case Left(ex: java.sql.SQLException) if ex.getSQLState == "23503" =>
+        ForeignKeyViolationError.invalidNel
+      case Left(ex: java.sql.SQLException) if ex.getSQLState == "08001" =>
+        DatabaseConnectionError.invalidNel
+      case Left(ex: java.sql.SQLException) =>
+        SqlExecutionError(ex.getMessage).invalidNel
       case Left(ex) =>
-        DeleteError.invalidNel
+        UnknownError(s"Unexpected error: ${ex.getMessage}").invalidNel
+      case _ =>
+        UnexpectedResultError.invalidNel
+    }
+  }
+
+  override def deleteAllByUserId(userId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = {
+    val deleteQuery: Update0 =
+      sql"""
+         DELETE FROM business_address
+         WHERE user_id = $userId
+       """.update
+
+    deleteQuery.run.transact(transactor).attempt.map {
+      case Right(affectedRows) if affectedRows > 0 =>
+        DeleteSuccess.validNel
+      case Right(affectedRows) if affectedRows == 0 =>
+        NotFoundError.invalidNel
+      case Left(ex: java.sql.SQLException) if ex.getSQLState == "23503" =>
+        ForeignKeyViolationError.invalidNel
+      case Left(ex: java.sql.SQLException) if ex.getSQLState == "08001" =>
+        DatabaseConnectionError.invalidNel
+      case Left(ex: java.sql.SQLException) =>
+        SqlExecutionError(ex.getMessage).invalidNel
+      case Left(ex) =>
+        UnknownError(s"Unexpected error: ${ex.getMessage}").invalidNel
+      case _ =>
+        UnexpectedResultError.invalidNel
     }
   }
 }
