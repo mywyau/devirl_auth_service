@@ -12,13 +12,13 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d # Mount the init scripts directory
     networks:
-      - shared-network
+      - traefik-network
     restart: unless-stopped
 
 volumes:
   postgres_data:
 
 networks:
-  shared-network:
+  traefik-network:
     external: true
 

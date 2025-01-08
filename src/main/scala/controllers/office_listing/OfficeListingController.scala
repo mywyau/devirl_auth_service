@@ -69,13 +69,35 @@ class OfficeListingControllerImpl[F[_] : Concurrent](officeListingService: Offic
         }
 
     case DELETE -> Root / "business" / "office" / "listing" / "delete" / officeId =>
-      logger.info(s"[OfficeListingControllerImpl] DELETE - Attempting to delete the office listing for officeId:${officeId}") *>
+      logger.info(s"[OfficeListingControllerImpl] DELETE - Attempting to delete the office listing for officeId: ${officeId}") *>
         officeListingService.delete(officeId).flatMap {
-          case Valid(contactDetails) =>
+          case Valid(result) =>
             logger.info(s"[OfficeListingControllerImpl] DELETE - Successfully deleted office listing for $officeId") *>
               Ok(DeletedResponse("Office listing deleted successfully").asJson)
           case Invalid(error) =>
             val errorResponse = ErrorResponse("placeholder error", "some deleted office listing message")
+            BadRequest(errorResponse.asJson)
+        }
+
+    case DELETE -> Root / "business" / "office" / "listing" / "delete" / "all" / businessId =>
+      logger.info(s"[OfficeListingControllerImpl] DELETE - Attempting to delete all office listings for businessId: ${businessId}") *>
+        officeListingService.deleteByBusinessId(businessId).flatMap {
+          case Valid(result) =>
+            logger.info(s"[OfficeListingControllerImpl] DELETE - Successfully DELETED ALL office listings for $businessId") *>
+              Ok(DeletedResponse("All Office listings deleted successfully").asJson)
+          case Invalid(error) =>
+            val errorResponse = ErrorResponse("placeholder error", "some deleted all office listings message")
+            BadRequest(errorResponse.asJson)
+        }
+
+    case DELETE -> Root / "business" / "office" / "listing" / "delete" / "all" / businessId =>
+      logger.info(s"[OfficeListingControllerImpl] DELETE - Attempting to delete all office listings for businessId: ${businessId}") *>
+        officeListingService.deleteByBusinessId(businessId).flatMap {
+          case Valid(result) =>
+            logger.info(s"[OfficeListingControllerImpl] DELETE - Successfully DELETED ALL office listings for $businessId") *>
+              Ok(DeletedResponse("All Office listings deleted successfully").asJson)
+          case Invalid(error) =>
+            val errorResponse = ErrorResponse("placeholder error", "some deleted all office listings message")
             BadRequest(errorResponse.asJson)
         }
   }

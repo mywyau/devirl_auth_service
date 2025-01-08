@@ -13,7 +13,7 @@ object BusinessAddressRepoFragments {
     sql"""
         CREATE TABLE IF NOT EXISTS business_address (
           id BIGSERIAL PRIMARY KEY,
-          user_id VARCHAR(255) NOT NULL UNIQUE,
+          user_id VARCHAR(255) NOT NULL,
           business_id VARCHAR(255) NOT NULL UNIQUE,
           building_name VARCHAR(255),
           floor_number VARCHAR(255),
@@ -50,6 +50,29 @@ object BusinessAddressRepoFragments {
         ) VALUES
         ('user_id_1','business_id_1', 'building_name_1', 'floor_1', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
         ('user_id_2','business_id_2', 'building_name_2', 'floor_2', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00');
+      """
+  }
+
+   val insertSameUserIdBusinessAddressData: fragment.Fragment = {
+    sql"""
+        INSERT INTO business_address (
+            user_id,
+            business_id,
+            building_name,
+            floor_number,
+            street,
+            city,
+            country,
+            county,
+            postcode,
+            latitude,
+            longitude,
+            created_at,
+            updated_at
+        ) VALUES
+        ('USER123','business_id_1', 'building_name_1', 'floor_1', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+        ('USER123','business_id_2', 'building_name_2', 'floor_2', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+        ('USER123','business_id_3', 'building_name_2', 'floor_2', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00');
       """
   }
 }
