@@ -28,7 +28,7 @@ WORKDIR /app
 COPY --from=builder /app/target/scala-3.3.0/pistachio-assembly-0.1.0-SNAPSHOT.jar /app/app.jar
 
 # Expose the application port
-EXPOSE 1010
+EXPOSE 1011
 
 # Run the application
 CMD ["java", "-jar", "/app/app.jar"]

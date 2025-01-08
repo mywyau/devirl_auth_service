@@ -13,7 +13,7 @@ services:
       DB_USER: shared_user
       DB_PASSWORD: share
     ports:
-      - "1010:1010"
+      - "1011:1011"
     networks:
       - shared-network
 
