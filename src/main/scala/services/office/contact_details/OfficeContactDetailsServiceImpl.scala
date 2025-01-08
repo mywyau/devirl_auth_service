@@ -8,6 +8,7 @@ import cats.effect.Concurrent
 import cats.implicits.*
 import cats.Monad
 import cats.NonEmptyParallel
+import models.database.CreateSuccess
 import models.database.DatabaseErrors
 import models.database.DatabaseSuccess
 import models.office.contact_details.errors.*
@@ -15,7 +16,6 @@ import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
 import models.office.contact_details.requests.UpdateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetailsPartial
 import repositories.office.OfficeContactDetailsRepositoryAlgebra
-import models.database.CreateSuccess
 
 trait OfficeContactDetailsServiceAlgebra[F[_]] {
 

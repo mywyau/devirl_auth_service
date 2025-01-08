@@ -7,6 +7,7 @@ import cats.effect.Concurrent
 import cats.implicits.*
 import cats.Monad
 import cats.NonEmptyParallel
+import models.database.CreateSuccess
 import models.database.DatabaseErrors
 import models.database.DatabaseSuccess
 import models.office.address_details.errors.OfficeAddressErrors
@@ -16,7 +17,6 @@ import models.office.specifications.requests.CreateOfficeSpecificationsRequest
 import models.office.specifications.requests.UpdateOfficeSpecificationsRequest
 import models.office.specifications.OfficeSpecificationsPartial
 import repositories.office.OfficeSpecificationsRepositoryAlgebra
-import models.database.CreateSuccess
 
 trait OfficeSpecificationsServiceAlgebra[F[_]] {
 

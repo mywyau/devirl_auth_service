@@ -201,16 +201,16 @@ class OfficeListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
       .transact(transactor)
       .attempt
       .map {
-       case Right(affectedRows) if affectedRows == 3 =>
-        CreateSuccess.validNel
-      case Left(e: java.sql.SQLIntegrityConstraintViolationException) =>
-        ConstraintViolation.invalidNel
-      case Left(e: java.sql.SQLException) =>
-        DatabaseError.invalidNel
-      case Left(ex) =>
-        UnknownError(s"Unexpected error: ${ex.getMessage}").invalidNel
-      case _ =>
-        UnexpectedResultError.invalidNel
+        case Right(affectedRows) if affectedRows == 3 =>
+          CreateSuccess.validNel
+        case Left(e: java.sql.SQLIntegrityConstraintViolationException) =>
+          ConstraintViolation.invalidNel
+        case Left(e: java.sql.SQLException) =>
+          DatabaseError.invalidNel
+        case Left(ex) =>
+          UnknownError(s"Unexpected error: ${ex.getMessage}").invalidNel
+        case _ =>
+          UnexpectedResultError.invalidNel
       }
   }
 

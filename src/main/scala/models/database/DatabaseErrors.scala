@@ -29,4 +29,3 @@ case object NotFoundError extends DatabaseErrors
 case object DataTooLongError extends DatabaseErrors
 
 case object UnexpectedResultError extends DatabaseErrors
-

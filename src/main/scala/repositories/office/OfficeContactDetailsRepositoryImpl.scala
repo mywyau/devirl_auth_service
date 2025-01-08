@@ -1,22 +1,21 @@
 package repositories.office
 
-import cats.Monad
 import cats.data.ValidatedNel
 import cats.effect.Concurrent
 import cats.syntax.all.*
+import cats.Monad
 import doobie.*
 import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
+import java.sql.Timestamp
+import java.time.LocalDateTime
 import models.database.*
-import models.office.contact_details.OfficeContactDetails
-import models.office.contact_details.OfficeContactDetailsPartial
 import models.office.contact_details.errors.OfficeContactDetailsErrors
 import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
 import models.office.contact_details.requests.UpdateOfficeContactDetailsRequest
-
-import java.sql.Timestamp
-import java.time.LocalDateTime
+import models.office.contact_details.OfficeContactDetails
+import models.office.contact_details.OfficeContactDetailsPartial
 
 trait OfficeContactDetailsRepositoryAlgebra[F[_]] {
 

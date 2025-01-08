@@ -60,7 +60,7 @@ class BusinessSpecificationsControllerImpl[F[_] : Concurrent](businessSpecificat
           businessSpecificationsService.update(businessId, request).flatMap {
             case Valid(updatedAddress) =>
               logger.info(s"[BusinessSpecificationsControllerImpl] PUT - Successfully updated business specifications for ID: $businessId") *>
-                Ok(UpdatedResponse("Update_Success","Business specifications updated successfully").asJson)
+                Ok(UpdatedResponse("Update_Success", "Business specifications updated successfully").asJson)
             case Invalid(errors) =>
               logger.warn(s"[BusinessSpecificationsControllerImpl] PUT - Validation failed for business specifications update: ${errors.toList}") *>
                 BadRequest(ErrorResponse(code = "VALIDATION_ERROR", message = errors.toList.mkString(", ")).asJson)

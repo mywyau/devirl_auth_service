@@ -36,8 +36,8 @@ object BusinessSpecificationsErrors {
 
   def fromString(str: String): BusinessSpecificationsErrors =
     str match {
-      case "BusinessSpecificationsNotFound" => BusinessSpecificationsNotFound 
-      case "BusinessSpecificationsNotCreated" => BusinessSpecificationsNotCreated 
+      case "BusinessSpecificationsNotFound" => BusinessSpecificationsNotFound
+      case "BusinessSpecificationsNotCreated" => BusinessSpecificationsNotCreated
       case "BusinessSpecificationsDatabaseError" => BusinessSpecificationsDatabaseError
       case "BusinessSpecificationsUserNotFound" => BusinessSpecificationsUserNotFound
       case "BusinessSpecificationsEmptyStringField" => BusinessSpecificationsEmptyStringField

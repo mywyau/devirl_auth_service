@@ -7,7 +7,7 @@ object AppConfigConstants {
   val appServerConfig =
     ServerConfig(
       host = "0.0.0.0",
-      port = 1010
+      port = 1011
     )
 
   val integrationSpecServerConfig =

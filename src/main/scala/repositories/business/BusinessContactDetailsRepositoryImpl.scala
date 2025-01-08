@@ -1,21 +1,20 @@
 package repositories.business
 
-import cats.Monad
 import cats.data.ValidatedNel
 import cats.effect.Concurrent
 import cats.syntax.all.*
+import cats.Monad
 import doobie.*
 import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
-import models.business.contact_details.BusinessContactDetails
-import models.business.contact_details.BusinessContactDetailsPartial
-import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
-import models.business.contact_details.requests.UpdateBusinessContactDetailsRequest
-import models.database.*
-
 import java.sql.Timestamp
 import java.time.LocalDateTime
+import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
+import models.business.contact_details.requests.UpdateBusinessContactDetailsRequest
+import models.business.contact_details.BusinessContactDetails
+import models.business.contact_details.BusinessContactDetailsPartial
+import models.database.*
 
 trait BusinessContactDetailsRepositoryAlgebra[F[_]] {
 

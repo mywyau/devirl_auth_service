@@ -11,10 +11,10 @@ import models.business.specifications.errors.*
 import models.business.specifications.requests.CreateBusinessSpecificationsRequest
 import models.business.specifications.requests.UpdateBusinessSpecificationsRequest
 import models.business.specifications.BusinessSpecificationsPartial
-import models.database.DatabaseErrors
-import repositories.business.BusinessSpecificationsRepositoryAlgebra
-import models.database.DatabaseSuccess
 import models.database.CreateSuccess
+import models.database.DatabaseErrors
+import models.database.DatabaseSuccess
+import repositories.business.BusinessSpecificationsRepositoryAlgebra
 
 trait BusinessSpecificationsServiceAlgebra[F[_]] {
 
