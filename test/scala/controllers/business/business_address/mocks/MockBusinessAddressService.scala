@@ -7,7 +7,6 @@ import models.business.address.errors.BusinessAddressErrors
 import models.business.address.errors.BusinessUserNotFound
 import models.business.address.requests.CreateBusinessAddressRequest
 import models.business.address.requests.UpdateBusinessAddressRequest
-import models.business.address.BusinessAddress
 import models.business.address.BusinessAddressPartial
 import models.database.CreateSuccess
 import models.database.DatabaseErrors

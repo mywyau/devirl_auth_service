@@ -1,15 +1,13 @@
 package controllers.constants
 
 import cats.effect.*
-import models.business.address.BusinessAddress
+import java.time.LocalDateTime
+import java.time.LocalTime
 import models.business.adts.*
+import models.business.specifications.requests.CreateBusinessSpecificationsRequest
 import models.business.specifications.BusinessAvailability
 import models.business.specifications.BusinessSpecifications
 import models.business.specifications.BusinessSpecificationsPartial
-import models.business.specifications.requests.CreateBusinessSpecificationsRequest
-
-import java.time.LocalDateTime
-import java.time.LocalTime
 
 object BusinessSpecificationsControllerConstants {
 

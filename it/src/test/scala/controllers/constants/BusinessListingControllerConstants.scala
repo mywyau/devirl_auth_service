@@ -1,15 +1,14 @@
 package controllers.constants
 
 import cats.effect.*
-import models.business.address.BusinessAddress
+import java.time.LocalDateTime
+import java.time.LocalTime
 import models.business.address.requests.CreateBusinessAddressRequest
 import models.business.adts.*
 import models.business.business_listing.requests.BusinessListingRequest
 import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
-import models.business.specifications.BusinessAvailability
 import models.business.specifications.requests.CreateBusinessSpecificationsRequest
-
-import java.time.{LocalDateTime, LocalTime}
+import models.business.specifications.BusinessAvailability
 
 object BusinessListingControllerConstants {
 
@@ -42,7 +41,6 @@ object BusinessListingControllerConstants {
       longitude = Some(-100.1)
     )
 
-
   val testCreateBusinessContactDetailsRequest: CreateBusinessContactDetailsRequest =
     CreateBusinessContactDetailsRequest(
       userId = "user_id_1",
@@ -54,7 +52,6 @@ object BusinessListingControllerConstants {
       contactNumber = "07402205071",
       websiteUrl = "mikey.com"
     )
-
 
   def testBusinessListingRequest(businessId: String): BusinessListingRequest =
     BusinessListingRequest(

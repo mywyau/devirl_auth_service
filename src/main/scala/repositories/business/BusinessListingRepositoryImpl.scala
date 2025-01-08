@@ -10,7 +10,6 @@ import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import java.sql.Timestamp
 import java.time.LocalDateTime
-import models.business.address.BusinessAddress
 import models.business.address.BusinessAddressPartial
 import models.business.business_listing.requests.InitiateBusinessListingRequest
 import models.business.business_listing.BusinessListing

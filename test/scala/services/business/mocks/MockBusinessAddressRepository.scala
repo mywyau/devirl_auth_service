@@ -7,7 +7,6 @@ import java.time.LocalDateTime
 import models.business.address.errors.BusinessAddressNotFound
 import models.business.address.requests.CreateBusinessAddressRequest
 import models.business.address.requests.UpdateBusinessAddressRequest
-import models.business.address.BusinessAddress
 import models.business.address.BusinessAddressPartial
 import models.database.CreateSuccess
 import models.database.DatabaseErrors

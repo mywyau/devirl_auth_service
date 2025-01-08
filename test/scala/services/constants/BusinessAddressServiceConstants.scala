@@ -7,7 +7,6 @@ import cats.effect.IO
 import cats.implicits.*
 import java.time.LocalDateTime
 import models.business.address.requests.CreateBusinessAddressRequest
-import models.business.address.BusinessAddress
 import models.business.address.BusinessAddressPartial
 import models.business.adts.*
 import models.business.business_listing.errors.BusinessListingErrors

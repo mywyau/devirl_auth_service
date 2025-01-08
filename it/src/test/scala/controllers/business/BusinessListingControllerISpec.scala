@@ -1,10 +1,6 @@
 package controllers.business
 
 import cats.effect.*
-import com.comcast.ip4s.ipv4
-import com.comcast.ip4s.port
-import configuration.models.AppConfig
-import controllers.business_listing.BusinessListingController
 import controllers.constants.BusinessListingControllerConstants.*
 import controllers.fragments.business.BusinessAddressRepoFragments.*
 import controllers.fragments.business.BusinessContactDetailsRepoFragments.*
@@ -13,15 +9,9 @@ import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.Json
 import io.circe.syntax.*
-import models.business.address.BusinessAddress
 import models.business.adts.*
-import models.business.business_listing.BusinessListing
 import models.business.business_listing.BusinessListingCard
-import models.business.business_listing.requests.BusinessListingRequest
 import models.business.business_listing.requests.InitiateBusinessListingRequest
-import models.business.contact_details.BusinessContactDetails
-import models.business.specifications.BusinessAvailability
-import models.business.specifications.BusinessSpecifications
 import models.responses.CreatedResponse
 import org.http4s.*
 import org.http4s.Method.*

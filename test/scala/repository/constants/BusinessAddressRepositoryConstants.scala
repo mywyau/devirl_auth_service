@@ -1,14 +1,12 @@
 package repository.constants
 
 import cats.data.Validated.Valid
-import cats.effect.IO
 import cats.effect.kernel.Ref
-import models.business.address.BusinessAddress
-import models.business.address.requests.CreateBusinessAddressRequest
-import repository.business.mocks.MockBusinessAddressRepository
-
+import cats.effect.IO
 import java.time.LocalDateTime
+import models.business.address.requests.CreateBusinessAddressRequest
 import models.business.address.BusinessAddressPartial
+import repository.business.mocks.MockBusinessAddressRepository
 
 object BusinessAddressRepositoryConstants {
 
@@ -45,6 +43,5 @@ object BusinessAddressRepositoryConstants {
       latitude = Some(100.1),
       longitude = Some(-100.1)
     )
-
 
 }

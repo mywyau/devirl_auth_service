@@ -1,15 +1,14 @@
 package repository.business
 
 import cats.data.Validated.Valid
-import cats.effect.IO
 import cats.effect.kernel.Ref
-import models.business.address.BusinessAddress
+import cats.effect.IO
 import models.business.address.requests.CreateBusinessAddressRequest
+import models.database.CreateSuccess
+import models.database.DeleteSuccess
 import repository.business.mocks.MockBusinessAddressRepository
 import repository.constants.BusinessAddressRepositoryConstants.*
 import weaver.SimpleIOSuite
-import models.database.CreateSuccess
-import models.database.DeleteSuccess
 
 object BusinessAddressRepositorySpec extends SimpleIOSuite {
 

@@ -1,4 +1,4 @@
-name: Pistachio Unit and Integration Tests
+name: Cashew Unit and Integration Tests
 
 on:
   push:
@@ -97,8 +97,10 @@ jobs:
         env:
           PGPASSWORD: share
         run: |
-          psql -h localhost -U shared_user -c "DROP DATABASE IF EXISTS shared_test_db;"
-          psql -h localhost -U shared_user -c "CREATE DATABASE shared_test_db;"
-
+          psql -h localhost -U shared_user -d postgres -c "DROP DATABASE IF EXISTS shared_test_db;"
+          psql -h localhost -U shared_user -d postgres -c "CREATE DATABASE shared_test_db;"
+        
       - name: Run Integration Tests
         run: sbt it/test
+
+        

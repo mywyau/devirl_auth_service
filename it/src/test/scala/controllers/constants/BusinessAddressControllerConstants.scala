@@ -1,15 +1,13 @@
 package controllers.constants
 
 import cats.effect.*
-import models.business.address.BusinessAddress
-import models.business.address.requests.CreateBusinessAddressRequest
-
 import java.time.LocalDateTime
+import models.business.address.requests.CreateBusinessAddressRequest
 import models.business.address.BusinessAddressPartial
 
 object BusinessAddressControllerConstants {
 
-  def testBusinessAddress(userId: String, businessId: String): BusinessAddressPartial = {
+  def testBusinessAddress(userId: String, businessId: String): BusinessAddressPartial =
     BusinessAddressPartial(
       userId = userId,
       businessId = businessId,
@@ -23,9 +21,8 @@ object BusinessAddressControllerConstants {
       latitude = Some(100.1),
       longitude = Some(-100.1)
     )
-  }
 
-  def testBusinessAddressRequest(userId: String, businessId: String): CreateBusinessAddressRequest = {
+  def testBusinessAddressRequest(userId: String, businessId: String): CreateBusinessAddressRequest =
     CreateBusinessAddressRequest(
       userId = userId,
       businessId = businessId,
@@ -40,6 +37,5 @@ object BusinessAddressControllerConstants {
       latitude = Some(100.1),
       longitude = Some(-100.1)
     )
-  }
 
 }

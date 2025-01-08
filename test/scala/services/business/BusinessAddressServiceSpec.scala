@@ -5,7 +5,6 @@ import cats.effect.IO
 import java.time.LocalDateTime
 import models.business.address.errors.BusinessAddressNotFound
 import models.business.address.requests.CreateBusinessAddressRequest
-import models.business.address.BusinessAddress
 import models.database.CreateSuccess
 import repositories.business.BusinessAddressRepositoryAlgebra
 import services.business.address.BusinessAddressService

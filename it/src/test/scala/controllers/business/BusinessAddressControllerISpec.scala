@@ -1,42 +1,35 @@
 package controllers.business
 
 import cats.effect.*
-import com.comcast.ip4s.{ipv4, port}
-import controllers.business.BusinessAddressController
 import controllers.constants.BusinessAddressControllerConstants.*
 import controllers.fragments.business.BusinessAddressRepoFragments.*
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.Json
 import io.circe.syntax.*
-import models.business.address.BusinessAddress
+import models.business.address.BusinessAddressPartial
 import models.business.address.requests.CreateBusinessAddressRequest
 import models.business.adts.*
-import models.business.contact_details.BusinessContactDetails
-import models.business.specifications.{BusinessAvailability, BusinessSpecifications}
-import models.responses.{CreatedResponse, DeletedResponse}
+import models.responses.CreatedResponse
+import models.responses.DeletedResponse
 import org.http4s.*
 import org.http4s.Method.*
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
-import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
-import org.http4s.server.{Router, Server}
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import repositories.business.{BusinessAddressRepository, BusinessContactDetailsRepository, BusinessSpecificationsRepository}
-import services.business.address.BusinessAddressService
-import shared.{HttpClientResource, TransactorResource}
+import shared.HttpClientResource
+import shared.TransactorResource
 import weaver.*
 
 import java.time.LocalDateTime
-import models.business.address.BusinessAddressPartial
 
 class BusinessAddressControllerISpec(global: GlobalRead) extends IOSuite {
 
   type Res = (TransactorResource, HttpClientResource)
 
-  def sharedResource: Resource[IO, Res] = {
+  def sharedResource: Resource[IO, Res] =
     for {
       transactor <- global.getOrFailR[TransactorResource]()
       _ <- Resource.eval(
@@ -46,7 +39,6 @@ class BusinessAddressControllerISpec(global: GlobalRead) extends IOSuite {
       )
       client <- global.getOrFailR[HttpClientResource]()
     } yield (transactor, client)
-  }
 
   test(
     "GET - /pistachio/business/businesses/address/details/business_id_1 - " +
