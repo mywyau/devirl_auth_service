@@ -15,8 +15,8 @@ services:
     ports:
       - "1011:1011"
     networks:
-      - shared-network
+      - traefik-network
 
 networks:
-  shared-network:
+  traefik-network:
     external: true

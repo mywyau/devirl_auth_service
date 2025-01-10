@@ -4,7 +4,7 @@ services:
   flyway-migration-pistachio:
     image: flyway/flyway:latest
     container_name: flyway-migration-pistachio
-    command: migrate
+    command: clean
     volumes:
       - ./flyway/flyway.conf:/flyway/conf/flyway.conf
       - ./migrations:/flyway/sql
@@ -14,8 +14,8 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - shared-network
+      - traefik-network
 
 networks:
-  shared-network:
+  traefik-network:
     external: true

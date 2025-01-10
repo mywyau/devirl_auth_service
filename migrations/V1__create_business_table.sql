@@ -1,9 +1,9 @@
 DROP TABLE IF EXISTS business_address;
 
 CREATE TABLE business_address (
-    id BIGSERIAL PRIMARY KEY UNIQUE,
-    user_id VARCHAR(255) NOT NULL UNIQUE,
-    business_id VARCHAR(255) NOT NULL,
+    id BIGSERIAL PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL,
+    business_id VARCHAR(255) NOT NULL UNIQUE,
     building_name VARCHAR(255),
     floor_number VARCHAR(255),
     street VARCHAR(255),
@@ -20,9 +20,9 @@ CREATE TABLE business_address (
 DROP TABLE IF EXISTS business_contact_details;
 
 CREATE TABLE business_contact_details (
-    id BIGSERIAL PRIMARY KEY UNIQUE,
-    user_id VARCHAR(255) NOT NULL UNIQUE,
-    business_id VARCHAR(255) NOT NULL,
+    id BIGSERIAL PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL,
+    business_id VARCHAR(255) NOT NULL UNIQUE,
     primary_contact_first_name VARCHAR(255),
     primary_contact_last_name VARCHAR(255),
     contact_email VARCHAR(255),
@@ -35,9 +35,9 @@ CREATE TABLE business_contact_details (
 DROP TABLE IF EXISTS business_specifications;
 
 CREATE TABLE business_specifications (
-    id SERIAL PRIMARY KEY UNIQUE,
-    user_id VARCHAR(255) NOT NULL UNIQUE,
-    business_id VARCHAR(255) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL,
+    business_id VARCHAR(255) NOT NULL UNIQUE,
     business_name VARCHAR(255) NOT NULL,
     description TEXT,
     availability JSONB,
