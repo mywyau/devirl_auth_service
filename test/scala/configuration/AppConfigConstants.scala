@@ -51,7 +51,7 @@ object AppConfigConstants {
 
   val featureSwitches = {
     FeatureSwitches(
-      useDockerHost = false
+      useDockerHost = true
     )
   }
 
