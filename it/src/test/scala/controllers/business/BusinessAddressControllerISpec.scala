@@ -9,7 +9,6 @@ import io.circe.Json
 import io.circe.syntax.*
 import models.business.address.BusinessAddressPartial
 import models.business.address.requests.CreateBusinessAddressRequest
-import models.business.adts.*
 import models.responses.CreatedResponse
 import models.responses.DeletedResponse
 import org.http4s.*

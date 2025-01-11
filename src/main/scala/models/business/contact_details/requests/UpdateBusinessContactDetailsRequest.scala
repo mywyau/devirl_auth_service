@@ -11,7 +11,7 @@ case class UpdateBusinessContactDetailsRequest(
   primaryContactLastName: String,
   contactEmail: String,
   contactNumber: String,
-  websiteUrl: String
+  websiteUrl: Option[String]
 )
 
 object UpdateBusinessContactDetailsRequest {

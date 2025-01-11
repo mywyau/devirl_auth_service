@@ -1,7 +1,7 @@
 package services.desk_listing.validation
 
 import cats.data.Validated
-import models.business.desk_listing.errors.DeskListingErrors
+import models.desk_listing.errors.DeskListingErrors
 
 trait DeskListingValidationServiceAlgebra[F[_]] {
 

@@ -9,13 +9,13 @@ import java.time.LocalDateTime
 case class UpdateBusinessAddressRequest(
   buildingName: Option[String],
   floorNumber: Option[String],
-  street: Option[String],
-  city: Option[String],
-  country: Option[String],
-  county: Option[String],
-  postcode: Option[String],
-  latitude: Option[BigDecimal],
-  longitude: Option[BigDecimal]
+  street: String,
+  city: String,
+  country: String,
+  county: String,
+  postcode: String,
+  latitude: BigDecimal,
+  longitude: BigDecimal
 )
 
 object UpdateBusinessAddressRequest {

@@ -1,12 +1,15 @@
 package controllers.desk_listing
 
+import cats.data.Validated.Valid
 import cats.effect.Concurrent
 import cats.effect.IO
 import cats.implicits.*
 import io.circe.syntax.*
-import models.business.desk_listing.requests.DeskListingRequest
+import models.desk_listing.requests.DeskListingRequest
 import models.responses.CreatedResponse
+import models.responses.DeletedResponse
 import models.responses.ErrorResponse
+import models.responses.UpdatedResponse
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
@@ -17,21 +20,57 @@ trait DeskListingController[F[_]] {
   def routes: HttpRoutes[F]
 }
 
-class DeskListingControllerImpl[F[_] : Concurrent](deskService: DeskListingServiceAlgebra[F])(implicit logger: Logger[F]) extends DeskListingController[F] with Http4sDsl[F] {
+class DeskListingControllerImpl[F[_] : Concurrent : Logger](
+  deskService: DeskListingServiceAlgebra[F]
+) extends DeskListingController[F]
+    with Http4sDsl[F] {
 
   implicit val deskListingRequestDecoder: EntityDecoder[F, DeskListingRequest] = jsonOf[F, DeskListingRequest]
 
-  override val routes: HttpRoutes[F] = HttpRoutes.of[F] { case req @ POST -> Root / "business" / "desk" / "listing" / "create" =>
-    logger.info(s"[DeskListingControllerImpl] POST - Creating desk listing") *>
-      req.decode[DeskListingRequest] { request =>
-        deskService.createDesk(request).flatMap {
-          case Right(_) =>
-            logger.info(s"[DeskListingControllerImpl] POST - Successfully created a desk listing") *>
-              Created(CreatedResponse("Business Desk created successfully").asJson)
+  override val routes: HttpRoutes[F] = HttpRoutes.of[F] {
+
+    case req @ POST -> Root / "business" / "desk" / "listing" / "details" / "create" =>
+      Logger[F].info(s"[DeskListingControllerImpl] POST - Creating desk listing") *>
+        req.decode[DeskListingRequest] { request =>
+          deskService.create(request).flatMap {
+            case Valid(_) =>
+              Logger[F].info(s"[DeskListingControllerImpl] POST - Successfully created a desk listing") *>
+                Created(CreatedResponse("Business Desk created successfully").asJson)
+            case _ =>
+              InternalServerError(ErrorResponse("Code", "An error occurred").asJson)
+          }
+        }
+
+    case req @ PUT -> Root / "business" / "desk" / "listing" / "details" / "update" / deskId =>
+      Logger[F].info(s"[DeskListingControllerImpl] POST - Creating desk listing") *>
+        req.decode[DeskListingRequest] { request =>
+          deskService.update(deskId, request).flatMap {
+            case Valid(response) =>
+              Logger[F].info(s"[DeskListingControllerImpl] POST - Successfully created a desk listing") *>
+                Ok(UpdatedResponse(response.toString, "desk listing updated successfully").asJson)
+            case _ =>
+              InternalServerError(ErrorResponse("Code", "An error occurred").asJson)
+          }
+        }
+    case DELETE -> Root / "business" / "desk" / "listing" / "details" / "delete" / deskId =>
+      Logger[F].info(s"[DeskListingControllerImpl] DELETE - Attempting to delete all desk listing for desk id: $deskId") *>
+        deskService.delete(deskId).flatMap {
+          case Valid(_) =>
+            Logger[F].info(s"[DeskListingControllerImpl] POST - Successfully deleted desk listing for desk id: $deskId") *>
+              Ok(DeletedResponse("Successfully deleted desk listing").asJson)
           case _ =>
             InternalServerError(ErrorResponse("Code", "An error occurred").asJson)
         }
-      }
+
+    case DELETE -> Root / "business" / "desk" / "listing" / "details" / "delete" / "all" / officeId =>
+      Logger[F].info(s"[DeskListingControllerImpl] DELETE - Attempting to delete all desk listing for office id: $officeId") *>
+        deskService.deleteAllByOfficeId(officeId).flatMap {
+          case Valid(_) =>
+            Logger[F].info(s"[DeskListingControllerImpl] DELETE - Successfully deleted all desk listings for office id: $officeId") *>
+              Ok(DeletedResponse(s"All desk listings deleted successfully for office id: $officeId").asJson)
+          case _ =>
+            InternalServerError(ErrorResponse("Code", "An error occurred").asJson)
+        }
   }
 }
 

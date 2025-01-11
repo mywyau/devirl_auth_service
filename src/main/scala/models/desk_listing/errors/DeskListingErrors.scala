@@ -1,4 +1,4 @@
-package models.business.desk_listing.errors
+package models.desk_listing.errors
 
 import io.circe.Decoder
 import io.circe.Encoder

@@ -9,7 +9,7 @@ import doobie.implicits.*
 import java.time.LocalDateTime
 import models.business.address.requests.CreateBusinessAddressRequest
 import models.business.address.BusinessAddressPartial
-import models.business.adts.PrivateDesk
+import models.desk_listing.PrivateDesk
 import models.business.specifications.BusinessAvailability
 import models.database.DeleteSuccess
 import repositories.business.BusinessAddressRepositoryImpl

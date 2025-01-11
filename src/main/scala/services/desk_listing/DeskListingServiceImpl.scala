@@ -1,36 +1,57 @@
 package services.desk_listing
 
+import cats.data.ValidatedNel
 import cats.effect.Concurrent
 import cats.implicits.*
 import cats.Monad
 import cats.NonEmptyParallel
-import models.business.desk_listing.errors.*
-import models.business.desk_listing.requests.DeskListingRequest
-import models.business.desk_listing.service.DeskListing
+import models.database.CreateSuccess
+import models.database.DatabaseErrors
+import models.database.DatabaseSuccess
+import models.desk_listing.errors.DatabaseError
+import models.desk_listing.errors.DeskListingErrors
+import models.desk_listing.errors.DeskListingNotFound
+import models.desk_listing.requests.DeskListingRequest
+import models.desk_listing.DeskListingPartial
+import models.desk_listing.DeskType
 import repositories.desk.DeskListingRepositoryAlgebra
 
-class DeskListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](deskListingRepo: DeskListingRepositoryAlgebra[F]) extends DeskListingServiceAlgebra[F] {
+trait DeskListingServiceAlgebra[F[_]] {
 
-  override def findByUserId(userId: String): F[Either[DeskListingErrors, DeskListing]] =
-    deskListingRepo.findByUserId(userId).flatMap {
-      case Some(user) =>
-        Concurrent[F].pure(Right(user))
-      case None =>
-        Concurrent[F].pure(Left(DeskListingNotFound))
-    }
+  def findByDeskId(deskId: String): F[Option[DeskListingPartial]]
 
-  override def createDesk(deskListing: DeskListingRequest): F[Either[DeskListingErrors, Int]] =
-    deskListingRepo.createDeskToRent(deskListing).attempt.flatMap {
-      case Right(id) =>
-        if (id > 0) {
-          Concurrent[F].pure(Right(id))
-        } else {
-          Concurrent[F].pure(Left(DatabaseError))
-        }
-      case Left(ex) =>
-        Concurrent[F].pure(Left(DatabaseError))
-    }
+  def findByOfficeId(officeId: String): F[List[DeskListingPartial]]
 
+  def create(request: DeskListingRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
+
+  def update(deskId: String, request: DeskListingRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
+
+  def delete(deskId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
+
+  def deleteAllByOfficeId(officeId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] 
+}
+
+class DeskListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
+  deskListingRepo: DeskListingRepositoryAlgebra[F]
+) extends DeskListingServiceAlgebra[F] {
+
+  override def findByDeskId(deskId: String): F[Option[DeskListingPartial]] =
+    deskListingRepo.findByDeskId(deskId)
+
+  override def findByOfficeId(officeId: String): F[List[DeskListingPartial]] = 
+    deskListingRepo.findByOfficeId(officeId)
+
+  override def create(request: DeskListingRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
+    deskListingRepo.create(request)
+
+  override def update(deskId: String, request: DeskListingRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
+    deskListingRepo.update(deskId, request)
+
+  override def delete(deskId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
+    deskListingRepo.delete(deskId)
+
+  override def deleteAllByOfficeId(officeId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
+    deskListingRepo.deleteAllByOfficeId(officeId)
 }
 
 object DeskListingService {

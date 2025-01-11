@@ -6,7 +6,7 @@ import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
 import java.time.LocalDateTime
-import models.business.adts.PrivateDesk
+import models.desk_listing.PrivateDesk
 import models.business.contact_details.BusinessContactDetails
 import models.business.contact_details.BusinessContactDetailsPartial
 import repositories.business.BusinessContactDetailsRepositoryImpl

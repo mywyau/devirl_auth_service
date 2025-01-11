@@ -1,36 +1,40 @@
 package controllers.business
 
 import cats.effect.*
-import com.comcast.ip4s.{ipv4, port}
+import com.comcast.ip4s.ipv4
+import com.comcast.ip4s.port
 import configuration.models.AppConfig
 import controllers.constants.BusinessContactDetailsControllerConstants.*
 import controllers.fragments.business.BusinessContactDetailsRepoFragments.*
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
-import io.circe.Json
 import io.circe.syntax.*
-import models.business.adts.*
-import models.business.contact_details.BusinessContactDetails
+import io.circe.Json
+import java.time.LocalDateTime
 import models.business.contact_details.errors.*
 import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
-import models.business.specifications.{BusinessSpecifications}
-import models.responses.{CreatedResponse, DeletedResponse, ErrorResponse}
+import models.business.contact_details.BusinessContactDetails
+import models.business.contact_details.BusinessContactDetailsPartial
+import models.business.specifications.BusinessSpecifications
+import models.responses.CreatedResponse
+import models.responses.DeletedResponse
+import models.responses.ErrorResponse
 import org.http4s.*
-import org.http4s.Method.*
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
-import org.http4s.server.{Router, Server}
-import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.http4s.server.Router
+import org.http4s.server.Server
+import org.http4s.Method.*
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import repositories.business.{BusinessContactDetailsRepository, BusinessSpecificationsRepository}
+import org.typelevel.log4cats.SelfAwareStructuredLogger
+import repositories.business.BusinessContactDetailsRepository
+import repositories.business.BusinessSpecificationsRepository
 import services.business.contact_details.BusinessContactDetailsService
-import shared.{HttpClientResource, TransactorResource}
+import shared.HttpClientResource
+import shared.TransactorResource
 import weaver.*
-
-import java.time.LocalDateTime
-import models.business.contact_details.BusinessContactDetailsPartial
 
 class BusinessContactDetailsControllerISpec(global: GlobalRead) extends IOSuite {
 
@@ -38,7 +42,7 @@ class BusinessContactDetailsControllerISpec(global: GlobalRead) extends IOSuite 
 
   type Res = (TransactorResource, HttpClientResource)
 
-  def sharedResource: Resource[IO, Res] = {
+  def sharedResource: Resource[IO, Res] =
     for {
       transactor <- global.getOrFailR[TransactorResource]()
       _ <- Resource.eval(
@@ -48,7 +52,6 @@ class BusinessContactDetailsControllerISpec(global: GlobalRead) extends IOSuite 
       )
       client <- global.getOrFailR[HttpClientResource]()
     } yield (transactor, client)
-  }
 
   test(
     "GET - /pistachio/business/businesses/contact/details/business_id_1 - " +

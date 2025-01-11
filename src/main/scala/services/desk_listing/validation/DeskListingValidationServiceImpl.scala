@@ -3,7 +3,7 @@ package services.desk_listing.validation
 import cats.data.Validated
 import cats.effect.Concurrent
 import cats.implicits.*
-import models.business.desk_listing.errors.*
+import models.desk_listing.errors.{BusinessInvalidFormat, DeskListingNotFound, DeskListingErrors, BusinessEmptyStringField}
 
 class DeskListingValidationServiceImpl[F[_] : Concurrent] extends DeskListingValidationServiceAlgebra[F] {
 

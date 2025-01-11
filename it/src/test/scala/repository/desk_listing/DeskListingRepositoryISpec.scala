@@ -1,19 +1,25 @@
-package repository.desk_listing
+package repository
 
-import cats.effect.{IO, Resource}
+import cats.data.Validated.Valid
+import cats.effect.IO
+import cats.effect.Resource
 import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
-import models.business.adts.PrivateDesk
-import models.business.desk_listing.Availability
-import models.business.desk_listing.requests.DeskListingRequest
-import models.business.desk_listing.service.DeskListing
-import repositories.desk.DeskListingRepositoryImpl
-import repository.fragments.DeskListingRepoFragments.{createDeskListingsTable, resetDeskListingsTable}
-import shared.TransactorResource
-import weaver.{GlobalRead, IOSuite, ResourceTag}
-
 import java.time.LocalDateTime
+import java.time.LocalTime
+import models.database.CreateSuccess
+import models.database.DeleteSuccess
+import models.desk_listing.requests.DeskListingRequest
+import models.desk_listing.Availability
+import models.desk_listing.DeskListingPartial
+import models.desk_listing.PrivateDesk
+import repositories.desk.DeskListingRepositoryImpl
+import repository.fragments.DeskListingRepoFragments.*
+import shared.TransactorResource
+import weaver.GlobalRead
+import weaver.IOSuite
+import weaver.ResourceTag
 
 class DeskListingRepositoryISpec(global: GlobalRead) extends IOSuite {
 
@@ -22,84 +28,102 @@ class DeskListingRepositoryISpec(global: GlobalRead) extends IOSuite {
   private def initializeSchema(transactor: TransactorResource): Resource[IO, Unit] =
     Resource.eval(
       createDeskListingsTable.update.run.transact(transactor.xa).void *>
-        resetDeskListingsTable.update.run.transact(transactor.xa).void
+        resetDeskListingsTable.update.run.transact(transactor.xa).void *>
+        insertDeskListings.update.run.transact(transactor.xa).void
     )
 
-  def testDeskListing(id: Option[Int], businessId: String) = {
-
-    val availability =
-      Availability(
-        days = List("Monday", "Tuesday", "Wednesday"),
-        startTime = LocalDateTime.of(2025, 1, 1, 10, 0, 0),
-        endTime = LocalDateTime.of(2025, 1, 1, 9, 0, 0)
-      )
-
-    DeskListingRequest(
-      business_id = businessId,
-      workspace_id = "workspace_id_1",
-      title = "Quiet Private Desk",
-      description = Some("A quiet, private desk for focused work."),
-      desk_type = PrivateDesk,
-      quantity = 5,
-      price_per_hour = 15.50,
-      price_per_day = 80.00,
-      rules = Some("No loud conversations. Keep the desk clean."),
-      features = List("Wi-Fi", "Power Outlets", "Monitor"),
-      availability = availability,
-      created_at = LocalDateTime.of(2025, 1, 1, 11, 0, 0),
-      updated_at = LocalDateTime.of(2025, 1, 1, 11, 2, 0)
+  val availability =
+    Availability(
+      days = List("Monday", "Tuesday", "Wednesday"),
+      startTime = LocalTime.of(9, 0, 0),
+      endTime = LocalTime.of(17, 0, 0)
     )
-  }
-
-  private def seedTestAddresses(businessDeskRepo: DeskListingRepositoryImpl[IO]): IO[Unit] = {
-    val users = List(
-      testDeskListing(Some(1), "business_id_1"),
-      testDeskListing(Some(2), "business_id_2"),
-      testDeskListing(Some(3), "business_id_3"),
-      testDeskListing(Some(4), "business_id_4"),
-      testDeskListing(Some(5), "business_id_5")
-    )
-    users.traverse(businessDeskRepo.createDeskToRent).void
-  }
 
   def sharedResource: Resource[IO, DeskListingRepositoryImpl[IO]] = {
     val setup = for {
       transactor <- global.getOrFailR[TransactorResource]()
       businessDeskRepo = new DeskListingRepositoryImpl[IO](transactor.xa)
       createSchemaIfNotPresent <- initializeSchema(transactor)
-      seedTable <- Resource.eval(seedTestAddresses(businessDeskRepo))
     } yield businessDeskRepo
 
     setup
   }
 
-  test(".findByUserId() - should return the desk listing if business_id exists for a previously created booking") { businessDeskRepo =>
-
-    val deskListing = testDeskListing(Some(1), "business_id_1")
+  test(".findByDeskId() - should return the desk listing details for a given deskId") { businessDeskRepo =>
 
     val expectedResult =
-      DeskListing(
-        id = Some(1),
-        business_id = "business_id_1", workspace_id = "workspace_id_1", title = "Quiet Private Desk",
-        description = Some("A quiet, private desk for focused work."),
-        desk_type = PrivateDesk,
+      DeskListingPartial(
+        deskName = "Mikey Desk 1",
+        description = Some("A quiet, private desk perfect for focused work with a comfortable chair and good lighting."),
+        deskType = PrivateDesk,
         quantity = 5,
-        price_per_hour = 15.50,
-        price_per_day = 80.00,
-        features = List("Wi-Fi", "Power Outlets", "Monitor"),
+        pricePerHour = 20.00,
+        pricePerDay = 100.00,
+        features = List("Wi-Fi", "Power Outlets", "Ergonomic Chair", "Desk Lamp"),
         availability = Availability(
           days = List("Monday", "Tuesday", "Wednesday"),
-          startTime = LocalDateTime.of(2025, 1, 1, 10, 0, 0),
-          endTime = LocalDateTime.of(2025, 1, 1, 9, 0, 0)
+          startTime = LocalTime.of(9, 0, 0),
+          endTime = LocalTime.of(17, 0, 0)
         ),
-        rules = Some("No loud conversations. Keep the desk clean."),
-        created_at = LocalDateTime.of(2025, 1, 1, 11, 0, 0),
-        updated_at = LocalDateTime.of(2025, 1, 1, 11, 2, 0)
+        rules = Some("No loud conversations, please keep the workspace clean.")
       )
 
     for {
-      deskListingOpt <- businessDeskRepo.findByUserId("business_id_1")
-      //      _ <- IO(println(s"Query Result: $deskListingOpt")) // Debug log the result
+      deskListingOpt <- businessDeskRepo.findByDeskId("desk001")
     } yield expect(deskListingOpt == Some(expectedResult))
+  }
+
+  test(".findByOfficeId() - should return the all desk listing for a given officeId") { businessDeskRepo =>
+
+    val expectedResult =
+      DeskListingPartial(
+        deskName = "Mikey Desk 1",
+        description = Some("A quiet, private desk perfect for focused work with a comfortable chair and good lighting."),
+        deskType = PrivateDesk,
+        quantity = 5,
+        pricePerHour = 20.00,
+        pricePerDay = 100.00,
+        features = List("Wi-Fi", "Power Outlets", "Ergonomic Chair", "Desk Lamp"),
+        availability = Availability(
+          days = List("Monday", "Tuesday", "Wednesday"),
+          startTime = LocalTime.of(9, 0, 0),
+          endTime = LocalTime.of(17, 0, 0)
+        ),
+        rules = Some("No loud conversations, please keep the workspace clean.")
+      )
+
+    for {
+      deskListingOpt <- businessDeskRepo.findByOfficeId("office01")
+    } yield expect(deskListingOpt == List(expectedResult))
+  }
+
+  test(".create() - should return CreateSuccess for successfuly creating a desk listing") { businessDeskRepo =>
+
+    val createRequest =
+      DeskListingRequest(
+        deskName = "Mikey Desk 1",
+        description = Some("A quiet, private desk perfect for focused work with a comfortable chair and good lighting."),
+        deskType = PrivateDesk,
+        quantity = 5,
+        pricePerHour = 20.00,
+        pricePerDay = 100.00,
+        features = List("Wi-Fi", "Power Outlets", "Ergonomic Chair", "Desk Lamp"),
+        availability = Availability(
+          days = List("Monday", "Tuesday", "Wednesday"),
+          startTime = LocalTime.of(9, 0, 0),
+          endTime = LocalTime.of(17, 0, 0)
+        ),
+        rules = Some("No loud conversations, please keep the workspace clean.")
+      )
+
+    for {
+      deskListingOpt <- businessDeskRepo.create(createRequest)
+    } yield expect(deskListingOpt == Valid(CreateSuccess))
+  }
+
+  test(".delete() - should return DeleteSuccess for successfuly deleting the desk based on the deskId") { businessDeskRepo =>
+    for {
+      deskListingOpt <- businessDeskRepo.delete("desk002")
+    } yield expect(deskListingOpt == Valid(DeleteSuccess))
   }
 }

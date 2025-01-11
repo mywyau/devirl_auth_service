@@ -16,7 +16,7 @@ object UpdateBusinessContactDetailsRequestSpec extends SimpleIOSuite {
       primaryContactLastName = "Yau",
       contactEmail = "mikey5922@gmail.com",
       contactNumber = "07402205071",
-      websiteUrl = "mikey5922.com"
+      websiteUrl = Some("mikey5922.com")
     )
 
   test("UpdateBusinessContactDetailsRequest model encodes correctly to JSON") {

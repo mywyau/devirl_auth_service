@@ -1,7 +1,6 @@
 package controllers.constants
 
 import cats.effect.*
-import models.business.adts.*
 import models.business.contact_details.BusinessContactDetails
 import models.business.contact_details.BusinessContactDetailsPartial
 import models.business.contact_details.requests.CreateBusinessContactDetailsRequest

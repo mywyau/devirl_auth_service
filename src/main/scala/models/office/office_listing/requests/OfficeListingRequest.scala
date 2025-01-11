@@ -6,8 +6,8 @@ import io.circe.Decoder
 import io.circe.Encoder
 import io.circe.Json
 import java.time.LocalDateTime
-import models.business.adts.DeskType
-import models.business.desk_listing.Availability
+import models.desk_listing.DeskType
+import models.desk_listing.Availability
 import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetails

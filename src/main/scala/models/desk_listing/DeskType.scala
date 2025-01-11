@@ -1,4 +1,4 @@
-package models.business.adts
+package models.desk_listing
 
 import io.circe.Decoder
 import io.circe.Encoder
