@@ -73,8 +73,7 @@ class OfficeAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
         county = Some("Manhattan"),
         postcode = Some("10001"),
         latitude = Some(40.748817),
-        longitude = Some(-73.985428),
-        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        longitude = Some(-73.985428)
       )
 
     for {

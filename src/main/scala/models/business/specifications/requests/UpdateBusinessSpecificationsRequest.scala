@@ -10,8 +10,7 @@ import models.business.specifications.BusinessAvailability
 case class UpdateBusinessSpecificationsRequest(
   businessName: String,
   description: String,
-  availability: BusinessAvailability,
-  updatedAt: LocalDateTime
+  availability: BusinessAvailability
 )
 
 object UpdateBusinessSpecificationsRequest {

@@ -17,8 +17,7 @@ case class UpdateOfficeSpecificationsRequest(
   capacity: Int,
   amenities: List[String],
   availability: OfficeAvailability,
-  rules: Option[String],
-  updatedAt: LocalDateTime
+  rules: Option[String]
 )
 
 object UpdateOfficeSpecificationsRequest {

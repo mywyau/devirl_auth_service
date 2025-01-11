@@ -15,8 +15,7 @@ case class UpdateBusinessAddressRequest(
   county: Option[String],
   postcode: Option[String],
   latitude: Option[BigDecimal],
-  longitude: Option[BigDecimal],
-  updatedAt: LocalDateTime
+  longitude: Option[BigDecimal]
 )
 
 object UpdateBusinessAddressRequest {

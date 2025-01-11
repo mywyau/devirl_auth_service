@@ -9,6 +9,8 @@ import cats.implicits.*
 import controllers.constants.OfficeSpecificationsControllerITConstants.testCreateOfficeSpecificationsRequest
 import doobie.*
 import doobie.implicits.*
+import java.time.LocalDateTime
+import java.time.LocalTime
 import models.database.CreateSuccess
 import models.database.DeleteSuccess
 import models.database.NotFoundError
@@ -16,11 +18,11 @@ import models.database.UpdateSuccess
 import models.office.address_details.requests.UpdateOfficeAddressRequest
 import models.office.adts.OpenPlanOffice
 import models.office.adts.PrivateOffice
+import models.office.specifications.requests.CreateOfficeSpecificationsRequest
+import models.office.specifications.requests.UpdateOfficeSpecificationsRequest
 import models.office.specifications.OfficeAvailability
 import models.office.specifications.OfficeSpecifications
 import models.office.specifications.OfficeSpecificationsPartial
-import models.office.specifications.requests.CreateOfficeSpecificationsRequest
-import models.office.specifications.requests.UpdateOfficeSpecificationsRequest
 import repositories.office.OfficeSpecificationsRepositoryImpl
 import repository.constants.OfficeAddressRepoITConstants.createInitialOfficeAddress
 import repository.fragments.OfficeSpecificationsRepoFragments.createOfficeSpecsTable
@@ -30,9 +32,6 @@ import shared.TransactorResource
 import weaver.GlobalRead
 import weaver.IOSuite
 import weaver.ResourceTag
-
-import java.time.LocalDateTime
-import java.time.LocalTime
 
 class OfficeSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite {
 
@@ -106,8 +105,7 @@ class OfficeSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite {
           startTime = LocalTime.of(9, 0, 0),
           endTime = LocalTime.of(17, 0, 0)
         ),
-        rules = Some("No loud conversations. Keep the desks clean."),
-        updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+        rules = Some("No loud conversations. Keep the desks clean.")
       )
 
     val expectedResult =

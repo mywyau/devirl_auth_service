@@ -7,13 +7,11 @@ import io.circe.Encoder
 import java.time.LocalDateTime
 
 case class UpdateBusinessContactDetailsRequest(
-  businessName: String,
   primaryContactFirstName: String,
   primaryContactLastName: String,
   contactEmail: String,
   contactNumber: String,
-  websiteUrl: String,
-  updatedAt: LocalDateTime
+  websiteUrl: String
 )
 
 object UpdateBusinessContactDetailsRequest {

@@ -114,7 +114,7 @@ class OfficeSpecificationsRepositoryImpl[F[_] : Concurrent : Monad](transactor: 
         amenities = ${request.amenities},
         availability = ${request.availability}::jsonb,
         rules = ${request.rules},
-        updated_at = ${request.updatedAt}
+        updated_at = ${LocalDateTime.now()}
       WHERE office_id = $officeId
     """.update.run
       .transact(transactor)

@@ -96,7 +96,7 @@ class BusinessContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor
         contact_email = ${request.contactEmail},
         contact_number = ${request.contactNumber},
         website_url = ${request.websiteUrl},
-        updated_at = ${request.updatedAt}
+        updated_at = ${LocalDateTime.now()}
       WHERE business_id = $businessId
     """.update.run
       .transact(transactor)

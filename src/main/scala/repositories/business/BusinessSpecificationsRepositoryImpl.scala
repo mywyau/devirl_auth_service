@@ -89,7 +89,7 @@ class BusinessSpecificationsRepositoryImpl[F[_] : Concurrent : Monad](transactor
         business_name = ${request.businessName},
         description = ${request.description},
         availability = ${request.availability.asJson.noSpaces}::jsonb,
-        updated_at = ${request.updatedAt}
+        updated_at = ${LocalDateTime.now()}
         WHERE business_id = $businessId
       """.update.run
       .transact(transactor)

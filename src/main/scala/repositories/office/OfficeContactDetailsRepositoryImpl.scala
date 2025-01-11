@@ -90,7 +90,7 @@ class OfficeContactDetailsRepositoryImpl[F[_] : Concurrent : Monad](transactor: 
           primary_contact_last_name = ${request.primaryContactLastName},
           contact_email = ${request.contactEmail},
           contact_number = ${request.contactNumber},
-          updated_at = ${request.updatedAt}
+          updated_at = ${LocalDateTime.now()}
        WHERE office_id = $officeId
      """.update.run
       .transact(transactor)

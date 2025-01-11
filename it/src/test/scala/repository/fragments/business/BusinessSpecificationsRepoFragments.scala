@@ -13,7 +13,7 @@ object BusinessSpecificationsRepoFragments {
     sql"""
       CREATE TABLE IF NOT EXISTS business_specifications (
         id SERIAL PRIMARY KEY,
-        user_id VARCHAR(255) NOT NULL UNIQUE,
+        user_id VARCHAR(255) NOT NULL,
         business_id VARCHAR(255) NOT NULL UNIQUE,
         business_name VARCHAR(255) NOT NULL,
         description TEXT,

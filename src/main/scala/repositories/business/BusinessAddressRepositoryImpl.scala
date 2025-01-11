@@ -112,7 +112,7 @@ class BusinessAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
           postcode = ${request.postcode},
           latitude = ${request.latitude},
           longitude = ${request.longitude},
-          updated_at = ${request.updatedAt}
+          updated_at = ${LocalDateTime.now()}
       WHERE business_id = ${businessId}
     """.update.run
       .transact(transactor)

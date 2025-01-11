@@ -10,8 +10,7 @@ case class UpdateOfficeContactDetailsRequest(
   primaryContactFirstName: String,
   primaryContactLastName: String,
   contactEmail: String,
-  contactNumber: String,
-  updatedAt: LocalDateTime
+  contactNumber: String
 )
 
 object UpdateOfficeContactDetailsRequest {

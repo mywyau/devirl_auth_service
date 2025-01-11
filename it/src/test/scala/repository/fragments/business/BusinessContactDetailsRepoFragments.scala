@@ -13,7 +13,7 @@ object BusinessContactDetailsRepoFragments {
     sql"""
       CREATE TABLE IF NOT EXISTS business_contact_details (
         id BIGSERIAL PRIMARY KEY,
-        user_id VARCHAR(255) NOT NULL UNIQUE,
+        user_id VARCHAR(255) NOT NULL,
         business_id VARCHAR(255) NOT NULL UNIQUE,
         primary_contact_first_name VARCHAR(255),
         primary_contact_last_name VARCHAR(255),
