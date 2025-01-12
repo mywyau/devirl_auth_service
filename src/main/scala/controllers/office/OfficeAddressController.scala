@@ -33,7 +33,7 @@ class OfficeAddressControllerImpl[F[_] : Concurrent : Logger](
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
-    case GET -> Root / "business" / "offices" / "address" / officeId =>
+    case GET -> Root / "business" / "offices" / "address" / "details" / officeId =>
       Logger[F].info(s"[OfficeAddressControllerImpl] GET - Office address for officeId: $officeId") *>
         officeAddressService.findByOfficeId(officeId).flatMap {
           case Right(address) =>
@@ -44,7 +44,7 @@ class OfficeAddressControllerImpl[F[_] : Concurrent : Logger](
             BadRequest(errorResponse.asJson)
         }
 
-    case req @ POST -> Root / "business" / "offices" / "address" / "create" =>
+    case req @ POST -> Root / "business" / "offices" / "address" / "details" / "create" =>
       Logger[F].info(s"[OfficeListingControllerImpl] POST - Creating office listing") *>
         req.decode[CreateOfficeAddressRequest] { request =>
           officeAddressService.create(request).flatMap {
@@ -59,7 +59,7 @@ class OfficeAddressControllerImpl[F[_] : Concurrent : Logger](
           }
         }
 
-    case req @ PUT -> Root / "business" / "offices" / "address" / officeId =>
+    case req @ PUT -> Root / "business" / "offices" / "address" / "details" / officeId =>
       Logger[F].info(s"[OfficeListingControllerImpl] PUT - Updating office address with ID: $officeId") *>
         req.decode[UpdateOfficeAddressRequest] { request =>
           officeAddressService.update(officeId, request).flatMap {
@@ -75,7 +75,7 @@ class OfficeAddressControllerImpl[F[_] : Concurrent : Logger](
           }
         }
 
-    case DELETE -> Root / "business" / "offices" / "address" / officeId =>
+    case DELETE -> Root / "business" / "offices" / "address" / "details" / officeId =>
       Logger[F].info(s"[OfficeAddressControllerImpl] DELETE - Attempting to delete the office address") *>
         officeAddressService.delete(officeId).flatMap {
           case Valid(address) =>

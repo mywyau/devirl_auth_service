@@ -49,7 +49,7 @@ class OfficeAddressControllerISpec(global: GlobalRead) extends IOSuite {
   }
 
   test(
-    "GET - /pistachio/business/offices/address/OFF001 - " +
+    "GET - /pistachio/business/offices/address/details/OFF001 - " +
       "given a office_id, find the office address data for given id, returning OK and the address json"
   ) { (sharedResources, log) =>
 
@@ -57,7 +57,7 @@ class OfficeAddressControllerISpec(global: GlobalRead) extends IOSuite {
     val client = sharedResources._2.client
 
     val request =
-      Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/offices/address/OFF001")
+      Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/offices/address/details/OFF001")
 
     val expectedOfficeAddress = testCreateOfficeAddressRequest("BUS123", "OFF001")
 
@@ -72,7 +72,7 @@ class OfficeAddressControllerISpec(global: GlobalRead) extends IOSuite {
   }
 
   test(
-    "POST - /pistachio/business/offices/address/create - " +
+    "POST - /pistachio/business/offices/address/details/create - " +
       "should generate the office address data in postgresql, returning Created response"
   ) { (sharedResources, log) =>
 
@@ -82,7 +82,7 @@ class OfficeAddressControllerISpec(global: GlobalRead) extends IOSuite {
     val businessListingRequest: Json = testCreateOfficeAddressRequest("BUSINESS1337", "OFFICE1337").asJson
 
     val request =
-      Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/offices/address/create")
+      Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/offices/address/details/create")
         .withEntity(businessListingRequest)
 
     val expectedBody = CreatedResponse("Office address created successfully")
@@ -99,7 +99,7 @@ class OfficeAddressControllerISpec(global: GlobalRead) extends IOSuite {
 
 
   test(
-    "DELETE - /pistachio/business/offices/address/OFF002 - " +
+    "DELETE - /pistachio/business/offices/address/details/OFF002 - " +
       "given a office_id, delete the office address data for given office id, returning OK and Deleted response json"
   ) { (sharedResources, log) =>
 
@@ -107,7 +107,7 @@ class OfficeAddressControllerISpec(global: GlobalRead) extends IOSuite {
     val client = sharedResources._2.client
 
     val request =
-      Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/offices/address/OFF002")
+      Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/offices/address/details/OFF002")
 
     val expectedBody = DeletedResponse("Office address deleted successfully")
 
