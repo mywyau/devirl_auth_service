@@ -89,6 +89,17 @@ class OfficeListingControllerImpl[F[_] : Concurrent](officeListingService: Offic
             val errorResponse = ErrorResponse("placeholder error", "some deleted all office listings message")
             BadRequest(errorResponse.asJson)
         }
+
+    case DELETE -> Root / "business" / "office" / "listing" / "delete" / "all" / businessId =>
+      logger.info(s"[OfficeListingControllerImpl] DELETE - Attempting to delete all office listings for businessId: ${businessId}") *>
+        officeListingService.deleteByBusinessId(businessId).flatMap {
+          case Valid(result) =>
+            logger.info(s"[OfficeListingControllerImpl] DELETE - Successfully DELETED ALL office listings for $businessId") *>
+              Ok(DeletedResponse("All Office listings deleted successfully").asJson)
+          case Invalid(error) =>
+            val errorResponse = ErrorResponse("placeholder error", "some deleted all office listings message")
+            BadRequest(errorResponse.asJson)
+        }
   }
 }
 
