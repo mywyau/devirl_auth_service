@@ -16,26 +16,27 @@ import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
 import org.typelevel.log4cats.Logger
-import services.business.contact_details.BusinessContactDetailsServiceAlgebra
+import services.business.BusinessContactDetailsServiceAlgebra
 
 trait BusinessContactDetailsControllerAlgebra[F[_]] {
   def routes: HttpRoutes[F]
 }
 
-class BusinessContactDetailsControllerImpl[F[_] : Concurrent](businessContactDetailsService: BusinessContactDetailsServiceAlgebra[F])(implicit logger: Logger[F])
-    extends Http4sDsl[F]
+class BusinessContactDetailsControllerImpl[F[_] : Concurrent : Logger](
+  businessContactDetailsService: BusinessContactDetailsServiceAlgebra[F]
+) extends Http4sDsl[F]
     with BusinessContactDetailsControllerAlgebra[F] {
 
-  implicit val createBusinessContactDetailsRequestDecoder: EntityDecoder[F, CreateBusinessContactDetailsRequest] = jsonOf[F, CreateBusinessContactDetailsRequest]
-  implicit val updateBusinessContactDetailsRequestRequestDecoder: EntityDecoder[F, UpdateBusinessContactDetailsRequest] = jsonOf[F, UpdateBusinessContactDetailsRequest]
+  implicit val createRequestDecoder: EntityDecoder[F, CreateBusinessContactDetailsRequest] = jsonOf[F, CreateBusinessContactDetailsRequest]
+  implicit val updateRequestDecoder: EntityDecoder[F, UpdateBusinessContactDetailsRequest] = jsonOf[F, UpdateBusinessContactDetailsRequest]
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
     case GET -> Root / "business" / "businesses" / "contact" / "details" / businessId =>
-      logger.debug(s"[BusinessContactDetailsControllerImpl] GET - Business contactDetails details for businessId: $businessId") *>
+      Logger[F].info(s"[BusinessContactDetailsControllerImpl] GET - Business contactDetails details for businessId: $businessId") *>
         businessContactDetailsService.getByBusinessId(businessId).flatMap {
           case Right(contactDetails) =>
-            logger.info(s"[BusinessContactDetailsControllerImpl] GET - Successfully retrieved business contact details") *>
+            Logger[F].info(s"[BusinessContactDetailsControllerImpl] GET - Successfully retrieved business contact details") *>
               Ok(contactDetails.asJson)
           case Left(error) =>
             val errorResponse = ErrorResponse(error.code, error.errorMessage)
@@ -43,39 +44,36 @@ class BusinessContactDetailsControllerImpl[F[_] : Concurrent](businessContactDet
         }
 
     case req @ POST -> Root / "business" / "businesses" / "contact" / "details" / "create" =>
-      logger.info(s"[BusinessContactControllerImpl] POST - Creating business listing") *>
+      Logger[F].info(s"[BusinessContactControllerImpl] POST - Creating business listing") *>
         req.decode[CreateBusinessContactDetailsRequest] { request =>
           businessContactDetailsService.create(request).flatMap {
-            case Valid(listing) =>
-              logger.info(s"[BusinessContactControllerImpl] POST - Successfully created a business contact details") *>
-                Created(CreatedResponse("Business contact details created successfully").asJson)
+            case Valid(response) =>
+              Logger[F].info(s"[BusinessContactControllerImpl] POST - Successfully created a business contact details") *>
+                Created(CreatedResponse(response.toString, "Business contact details created successfully").asJson)
             case _ =>
               InternalServerError(ErrorResponse(code = "Code", message = "An error occurred").asJson)
           }
         }
 
     case req @ PUT -> Root / "business" / "businesses" / "contact" / "details" / "update" / businessId =>
-      logger.info(s"[BusinessContactDetailsControllerImpl] PUT - Updating business contactDetails with ID: $businessId") *>
+      Logger[F].info(s"[BusinessContactDetailsControllerImpl] PUT - Updating business contactDetails with ID: $businessId") *>
         req.decode[UpdateBusinessContactDetailsRequest] { request =>
           businessContactDetailsService.update(businessId, request).flatMap {
             case Valid(updatedContactDetails) =>
-              logger.info(s"[BusinessContactDetailsControllerImpl] PUT - Successfully updated business contactDetails for ID: $businessId") *>
+              Logger[F].info(s"[BusinessContactDetailsControllerImpl] PUT - Successfully updated business contactDetails for ID: $businessId") *>
                 Ok(UpdatedResponse("Update_Success", "Business contactDetails updated successfully").asJson)
             case Invalid(errors) =>
-              logger.warn(s"[BusinessContactDetailsControllerImpl] PUT - Validation failed for business contactDetails update: ${errors.toList}") *>
+              Logger[F].warn(s"[BusinessContactDetailsControllerImpl] PUT - Validation failed for business contactDetails update: ${errors.toList}") *>
                 BadRequest(ErrorResponse(code = "VALIDATION_ERROR", message = errors.toList.mkString(", ")).asJson)
-            case _ =>
-              logger.error(s"[BusinessContactDetailsControllerImpl] PUT - Error updating business contactDetails for ID: $businessId") *>
-                InternalServerError(ErrorResponse(code = "SERVER_ERROR", message = "An error occurred").asJson)
           }
         }
 
     case DELETE -> Root / "business" / "businesses" / "contact" / "details" / businessId =>
-      logger.info(s"[BusinessContactControllerImpl] DELETE - Attempting to delete business contact details") *>
+      Logger[F].info(s"[BusinessContactControllerImpl] DELETE - Attempting to delete business contact details") *>
         businessContactDetailsService.delete(businessId).flatMap {
-          case Valid(contact) =>
-            logger.info(s"[BusinessContactControllerImpl] DELETE - Successfully deleted business contact details for $businessId") *>
-              Ok(DeletedResponse("Business contact details deleted successfully").asJson)
+          case Valid(response) =>
+            Logger[F].info(s"[BusinessContactControllerImpl] DELETE - Successfully deleted business contact details for $businessId") *>
+              Ok(DeletedResponse(response.toString, "Business contact details deleted successfully").asJson)
           case Invalid(error) =>
             val errorResponse = ErrorResponse("placeholder error", "some deleted business contact details message")
             BadRequest(errorResponse.asJson)

@@ -12,7 +12,7 @@ import models.database.UpdateSuccess
 import models.office.address_details.OfficeAddress
 import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.address_details.requests.UpdateOfficeAddressRequest
-import models.office.office_listing.requests.OfficeListingRequest
+import models.office_listing.requests.OfficeListingRequest
 import models.office.specifications.OfficeAvailability
 import repositories.office.OfficeAddressRepositoryImpl
 import repository.constants.OfficeAddressRepoITConstants.*
@@ -53,7 +53,7 @@ class OfficeAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
 
     for {
       officeAddressOpt <- officeAddressRepo.findByOfficeId("office_id_1")
-    } yield expect(officeAddressOpt == Some(expectedResult))
+    } yield expect(officeAddressOpt == Valid(expectedResult))
   }
 
   test(".update() - should return UpdateSucess and update the office address if office_id exists for a previously created office address") { officeAddressRepo =>

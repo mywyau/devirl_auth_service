@@ -6,7 +6,7 @@ import cats.effect.IO
 import java.time.LocalDateTime
 import models.business.address.requests.CreateBusinessAddressRequest
 import models.business.address.BusinessAddressPartial
-import repository.business.mocks.MockBusinessAddressRepository
+import mocks.MockBusinessAddressRepository
 
 object BusinessAddressRepositoryConstants {
 

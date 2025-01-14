@@ -11,7 +11,7 @@ import models.business.address.BusinessAddressPartial
 import models.database.CreateSuccess
 import models.database.DatabaseErrors
 import models.database.DatabaseSuccess
-import services.business.address.BusinessAddressServiceAlgebra
+import services.business.BusinessAddressServiceAlgebra
 
 class MockBusinessAddressService(userAddressData: Map[String, BusinessAddressPartial]) extends BusinessAddressServiceAlgebra[IO] {
 

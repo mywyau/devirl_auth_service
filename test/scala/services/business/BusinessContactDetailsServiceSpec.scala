@@ -10,7 +10,6 @@ import models.business.contact_details.BusinessContactDetails
 import models.database.CreateSuccess
 import models.database.DatabaseErrors
 import repositories.business.BusinessContactDetailsRepositoryAlgebra
-import services.business.contact_details.BusinessContactDetailsService
 import services.business.mocks.MockBusinessContactDetailsRepository
 import services.constants.BusinessContactDetailsServiceConstants.*
 import weaver.SimpleIOSuite

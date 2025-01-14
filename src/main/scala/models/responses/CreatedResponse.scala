@@ -5,9 +5,9 @@ import io.circe.generic.semiauto.deriveEncoder
 import io.circe.Decoder
 import io.circe.Encoder
 
-case class CreatedResponse(message: String)
+case class CreatedResponse(code:String, message: String)
 
 object CreatedResponse {
-  implicit val createdEncoder: Encoder[CreatedResponse] = deriveEncoder[CreatedResponse]
-  implicit val createdDecoder: Decoder[CreatedResponse] = deriveDecoder[CreatedResponse]
+  implicit val encoder: Encoder[CreatedResponse] = deriveEncoder[CreatedResponse]
+  implicit val decoder: Decoder[CreatedResponse] = deriveDecoder[CreatedResponse]
 }

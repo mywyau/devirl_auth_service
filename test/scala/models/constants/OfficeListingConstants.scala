@@ -5,7 +5,7 @@ import models.office.adts.*
 import models.office.specifications.requests.CreateOfficeSpecificationsRequest
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
-import models.office.office_listing.requests.OfficeListingRequest
+import models.office_listing.requests.OfficeListingRequest
 import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
 
 import java.time.{LocalDateTime, LocalTime}

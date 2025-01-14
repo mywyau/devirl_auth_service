@@ -32,7 +32,7 @@ class OfficeSpecificationsControllerImpl[F[_] : Concurrent](officeSpecifications
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
     case GET -> Root / "business" / "offices" / "specifications" / officeId =>
-      logger.debug(s"[OfficeSpecificationsControllerImpl] GET - Office specifications for officeId: $officeId") *>
+      logger.info(s"[OfficeSpecificationsControllerImpl] GET - Office specifications for officeId: $officeId") *>
         officeSpecificationsService.getByOfficeId(officeId).flatMap {
           case Right(specifications) =>
             logger.info(s"[OfficeSpecificationsControllerImpl] GET - Successfully retrieved office specification") *>
@@ -46,9 +46,9 @@ class OfficeSpecificationsControllerImpl[F[_] : Concurrent](officeSpecifications
       logger.info(s"[OfficeSpecificationsControllerImpl] POST - Creating office listing") *>
         req.decode[CreateOfficeSpecificationsRequest] { request =>
           officeSpecificationsService.create(request).flatMap {
-            case Valid(listing) =>
+            case Valid(response) =>
               logger.info(s"[OfficeSpecificationsControllerImpl] POST - Successfully created a office specifications") *>
-                Created(CreatedResponse("Office specifications created successfully").asJson)
+                Created(CreatedResponse(response.toString, "Office specifications created successfully").asJson)
             case _ =>
               InternalServerError(ErrorResponse(code = "Code", message = "An error occurred").asJson)
           }
@@ -64,18 +64,15 @@ class OfficeSpecificationsControllerImpl[F[_] : Concurrent](officeSpecifications
             case Invalid(errors) =>
               logger.warn(s"[OfficeSpecificationsControllerImpl] PUT - Validation failed for office specifications update: ${errors.toList}") *>
                 BadRequest(ErrorResponse(code = "VALIDATION_ERROR", message = errors.toList.mkString(", ")).asJson)
-            case _ =>
-              logger.error(s"[OfficeSpecificationsControllerImpl] PUT - Error updating office specifications for ID: $officeId") *>
-                InternalServerError(ErrorResponse(code = "SERVER_ERROR", message = "An error occurred").asJson)
           }
         }
 
     case DELETE -> Root / "business" / "offices" / "specifications" / officeId =>
       logger.info(s"[OfficeAddressControllerImpl] DELETE - Attempting to delete the office specifications") *>
         officeSpecificationsService.delete(officeId).flatMap {
-          case Valid(specifications) =>
+          case Valid(response) =>
             logger.info(s"[OfficeAddressControllerImpl] DELETE - Successfully deleted office specifications for $officeId") *>
-              Ok(DeletedResponse("Office specifications deleted successfully").asJson)
+              Ok(DeletedResponse(response.toString,  "Office specifications deleted successfully").asJson)
           case Invalid(error) =>
             val errorResponse = ErrorResponse("placeholder error", "some deleted office specifications message")
             BadRequest(errorResponse.asJson)

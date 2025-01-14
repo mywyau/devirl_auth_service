@@ -8,7 +8,7 @@ import doobie.*
 import doobie.implicits.*
 import models.database.CreateSuccess
 import models.database.DeleteSuccess
-import models.office.office_listing.requests.InitiateOfficeListingRequest
+import models.office_listing.requests.InitiateOfficeListingRequest
 import repositories.office.OfficeListingRepositoryImpl
 import repository.constants.OfficeListingRepoITConstants.*
 import repository.fragments.OfficeAddressRepoFragments.*

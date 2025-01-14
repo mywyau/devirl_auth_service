@@ -16,41 +16,43 @@ import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
 import org.typelevel.log4cats.Logger
-import services.office.contact_details.OfficeContactDetailsServiceAlgebra
+import services.office.OfficeContactDetailsServiceAlgebra
 
 trait OfficeContactDetailsControllerAlgebra[F[_]] {
   def routes: HttpRoutes[F]
 }
 
-class OfficeContactDetailsControllerImpl[F[_] : Concurrent](officeContactDetailsService: OfficeContactDetailsServiceAlgebra[F])(implicit logger: Logger[F])
+class OfficeContactDetailsControllerImpl[F[_] : Concurrent](
+  officeContactDetailsService: OfficeContactDetailsServiceAlgebra[F]
+)(implicit logger: Logger[F])
     extends Http4sDsl[F]
     with OfficeContactDetailsControllerAlgebra[F] {
 
-  implicit val createOfficeContactDetailsRequestDecoder: EntityDecoder[F, CreateOfficeContactDetailsRequest] = jsonOf[F, CreateOfficeContactDetailsRequest]
-  implicit val updateOfficeContactDetailsRequestDecoder: EntityDecoder[F, UpdateOfficeContactDetailsRequest] = jsonOf[F, UpdateOfficeContactDetailsRequest]
+  implicit val createRequestDecoder: EntityDecoder[F, CreateOfficeContactDetailsRequest] = jsonOf[F, CreateOfficeContactDetailsRequest]
+  implicit val updateRequestDecoder: EntityDecoder[F, UpdateOfficeContactDetailsRequest] = jsonOf[F, UpdateOfficeContactDetailsRequest]
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
     case GET -> Root / "business" / "offices" / "contact" / "details" / officeId =>
-      logger.debug(s"[OfficeContactDetailsControllerImpl] GET - Office contact details for officeId: $officeId") *>
+      logger.info(s"[OfficeContactDetailsControllerImpl] GET - Office contact details for officeId: $officeId") *>
         officeContactDetailsService.getByOfficeId(officeId).flatMap {
           case Right(contactDetails) =>
             logger.info(s"[OfficeContactDetailsControllerImpl] GET - Successfully retrieved office specification") *>
               Ok(contactDetails.asJson)
           case Left(error) =>
             val errorResponse = ErrorResponse(error.code, error.errorMessage)
-            BadRequest(errorResponse.asJson)
+            BadRequest(errorResponse.asJson)  
         }
 
     case req @ POST -> Root / "business" / "offices" / "contact" / "details" / "create" =>
       logger.info(s"[OfficeContactDetailsControllerImpl] POST - Creating office listing") *>
         req.decode[CreateOfficeContactDetailsRequest] { request =>
           officeContactDetailsService.create(request).flatMap {
-            case Valid(listing) =>
+            case Valid(response) =>
               logger.info(s"[OfficeContactDetailsControllerImpl] POST - Successfully created a office contact details") *>
-                Created(CreatedResponse("Office contact details created successfully").asJson)
-            case _ =>
-              InternalServerError(ErrorResponse(code = "Code", message = "An error occurred").asJson)
+                Created(CreatedResponse(response.toString, "Office contact details created successfully").asJson)
+            case Invalid(_) =>
+              InternalServerError(ErrorResponse(code = "VALIDATION_ERROR", message = "An error occurred").asJson)
           }
         }
 
@@ -63,21 +65,18 @@ class OfficeContactDetailsControllerImpl[F[_] : Concurrent](officeContactDetails
                 Ok(UpdatedResponse("Update_Success", "Office contact details updated successfully").asJson)
             case Invalid(errors) =>
               logger.warn(s"[OfficeContactDetailsControllerImpl] PUT - Validation failed for office contact details update: ${errors.toList}") *>
-                BadRequest(ErrorResponse(code = "VALIDATION_ERROR", message = errors.toList.mkString(", ")).asJson)
-            case _ =>
-              logger.error(s"[OfficeContactDetailsControllerImpl] PUT - Error updating office contact details for ID: $officeId") *>
-                InternalServerError(ErrorResponse(code = "SERVER_ERROR", message = "An error occurred").asJson)
+                BadRequest(ErrorResponse(code = "UPDATE_ERROR", message = errors.toList.mkString(", ")).asJson)
           }
         }
 
     case DELETE -> Root / "business" / "offices" / "contact" / "details" / officeId =>
       logger.info(s"[OfficeContactDetailsControllerImpl] DELETE - Attempting to delete the office contact details") *>
         officeContactDetailsService.delete(officeId).flatMap {
-          case Valid(contactDetails) =>
+          case Valid(response) =>
             logger.info(s"[OfficeContactDetailsControllerImpl] DELETE - Successfully deleted office contact details for $officeId") *>
-              Ok(DeletedResponse("Office contact details deleted successfully").asJson)
+              Ok(DeletedResponse(response.toString, "Office contact details deleted successfully").asJson)
           case Invalid(error) =>
-            val errorResponse = ErrorResponse("placeholder error", "some deleted office contact details message")
+            val errorResponse = ErrorResponse("DELETE_ERROR", "unable to delete office contact details for office id")
             BadRequest(errorResponse.asJson)
         }
   }

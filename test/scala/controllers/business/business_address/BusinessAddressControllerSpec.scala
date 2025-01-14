@@ -1,24 +1,25 @@
 package controllers.business.business_address
 
 import cats.effect.IO
+import controllers.ControllerSpecBase
 import controllers.business.BusinessAddressController
-import controllers.business.business_address.constants.BusinessAddressControllerConstants.sampleBusinessAddress1 
+import controllers.business.business_address.constants.BusinessAddressControllerConstants.sampleBusinessAddress1
 import controllers.business.business_address.mocks.MockBusinessAddressService
 import models.business.address.errors.BusinessUserNotFound
 import models.responses.ErrorResponse
 import org.http4s.*
-import org.http4s.Status.{BadRequest, Ok}
+import org.http4s.Status.BadRequest
+import org.http4s.Status.Ok
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityDecoder.*
 import org.http4s.implicits.*
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import services.SpecBase
-import services.business.address.BusinessAddressServiceAlgebra
+import services.business.BusinessAddressServiceAlgebra
 import weaver.SimpleIOSuite
 
 
-object BusinessAddressControllerSpec extends SimpleIOSuite with SpecBase {
+object BusinessAddressControllerSpec extends SimpleIOSuite with ControllerSpecBase {
 
   def createUserController(businessAddressService: BusinessAddressServiceAlgebra[IO]): HttpRoutes[IO] =
     BusinessAddressController[IO](businessAddressService).routes

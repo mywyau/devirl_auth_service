@@ -14,6 +14,7 @@ import doobie.util.transactor.Transactor
 import io.circe.syntax.*
 import io.circe.Json
 import java.time.LocalDateTime
+import models.database.*
 import models.office.adts.*
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.OfficeContactDetailsPartial
@@ -87,7 +88,7 @@ class OfficeContactDetailsControllerISpec(global: GlobalRead) extends IOSuite {
       Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/offices/contact/details/create")
         .withEntity(businessListingRequest)
 
-    val expectedBody = CreatedResponse("Office contact details created successfully")
+    val expectedBody = CreatedResponse(CreateSuccess.toString, "Office contact details created successfully")
 
     client.run(request).use { response =>
       response.as[CreatedResponse].map { body =>
@@ -110,7 +111,7 @@ class OfficeContactDetailsControllerISpec(global: GlobalRead) extends IOSuite {
     val request =
       Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/offices/contact/details/OFF002")
 
-    val expectedBody = DeletedResponse("Office contact details deleted successfully")
+    val expectedBody = DeletedResponse(DeleteSuccess.toString, "Office contact details deleted successfully")
 
     client.run(request).use { response =>
       response.as[DeletedResponse].map { body =>

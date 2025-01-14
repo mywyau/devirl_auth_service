@@ -5,7 +5,7 @@ import io.circe.generic.semiauto.deriveEncoder
 import io.circe.Decoder
 import io.circe.Encoder
 
-case class DeletedResponse(message: String)
+case class DeletedResponse(code: String, message: String)
 
 object DeletedResponse {
   implicit val deletedEncoder: Encoder[DeletedResponse] = deriveEncoder[DeletedResponse]

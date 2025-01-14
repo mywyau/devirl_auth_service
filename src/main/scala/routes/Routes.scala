@@ -5,14 +5,14 @@ import cats.NonEmptyParallel
 import controllers.*
 import controllers.business.BusinessAddressController
 import controllers.business.BusinessContactDetailsController
+import controllers.business.BusinessListingController
+import controllers.business.BusinessListingControllerImpl
 import controllers.business.BusinessSpecificationsController
-import controllers.business_listing.BusinessListingController
-import controllers.business_listing.BusinessListingControllerImpl
 import controllers.desk_listing.DeskListingControllerImpl
 import controllers.office.OfficeAddressController
 import controllers.office.OfficeContactDetailsController
 import controllers.office.OfficeSpecificationsController
-import controllers.office_listing.OfficeListingController
+import controllers.office.OfficeListingController
 import doobie.hikari.HikariTransactor
 import org.http4s.HttpRoutes
 import org.typelevel.log4cats.Logger
@@ -27,14 +27,14 @@ import repositories.office.OfficeContactDetailsRepository
 import repositories.office.OfficeListingRepository
 import repositories.office.OfficeSpecificationsRepository
 import services.*
-import services.business.address.BusinessAddressService
-import services.business.business_listing.BusinessListingService
-import services.business.contact_details.BusinessContactDetailsService
-import services.business.specifications.BusinessSpecificationsService
+import services.business.BusinessAddressService
+import services.business.BusinessListingService
+import services.business.BusinessContactDetailsService
+import services.business.BusinessSpecificationsService
 import services.desk_listing.DeskListingService
-import services.office.address.OfficeAddressService
-import services.office.contact_details.OfficeContactDetailsService
-import services.office.office_listing.OfficeListingService
+import services.office.OfficeAddressService
+import services.office.OfficeContactDetailsService
+import services.office.OfficeListingService
 import services.office.OfficeSpecificationsService
 
 object Routes {

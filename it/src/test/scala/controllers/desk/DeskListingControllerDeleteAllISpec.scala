@@ -3,14 +3,13 @@ package controllers.desk
 import cats.effect.*
 import com.comcast.ip4s.ipv4
 import com.comcast.ip4s.port
+import controllers.ControllerISpecBase
 import controllers.constants.DeskListingControllerConstants.testDeskListingRequest
 import controllers.desk_listing.DeskListingController
 import controllers.fragments.DeskListingControllerFragments.*
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.syntax.*
-import java.time.LocalDateTime
-import java.time.LocalTime
 import models.desk_listing.Availability
 import models.desk_listing.DeskListingPartial
 import models.desk_listing.PrivateDesk
@@ -18,24 +17,25 @@ import models.responses.CreatedResponse
 import models.responses.DeletedResponse
 import models.responses.ErrorResponse
 import org.http4s.*
-import org.http4s.circe.jsonEncoder
+import org.http4s.Method.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
+import org.http4s.circe.jsonEncoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.Router
 import org.http4s.server.Server
-import org.http4s.Method.*
-import org.typelevel.log4cats.slf4j.Slf4jLogger
 import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import repositories.desk.DeskListingRepositoryImpl
 import services.desk_listing.DeskListingServiceImpl
 import shared.HttpClientResource
 import shared.TransactorResource
 import weaver.*
 
-class DeskListingControllerDeleteAllISpec(global: GlobalRead) extends IOSuite {
+import java.time.LocalDateTime
+import java.time.LocalTime
 
-  implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
+class DeskListingControllerDeleteAllISpec(global: GlobalRead) extends IOSuite with ControllerISpecBase {
 
   type Res = (TransactorResource, HttpClientResource)
 

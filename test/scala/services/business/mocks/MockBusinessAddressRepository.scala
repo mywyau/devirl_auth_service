@@ -12,8 +12,8 @@ import models.database.CreateSuccess
 import models.database.DatabaseErrors
 import models.database.DatabaseSuccess
 import repositories.business.BusinessAddressRepositoryAlgebra
-import services.business.address.BusinessAddressService
-import services.business.address.BusinessAddressServiceImpl
+import services.business.BusinessAddressService
+import services.business.BusinessAddressServiceImpl
 import weaver.SimpleIOSuite
 
 class MockBusinessAddressRepository(

@@ -4,42 +4,42 @@ import cats.effect.*
 import com.comcast.ip4s.ipv4
 import com.comcast.ip4s.port
 import configuration.models.AppConfig
+import controllers.ControllerISpecBase
 import controllers.constants.BusinessContactDetailsControllerConstants.*
 import controllers.fragments.business.BusinessContactDetailsRepoFragments.*
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
-import io.circe.syntax.*
 import io.circe.Json
-import java.time.LocalDateTime
-import models.business.contact_details.errors.*
-import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
+import io.circe.syntax.*
 import models.business.contact_details.BusinessContactDetails
 import models.business.contact_details.BusinessContactDetailsPartial
+import models.business.contact_details.errors.*
+import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
 import models.business.specifications.BusinessSpecifications
+import models.database.*
 import models.responses.CreatedResponse
 import models.responses.DeletedResponse
 import models.responses.ErrorResponse
 import org.http4s.*
+import org.http4s.Method.*
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.Router
 import org.http4s.server.Server
-import org.http4s.Method.*
-import org.typelevel.log4cats.slf4j.Slf4jLogger
 import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import repositories.business.BusinessContactDetailsRepository
 import repositories.business.BusinessSpecificationsRepository
-import services.business.contact_details.BusinessContactDetailsService
+import services.business.BusinessContactDetailsService
 import shared.HttpClientResource
 import shared.TransactorResource
 import weaver.*
 
-class BusinessContactDetailsControllerISpec(global: GlobalRead) extends IOSuite {
+import java.time.LocalDateTime
 
-  implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
-
+class BusinessContactDetailsControllerISpec(global: GlobalRead) extends IOSuite with ControllerISpecBase {
   type Res = (TransactorResource, HttpClientResource)
 
   def sharedResource: Resource[IO, Res] =
@@ -136,7 +136,7 @@ class BusinessContactDetailsControllerISpec(global: GlobalRead) extends IOSuite 
       Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/businesses/contact/details/create")
         .withEntity(businessAddressRequest)
 
-    val expectedBody = CreatedResponse("Business contact details created successfully")
+    val expectedBody = CreatedResponse(CreateSuccess.toString, "Business contact details created successfully")
 
     client.run(request).use { response =>
       response.as[CreatedResponse].map { body =>
@@ -159,7 +159,7 @@ class BusinessContactDetailsControllerISpec(global: GlobalRead) extends IOSuite 
     val request =
       Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/businesses/contact/details/business_id_2")
 
-    val expectedBody = DeletedResponse("Business contact details deleted successfully")
+    val expectedBody = DeletedResponse(DeleteSuccess.toString, "Business contact details deleted successfully")
 
     client.run(request).use { response =>
       response.as[DeletedResponse].map { body =>
@@ -170,4 +170,5 @@ class BusinessContactDetailsControllerISpec(global: GlobalRead) extends IOSuite 
       }
     }
   }
+
 }

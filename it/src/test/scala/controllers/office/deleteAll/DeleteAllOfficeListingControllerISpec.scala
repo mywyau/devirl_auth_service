@@ -1,6 +1,7 @@
 package controllers.office
 
 import cats.effect.*
+import controllers.ControllerISpecBase
 import controllers.constants.OfficeListingControllerConstants.*
 import controllers.fragments.OfficeAddressRepoFragments.*
 import controllers.fragments.OfficeContactDetailsRepoFragments.*
@@ -8,8 +9,8 @@ import controllers.fragments.OfficeSpecificationRepoFragments.*
 import doobie.implicits.*
 import io.circe.Json
 import io.circe.syntax.*
-import models.office.office_listing.OfficeListing
-import models.office.office_listing.OfficeListingCard
+import models.office_listing.OfficeListing
+import models.office_listing.OfficeListingCard
 import models.responses.DeletedResponse
 import org.http4s.*
 import org.http4s.Method.*
@@ -22,10 +23,7 @@ import shared.HttpClientResource
 import shared.TransactorResource
 import weaver.*
 
-class DeleteAllOfficeListingControllerISpec(global: GlobalRead) extends IOSuite {
-
-  implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
-
+class DeleteAllOfficeListingControllerISpec(global: GlobalRead) extends IOSuite with ControllerISpecBase {
   type Res = (TransactorResource, HttpClientResource)
 
   def sharedResource: Resource[IO, Res] =

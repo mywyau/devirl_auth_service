@@ -5,7 +5,7 @@ import cats.effect.IO
 import cats.effect.kernel.Ref
 import models.business.contact_details.BusinessContactDetails
 import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
-import repository.business.mocks.MockBusinessContactDetailsRepository
+import mocks.MockBusinessContactDetailsRepository
 
 import java.time.LocalDateTime
 import models.business.contact_details.BusinessContactDetailsPartial

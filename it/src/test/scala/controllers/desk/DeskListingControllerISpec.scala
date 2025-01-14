@@ -1,54 +1,38 @@
 package controllers.desk
 
 import cats.effect.*
-import com.comcast.ip4s.ipv4
-import com.comcast.ip4s.port
+import controllers.ControllerISpecBase
 import controllers.constants.DeskListingControllerConstants.testDeskListingRequest
 import controllers.desk_listing.DeskListingController
 import controllers.fragments.DeskListingControllerFragments.*
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.syntax.*
-import java.time.LocalDateTime
-import java.time.LocalTime
+import models.database.CreateSuccess
 import models.database.UpdateSuccess
-import models.desk_listing.requests.DeskListingRequest
 import models.desk_listing.Availability
 import models.desk_listing.DeskListingPartial
 import models.desk_listing.PrivateDesk
+import models.desk_listing.requests.DeskListingRequest
 import models.responses.CreatedResponse
 import models.responses.DeletedResponse
 import models.responses.UpdatedResponse
 import org.http4s.*
-import org.http4s.circe.jsonEncoder
-import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
-import org.http4s.ember.server.EmberServerBuilder
-import org.http4s.implicits.*
-import org.http4s.server.Router
-import org.http4s.server.Server
 import org.http4s.Method.*
-import org.typelevel.log4cats.slf4j.Slf4jLogger
-import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
+import org.http4s.circe.jsonEncoder
+import org.http4s.implicits.*
 import repositories.desk.DeskListingRepositoryImpl
 import services.desk_listing.DeskListingServiceImpl
 import shared.HttpClientResource
 import shared.TransactorResource
 import weaver.*
 
-class DeskListingControllerISpec(global: GlobalRead) extends IOSuite {
+import java.time.LocalDateTime
+import java.time.LocalTime
 
-  implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
-
+class DeskListingControllerISpec(global: GlobalRead) extends IOSuite with ControllerISpecBase {
   type Res = (TransactorResource, HttpClientResource)
-
-  def createServer[F[_] : Async](router: HttpRoutes[F]): Resource[F, Server] =
-    EmberServerBuilder
-      .default[F]
-      .withHost(ipv4"127.0.0.1")
-      .withPort(port"9999")
-      .withHttpApp(router.orNotFound)
-      .build
-
   def sharedResource: Resource[IO, Res] =
     for {
       transactor <- global.getOrFailR[TransactorResource]()
@@ -154,7 +138,7 @@ class DeskListingControllerISpec(global: GlobalRead) extends IOSuite {
     val deleteRequest =
       Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/desk/listing/details/delete/desk003")
 
-    val expectedDeskListing = CreatedResponse("Business Desk created successfully")
+    val expectedDeskListing = CreatedResponse(CreateSuccess.toString, "Business Desk created successfully")
 
     for {
       findAllResponseBefore <- client.run(findAllRequest).use(_.as[List[DeskListingPartial]])

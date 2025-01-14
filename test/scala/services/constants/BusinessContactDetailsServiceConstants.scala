@@ -1,9 +1,11 @@
 package services.constants
 
-import java.time.LocalDateTime
-import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
 import models.business.contact_details.BusinessContactDetails
 import models.business.contact_details.BusinessContactDetailsPartial
+import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
+import testData.TestConstants.*
+
+import java.time.LocalDateTime
 
 object BusinessContactDetailsServiceConstants {
 
@@ -11,23 +13,23 @@ object BusinessContactDetailsServiceConstants {
     CreateBusinessContactDetailsRequest(
       userId = userId,
       businessId = businessId,
-      businessName = "MikeyCorp",
-      primaryContactFirstName = "Michael",
-      primaryContactLastName = "Yau",
-      contactEmail = "mike@gmail.com",
-      contactNumber = "07402205071",
-      websiteUrl = "mikey.com"
+      businessName = businessName1,
+      primaryContactFirstName = primaryContactFirstName1,
+      primaryContactLastName = primaryContactLastName1,
+      contactEmail = contactEmail1,
+      contactNumber = contactNumber1,
+      websiteUrl = websiteUrl1
     )
 
   def testContactDetails(userId: String, businessId: String): BusinessContactDetailsPartial =
     BusinessContactDetailsPartial(
       userId = userId,
       businessId = businessId,
-      primaryContactFirstName = Some("Michael"),
-      primaryContactLastName = Some("Yau"),
-      contactEmail = Some("mike@gmail.com"),
-      contactNumber = Some("07402205071"),
-      websiteUrl = Some("mikey.com")
+      primaryContactFirstName = Some(primaryContactFirstName1),
+      primaryContactLastName = Some(primaryContactLastName1),
+      contactEmail = Some(contactEmail1),
+      contactNumber = Some(contactNumber1),
+      websiteUrl = Some(websiteUrl1)
     )
 
 }

@@ -11,8 +11,8 @@ import doobie.util.meta.Meta
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import models.business.address.BusinessAddressPartial
-import models.business.business_listing.requests.InitiateBusinessListingRequest
-import models.business.business_listing.BusinessListing
+import models.business_listing.requests.InitiateBusinessListingRequest
+import models.business_listing.BusinessListing
 import models.business.contact_details.BusinessContactDetailsPartial
 import models.business.specifications.BusinessSpecificationsPartial
 import models.database.*

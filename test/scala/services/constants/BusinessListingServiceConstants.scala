@@ -1,51 +1,49 @@
 package services.constants
 
+import java.time.LocalDateTime
+import java.time.LocalTime
 import models.business.address.requests.CreateBusinessAddressRequest
-import models.business.business_listing.requests.BusinessListingRequest
 import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
 import models.business.specifications.requests.CreateBusinessSpecificationsRequest
-
-import java.time.LocalDateTime
 import models.business.specifications.BusinessAvailability
-import java.time.LocalTime
-
+import models.business_listing.requests.BusinessListingRequest
+import testData.TestConstants.*
 
 object BusinessListingServiceConstants {
 
   val testCreateBusinessAddressRequest: CreateBusinessAddressRequest =
     CreateBusinessAddressRequest(
-      userId = "user_id_1",
-      businessId = "business_id_1",
-      businessName = Some("businessCorp"),
-      buildingName = Some("build_123"),
-      floorNumber = Some("floor 1"),
-      street = Some("1 Canton Street"),
-      city = Some("New York"),
-      country = Some("USA"),
-      county = Some("New York County"),
-      postcode = Some("10001"),
-      latitude = Some(100.1),
-      longitude = Some(-100.1)
+      userId = userId1,
+      businessId = businessId1,
+      businessName = Some(businessName1),
+      buildingName = Some(buildingName1),
+      floorNumber = Some(floorNumber1),
+      street = Some(street1),
+      city = Some(city1),
+      country = Some(country1),
+      county = Some(county1),
+      postcode = Some(postcode1),
+      latitude = Some(latitude1),
+      longitude = Some(longitude1)
     )
-
 
   val testCreateBusinessSpecificationsRequest: CreateBusinessSpecificationsRequest =
     CreateBusinessSpecificationsRequest(
-      userId = "user_id_1",
-      businessId = "business_id_1",
-      businessName = "Modern Workspace",
-      description = "A vibrant business space in the heart of the city, ideal for teams or individuals.",
+      userId = userId1,
+      businessId = businessId1,
+      businessName = businessName1,
+      description = businessDescription1,
       availability = BusinessAvailability(
         days = List("Monday", "Tuesday"),
-        startTime = LocalTime.of(10, 0, 0),
-        endTime = LocalTime.of(10, 30, 0)
+        startTime = startTime0900,
+        endTime = endTime1700
       )
     )
 
   val testCreateBusinessContactDetailsRequest =
     CreateBusinessContactDetailsRequest(
-      userId = "user_id_1",
-      businessId = "business_id_1",
+      userId = userId1,
+      businessId = businessId1,
       businessName = "businessCorp",
       primaryContactFirstName = "Michael",
       primaryContactLastName = "Yau",
@@ -56,11 +54,11 @@ object BusinessListingServiceConstants {
 
   val businessListingRequest: BusinessListingRequest =
     BusinessListingRequest(
-      businessId = "business_id_1",
+      businessId = businessId1,
       addressDetails = testCreateBusinessAddressRequest,
       businessSpecs = testCreateBusinessSpecificationsRequest,
       contactDetails = testCreateBusinessContactDetailsRequest,
-      createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
-      updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
+      createdAt = createdAt01Jan2025,
+      updatedAt = updatedAt01Jan2025
     )
 }

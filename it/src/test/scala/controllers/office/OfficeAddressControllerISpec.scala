@@ -1,42 +1,46 @@
 package controllers.office
 
 import cats.effect.*
-import com.comcast.ip4s.{ipv4, port}
 import configuration.models.AppConfig
+import controllers.ControllerISpecBase
 import controllers.constants.OfficeAddressControllerConstants.*
-import controllers.fragments.OfficeAddressRepoFragments.{createOfficeAddressTable, insertOfficeAddressesTable, resetOfficeAddressTable}
+import controllers.fragments.OfficeAddressRepoFragments.createOfficeAddressTable
+import controllers.fragments.OfficeAddressRepoFragments.insertOfficeAddressesTable
+import controllers.fragments.OfficeAddressRepoFragments.resetOfficeAddressTable
 import controllers.office.OfficeAddressController
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.Json
 import io.circe.syntax.*
+import models.database.*
 import models.office.address_details.OfficeAddress
 import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.adts.*
-import models.responses.{CreatedResponse, DeletedResponse}
+import models.responses.CreatedResponse
+import models.responses.DeletedResponse
 import org.http4s.*
 import org.http4s.Method.*
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
-import org.http4s.server.{Router, Server}
+import org.http4s.server.Router
+import org.http4s.server.Server
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import repositories.office.OfficeAddressRepository
-import services.office.address.OfficeAddressService
-import shared.{HttpClientResource, TransactorResource}
+import services.office.OfficeAddressService
+import shared.HttpClientResource
+import shared.TransactorResource
 import weaver.*
 
 import java.time.LocalDateTime
 
-class OfficeAddressControllerISpec(global: GlobalRead) extends IOSuite {
-
-  implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
+class OfficeAddressControllerISpec(global: GlobalRead) extends IOSuite with ControllerISpecBase {
 
   type Res = (TransactorResource, HttpClientResource)
 
-  def sharedResource: Resource[IO, Res] = {
+  def sharedResource: Resource[IO, Res] =
     for {
       transactor <- global.getOrFailR[TransactorResource]()
       _ <- Resource.eval(
@@ -46,7 +50,6 @@ class OfficeAddressControllerISpec(global: GlobalRead) extends IOSuite {
       )
       client <- global.getOrFailR[HttpClientResource]()
     } yield (transactor, client)
-  }
 
   test(
     "GET - /pistachio/business/offices/address/details/OFF001 - " +
@@ -85,7 +88,7 @@ class OfficeAddressControllerISpec(global: GlobalRead) extends IOSuite {
       Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/offices/address/details/create")
         .withEntity(businessListingRequest)
 
-    val expectedBody = CreatedResponse("Office address created successfully")
+    val expectedBody = CreatedResponse(CreateSuccess.toString, "Office address created successfully")
 
     client.run(request).use { response =>
       response.as[CreatedResponse].map { body =>
@@ -96,7 +99,6 @@ class OfficeAddressControllerISpec(global: GlobalRead) extends IOSuite {
       }
     }
   }
-
 
   test(
     "DELETE - /pistachio/business/offices/address/details/OFF002 - " +
@@ -109,7 +111,7 @@ class OfficeAddressControllerISpec(global: GlobalRead) extends IOSuite {
     val request =
       Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/offices/address/details/OFF002")
 
-    val expectedBody = DeletedResponse("Office address deleted successfully")
+    val expectedBody = DeletedResponse(DeleteSuccess.toString, "Office address deleted successfully")
 
     client.run(request).use { response =>
       response.as[DeletedResponse].map { body =>

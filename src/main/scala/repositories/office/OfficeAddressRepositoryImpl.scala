@@ -1,6 +1,7 @@
 package repositories.office
 
 import cats.data.Validated
+import cats.data.Validated.Invalid
 import cats.data.Validated.Valid
 import cats.data.ValidatedNel
 import cats.effect.Concurrent
@@ -20,9 +21,9 @@ import models.office.address_details.OfficeAddressPartial
 
 trait OfficeAddressRepositoryAlgebra[F[_]] {
 
-  def findByOfficeId(officeId: String): F[Option[OfficeAddressPartial]]
+  def findByOfficeId(officeId: String): F[ValidatedNel[DatabaseErrors, OfficeAddressPartial]]
 
-  def create(officeAddressRequest: CreateOfficeAddressRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
+  def create(request: CreateOfficeAddressRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
   def update(officeId: String, request: UpdateOfficeAddressRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
@@ -37,29 +38,55 @@ class OfficeAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
   implicit val localDateTimeMeta: Meta[LocalDateTime] =
     Meta[Timestamp].imap(_.toLocalDateTime)(Timestamp.valueOf)
 
-  override def findByOfficeId(officeId: String): F[Option[OfficeAddressPartial]] = {
-    val findQuery: F[Option[OfficeAddressPartial]] =
-      sql"""
-         SELECT 
-             business_id,
-             office_id,
-             building_name,
-             floor_number,
-             street,
-             city,
-             country,
-             county,
-             postcode,
-             latitude,
-             longitude
-         FROM office_address
-         WHERE office_id = $officeId
-       """.query[OfficeAddressPartial].option.transact(transactor)
+  override def findByOfficeId(officeId: String): F[ValidatedNel[DatabaseErrors, OfficeAddressPartial]] = {
 
-    findQuery
+    def validateOfficeId(officeId: String): ValidatedNel[DatabaseErrors, String] =
+      if (officeId.nonEmpty) officeId.validNel
+      else DatabaseError.invalidNel
+
+    val findQuery: ConnectionIO[Option[OfficeAddressPartial]] =
+      sql"""
+       SELECT 
+           business_id,
+           office_id,
+           building_name,
+           floor_number,
+           street,
+           city,
+           country,
+           county,
+           postcode,
+           latitude,
+           longitude
+       FROM office_address
+       WHERE office_id = $officeId
+      """.query[OfficeAddressPartial].option
+
+    def handleDatabaseError(ex: Throwable): DatabaseErrors = ex match {
+      case _: java.sql.SQLIntegrityConstraintViolationException =>
+        ConstraintViolation
+      case _: java.sql.SQLException =>
+        SqlExecutionError(s"SQL error occurred while querying office_id: $officeId: ${ex.getMessage}")
+      case _ =>
+        UnknownError(s"Unexpected error occurred: ${ex.getMessage}")
+    }
+
+    validateOfficeId(officeId) match {
+      case Valid(validOfficeId) =>
+        findQuery.transact(transactor).attempt.map {
+          case Right(Some(officeAddress)) =>
+            officeAddress.validNel
+          case Right(None) =>
+            NotFoundError.invalidNel
+          case Left(ex) =>
+            handleDatabaseError(ex).invalidNel
+        }
+      case Invalid(validationErrors) =>
+        validationErrors.invalid.pure[F]
+    }
   }
 
-  override def create(officeAddressRequest: CreateOfficeAddressRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
+  override def create(request: CreateOfficeAddressRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
     sql"""
       INSERT INTO office_address (
         business_id,
@@ -74,17 +101,17 @@ class OfficeAddressRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transac
         latitude,
         longitude
       ) VALUES (
-        ${officeAddressRequest.businessId},
-        ${officeAddressRequest.officeId},
-        ${officeAddressRequest.buildingName},
-        ${officeAddressRequest.floorNumber},
-        ${officeAddressRequest.street},
-        ${officeAddressRequest.city},
-        ${officeAddressRequest.country},
-        ${officeAddressRequest.county},
-        ${officeAddressRequest.postcode},
-        ${officeAddressRequest.latitude},
-        ${officeAddressRequest.longitude}
+        ${request.businessId},
+        ${request.officeId},
+        ${request.buildingName},
+        ${request.floorNumber},
+        ${request.street},
+        ${request.city},
+        ${request.country},
+        ${request.county},
+        ${request.postcode},
+        ${request.latitude},
+        ${request.longitude}
       )
     """.update.run.transact(transactor).attempt.map {
       case Right(affectedRows) if affectedRows == 1 =>

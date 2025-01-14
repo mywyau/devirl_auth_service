@@ -1,42 +1,49 @@
 package controllers.office
 
 import cats.effect.*
-import com.comcast.ip4s.{ipv4, port}
+import com.comcast.ip4s.ipv4
+import com.comcast.ip4s.port
 import configuration.models.AppConfig
 import controllers.constants.OfficeSpecificationsControllerITConstants.*
-import controllers.fragments.OfficeSpecificationRepoFragments.{createOfficeSpecsTable, insertOfficeSpecificationsTable, resetOfficeSpecsTable}
+import controllers.fragments.OfficeSpecificationRepoFragments.createOfficeSpecsTable
+import controllers.fragments.OfficeSpecificationRepoFragments.insertOfficeSpecificationsTable
+import controllers.fragments.OfficeSpecificationRepoFragments.resetOfficeSpecsTable
 import controllers.office.OfficeSpecificationsController
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
-import io.circe.Json
 import io.circe.syntax.*
+import io.circe.Json
+import java.time.LocalDateTime
+import models.database.CreateSuccess
+import models.database.DeleteSuccess
 import models.office.adts.*
-import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
-import models.responses.{CreatedResponse, DeletedResponse}
+import models.office.specifications.OfficeAvailability
+import models.office.specifications.OfficeSpecifications
+import models.office.specifications.OfficeSpecificationsPartial
+import models.responses.CreatedResponse
+import models.responses.DeletedResponse
 import org.http4s.*
-import org.http4s.Method.*
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
-import org.http4s.server.{Router, Server}
-import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.http4s.server.Router
+import org.http4s.server.Server
+import org.http4s.Method.*
 import org.typelevel.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.SelfAwareStructuredLogger
 import repositories.office.OfficeSpecificationsRepository
 import services.office.OfficeSpecificationsService
-import shared.{HttpClientResource, TransactorResource}
+import shared.HttpClientResource
+import shared.TransactorResource
 import weaver.*
-
-import java.time.LocalDateTime
-import models.office.specifications.OfficeSpecificationsPartial
 
 class OfficeSpecificationsControllerISpec(global: GlobalRead) extends IOSuite {
 
   implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
-
   type Res = (TransactorResource, HttpClientResource)
 
-  def sharedResource: Resource[IO, Res] = {
+  def sharedResource: Resource[IO, Res] =
     for {
       transactor <- global.getOrFailR[TransactorResource]()
       _ <- Resource.eval(
@@ -46,7 +53,6 @@ class OfficeSpecificationsControllerISpec(global: GlobalRead) extends IOSuite {
       )
       client <- global.getOrFailR[HttpClientResource]()
     } yield (transactor, client)
-  }
 
   test(
     "GET - /pistachio/business/offices/specifications/OFF001 - " +
@@ -85,7 +91,7 @@ class OfficeSpecificationsControllerISpec(global: GlobalRead) extends IOSuite {
       Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/offices/specifications/create")
         .withEntity(businessListingRequest)
 
-    val expectedBody = CreatedResponse("Office specifications created successfully")
+    val expectedBody = CreatedResponse(CreateSuccess.toString, "Office specifications created successfully")
 
     client.run(request).use { response =>
       response.as[CreatedResponse].map { body =>
@@ -108,7 +114,7 @@ class OfficeSpecificationsControllerISpec(global: GlobalRead) extends IOSuite {
     val request =
       Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/offices/specifications/OFF002")
 
-    val expectedBody = DeletedResponse("Office specifications deleted successfully")
+    val expectedBody = DeletedResponse(DeleteSuccess.toString, "Office specifications deleted successfully")
 
     client.run(request).use { response =>
       response.as[DeletedResponse].map { body =>

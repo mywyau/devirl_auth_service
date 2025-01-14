@@ -99,9 +99,9 @@ ALTER ROLE shared_user SET search_path TO share_schema, public;
 
 ### Httpie requests 
 
-We can use httpie instead of curl to trigger our endpoints. I did have some working bit it was out of date requests.
+We can use httpie instead of curl to trigger our endpoints.
 
-WIP TODO: add some exmaples to hit our endpoints
+
 ```
 http POST http://localhost:1010/pistachio/business/offices/address/create Content-Type:application/json businessId="BUS12345" officeId="OFF12345" buildingName="Example Building" floorNumber="12" street="123 Example Street" city="Example City" country="Example Country" county="Example County" postcode="12345" latitude:=12.345678 longitude:=-98.765432
 ```

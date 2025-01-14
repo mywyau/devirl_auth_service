@@ -19,6 +19,8 @@ import models.database.*
 import models.desk_listing.requests.DeskListingRequest
 import models.desk_listing.DeskListingPartial
 import models.desk_listing.DeskType
+import org.typelevel.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.Logger
 
 trait DeskListingRepositoryAlgebra[F[_]] {
 
@@ -35,7 +37,7 @@ trait DeskListingRepositoryAlgebra[F[_]] {
   def deleteAllByOfficeId(officeId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 }
 
-class DeskListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transactor[F]) extends DeskListingRepositoryAlgebra[F] {
+class DeskListingRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: Transactor[F]) extends DeskListingRepositoryAlgebra[F] {
 
   implicit val localDateTimeMeta: Meta[LocalDateTime] = Meta[Timestamp].imap(_.toLocalDateTime)(Timestamp.valueOf)
 
@@ -211,6 +213,6 @@ class DeskListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Transacto
 }
 
 object DeskListingRepository {
-  def apply[F[_] : Concurrent : Monad](transactor: Transactor[F]): DeskListingRepositoryImpl[F] =
+  def apply[F[_] : Concurrent : Monad : Logger](transactor: Transactor[F]): DeskListingRepositoryImpl[F] =
     new DeskListingRepositoryImpl[F](transactor)
 }

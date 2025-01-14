@@ -6,14 +6,12 @@ import cats.effect.Resource
 import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
-import java.time.LocalDateTime
-import java.time.LocalTime
 import models.database.CreateSuccess
 import models.database.DeleteSuccess
-import models.desk_listing.requests.DeskListingRequest
 import models.desk_listing.Availability
 import models.desk_listing.DeskListingPartial
 import models.desk_listing.PrivateDesk
+import models.desk_listing.requests.DeskListingRequest
 import repositories.desk.DeskListingRepositoryImpl
 import repository.fragments.DeskListingRepoFragments.*
 import shared.TransactorResource
@@ -21,7 +19,10 @@ import weaver.GlobalRead
 import weaver.IOSuite
 import weaver.ResourceTag
 
-class DeskListingRepositoryISpec(global: GlobalRead) extends IOSuite {
+import java.time.LocalDateTime
+import java.time.LocalTime
+
+class DeskListingRepositoryISpec(global: GlobalRead) extends IOSuite with RepositoryISpecBase {
 
   type Res = DeskListingRepositoryImpl[IO]
 

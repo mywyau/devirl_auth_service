@@ -5,9 +5,9 @@ import cats.data.Validated.Valid
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
+import models.office.address_details.OfficeAddress
 import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.address_details.requests.UpdateOfficeAddressRequest
-import models.office.address_details.OfficeAddress
 import models.responses.CreatedResponse
 import models.responses.DeletedResponse
 import models.responses.ErrorResponse
@@ -16,7 +16,7 @@ import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
 import org.typelevel.log4cats.Logger
-import services.office.address.OfficeAddressServiceAlgebra
+import services.office.OfficeAddressServiceAlgebra
 
 trait OfficeAddressControllerAlgebra[F[_]] {
   def routes: HttpRoutes[F]
@@ -27,20 +27,19 @@ class OfficeAddressControllerImpl[F[_] : Concurrent : Logger](
 ) extends Http4sDsl[F]
     with OfficeAddressControllerAlgebra[F] {
 
-  implicit val officeAddressDecoder: EntityDecoder[F, OfficeAddress] = jsonOf[F, OfficeAddress]
-  implicit val updateOfficeAddressRequestDecoder: EntityDecoder[F, UpdateOfficeAddressRequest] = jsonOf[F, UpdateOfficeAddressRequest]
-  implicit val createOfficeAddressRequestDecoder: EntityDecoder[F, CreateOfficeAddressRequest] = jsonOf[F, CreateOfficeAddressRequest]
+  implicit val updateRequestDecoder: EntityDecoder[F, UpdateOfficeAddressRequest] = jsonOf[F, UpdateOfficeAddressRequest]
+  implicit val createRequestDecoder: EntityDecoder[F, CreateOfficeAddressRequest] = jsonOf[F, CreateOfficeAddressRequest]
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
     case GET -> Root / "business" / "offices" / "address" / "details" / officeId =>
       Logger[F].info(s"[OfficeAddressControllerImpl] GET - Office address for officeId: $officeId") *>
         officeAddressService.findByOfficeId(officeId).flatMap {
-          case Right(address) =>
+          case Valid(address) =>
             Logger[F].info(s"[OfficeAddressControllerImpl] GET - Successfully retrieved office address") *>
               Ok(address.asJson)
-          case Left(error) =>
-            val errorResponse = ErrorResponse(error.code, error.errorMessage)
+          case Invalid(error) =>
+            val errorResponse = ErrorResponse(error.toString, "Unable to fin the office address details for office id")
             BadRequest(errorResponse.asJson)
         }
 
@@ -48,14 +47,12 @@ class OfficeAddressControllerImpl[F[_] : Concurrent : Logger](
       Logger[F].info(s"[OfficeListingControllerImpl] POST - Creating office listing") *>
         req.decode[CreateOfficeAddressRequest] { request =>
           officeAddressService.create(request).flatMap {
-            case Valid(listing) =>
+            case Valid(response) =>
               Logger[F].info(s"[OfficeListingControllerImpl] POST - Successfully created a office address") *>
-                Created(CreatedResponse("Office address created successfully").asJson)
+                Created(CreatedResponse(response.toString, "Office address created successfully").asJson)
             case Invalid(errors) =>
               Logger[F].warn(s"[OfficeListingControllerImpl] POST - Validation failed for office address creation: ${errors.toList}") *>
-                BadRequest(ErrorResponse(code = "VALIDATION_ERROR", message = errors.toList.mkString(", ")).asJson)
-            case _ =>
-              InternalServerError(ErrorResponse(code = "Code", message = "An error occurred").asJson)
+                BadRequest(ErrorResponse(code = "CREATE_ERROR", message = errors.toList.mkString(", ")).asJson)
           }
         }
 
@@ -68,21 +65,18 @@ class OfficeAddressControllerImpl[F[_] : Concurrent : Logger](
                 Ok(UpdatedResponse(response.toString, "Office address updated successfully").asJson)
             case Invalid(errors) =>
               Logger[F].warn(s"[OfficeListingControllerImpl] PUT - Validation failed for office address update: ${errors.toList}") *>
-                BadRequest(ErrorResponse(code = "VALIDATION_ERROR", message = errors.toList.mkString(", ")).asJson)
-            case _ =>
-              Logger[F].error(s"[OfficeListingControllerImpl] PUT - Error updating office address for ID: $officeId") *>
-                InternalServerError(ErrorResponse(code = "SERVER_ERROR", message = "An error occurred").asJson)
+                BadRequest(ErrorResponse(code = "UPDATE_ERROR", message = errors.toList.mkString(", ")).asJson)
           }
         }
 
     case DELETE -> Root / "business" / "offices" / "address" / "details" / officeId =>
       Logger[F].info(s"[OfficeAddressControllerImpl] DELETE - Attempting to delete the office address") *>
         officeAddressService.delete(officeId).flatMap {
-          case Valid(address) =>
+          case Valid(response) =>
             Logger[F].info(s"[OfficeAddressControllerImpl] DELETE - Successfully deleted office address for $officeId") *>
-              Ok(DeletedResponse("Office address deleted successfully").asJson)
+              Ok(DeletedResponse(response.toString, "Office address deleted successfully").asJson)
           case Invalid(error) =>
-            val errorResponse = ErrorResponse("placeholder error", "some deleted office address message")
+            val errorResponse = ErrorResponse("DELETE_ERROR", "unable to delete office address")
             BadRequest(errorResponse.asJson)
         }
   }

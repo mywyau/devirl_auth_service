@@ -1,26 +1,10 @@
 package services.constants
 
-import cats.data.NonEmptyList
-import cats.data.Validated
-import cats.data.ValidatedNel
-import cats.effect.IO
-import cats.implicits.*
-import java.time.LocalDateTime
-import models.business.address.requests.CreateBusinessAddressRequest
 import models.business.address.BusinessAddressPartial
-import models.business.business_listing.errors.BusinessListingErrors
-import models.business.business_listing.requests.BusinessListingRequest
-import models.business.contact_details.BusinessContactDetails
-import models.business.specifications.BusinessAvailability
-import models.business.specifications.BusinessSpecifications
+import models.business.address.requests.CreateBusinessAddressRequest
 import models.database.*
-import org.typelevel.log4cats.slf4j.Slf4jLogger
-import org.typelevel.log4cats.SelfAwareStructuredLogger
-import repositories.business.BusinessAddressRepositoryAlgebra
-import repositories.business.BusinessContactDetailsRepositoryAlgebra
-import repositories.business.BusinessSpecificationsRepositoryAlgebra
-import services.business.business_listing.BusinessListingServiceImpl
-import weaver.SimpleIOSuite
+import services.business.BusinessListingServiceImpl
+import testData.TestConstants.*
 
 object BusinessAddressServiceConstants {
 
@@ -28,31 +12,31 @@ object BusinessAddressServiceConstants {
     CreateBusinessAddressRequest(
       userId = userId,
       businessId = businessId,
-      businessName = Some("mikeyCorp"),
-      buildingName = Some("building name"),
-      floorNumber = Some("floor 1"),
-      street = Some("1 Canton Street"),
-      city = Some("fake city 1"),
-      country = Some("UK"),
-      county = Some("County 1"),
-      postcode = Some("CF3 3NJ"),
-      latitude = Some(100.1),
-      longitude = Some(-100.1)
+      businessName = Some(businessName1),
+      buildingName = Some(buildingName1),
+      floorNumber = Some(floorNumber1),
+      street = Some(street1),
+      city = Some(city1),
+      country = Some(country1),
+      county = Some(county1),
+      postcode = Some(postcode1),
+      latitude = Some(latitude1),
+      longitude = Some(longitude1)
     )
 
   def testBusinessAddress(userId: String, businessId: String): BusinessAddressPartial =
     BusinessAddressPartial(
       userId = userId,
       businessId = businessId,
-      buildingName = Some("building name"),
-      floorNumber = Some("floor 1"),
-      street = Some("1 Canton Street"),
-      city = Some("fake city 1"),
-      country = Some("UK"),
-      county = Some("County 1"),
-      postcode = Some("CF3 3NJ"),
-      latitude = Some(100.1),
-      longitude = Some(-100.1)
+      buildingName = Some(buildingName1),
+      floorNumber = Some(floorNumber1),
+      street = Some(street1),
+      city = Some(city1),
+      country = Some(country1),
+      county = Some(county1),
+      postcode = Some(postcode1),
+      latitude = Some(latitude1),
+      longitude = Some(longitude1)
     )
 
 }

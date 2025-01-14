@@ -21,6 +21,6 @@ case class BusinessContactDetails(
 )
 
 object BusinessContactDetails {
-  implicit val businessContactDetailsEncoder: Encoder[BusinessContactDetails] = deriveEncoder[BusinessContactDetails]
-  implicit val businessContactDetailsDecoder: Decoder[BusinessContactDetails] = deriveDecoder[BusinessContactDetails]
+  implicit val encoder: Encoder[BusinessContactDetails] = deriveEncoder[BusinessContactDetails]
+  implicit val decoder: Decoder[BusinessContactDetails] = deriveDecoder[BusinessContactDetails]
 }

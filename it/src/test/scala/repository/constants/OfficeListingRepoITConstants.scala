@@ -6,7 +6,7 @@ import models.office.address_details.OfficeAddress
 import models.office.address_details.OfficeAddressPartial
 import models.office.adts.*
 import models.office.contact_details.OfficeContactDetailsPartial
-import models.office.office_listing.OfficeListing
+import models.office_listing.OfficeListing
 import models.office.specifications.OfficeAvailability
 import models.office.specifications.OfficeSpecificationsPartial
 

@@ -6,19 +6,21 @@ import controllers.fragments.OfficeAddressRepoFragments.*
 import controllers.fragments.OfficeContactDetailsRepoFragments.*
 import controllers.fragments.OfficeSpecificationRepoFragments.*
 import doobie.implicits.*
+import io.circe.syntax.*
 import io.circe.Json
-import io.circe.syntax.* 
-import models.office.office_listing.OfficeListing
-import models.office.office_listing.OfficeListingCard
+import models.office_listing.OfficeListing
+import models.office_listing.OfficeListingCard
 import models.responses.DeletedResponse
+import models.database.*
 import org.http4s.*
-import org.http4s.Method.*
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.implicits.*
-import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.http4s.Method.*
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import shared.{HttpClientResource, TransactorResource}
+import org.typelevel.log4cats.SelfAwareStructuredLogger
+import shared.HttpClientResource
+import shared.TransactorResource
 import weaver.*
 
 class OfficeListingControllerISpec(global: GlobalRead) extends IOSuite {
@@ -27,7 +29,7 @@ class OfficeListingControllerISpec(global: GlobalRead) extends IOSuite {
 
   type Res = (TransactorResource, HttpClientResource)
 
-  def sharedResource: Resource[IO, Res] = {
+  def sharedResource: Resource[IO, Res] =
     for {
       transactor <- global.getOrFailR[TransactorResource]()
       _ <- Resource.eval(
@@ -45,7 +47,6 @@ class OfficeListingControllerISpec(global: GlobalRead) extends IOSuite {
       )
       client <- global.getOrFailR[HttpClientResource]()
     } yield (transactor, client)
-  }
 
   test(
     "POST - /pistachio/business/office/listing/initiate - should generate the office listing data for a business in the respective tables, returning Created response, " +
@@ -58,7 +59,6 @@ class OfficeListingControllerISpec(global: GlobalRead) extends IOSuite {
 
     val businessId = "business_id_1"
     val officeId = "office_id_1"
-
 
     val initiateOfficeListingRequest: Json =
       testInitiateOfficeListingRequest(businessId, officeId).asJson
@@ -75,7 +75,7 @@ class OfficeListingControllerISpec(global: GlobalRead) extends IOSuite {
           createdOfficeListing.businessId == businessId,
           createdOfficeListing.officeId == officeId,
           createdOfficeListing.officeName == "some office name",
-          createdOfficeListing.description == "some desc",
+          createdOfficeListing.description == "some desc"
         )
 
         // Step 2: Make the GET request to verify all listings include the newly created one
@@ -94,7 +94,7 @@ class OfficeListingControllerISpec(global: GlobalRead) extends IOSuite {
         val request =
           Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/office/listing/delete/office_id_1")
 
-        val expectedBody = DeletedResponse("Office listing deleted successfully")
+        val expectedBody = DeletedResponse(DeleteSuccess.toString, "Office listing deleted successfully")
 
         client.run(request).use { response =>
           response.as[DeletedResponse].map { body =>

@@ -18,8 +18,8 @@ import models.office.adts.OfficeType
 import models.office.contact_details.requests.UpdateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.OfficeContactDetailsPartial
-import models.office.office_listing.requests.InitiateOfficeListingRequest
-import models.office.office_listing.OfficeListing
+import models.office_listing.requests.InitiateOfficeListingRequest
+import models.office_listing.OfficeListing
 import models.office.specifications.OfficeSpecificationsPartial
 
 trait OfficeListingRepositoryAlgebra[F[_]] {

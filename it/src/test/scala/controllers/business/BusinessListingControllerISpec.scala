@@ -1,39 +1,39 @@
 package controllers.business
 
 import cats.effect.*
+import controllers.ControllerISpecBase
 import controllers.constants.BusinessListingControllerConstants.*
 import controllers.fragments.business.BusinessAddressRepoFragments.*
 import controllers.fragments.business.BusinessContactDetailsRepoFragments.*
 import controllers.fragments.business.BusinessSpecificationsRepoFragments.*
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
-import io.circe.syntax.*
 import io.circe.Json
-import java.time.LocalDateTime
-import models.business.business_listing.requests.InitiateBusinessListingRequest
-import models.business.business_listing.BusinessListingCard
+import io.circe.syntax.*
+import models.business_listing.BusinessListingCard
+import models.business_listing.requests.InitiateBusinessListingRequest
 import models.responses.CreatedResponse
 import org.http4s.*
+import org.http4s.Method.*
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.Router
 import org.http4s.server.Server
-import org.http4s.Method.*
-import org.typelevel.log4cats.slf4j.Slf4jLogger
 import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import repositories.business.BusinessAddressRepository
 import repositories.business.BusinessContactDetailsRepository
 import repositories.business.BusinessSpecificationsRepository
-import services.business.business_listing.BusinessListingService
+import services.business.BusinessListingService
 import shared.HttpClientResource
 import shared.TransactorResource
 import weaver.*
 
-class BusinessListingControllerISpec(global: GlobalRead) extends IOSuite {
+import java.time.LocalDateTime
 
-  implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
+class BusinessListingControllerISpec(global: GlobalRead) extends IOSuite with ControllerISpecBase {
 
   type Res = (TransactorResource, HttpClientResource)
 

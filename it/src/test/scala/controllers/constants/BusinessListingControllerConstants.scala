@@ -2,7 +2,7 @@ package controllers.constants
 
 import cats.effect.*
 import models.business.address.requests.CreateBusinessAddressRequest
-import models.business.business_listing.requests.BusinessListingRequest
+import models.business_listing.requests.BusinessListingRequest
 import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
 import models.business.specifications.BusinessAvailability
 import models.business.specifications.requests.CreateBusinessSpecificationsRequest

@@ -1,30 +1,29 @@
 package controllers.business
 
 import cats.effect.*
+import controllers.ControllerISpecBase
 import controllers.constants.BusinessListingControllerConstants.*
 import controllers.fragments.business.BusinessAddressRepoFragments.*
 import controllers.fragments.business.BusinessContactDetailsRepoFragments.*
 import controllers.fragments.business.BusinessSpecificationsRepoFragments.*
 import doobie.implicits.*
-import io.circe.syntax.*
 import io.circe.Json
-import models.business.business_listing.BusinessListing
-import models.business.business_listing.BusinessListingCard
+import io.circe.syntax.*
+import models.business_listing.BusinessListing
+import models.business_listing.BusinessListingCard
 import models.responses.DeletedResponse
 import org.http4s.*
+import org.http4s.Method.*
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.implicits.*
-import org.http4s.Method.*
-import org.typelevel.log4cats.slf4j.Slf4jLogger
 import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import shared.HttpClientResource
 import shared.TransactorResource
 import weaver.*
 
-class DeleteAllBusinessListingControllerISpec(global: GlobalRead) extends IOSuite {
-
-  implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
+class DeleteAllBusinessListingControllerISpec(global: GlobalRead) extends IOSuite with ControllerISpecBase {
 
   type Res = (TransactorResource, HttpClientResource)
 
@@ -55,7 +54,7 @@ class DeleteAllBusinessListingControllerISpec(global: GlobalRead) extends IOSuit
 
     // Define the requests
     val findAllRequest =
-      Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/businesses/listing/cards/find/all")  // TODO: Fix this endpoint to be user id based
+      Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/businesses/listing/cards/find/all") // TODO: Fix this endpoint to be user id based
       // Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/businesses/listing/cards/find/all/USER123")
 
     val deleteRequest =

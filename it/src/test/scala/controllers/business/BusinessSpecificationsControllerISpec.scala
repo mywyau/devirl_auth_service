@@ -4,38 +4,42 @@ import cats.effect.*
 import com.comcast.ip4s.ipv4
 import com.comcast.ip4s.port
 import configuration.models.AppConfig
+import controllers.ControllerISpecBase
 import controllers.business.BusinessSpecificationsController
 import controllers.constants.BusinessSpecificationsControllerConstants.*
 import controllers.fragments.business.BusinessSpecificationsRepoFragments.*
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
-import io.circe.syntax.*
 import io.circe.Json
-import java.time.LocalDateTime
+import io.circe.syntax.*
 import models.business.specifications.BusinessAvailability
 import models.business.specifications.BusinessSpecifications
 import models.business.specifications.BusinessSpecificationsPartial
+import models.business.specifications.requests.UpdateBusinessSpecificationsRequest
+import models.database.*
 import models.responses.CreatedResponse
 import models.responses.DeletedResponse
+import models.responses.UpdatedResponse
 import org.http4s.*
+import org.http4s.Method.*
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.Router
 import org.http4s.server.Server
-import org.http4s.Method.*
-import org.typelevel.log4cats.slf4j.Slf4jLogger
 import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import repositories.business.BusinessSpecificationsRepository
-import services.business.specifications.BusinessSpecificationsService
+import services.business.BusinessSpecificationsService
 import shared.HttpClientResource
 import shared.TransactorResource
 import weaver.*
 
-class BusinessSpecificationsControllerISpec(global: GlobalRead) extends IOSuite {
+import java.time.LocalDateTime
+import java.time.LocalTime
 
-  implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
+class BusinessSpecificationsControllerISpec(global: GlobalRead) extends IOSuite with ControllerISpecBase {
 
   type Res = (TransactorResource, HttpClientResource)
 
@@ -87,12 +91,47 @@ class BusinessSpecificationsControllerISpec(global: GlobalRead) extends IOSuite 
       Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/businesses/specifications/create")
         .withEntity(businessAddressRequest)
 
-    val expectedBody = CreatedResponse("Business specifications created successfully")
+    val expectedBody = CreatedResponse(CreateSuccess.toString, "Business specifications created successfully")
 
     client.run(request).use { response =>
       response.as[CreatedResponse].map { body =>
         expect.all(
           response.status == Status.Created,
+          body == expectedBody
+        )
+      }
+    }
+  }
+
+  test(
+    "PUT - /pistachio/business/businesses/specifications/update/business_id_4 - " +
+      "should update the business address data for a business in database table, returning Updated response"
+  ) { (transactorResource, log) =>
+
+    val transactor = transactorResource._1.xa
+    val client = transactorResource._2.client
+
+    val updateRequest: UpdateBusinessSpecificationsRequest =
+      UpdateBusinessSpecificationsRequest(
+        businessName = "MikeyCorp",
+        description = "Some description",
+        availability = BusinessAvailability(
+          days = List("Monday", "Tuesday"),
+          startTime = LocalTime.of(10, 0, 0),
+          endTime = LocalTime.of(10, 30, 0)
+        )
+      )
+
+    val request =
+      Request[IO](PUT, uri"http://127.0.0.1:9999/pistachio/business/businesses/specifications/update/business_id_4")
+        .withEntity(updateRequest.asJson)
+
+    val expectedBody = UpdatedResponse(UpdateSuccess.toString, "Business specifications updated successfully")
+
+    client.run(request).use { response =>
+      response.as[UpdatedResponse].map { body =>
+        expect.all(
+          response.status == Status.Ok,
           body == expectedBody
         )
       }
@@ -110,7 +149,7 @@ class BusinessSpecificationsControllerISpec(global: GlobalRead) extends IOSuite 
     val request =
       Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/businesses/specifications/business_id_2")
 
-    val expectedBody = DeletedResponse("Business specifications deleted successfully")
+    val expectedBody = DeletedResponse(DeleteSuccess.toString, "Business specifications deleted successfully")
 
     client.run(request).use { response =>
       response.as[DeletedResponse].map { body =>

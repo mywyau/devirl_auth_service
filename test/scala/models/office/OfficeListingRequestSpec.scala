@@ -7,7 +7,7 @@ import io.circe.syntax.EncoderOps
 import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.adts.*
 import models.office.contact_details.OfficeContactDetails
-import models.office.office_listing.requests.OfficeListingRequest
+import models.office_listing.requests.OfficeListingRequest
 import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
 import weaver.SimpleIOSuite
 import models.constants.OfficeListingConstants.*

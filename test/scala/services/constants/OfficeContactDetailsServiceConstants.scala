@@ -10,10 +10,11 @@ import models.office.contact_details.requests.UpdateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.OfficeContactDetailsPartial
 import repositories.office.OfficeContactDetailsRepositoryAlgebra
-import repository.business.mocks.MockBusinessContactDetailsRepository
-import repository.office.mocks.MockOfficeContactDetailsRepository
+import mocks.MockBusinessContactDetailsRepository
+import mocks.MockOfficeContactDetailsRepository
+import testData.TestConstants.*
 
-object OfficeContactDetailsServiceConstants {
+object OfficeContactDetailsServiceConstants  {
 
   def testOfficeContactDetails(id: Option[Int], businessId: String, office_id: String): OfficeContactDetailsPartial =
     OfficeContactDetailsPartial(

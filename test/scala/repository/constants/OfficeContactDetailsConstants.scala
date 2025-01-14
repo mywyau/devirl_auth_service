@@ -4,13 +4,10 @@ import cats.data.Validated.Valid
 import cats.effect.kernel.Ref
 import cats.effect.IO
 import java.time.LocalDateTime
-import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
-import models.business.contact_details.BusinessContactDetails
+import mocks.MockOfficeContactDetailsRepository
 import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.OfficeContactDetailsPartial
-import repository.business.mocks.MockBusinessContactDetailsRepository
-import repository.office.mocks.MockOfficeContactDetailsRepository
 
 object OfficeContactDetailsConstants {
 

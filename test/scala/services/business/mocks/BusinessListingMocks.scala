@@ -7,8 +7,8 @@ import cats.effect.IO
 import java.time.LocalDateTime
 import java.time.LocalTime
 import models.business.address.BusinessAddressPartial
-import models.business.business_listing.requests.InitiateBusinessListingRequest
-import models.business.business_listing.BusinessListing
+import models.business_listing.requests.InitiateBusinessListingRequest
+import models.business_listing.BusinessListing
 import models.business.contact_details.BusinessContactDetailsPartial
 import models.business.specifications.BusinessAvailability
 import models.business.specifications.BusinessSpecificationsPartial
