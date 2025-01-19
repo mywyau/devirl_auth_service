@@ -7,11 +7,13 @@ import controllers.business.BusinessAddressController
 import controllers.business.BusinessContactDetailsController
 import controllers.business.BusinessListingController
 import controllers.business.BusinessSpecificationsController
-import controllers.desk_listing.DeskListingController
+import controllers.desk.DeskListingController
+import controllers.desk.DeskPricingController
+import controllers.desk.DeskSpecificationsController
 import controllers.office.OfficeAddressController
 import controllers.office.OfficeContactDetailsController
-import controllers.office.OfficeSpecificationsController
 import controllers.office.OfficeListingController
+import controllers.office.OfficeSpecificationsController
 import doobie.hikari.HikariTransactor
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
@@ -26,6 +28,8 @@ import repositories.business.BusinessContactDetailsRepository
 import repositories.business.BusinessListingRepository
 import repositories.business.BusinessSpecificationsRepository
 import repositories.desk.DeskListingRepository
+import repositories.desk.DeskPricingRepository
+import repositories.desk.DeskSpecificationsRepository
 import repositories.office.OfficeAddressRepository
 import repositories.office.OfficeContactDetailsRepository
 import repositories.office.OfficeListingRepository
@@ -34,7 +38,9 @@ import services.business.BusinessAddressService
 import services.business.BusinessContactDetailsService
 import services.business.BusinessListingService
 import services.business.BusinessSpecificationsService
-import services.desk_listing.DeskListingService
+import services.desk.DeskListingService
+import services.desk.DeskPricingService
+import services.desk.DeskSpecificationsService
 import services.office.OfficeAddressService
 import services.office.OfficeContactDetailsService
 import services.office.OfficeListingService
@@ -84,13 +90,22 @@ object TestRoutes {
     businessListingController.routes
   }
 
-  def deskListingRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
+  def deskSpecificationsRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
 
-    val deskListingRepository = DeskListingRepository(transactor)
-    val deskListingService = DeskListingService(deskListingRepository)
-    val deskListingController = DeskListingController(deskListingService)
+    val deskSpecificationsRepository = DeskSpecificationsRepository(transactor)
+    val deskSpecificationsService = DeskSpecificationsService(deskSpecificationsRepository)
+    val deskSpecificationsController = DeskSpecificationsController(deskSpecificationsService)
 
-    deskListingController.routes
+    deskSpecificationsController.routes
+  }
+
+  def deskPricingRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
+
+    val deskPricingRepository = DeskPricingRepository(transactor)
+    val deskPricingService = DeskPricingService(deskPricingRepository)
+    val deskPricingController = DeskPricingController(deskPricingService)
+
+    deskPricingController.routes
   }
 
   def officeAddressRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
@@ -143,7 +158,8 @@ object TestRoutes {
           officeContactDetailsRoutes(transactor) <+>
           officeSpecificationsRoutes(transactor) <+>
           officeListingRoutes(transactor) <+>
-          deskListingRoutes(transactor)
+          deskSpecificationsRoutes(transactor) <+>
+          deskPricingRoutes(transactor)
       )
     )
 }

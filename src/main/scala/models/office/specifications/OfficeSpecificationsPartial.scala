@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 import models.office.adts.OfficeType
 import models.office.specifications.OfficeAvailability
 
-case class OfficeSpecificationsPartial(
+  case class OfficeSpecificationsPartial(
   businessId: String,
   officeId: String,
   officeName: Option[String],

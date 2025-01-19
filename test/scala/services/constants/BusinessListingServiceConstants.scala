@@ -44,7 +44,6 @@ object BusinessListingServiceConstants {
     CreateBusinessContactDetailsRequest(
       userId = userId1,
       businessId = businessId1,
-      businessName = "businessCorp",
       primaryContactFirstName = "Michael",
       primaryContactLastName = "Yau",
       contactEmail = "mike@gmail.com",

@@ -52,6 +52,7 @@ object Main extends IOApp {
   ): Resource[F, HttpRoutes[F]] =
     for {
       deskListingRoutes <- Resource.pure(deskListingRoutes(transactor))
+      deskPricingRoutes <- Resource.pure(deskPricingRoutes(transactor))
       officeAddressRoutes <- Resource.pure(officeAddressRoutes(transactor))
       officeContactDetailsRoutes <- Resource.pure(officeContactDetailsRoutes(transactor))
       officeSpecificationsRoutes <- Resource.pure(officeSpecificationsRoutes(transactor))
@@ -64,6 +65,7 @@ object Main extends IOApp {
       combinedRoutes = Router(
         "/pistachio" -> (
           deskListingRoutes <+>
+            deskPricingRoutes <+>
             officeAddressRoutes <+>
             officeContactDetailsRoutes <+>
             officeSpecificationsRoutes <+>

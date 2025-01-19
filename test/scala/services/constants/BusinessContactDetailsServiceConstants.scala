@@ -13,7 +13,6 @@ object BusinessContactDetailsServiceConstants {
     CreateBusinessContactDetailsRequest(
       userId = userId,
       businessId = businessId,
-      businessName = businessName1,
       primaryContactFirstName = primaryContactFirstName1,
       primaryContactLastName = primaryContactLastName1,
       contactEmail = contactEmail1,

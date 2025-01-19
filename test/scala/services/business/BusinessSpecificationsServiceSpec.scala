@@ -15,6 +15,7 @@ import repositories.business.BusinessSpecificationsRepositoryAlgebra
 import services.business.mocks.MockBusinessSpecificationsRepository
 import weaver.SimpleIOSuite
 import models.database.CreateSuccess
+import testData.TestConstants.*
 
 object BusinessSpecificationsServiceSpec extends SimpleIOSuite {
 
@@ -25,12 +26,12 @@ object BusinessSpecificationsServiceSpec extends SimpleIOSuite {
     CreateBusinessSpecificationsRequest(
       userId = userId,
       businessId = businessId,
-      businessName = "MikeyCorp",
-      description = "Some description",
+      businessName = businessName1,
+      description = businessDescription1,
       availability = BusinessAvailability(
         days = List("Monday", "Tuesday"),
-        startTime = LocalTime.of(10, 0, 0),
-        endTime = LocalTime.of(10, 30, 0)
+        startTime = startTime0900,
+        endTime = endTime1700
       )
     )
 
@@ -47,8 +48,8 @@ object BusinessSpecificationsServiceSpec extends SimpleIOSuite {
       availability = Some(
         BusinessAvailability(
           days = List("Monday", "Tuesday"),
-          startTime = LocalTime.of(10, 0, 0),
-          endTime = LocalTime.of(10, 30, 0)
+          startTime = startTime0900,
+          endTime = endTime1700
         )
       )
     )

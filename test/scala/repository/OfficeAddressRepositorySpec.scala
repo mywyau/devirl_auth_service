@@ -11,40 +11,12 @@ import models.database.CreateSuccess
 import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.address_details.OfficeAddress
 import models.office.address_details.OfficeAddressPartial
+import repository.constants.OfficeAddressRepoConstants.*
+import services.RepositorySpecBase
 import testData.TestConstants.*
 import weaver.SimpleIOSuite
 
-object OfficeAddressRepositorySpec extends SimpleIOSuite {
-
-  def testOfficeAddressRequest(businessId: String, officeId: String): CreateOfficeAddressRequest =
-    CreateOfficeAddressRequest(
-      businessId = businessId,
-      officeId = officeId,
-      buildingName = Some("building name"),
-      floorNumber = Some("floor 3"),
-      street = Some("fake street 1"),
-      city = Some("fake city 1"),
-      country = Some("United Kingdom"),
-      county = Some("fake County"),
-      postcode = Some("CF3 3NJ"),
-      latitude = Some(-100),
-      longitude = Some(-96.7)
-    )
-
-  def testOfficeAddressPartial(businessId: String, officeId: String): OfficeAddressPartial =
-    OfficeAddressPartial(
-      businessId = businessId,
-      officeId = officeId,
-      buildingName = Some("building name"),
-      floorNumber = Some("floor 3"),
-      street = Some("fake street 1"),
-      city = Some("fake city 1"),
-      country = Some("United Kingdom"),
-      county = Some("fake County"),
-      postcode = Some("CF3 3NJ"),
-      latitude = Some(-100),
-      longitude = Some(-96.7)
-    )
+object OfficeAddressRepositorySpec extends SimpleIOSuite with RepositorySpecBase {
 
   test(".findByOfficeId() - should return an address if officeId exists") {
 

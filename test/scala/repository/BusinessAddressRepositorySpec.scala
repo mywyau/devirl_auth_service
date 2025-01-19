@@ -1,43 +1,45 @@
 package repository
 
 import cats.data.Validated.Valid
-import cats.effect.kernel.Ref
 import cats.effect.IO
+import cats.effect.kernel.Ref
+import mocks.MockBusinessAddressRepository
 import models.business.address.requests.CreateBusinessAddressRequest
 import models.database.CreateSuccess
 import models.database.DeleteSuccess
-import mocks.MockBusinessAddressRepository
-import repository.constants.BusinessAddressRepositoryConstants.*
+import repository.constants.BusinessAddressRepoConstants.*
+import services.RepositorySpecBase
+import testData.TestConstants.*
 import weaver.SimpleIOSuite
 
-object BusinessAddressRepositorySpec extends SimpleIOSuite {
+object BusinessAddressRepositorySpec extends SimpleIOSuite with RepositorySpecBase {
 
   test(".findByBusinessId() - should return an address if business_id_1 exists") {
 
-    val existingAddressForUser = testAddress("user_id_1", "business_id_1")
+    val existingAddressForUser = testAddress(userId1, businessId1)
 
     for {
       mockRepo <- createMockRepo(List(existingAddressForUser))
-      result <- mockRepo.findByBusinessId("business_id_1")
+      result <- mockRepo.findByBusinessId(businessId1)
     } yield expect(result.contains(existingAddressForUser))
   }
 
   test(".findByBusinessId() - should return None if business_id_1 does not exist") {
     for {
       mockRepo <- createMockRepo(List())
-      result <- mockRepo.findByBusinessId("business_id_1")
+      result <- mockRepo.findByBusinessId(businessId1)
     } yield expect(result.isEmpty)
   }
 
   test(".createBusinessAddress() - when given a valid business address should insert an address into the postgres db") {
 
-    val testBusinessAddressRequest: CreateBusinessAddressRequest = testCreateBusinessAddressRequest("user_id_2", "business_id_2")
-    val testAddressForUser2 = testAddress("user_id_2", "business_id_2")
+    val testBusinessAddressRequest: CreateBusinessAddressRequest = testCreateBusinessAddressRequest(userId2, businessId2)
+    val testAddressForUser2 = testAddress(userId2, businessId2)
 
     for {
       mockRepo <- createMockRepo(List())
       result <- mockRepo.create(testBusinessAddressRequest)
-      findInsertedAddress <- mockRepo.findByBusinessId("business_id_2")
+      findInsertedAddress <- mockRepo.findByBusinessId(businessId2)
     } yield expect.all(
       result == Valid(CreateSuccess),
       findInsertedAddress == Some(testAddressForUser2)
@@ -46,13 +48,13 @@ object BusinessAddressRepositorySpec extends SimpleIOSuite {
 
   test(".delete() - when given a valid businessId should delete the business address details") {
 
-    val existingAddressForUser = testAddress("user_id_3", "business_id_3")
+    val existingAddressForUser = testAddress(userId3, businessId3)
 
     for {
       mockRepo <- createMockRepo(List(existingAddressForUser))
-      findInitiallyCreatedAddress <- mockRepo.findByBusinessId("business_id_3")
-      result <- mockRepo.delete("business_id_3")
-      findInsertedAddress <- mockRepo.findByBusinessId("business_id_3")
+      findInitiallyCreatedAddress <- mockRepo.findByBusinessId(businessId3)
+      result <- mockRepo.delete(businessId3)
+      findInsertedAddress <- mockRepo.findByBusinessId(businessId3)
     } yield expect.all(
       findInitiallyCreatedAddress == Some(existingAddressForUser),
       result == Valid(DeleteSuccess),

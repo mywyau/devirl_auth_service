@@ -11,8 +11,9 @@ import models.office.contact_details.OfficeContactDetails
 import repository.constants.OfficeContactDetailsConstants.*
 import testData.TestConstants.*
 import weaver.SimpleIOSuite
+import services.RepositorySpecBase
 
-object OfficeContactDetailsRepositorySpec extends SimpleIOSuite {
+object OfficeContactDetailsRepositorySpec extends SimpleIOSuite with RepositorySpecBase {
 
   test(".findByOfficeId() - should return the contact details if office_id_1 exists") {
 

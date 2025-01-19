@@ -8,11 +8,12 @@ import controllers.business.BusinessContactDetailsController
 import controllers.business.BusinessListingController
 import controllers.business.BusinessListingControllerImpl
 import controllers.business.BusinessSpecificationsController
-import controllers.desk_listing.DeskListingControllerImpl
+import controllers.desk.DeskListingControllerImpl
+import controllers.desk.DeskPricingControllerImpl
 import controllers.office.OfficeAddressController
 import controllers.office.OfficeContactDetailsController
-import controllers.office.OfficeSpecificationsController
 import controllers.office.OfficeListingController
+import controllers.office.OfficeSpecificationsController
 import doobie.hikari.HikariTransactor
 import org.http4s.HttpRoutes
 import org.typelevel.log4cats.Logger
@@ -22,16 +23,18 @@ import repositories.business.BusinessContactDetailsRepository
 import repositories.business.BusinessListingRepository
 import repositories.business.BusinessSpecificationsRepository
 import repositories.desk.DeskListingRepository
+import repositories.desk.DeskPricingRepository
 import repositories.office.OfficeAddressRepository
 import repositories.office.OfficeContactDetailsRepository
 import repositories.office.OfficeListingRepository
 import repositories.office.OfficeSpecificationsRepository
 import services.*
 import services.business.BusinessAddressService
-import services.business.BusinessListingService
 import services.business.BusinessContactDetailsService
+import services.business.BusinessListingService
 import services.business.BusinessSpecificationsService
-import services.desk_listing.DeskListingService
+import services.desk.DeskListingService
+import services.desk.DeskPricingService
 import services.office.OfficeAddressService
 import services.office.OfficeContactDetailsService
 import services.office.OfficeListingService
@@ -46,6 +49,15 @@ object Routes {
     val deskListingController = new DeskListingControllerImpl[F](deskListingService)
 
     deskListingController.routes
+  }
+
+  def deskPricingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+
+    val deskPricingRepo = DeskPricingRepository(transactor)
+    val deskPricingService = DeskPricingService(deskPricingRepo)
+    val deskPricingController = new DeskPricingControllerImpl[F](deskPricingService)
+
+    deskPricingController.routes
   }
 
   def officeAddressRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {

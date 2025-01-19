@@ -15,7 +15,6 @@ object BusinessContactDetailsControllerConstants {
     CreateBusinessContactDetailsRequest(
       userId = userId,
       businessId = businessId,
-      businessName = "Example Business Name",
       primaryContactFirstName = "John",
       primaryContactLastName = "Doe",
       contactEmail = "johndoe@example.com",

@@ -6,7 +6,7 @@ import cats.effect.Resource
 import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
-import models.desk_listing.PrivateDesk
+import models.desk.deskSpecifications.PrivateDesk
 import models.database.DeleteSuccess
 import models.database.UpdateSuccess
 import models.office.address_details.OfficeAddress

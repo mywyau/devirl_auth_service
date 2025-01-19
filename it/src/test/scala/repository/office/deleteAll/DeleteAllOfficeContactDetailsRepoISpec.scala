@@ -7,7 +7,7 @@ import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
 import java.time.LocalDateTime
-import models.desk_listing.PrivateDesk
+import models.desk.deskSpecifications.PrivateDesk
 import models.database.DeleteSuccess
 import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetails

@@ -8,6 +8,7 @@ import mocks.MockOfficeContactDetailsRepository
 import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.OfficeContactDetailsPartial
+import testData.TestConstants.*
 
 object OfficeContactDetailsConstants {
 
@@ -15,20 +16,20 @@ object OfficeContactDetailsConstants {
     CreateOfficeContactDetailsRequest(
       businessId = businessId,
       officeId = office_id,
-      primaryContactFirstName = "Michael",
-      primaryContactLastName = "Yau",
-      contactEmail = "mikey@gmail.com",
-      contactNumber = "07402205071"
+      primaryContactFirstName = primaryContactFirstName1,
+      primaryContactLastName = primaryContactLastName1,
+      contactEmail = contactEmail1,
+      contactNumber = contactNumber1
     )
 
   def testContactDetails(businessId: String, office_id: String): OfficeContactDetailsPartial =
     OfficeContactDetailsPartial(
       businessId = businessId,
       officeId = office_id,
-      primaryContactFirstName = Some("Michael"),
-      primaryContactLastName = Some("Yau"),
-      contactEmail = Some("mikey@gmail.com"),
-      contactNumber = Some("07402205071")
+      primaryContactFirstName = Some(primaryContactFirstName1),
+      primaryContactLastName = Some(primaryContactLastName1),
+      contactEmail = Some(contactEmail1),
+      contactNumber = Some(contactNumber1)
     )
 
   // Helper method to create a mock repository with initial state

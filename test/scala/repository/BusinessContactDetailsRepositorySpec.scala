@@ -2,14 +2,15 @@ package repository
 
 import cats.data.Validated.Valid
 import mocks.MockBusinessContactDetailsRepository
-import models.business.contact_details.BusinessContactDetails
 import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
+import models.business.contact_details.BusinessContactDetails
 import models.database.CreateSuccess
-import repository.constants.BusinessContactDetailsConstants.*
+import repository.constants.BusinessContactDetailsRepoConstants.*
+import services.RepositorySpecBase
 import testData.TestConstants.*
 import weaver.SimpleIOSuite
 
-object BusinessContactDetailsRepositorySpec extends SimpleIOSuite {
+object BusinessContactDetailsRepositorySpec extends SimpleIOSuite with RepositorySpecBase {
 
   test(".findByBusinessId() - should return the contact details if business_id exists") {
 

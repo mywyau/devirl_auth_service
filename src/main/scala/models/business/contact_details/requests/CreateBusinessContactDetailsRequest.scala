@@ -9,7 +9,6 @@ import java.time.LocalDateTime
 case class CreateBusinessContactDetailsRequest(
   userId: String,
   businessId: String,
-  businessName: String,
   primaryContactFirstName: String,
   primaryContactLastName: String,
   contactEmail: String,
