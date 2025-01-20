@@ -108,6 +108,15 @@ object TestRoutes {
     deskPricingController.routes
   }
 
+   def deskListingRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
+
+    val deskListingRepository = DeskListingRepository(transactor)
+    val deskListingService = DeskListingService(deskListingRepository)
+    val deskListingController = DeskListingController(deskListingService)
+
+    deskListingController.routes
+  }
+
   def officeAddressRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
 
     val officeAddressRepository = OfficeAddressRepository(transactor)
@@ -159,7 +168,8 @@ object TestRoutes {
           officeSpecificationsRoutes(transactor) <+>
           officeListingRoutes(transactor) <+>
           deskSpecificationsRoutes(transactor) <+>
-          deskPricingRoutes(transactor)
+          deskPricingRoutes(transactor) <+>
+          deskListingRoutes(transactor)
       )
     )
 }

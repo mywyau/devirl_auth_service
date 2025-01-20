@@ -40,12 +40,12 @@ class DeskSpecificationsControllerImpl[F[_] : Concurrent : Logger](
         }
 
     case req @ GET -> Root / "business" / "desk" / "specifications" / "details" / "find" / "all" / officeId =>
-      Logger[F].info(s"[DeskSpecificationsControllerImpl] GET - Attempting to retrieve all desk specificationss for $officeId") *>
+      Logger[F].info(s"[DeskSpecificationsControllerImpl] GET - Attempting to retrieve all desk specifications for $officeId") *>
         deskService.findByOfficeId(officeId).flatMap {
           case Nil =>
             BadRequest(ErrorResponse("Code", "An error occurred did not find any desks for given office id").asJson)
           case desks =>
-            Logger[F].info(s"[DeskSpecificationsControllerImpl] GET - Successfully retrieved all desk specificationss for $officeId") *>
+            Logger[F].info(s"[DeskSpecificationsControllerImpl] GET - Successfully retrieved all desk specifications for $officeId") *>
               Ok(desks.asJson)
         }
 
@@ -87,8 +87,8 @@ class DeskSpecificationsControllerImpl[F[_] : Concurrent : Logger](
       Logger[F].info(s"[DeskSpecificationsControllerImpl] DELETE - Attempting to delete all desk specifications for office id: $officeId") *>
         deskService.deleteAllByOfficeId(officeId).flatMap {
           case Valid(response) =>
-            Logger[F].info(s"[DeskSpecificationsControllerImpl] DELETE - Successfully deleted all desk specificationss for office id: $officeId") *>
-              Ok(DeletedResponse(response.toString, s"All desk specificationss deleted successfully for office id: $officeId").asJson)
+            Logger[F].info(s"[DeskSpecificationsControllerImpl] DELETE - Successfully deleted all desk specifications for office id: $officeId") *>
+              Ok(DeletedResponse(response.toString, s"All desk specifications deleted successfully for office id: $officeId").asJson)
           case _ =>
             InternalServerError(ErrorResponse("Code", "An error occurred").asJson)
         }

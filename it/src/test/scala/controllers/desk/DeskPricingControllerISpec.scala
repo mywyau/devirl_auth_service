@@ -3,7 +3,7 @@ package controllers.desk
 import cats.effect.*
 import controllers.constants.DeskPricingControllerConstants.testUpdateRequest
 import controllers.desk.DeskPricingController
-import controllers.fragments.DeskPricingControllerFragments.*
+import controllers.fragments.desk.DeskPricingControllerFragments.*
 import controllers.ControllerISpecBase
 import doobie.implicits.*
 import doobie.util.transactor.Transactor

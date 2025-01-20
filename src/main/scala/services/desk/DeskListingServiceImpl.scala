@@ -33,16 +33,7 @@ class DeskListingServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad](
     deskListingRepo.findByDeskId(deskId)
 
   override def findAllListingCardDetails(officeId: String): F[List[DeskListingCard]] =
-    for {
-      allListings: List[DeskListing] <- deskListingRepo.findAll(officeId)
-      createCardDetails: List[DeskListingCard] = allListings.map(details =>
-        DeskListingCard(
-          deskId = details.deskId,
-          deskName = details.specifications.deskName,
-          description = details.specifications.description.getOrElse("")
-        )
-      )
-    } yield createCardDetails
+    deskListingRepo.findAll(officeId)
 
   override def initiate(request: InitiateDeskListingRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
     deskListingRepo.initiate(request)

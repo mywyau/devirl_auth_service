@@ -28,9 +28,9 @@ class DeskSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite with
 
   private def initializeSchema(transactor: TransactorResource): Resource[IO, Unit] =
     Resource.eval(
-      createDeskSpecificationssTable.update.run.transact(transactor.xa).void *>
-        resetDeskSpecificationssTable.update.run.transact(transactor.xa).void *>
-        insertDeskSpecificationss.update.run.transact(transactor.xa).void
+      createDeskSpecificationsTable.update.run.transact(transactor.xa).void *>
+        resetDeskSpecificationsTable.update.run.transact(transactor.xa).void *>
+        insertDeskSpecifications.update.run.transact(transactor.xa).void
     )
 
   val availability =

@@ -1,4 +1,4 @@
-package controllers.fragments
+package controllers.fragments.desk
 
 import doobie.implicits.*
 import doobie.util.fragment
@@ -61,7 +61,7 @@ object DeskPricingControllerFragments {
           'desk002',
           10.00,
           80.00,
-          NULL, -- No weekly price
+          NULL, 
           1500.00,
           18000.00,
           CURRENT_TIMESTAMP,
@@ -72,11 +72,11 @@ object DeskPricingControllerFragments {
           'business003',
           'office003',
           'desk003',
-          0.00, -- Defaulting to 0 for no hourly price
+          0.00, 
           120.00,
           700.00,
           2500.00,
-          0.00, -- Defaulting to 0 for no yearly price
+          0.00, 
           CURRENT_TIMESTAMP,
           CURRENT_TIMESTAMP
         ),
@@ -86,7 +86,7 @@ object DeskPricingControllerFragments {
           'office004',
           'desk004',
           20.00,
-          0.00, -- Defaulting to 0 for no daily price
+          0.00,
           1000.00,
           3000.00,
           36000.00,
@@ -98,10 +98,10 @@ object DeskPricingControllerFragments {
           'business005',
           'office005',
           'desk005',
-          0.00, -- Defaulting to 0 for no hourly price
-          0.00, -- Defaulting to 0 for no daily price
-          0.00, -- Defaulting to 0 for no weekly price
-          0.00, -- Defaulting to 0 for no monthly price
+          0.00,
+          0.00,
+          0.00,
+          0.00,
           50000.00,
           CURRENT_TIMESTAMP,
           CURRENT_TIMESTAMP

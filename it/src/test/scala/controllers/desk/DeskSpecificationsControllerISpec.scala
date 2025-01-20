@@ -3,7 +3,7 @@ package controllers.desk
 import cats.effect.*
 import controllers.ControllerISpecBase
 import controllers.desk.DeskSpecificationsController
-import controllers.fragments.DeskSpecificationsControllerFragments.*
+import controllers.fragments.desk.DeskSpecificationsControllerFragments.*
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.syntax.*
@@ -117,7 +117,7 @@ class DeskSpecificationsControllerISpec(global: GlobalRead) extends IOSuite with
   }
 
   test(
-    "GET - /pistachio/business/desk/specifications/details/find/all/office01 - should find all the desk specificationss for office01" +
+    "GET - /pistachio/business/desk/specifications/details/find/all/office001 - should find all the desk specifications for office01" +
       "\nPOST - /pistachio/business/desk/specifications/create - should create a desk specifications" +
       "\nDELETE - /pistachio/business/desk/specifications/details/delete/desk003 - should delete a desk specifications for a given deskId"
   ) { (sharedResources, log) =>
@@ -126,7 +126,7 @@ class DeskSpecificationsControllerISpec(global: GlobalRead) extends IOSuite with
     val client = sharedResources._2.client
 
     val findAllRequest =
-      Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/desk/specifications/details/find/all/office01")
+      Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/desk/specifications/details/find/all/office001")
 
     val createRequest =
       Request[IO](POST, uri"http://127.0.0.1:9999/pistachio/business/desk/specifications/details/create")

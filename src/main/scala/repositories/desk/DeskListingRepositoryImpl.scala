@@ -18,6 +18,7 @@ import java.time.LocalDateTime
 import models.database.*
 import models.desk.deskListing.requests.InitiateDeskListingRequest
 import models.desk.deskListing.DeskListing
+import models.desk.deskListing.DeskListingCard
 import models.desk.deskPricing.DeskPricingPartial
 import models.desk.deskSpecifications.DeskSpecificationsPartial
 import models.desk.deskSpecifications.DeskType
@@ -28,7 +29,7 @@ trait DeskListingRepositoryAlgebra[F[_]] {
 
   def findByDeskId(deskId: String): F[Option[DeskListing]]
 
-  def findAll(officeId: String): F[List[DeskListing]]
+  def findAll(officeId: String): F[List[DeskListingCard]]
 
   def initiate(request: InitiateDeskListingRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
@@ -47,10 +48,10 @@ class DeskListingRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: 
     val fetchDeskDetails =
       sql"""
         SELECT 
-          ds.deskId AS ds_deskId,
-          ds.deskName AS ds_deskName,
+          ds.desk_id AS ds_desk_id,
+          ds.desk_name AS ds_desk_name,
           ds.description AS ds_description,
-          ds.deskType AS ds_deskType,
+          ds.desk_type AS ds_desk_type,
           ds.quantity AS ds_quantity,
           ds.features AS ds_features,
           ds.availability AS ds_availability,
@@ -61,7 +62,7 @@ class DeskListingRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: 
           dp.price_per_week AS dp_price_per_week,
           dp.price_per_month AS dp_price_per_month,
           dp.price_per_year AS dp_price_per_year
-        FROM office_address oa
+        FROM desk_specifications ds
         LEFT JOIN desk_pricing dp ON ds.desk_id = dp.desk_id
         WHERE ds.desk_id = $deskId
       """.query[(DeskSpecificationsPartial, DeskPricingPartial)].option
@@ -82,46 +83,26 @@ class DeskListingRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: 
       .transact(transactor)
   }
 
-  override def findAll(officeId: String): F[List[DeskListing]] = {
-    val fetchAllDeskDetails =
+  override def findAll(officeId: String): F[List[DeskListingCard]] = {
+    val fetchBasicDeskCardDetails =
       sql"""
-      SELECT 
-          ds.deskId AS ds_deskId,
-          ds.deskName AS ds_deskName,
-          ds.description AS ds_description,
-          ds.deskType AS ds_deskType,
-          ds.quantity AS ds_quantity,
-          ds.features AS ds_features,
-          ds.availability AS ds_availability,
-          ds.rules AS ds_rules,
+        SELECT 
+            ds.desk_id AS deskId,
+            ds.desk_name AS deskName,
+            ds.description AS description
+        FROM desk_specifications ds
+        INNER JOIN desk_pricing dp ON ds.desk_id = dp.desk_id
+        WHERE ds.office_id = $officeId
+      """.query[DeskListingCard].to[List]
 
-          dp.price_per_hour AS dp_price_per_hour,
-          dp.price_per_day AS dp_price_per_day,
-          dp.price_per_week AS dp_price_per_week,
-          dp.price_per_month AS dp_price_per_month,
-          dp.price_per_year AS dp_price_per_year
-      FROM desk_specifications ds
-      LEFT JOIN desk_pricing dp ON ds.desk_id = dp.desk_id
-      WHERE ds.office_id = $officeId
-    """.query[(DeskSpecificationsPartial, DeskPricingPartial)].to[List]
-
-    fetchAllDeskDetails
-      .map { results =>
-        results.map { case (specs, pricing) =>
-          DeskListing(
-            deskId = specs.deskId,
-            specifications = specs,
-            pricing = pricing
-          )
-        }
-      }
+    fetchBasicDeskCardDetails
       .transact(transactor)
   }
 
   override def initiate(request: InitiateDeskListingRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = {
     val insertDeskSpecifications =
       sql"""
-        INSERT INTO desk_listings (
+        INSERT INTO desk_specifications (
           office_id,
           desk_id
         ) VALUES (

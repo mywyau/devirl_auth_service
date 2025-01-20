@@ -6,7 +6,7 @@ import com.comcast.ip4s.port
 import controllers.ControllerISpecBase
 import controllers.constants.DeskSpecificationsControllerConstants.testDeskSpecificationsRequest
 import controllers.desk.DeskSpecificationsController
-import controllers.fragments.DeskSpecificationsControllerFragments.*
+import controllers.fragments.desk.DeskSpecificationsControllerFragments.*
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.syntax.*
@@ -75,7 +75,7 @@ class DeskSpecificationsControllerDeleteAllISpec(global: GlobalRead) extends IOS
       findAllResponseBefore <- client.run(findAllRequest).use(_.as[List[DeskSpecificationsPartial]])
       _ <- IO(expect(findAllResponseBefore.size == 1))
       deleteResponse <- client.run(deleteRequest).use(_.as[DeletedResponse])
-      _ <- IO(expect(deleteResponse.message == "All Business specificationss deleted successfully"))
+      _ <- IO(expect(deleteResponse.message == "All Business specifications deleted successfully"))
 
       findAllResponseAfter <- client.run(findAllRequest).use(_.as[ErrorResponse])
       _ <- IO(expect(findAllResponseAfter.message == "An error occurred did not find any desks for given office id"))
