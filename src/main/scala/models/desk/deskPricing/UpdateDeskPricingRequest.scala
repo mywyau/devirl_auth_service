@@ -8,10 +8,10 @@ import io.circe.Json
 
 case class UpdateDeskPricingRequest(
   pricePerHour: BigDecimal,
-  pricePerDay: BigDecimal,
-  pricePerWeek: BigDecimal,
-  pricePerMonth: BigDecimal,
-  pricePerYear: BigDecimal
+  pricePerDay: Option[BigDecimal],
+  pricePerWeek: Option[BigDecimal],
+  pricePerMonth: Option[BigDecimal],
+  pricePerYear: Option[BigDecimal]
 )
 
 object UpdateDeskPricingRequest {

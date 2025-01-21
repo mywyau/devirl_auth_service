@@ -57,14 +57,14 @@ class DeskSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite with
         deskId = "desk001",
         deskName = "Mikey Desk 1",
         description = Some("A quiet, private desk perfect for focused work with a comfortable chair and good lighting."),
-        deskType = PrivateDesk,
-        quantity = 5,
-        features = List("Wi-Fi", "Power Outlets", "Ergonomic Chair", "Desk Lamp"),
-        availability = Availability(
+        deskType = Some(PrivateDesk),
+        quantity = Some(5),
+        features = Some(List("Wi-Fi", "Power Outlets", "Ergonomic Chair", "Desk Lamp")),
+        availability = Some(Availability(
           days = List("Monday", "Tuesday", "Wednesday"),
           startTime = LocalTime.of(9, 0, 0),
           endTime = LocalTime.of(17, 0, 0)
-        ),
+        )),
         rules = Some("No loud conversations, please keep the workspace clean.")
       )
 
@@ -80,14 +80,14 @@ class DeskSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite with
         deskId = "desk001",
         deskName = "Mikey Desk 1",
         description = Some("A quiet, private desk perfect for focused work with a comfortable chair and good lighting."),
-        deskType = PrivateDesk,
-        quantity = 5,
-        features = List("Wi-Fi", "Power Outlets", "Ergonomic Chair", "Desk Lamp"),
-        availability = Availability(
+        deskType = Some(PrivateDesk),
+        quantity = Some(5),
+        features = Some(List("Wi-Fi", "Power Outlets", "Ergonomic Chair", "Desk Lamp")),
+        availability = Some(Availability(
           days = List("Monday", "Tuesday", "Wednesday"),
           startTime = LocalTime.of(9, 0, 0),
           endTime = LocalTime.of(17, 0, 0)
-        ),
+        )),
         rules = Some("No loud conversations, please keep the workspace clean.")
       )
 

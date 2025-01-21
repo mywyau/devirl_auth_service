@@ -24,6 +24,7 @@ import models.desk.deskSpecifications.DeskSpecificationsPartial
 import models.desk.deskSpecifications.DeskType
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import org.typelevel.log4cats.Logger
+import models.desk.deskPricing.RetrievedDeskPricing
 
 trait DeskListingRepositoryAlgebra[F[_]] {
 
@@ -65,7 +66,7 @@ class DeskListingRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: 
         FROM desk_specifications ds
         LEFT JOIN desk_pricing dp ON ds.desk_id = dp.desk_id
         WHERE ds.desk_id = $deskId
-      """.query[(DeskSpecificationsPartial, DeskPricingPartial)].option
+      """.query[(DeskSpecificationsPartial, RetrievedDeskPricing)].option
 
     fetchDeskDetails
       .map {
@@ -104,10 +105,14 @@ class DeskListingRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: 
       sql"""
         INSERT INTO desk_specifications (
           office_id,
-          desk_id
+          desk_id,
+          desk_name,
+          description
         ) VALUES (
           ${request.officeId},
-          ${request.deskId}
+          ${request.deskId},
+          ${request.deskName},
+          ${request.description}
         )
       """
 

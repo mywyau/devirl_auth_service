@@ -6,7 +6,7 @@ import io.circe.Decoder
 import io.circe.Encoder
 
 case class RetrievedDeskPricing(
-  pricePerHour: BigDecimal,
+  pricePerHour: Option[BigDecimal],
   pricePerDay: Option[BigDecimal],
   pricePerWeek: Option[BigDecimal],
   pricePerMonth: Option[BigDecimal],

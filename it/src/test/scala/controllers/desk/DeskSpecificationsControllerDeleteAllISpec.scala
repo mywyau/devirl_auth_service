@@ -51,9 +51,9 @@ class DeskSpecificationsControllerDeleteAllISpec(global: GlobalRead) extends IOS
     for {
       transactor <- global.getOrFailR[TransactorResource]()
       _ <- Resource.eval(
-        createDeskSpecificationssTable.update.run.transact(transactor.xa).void *>
+        createDeskSpecificationsTable.update.run.transact(transactor.xa).void *>
           resetDeskSpecificationsTable.update.run.transact(transactor.xa).void *>
-          sameOfficeIdInsertDeskSpecificationss.update.run.transact(transactor.xa).void
+          sameOfficeIdInsertDeskSpecifications.update.run.transact(transactor.xa).void
       )
       client <- global.getOrFailR[HttpClientResource]()
     } yield (transactor, client)
@@ -76,7 +76,6 @@ class DeskSpecificationsControllerDeleteAllISpec(global: GlobalRead) extends IOS
       _ <- IO(expect(findAllResponseBefore.size == 1))
       deleteResponse <- client.run(deleteRequest).use(_.as[DeletedResponse])
       _ <- IO(expect(deleteResponse.message == "All Business specifications deleted successfully"))
-
       findAllResponseAfter <- client.run(findAllRequest).use(_.as[ErrorResponse])
       _ <- IO(expect(findAllResponseAfter.message == "An error occurred did not find any desks for given office id"))
     } yield success

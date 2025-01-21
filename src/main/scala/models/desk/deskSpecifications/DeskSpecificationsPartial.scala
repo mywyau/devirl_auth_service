@@ -12,10 +12,10 @@ case class DeskSpecificationsPartial(
   deskId: String,
   deskName: String,
   description: Option[String],
-  deskType: DeskType,
-  quantity: Int,
-  features: List[String],
-  availability: Availability,
+  deskType: Option[DeskType],
+  quantity: Option[Int],
+  features: Option[List[String]],
+  availability: Option[Availability],
   rules: Option[String]
 )
 

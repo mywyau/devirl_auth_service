@@ -1,4 +1,4 @@
-package models
+package models.desk
 
 import cats.effect.IO
 import io.circe.*
@@ -20,7 +20,7 @@ object UpdateDeskSpecificationsRequestSpec extends SimpleIOSuite {
       endTime = LocalTime.of(10, 30, 0)
     )
 
-  val sampleDeskListingRequest: UpdateDeskSpecificationsRequest =
+  val sampleUpdateRequest: UpdateDeskSpecificationsRequest =
     UpdateDeskSpecificationsRequest(
       deskName = "Private Office Desk",
       description = Some("A comfortable desk in a private office space with all amenities included."),
@@ -33,7 +33,7 @@ object UpdateDeskSpecificationsRequestSpec extends SimpleIOSuite {
 
   test("UpdateDeskSpecificationsRequest model encodes correctly to JSON") {
 
-    val jsonResult = sampleDeskListingRequest.asJson
+    val jsonResult = sampleUpdateRequest.asJson
 
     val expectedJson =
       """

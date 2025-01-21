@@ -53,6 +53,7 @@ object Main extends IOApp {
     for {
       deskListingRoutes <- Resource.pure(deskListingRoutes(transactor))
       deskPricingRoutes <- Resource.pure(deskPricingRoutes(transactor))
+      deskSpecificationsRoutes <- Resource.pure(deskSpecificationsRoutes(transactor))
       officeAddressRoutes <- Resource.pure(officeAddressRoutes(transactor))
       officeContactDetailsRoutes <- Resource.pure(officeContactDetailsRoutes(transactor))
       officeSpecificationsRoutes <- Resource.pure(officeSpecificationsRoutes(transactor))
@@ -66,6 +67,7 @@ object Main extends IOApp {
         "/pistachio" -> (
           deskListingRoutes <+>
             deskPricingRoutes <+>
+            deskSpecificationsRoutes <+>
             officeAddressRoutes <+>
             officeContactDetailsRoutes <+>
             officeSpecificationsRoutes <+>

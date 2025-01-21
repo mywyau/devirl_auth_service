@@ -6,11 +6,12 @@ import io.circe.Decoder
 import io.circe.Encoder
 import models.desk.deskSpecifications.DeskSpecificationsPartial
 import models.desk.deskPricing.DeskPricingPartial
+import models.desk.deskPricing.RetrievedDeskPricing
 
 case class DeskListing(
   deskId: String,
   specifications: DeskSpecificationsPartial,
-  pricing: DeskPricingPartial
+  pricing: RetrievedDeskPricing
 )
 
 object DeskListing {

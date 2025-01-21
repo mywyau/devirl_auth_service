@@ -12,10 +12,10 @@ object DeskPricingControllerConstants {
   val testUpdateRequest =
     UpdateDeskPricingRequest(
       pricePerHour = 15.0,
-      pricePerDay = 100.0,
-      pricePerWeek = 600.0,
-      pricePerMonth = 2000.0,
-      pricePerYear = 24000.0
+      pricePerDay = Some(100.0),
+      pricePerWeek = Some(600.0),
+      pricePerMonth = Some(2000.0),
+      pricePerYear = Some(24000.0)
     )
 
 }

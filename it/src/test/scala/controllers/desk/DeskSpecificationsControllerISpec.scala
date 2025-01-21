@@ -37,9 +37,9 @@ class DeskSpecificationsControllerISpec(global: GlobalRead) extends IOSuite with
     for {
       transactor <- global.getOrFailR[TransactorResource]()
       _ <- Resource.eval(
-        createDeskSpecificationssTable.update.run.transact(transactor.xa).void *>
+        createDeskSpecificationsTable.update.run.transact(transactor.xa).void *>
           resetDeskSpecificationsTable.update.run.transact(transactor.xa).void *>
-          insertDeskSpecificationss.update.run.transact(transactor.xa).void
+          insertDeskSpecifications.update.run.transact(transactor.xa).void
       )
       client <- global.getOrFailR[HttpClientResource]()
     } yield (transactor, client)
@@ -59,14 +59,14 @@ class DeskSpecificationsControllerISpec(global: GlobalRead) extends IOSuite with
         deskId = "desk002",
         deskName = "Mikey Desk 2",
         description = Some("A shared desk in a collaborative space with easy access to team members."),
-        deskType = PrivateDesk,
-        quantity = 3,
-        features = List("Wi-Fi", "Power Outlets", "Whiteboard", "Projector"),
-        availability = Availability(
+        deskType = Some(PrivateDesk),
+        quantity = Some(3),
+        features = Some(List("Wi-Fi", "Power Outlets", "Whiteboard", "Projector")),
+        availability = Some(Availability(
           List("Monday", "Wednesday", "Friday"),
           LocalTime.of(9, 0, 0),
           LocalTime.of(17, 0, 0)
-        ),
+        )),
         rules = Some("Respect others' privacy and keep noise levels to a minimum.")
       )
 

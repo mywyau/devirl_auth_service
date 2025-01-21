@@ -53,7 +53,7 @@ class DeskPricingControllerISpec(global: GlobalRead) extends IOSuite with Contro
 
     val expectedDeskPricing =
       RetrievedDeskPricing(
-        pricePerHour = 10.0,
+        pricePerHour = Some(10.0),
         pricePerDay = Some(80.0),
         pricePerWeek = None,
         pricePerMonth = Some(1500.0),
@@ -80,10 +80,10 @@ class DeskPricingControllerISpec(global: GlobalRead) extends IOSuite with Contro
     val updateRequest =
       UpdateDeskPricingRequest(
         pricePerHour = 999.0,
-        pricePerDay = 999.0,
-        pricePerWeek = 999.0,
-        pricePerMonth = 9999.0,
-        pricePerYear = 99999.0
+        pricePerDay = Some(999.0),
+        pricePerWeek = Some(999.0),
+        pricePerMonth = Some(9999.0),
+        pricePerYear = Some(99999.0)
       )
 
     val request =

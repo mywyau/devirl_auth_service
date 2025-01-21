@@ -8,7 +8,7 @@ object DeskSpecificationsControllerFragments {
   val resetDeskSpecificationsTable: fragment.Fragment =
     sql"TRUNCATE TABLE desk_specifications RESTART IDENTITY"
 
-  val createDeskSpecificationssTable: fragment.Fragment =
+  val createDeskSpecificationsTable: fragment.Fragment =
     sql"""
         CREATE TABLE IF NOT EXISTS desk_specifications (
           id SERIAL PRIMARY KEY,
@@ -28,7 +28,7 @@ object DeskSpecificationsControllerFragments {
         );
       """
 
-  val insertDeskSpecificationss: fragment.Fragment =
+  val insertDeskSpecifications: fragment.Fragment =
     sql"""
       INSERT INTO desk_specifications (
         user_id, business_id, office_id, desk_id, desk_name, description, desk_type, 
@@ -64,14 +64,14 @@ object DeskSpecificationsControllerFragments {
          '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
         ('user005', 'biz004', 'office005', 'desk005', 'Mikey Desk 5', 
          'An executive desk in a quiet, well-lit space designed for high-level work.', 'PrivateDesk', 
-         1,
-         ARRAY['Wi-Fi', 'Power Outlets', 'Ergonomic Chair', 'Storage Space'], 
-         '{"days": ["Monday", "Wednesday", "Friday"], "startTime": "09:00:00", "endTime": "17:00:00"}', 
-         'No food or drinks allowed at the desk. Keep the workspace organized.', 
+         NULL, -- Missing quantity
+         NULL, -- Missing features
+         NULL, -- Missing availability
+         NULL, -- Missing rules
          '2025-01-01 00:00:00', '2025-01-01 00:00:00');
-  """
+    """
 
-  val sameOfficeIdInsertDeskSpecificationss: fragment.Fragment =
+  val sameOfficeIdInsertDeskSpecifications: fragment.Fragment =
     sql"""
       INSERT INTO desk_specifications (
         user_id, business_id, office_id, desk_id, desk_name, description, desk_type, 

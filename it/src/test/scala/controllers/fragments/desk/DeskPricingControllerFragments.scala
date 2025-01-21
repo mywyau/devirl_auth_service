@@ -72,11 +72,11 @@ object DeskPricingControllerFragments {
           'business003',
           'office003',
           'desk003',
-          0.00, 
+          NULL, 
           120.00,
           700.00,
           2500.00,
-          0.00, 
+          NULL, 
           CURRENT_TIMESTAMP,
           CURRENT_TIMESTAMP
         ),
@@ -86,7 +86,7 @@ object DeskPricingControllerFragments {
           'office004',
           'desk004',
           20.00,
-          0.00,
+          NULL,
           1000.00,
           3000.00,
           36000.00,
@@ -98,13 +98,14 @@ object DeskPricingControllerFragments {
           'business005',
           'office005',
           'desk005',
-          0.00,
-          0.00,
-          0.00,
-          0.00,
+          NULL,
+          NULL,
+          NULL,
+          NULL,
           50000.00,
           CURRENT_TIMESTAMP,
           CURRENT_TIMESTAMP
         );
     """
+
 }

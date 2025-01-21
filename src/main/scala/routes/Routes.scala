@@ -39,6 +39,9 @@ import services.office.OfficeAddressService
 import services.office.OfficeContactDetailsService
 import services.office.OfficeListingService
 import services.office.OfficeSpecificationsService
+import repositories.desk.DeskSpecificationsRepository
+import services.desk.DeskSpecificationsService
+import controllers.desk.DeskSpecificationsControllerImpl
 
 object Routes {
 
@@ -49,6 +52,15 @@ object Routes {
     val deskListingController = new DeskListingControllerImpl[F](deskListingService)
 
     deskListingController.routes
+  }
+
+  def deskSpecificationsRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {
+
+    val deskSpecificationsRepo = DeskSpecificationsRepository(transactor)
+    val deskSpecificationsService = DeskSpecificationsService(deskSpecificationsRepo)
+    val deskSpecificationsController = new DeskSpecificationsControllerImpl[F](deskSpecificationsService)
+
+    deskSpecificationsController.routes
   }
 
   def deskPricingRoutes[F[_] : Concurrent : Temporal : NonEmptyParallel : Async : Logger](transactor: HikariTransactor[F]): HttpRoutes[F] = {

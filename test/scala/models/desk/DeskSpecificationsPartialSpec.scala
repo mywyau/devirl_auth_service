@@ -1,4 +1,4 @@
-package models
+package models.desk
 
 import cats.effect.IO
 import io.circe.*
@@ -25,10 +25,10 @@ object DeskSpecificationsPartialSpec extends SimpleIOSuite {
       deskId = "desk-001",
       deskName = "Private Office Desk",
       description = Some("A comfortable desk in a private office space with all amenities included."),
-      deskType = PrivateDesk,
-      quantity = 5,
-      features = List("Wi-Fi", "Power Outlets", "Monitor", "Ergonomic Chair"),
-      availability = availability,
+      deskType = Some(PrivateDesk),
+      quantity = Some(5),
+      features = Some(List("Wi-Fi", "Power Outlets", "Monitor", "Ergonomic Chair")),
+      availability = Some(availability),
       rules = Some("Please keep the desk clean and quiet.")
     )
 
