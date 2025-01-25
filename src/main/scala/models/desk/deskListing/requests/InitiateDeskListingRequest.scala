@@ -8,6 +8,7 @@ import io.circe.Json
 import java.time.LocalDateTime
 
 case class InitiateDeskListingRequest(
+  businessId: String,
   officeId: String,
   deskId: String,
   deskName: String,

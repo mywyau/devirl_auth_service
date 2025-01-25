@@ -95,6 +95,7 @@ class DeskListingRepositoryISpec(global: GlobalRead) extends IOSuite with Reposi
 
     val initiateRequest =
       InitiateDeskListingRequest(
+        businessId = "business006",
         officeId = "office006",
         deskId = "desk006",
         deskName = "Mikey Desk 1",

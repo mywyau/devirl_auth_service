@@ -18,19 +18,24 @@ import java.time.LocalDateTime
 import models.database.*
 import models.desk.deskListing.requests.InitiateDeskListingRequest
 import models.desk.deskListing.DeskListing
+import models.desk.deskListing.DeskListingBusinessAndOffice
 import models.desk.deskListing.DeskListingCard
 import models.desk.deskPricing.DeskPricingPartial
+import models.desk.deskPricing.RetrievedDeskPricing
 import models.desk.deskSpecifications.DeskSpecificationsPartial
 import models.desk.deskSpecifications.DeskType
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import org.typelevel.log4cats.Logger
-import models.desk.deskPricing.RetrievedDeskPricing
 
 trait DeskListingRepositoryAlgebra[F[_]] {
+
+  def getOfficeAndBusinessId(deskId: String): F[Option[DeskListingBusinessAndOffice]]
 
   def findByDeskId(deskId: String): F[Option[DeskListing]]
 
   def findAll(officeId: String): F[List[DeskListingCard]]
+
+  def streamAllListingCardDetails(officeId: String): fs2.Stream[F, DeskListingCard]
 
   def initiate(request: InitiateDeskListingRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
@@ -45,70 +50,123 @@ class DeskListingRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: 
 
   implicit val deskTypeMeta: Meta[DeskType] = Meta[String].imap(DeskType.fromString)(_.toString)
 
+  override def getOfficeAndBusinessId(deskId: String): F[Option[DeskListingBusinessAndOffice]] = {
+    val fetchOfficeAndBusinessIds =
+      sql"""
+        SELECT 
+          ds.desk_id AS deskId,
+          ds.office_id AS officeId,
+          ds.business_id AS businessId
+        FROM desk_specifications ds
+        INNER JOIN desk_pricing dp ON ds.desk_id = dp.desk_id
+        WHERE ds.desk_id = $deskId 
+          AND ds.office_id = dp.office_id 
+          AND ds.business_id = dp.business_id
+      """.query[DeskListingBusinessAndOffice].option
+
+    for {
+      _ <- Logger[F].info(s"[DeskListingRepositoryImpl][getOfficeAndBusinessId] Attempting to fetch office and business IDs for deskId: $deskId")
+      result <- fetchOfficeAndBusinessIds.transact(transactor).flatTap {
+        case Some(DeskListingBusinessAndOffice(deskId, officeId, businessId)) =>
+          Logger[F].info(s"Successfully retrieved Desk ID: $deskId, Office ID: $officeId, Business ID: $businessId for deskId: $deskId")
+        case None =>
+          Logger[F].warn(s"No matching office and business IDs found for deskId: $deskId")
+      }
+    } yield result
+  }
+
   override def findByDeskId(deskId: String): F[Option[DeskListing]] = {
     val fetchDeskDetails =
       sql"""
-        SELECT 
-          ds.desk_id AS ds_desk_id,
-          ds.desk_name AS ds_desk_name,
-          ds.description AS ds_description,
-          ds.desk_type AS ds_desk_type,
-          ds.quantity AS ds_quantity,
-          ds.features AS ds_features,
-          ds.availability AS ds_availability,
-          ds.rules AS ds_rules,
+      SELECT 
+        ds.desk_id AS ds_desk_id,
+        ds.desk_name AS ds_desk_name,
+        ds.description AS ds_description,
+        ds.desk_type AS ds_desk_type,
+        ds.quantity AS ds_quantity,
+        ds.features AS ds_features,
+        ds.availability AS ds_availability,
+        ds.rules AS ds_rules,
 
-          dp.price_per_hour AS dp_price_per_hour,
-          dp.price_per_day AS dp_price_per_day,
-          dp.price_per_week AS dp_price_per_week,
-          dp.price_per_month AS dp_price_per_month,
-          dp.price_per_year AS dp_price_per_year
-        FROM desk_specifications ds
-        LEFT JOIN desk_pricing dp ON ds.desk_id = dp.desk_id
-        WHERE ds.desk_id = $deskId
-      """.query[(DeskSpecificationsPartial, RetrievedDeskPricing)].option
+        dp.price_per_hour AS dp_price_per_hour,
+        dp.price_per_day AS dp_price_per_day,
+        dp.price_per_week AS dp_price_per_week,
+        dp.price_per_month AS dp_price_per_month,
+        dp.price_per_year AS dp_price_per_year
+      FROM desk_specifications ds
+      LEFT JOIN desk_pricing dp ON ds.desk_id = dp.desk_id
+      WHERE ds.desk_id = $deskId
+    """.query[(DeskSpecificationsPartial, RetrievedDeskPricing)].option
 
-    fetchDeskDetails
-      .map {
+    for {
+      _ <- Logger[F].info(s"Attempting to fetch desk details for deskId: $deskId")
+      result <- fetchDeskDetails.transact(transactor).flatTap {
         case Some((specs, pricing)) =>
-          Some(
-            DeskListing(
-              deskId = specs.deskId,
-              specifications = specs,
-              pricing = pricing
-            )
-          )
+          Logger[F].info(s"Desk details retrieved successfully for deskId: $deskId")
         case None =>
-          None
+          Logger[F].warn(s"No desk found for deskId: $deskId")
       }
-      .transact(transactor)
+      deskListing <- result match {
+        case Some((specs, pricing)) =>
+          Concurrent[F].pure(Some(DeskListing(deskId = specs.deskId, specifications = specs, pricing = pricing)))
+        case None =>
+          Concurrent[F].pure(None)
+      }
+    } yield deskListing
   }
 
   override def findAll(officeId: String): F[List[DeskListingCard]] = {
     val fetchBasicDeskCardDetails =
       sql"""
-        SELECT 
-            ds.desk_id AS deskId,
-            ds.desk_name AS deskName,
-            ds.description AS description
-        FROM desk_specifications ds
-        INNER JOIN desk_pricing dp ON ds.desk_id = dp.desk_id
-        WHERE ds.office_id = $officeId
-      """.query[DeskListingCard].to[List]
+      SELECT 
+          ds.desk_id AS deskId,
+          ds.desk_name AS deskName,
+          ds.description AS description
+      FROM desk_specifications ds
+      INNER JOIN desk_pricing dp ON ds.desk_id = dp.desk_id
+      WHERE ds.office_id = $officeId
+    """.query[DeskListingCard].to[List]
 
-    fetchBasicDeskCardDetails
-      .transact(transactor)
+    for {
+      _ <- Logger[F].info(s"Attempting to fetch all desk details for officeId: $officeId")
+      result <- fetchBasicDeskCardDetails.transact(transactor)
+      _ <-
+        if (result.isEmpty) {
+          Logger[F].warn(s"No desks found for officeId: $officeId")
+        } else {
+          Logger[F].info(s"Successfully retrieved ${result.size} desks for officeId: $officeId")
+        }
+    } yield result
+  }
+
+  // Streaming method implementation
+  override def streamAllListingCardDetails(officeId: String): fs2.Stream[F, DeskListingCard] = {
+    val query =
+      sql"""
+      SELECT 
+        ds.desk_id AS deskId,
+        ds.desk_name AS deskName,
+        ds.description AS description
+      FROM desk_specifications ds
+      INNER JOIN desk_pricing dp ON ds.desk_id = dp.desk_id
+      WHERE ds.office_id = $officeId
+    """.query[DeskListingCard]
+
+    fs2.Stream.eval(Logger[F].info(s"Streaming desk listing cards for officeId: $officeId")) *>
+      query.stream.chunkLimit(100).transact(transactor).flatMap(fs2.Stream.chunk)
   }
 
   override def initiate(request: InitiateDeskListingRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = {
     val insertDeskSpecifications =
       sql"""
         INSERT INTO desk_specifications (
+          business_id,
           office_id,
           desk_id,
           desk_name,
           description
         ) VALUES (
+          ${request.businessId},
           ${request.officeId},
           ${request.deskId},
           ${request.deskName},
@@ -119,9 +177,11 @@ class DeskListingRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: 
     val insertDeskPricingDetails =
       sql"""
         INSERT INTO desk_pricing (
+          business_id,
           office_id,
           desk_id
         ) VALUES (
+          ${request.businessId},
           ${request.officeId},
           ${request.deskId}
         )

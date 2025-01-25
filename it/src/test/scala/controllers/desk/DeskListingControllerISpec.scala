@@ -162,6 +162,7 @@ class DeskListingControllerISpec(global: GlobalRead) extends IOSuite with Contro
 
     val initiateRequest =
       InitiateDeskListingRequest(
+        businessId = "business001",
         officeId = "office001",
         deskId = "desk006",
         deskName = "Mikey Desk 1",
@@ -193,6 +194,7 @@ class DeskListingControllerISpec(global: GlobalRead) extends IOSuite with Contro
 
     val initiateRequest =
       InitiateDeskListingRequest(
+        businessId = "business001",
         officeId = "office001",
         deskId = "desk007",
         deskName = "Mikey Desk 7",

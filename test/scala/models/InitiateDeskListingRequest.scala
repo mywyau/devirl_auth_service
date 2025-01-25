@@ -1,10 +1,18 @@
-package models.desk
+package models
 
 import cats.effect.IO
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
+import java.time.LocalDateTime
+import java.time.LocalTime
 import models.desk.deskListing.requests.InitiateDeskListingRequest
+import models.desk.deskListing.DeskListing
+import models.desk.deskPricing.DeskPricingPartial
+import models.desk.deskSpecifications.requests.UpdateDeskSpecificationsRequest
+import models.desk.deskSpecifications.Availability
+import models.desk.deskSpecifications.DeskSpecificationsPartial
+import models.desk.deskSpecifications.PrivateDesk
 import weaver.SimpleIOSuite
 
 object InitiateDeskListingRequestSpec extends SimpleIOSuite {

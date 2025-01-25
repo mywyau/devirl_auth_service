@@ -5,6 +5,7 @@ import cats.effect.Concurrent
 import cats.effect.IO
 import cats.implicits.*
 import io.circe.syntax.*
+import models.database.CreateSuccess
 import models.desk.deskListing.requests.InitiateDeskListingRequest
 import models.responses.CreatedResponse
 import models.responses.DeletedResponse
@@ -15,7 +16,6 @@ import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
 import org.typelevel.log4cats.Logger
 import services.desk.DeskListingServiceAlgebra
-import models.database.CreateSuccess
 
 trait DeskListingController[F[_]] {
   def routes: HttpRoutes[F]
@@ -40,6 +40,16 @@ class DeskListingControllerImpl[F[_] : Concurrent : Logger](
             InternalServerError(ErrorResponse("Code", "An error occurred").asJson)
         }
 
+    case req @ GET -> Root / "desk" / "listing" / "find" / "business-and-office" / "id" / deskId =>
+      Logger[F].info(s"[DeskListingControllerImpl] GET - Attempting to retrieve the business and office id for desk listing: $deskId") *>
+        deskService.getOfficeAndBusinessIds(deskId).flatMap {
+          case Some(deskListingBusinessAndOffice) =>
+            Logger[F].info(s"[DeskListingControllerImpl] GET - Successfully retrieved the business and office id for desk listing: $deskId") *>
+              Ok(deskListingBusinessAndOffice.asJson)
+          case _ =>
+            InternalServerError(ErrorResponse("Code", "An error occurred").asJson)
+        }
+
     case GET -> Root / "business" / "desk" / "listing" / "cards" / "find" / "all" / officeId =>
       Logger[F].info(s"[OfficeListingControllerImpl] GET - Find all desk listing card details") *>
         deskService.findAllListingCardDetails(officeId).flatMap {
@@ -50,6 +60,17 @@ class DeskListingControllerImpl[F[_] : Concurrent : Logger](
             Logger[F].info(s"[OfficeListingControllerImpl] GET - Successfully retrieved all desk listing card details") *>
               Ok(listingCards.asJson)
         }
+
+    // Bad we want to paginate results instead
+    case GET -> Root / "business" / "desk" / "listing" / "cards" / "stream" / officeId =>
+      Logger[F].info(s"[OfficeListingControllerImpl] GET - Stream all desk listing card details for officeId: $officeId") *>
+        Ok(
+          deskService
+            .streamAllListingCardDetails(officeId) // Stream[F, DeskListingCard]
+            .map(desk => desk.asJson.noSpaces) // Stream[F, String]
+            .intersperse("\n") // Add a newline between JSON objects
+            .through(fs2.text.utf8Encode) // Stream[F, Byte]
+        )
 
     case req @ POST -> Root / "business" / "desk" / "listing" / "initiate" =>
       Logger[F].info(s"[DeskListingControllerImpl] POST - Initiating desk listing") *>
