@@ -6,8 +6,9 @@ import io.circe.Decoder
 import io.circe.Encoder
 import io.circe.Json
 import java.time.LocalDateTime
-import models.desk.deskSpecifications.Availability
+
 import models.desk.deskSpecifications.DeskType
+import models.OpeningHours
 
 case class UpdateDeskSpecificationsRequest(
   deskName: String,
@@ -15,7 +16,7 @@ case class UpdateDeskSpecificationsRequest(
   deskType: DeskType,
   quantity: Int,
   features: List[String],
-  availability: Availability,
+  openingHours: List[OpeningHours],
   rules: Option[String]
 )
 

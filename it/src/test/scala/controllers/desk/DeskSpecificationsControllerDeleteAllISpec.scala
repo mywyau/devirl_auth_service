@@ -10,7 +10,7 @@ import controllers.fragments.desk.DeskSpecificationsControllerFragments.*
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
 import io.circe.syntax.*
-import models.desk.deskSpecifications.Availability
+
 import models.desk.deskSpecifications.DeskSpecificationsPartial
 import models.desk.deskSpecifications.PrivateDesk
 import models.responses.CreatedResponse

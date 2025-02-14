@@ -1,18 +1,19 @@
 package models.business.specifications
 
-import io.circe.generic.semiauto.deriveDecoder
-import io.circe.generic.semiauto.deriveEncoder
 import io.circe.Decoder
 import io.circe.Encoder
+import io.circe.generic.semiauto.deriveDecoder
+import io.circe.generic.semiauto.deriveEncoder
+import models.OpeningHours
+
 import java.time.LocalDateTime
-import models.business.specifications.BusinessAvailability
 
 case class BusinessSpecificationsPartial(
   userId: String,
   businessId: String,
   businessName: Option[String],
   description: Option[String],
-  availability: Option[BusinessAvailability]
+  openingHours: Option[List[OpeningHours]]
 )
 
 object BusinessSpecificationsPartial {

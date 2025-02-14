@@ -1,41 +1,29 @@
 package models.office
 
-import models.office.address_details.requests.UpdateOfficeAddressRequest
 import cats.effect.IO
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
+import models.ModelsBaseSpec
+import testData.OfficeTestConstants.*
 import weaver.SimpleIOSuite
 
-object UpdateOfficeAddressRequestSpec extends SimpleIOSuite {
-
-  val createOfficeAddressRequest: UpdateOfficeAddressRequest =
-    UpdateOfficeAddressRequest(
-      buildingName = Some("build_123"),
-      floorNumber = Some("floor 1"),
-      street = Some("123 Main Street"),
-      city = Some("New York"),
-      country = Some("USA"),
-      county = Some("New York County"),
-      postcode = Some("10001"),
-      latitude = Some(100.1),
-      longitude = Some(-100.1)
-    )
+object UpdateOfficeAddressRequestSpec extends SimpleIOSuite with ModelsBaseSpec {
 
   test("UpdateOfficeAddressRequest model encodes correctly to JSON") {
 
-    val jsonResult = createOfficeAddressRequest.asJson
+    val jsonResult = updateOfficeAddressRequest.asJson
 
     val expectedJson =
       """
         |{
-        |   "buildingName": "build_123",
+        |   "buildingName": "butter building",
         |   "floorNumber": "floor 1",
-        |   "street": "123 Main Street",
+        |   "street": "Main street 123",
         |   "city": "New York",
         |   "country": "USA",
-        |   "county": "New York County",
-        |   "postcode": "10001",
+        |   "county": "County 123",
+        |   "postcode": "123456",
         |   "latitude": 100.1,
         |   "longitude": -100.1
         |}
@@ -43,9 +31,21 @@ object UpdateOfficeAddressRequestSpec extends SimpleIOSuite {
 
     val expectedResult: Json = parse(expectedJson).getOrElse(Json.Null)
 
+    val jsonResultPretty = printer.print(jsonResult)
+    val expectedResultPretty = printer.print(expectedResult)
+
+    val differences = jsonDiff(jsonResult, expectedResult, expectedResultPretty, jsonResultPretty)
+
     for {
-      _ <- IO("")
-    } yield expect(jsonResult == expectedResult)
+      _ <- IO {
+        if (differences.nonEmpty) {
+          println("=== JSON Difference Detected! ===")
+          differences.foreach(diff => println(s"- $diff"))
+          println("Generated JSON:\n" + jsonResultPretty)
+          println("Expected JSON:\n" + expectedResultPretty)
+        }
+      }
+    } yield expect(differences.isEmpty)
   }
 
 }

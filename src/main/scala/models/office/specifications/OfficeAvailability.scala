@@ -1,18 +1,22 @@
 package models.office.specifications
 
 import doobie.util.meta.Meta
+import io.circe.Decoder
+import io.circe.Encoder
 import io.circe.generic.semiauto.*
 import io.circe.parser.decode
 import io.circe.syntax.*
-import io.circe.Decoder
-import io.circe.Encoder
+import models.OpeningHours
+
 import java.time.LocalTime
 
-case class OfficeAvailability(days: List[String], startTime: LocalTime, endTime: LocalTime)
+case class OfficeAvailability(
+  availability: List[OpeningHours]
+)
 
 object OfficeAvailability {
-  implicit val officeAvailabilityEncoder: Encoder[OfficeAvailability] = deriveEncoder[OfficeAvailability]
-  implicit val officeAvailabilityDecoder: Decoder[OfficeAvailability] = deriveDecoder[OfficeAvailability]
+  implicit val encoder: Encoder[OfficeAvailability] = deriveEncoder[OfficeAvailability]
+  implicit val decoder: Decoder[OfficeAvailability] = deriveDecoder[OfficeAvailability]
 
   // Define Doobie Meta for JSON
   implicit val availabilityMeta: Meta[OfficeAvailability] =

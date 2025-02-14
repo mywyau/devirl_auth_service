@@ -8,14 +8,16 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import models.business.specifications.errors.BusinessSpecificationsNotFound
 import models.business.specifications.requests.CreateBusinessSpecificationsRequest
-import models.business.specifications.BusinessAvailability
 import models.business.specifications.BusinessSpecifications
 import models.business.specifications.BusinessSpecificationsPartial
+import models.database.CreateSuccess
+import models.Monday
+import models.OpeningHours
+import models.Tuesday
 import repositories.business.BusinessSpecificationsRepositoryAlgebra
 import services.business.mocks.MockBusinessSpecificationsRepository
-import weaver.SimpleIOSuite
-import models.database.CreateSuccess
 import testData.TestConstants.*
+import weaver.SimpleIOSuite
 
 object BusinessSpecificationsServiceSpec extends SimpleIOSuite {
 
@@ -28,10 +30,17 @@ object BusinessSpecificationsServiceSpec extends SimpleIOSuite {
       businessId = businessId,
       businessName = businessName1,
       description = businessDescription1,
-      availability = BusinessAvailability(
-        days = List("Monday", "Tuesday"),
-        startTime = startTime0900,
-        endTime = endTime1700
+      openingHours = List(
+        OpeningHours(
+          day = Monday,
+          openingTime = openingTime0900,
+          closingTime = closingTime1700
+        ),
+        OpeningHours(
+          day = Tuesday,
+          openingTime = openingTime0900,
+          closingTime = closingTime1700
+        )
       )
     )
 
@@ -45,18 +54,25 @@ object BusinessSpecificationsServiceSpec extends SimpleIOSuite {
       businessId = businessId,
       businessName = Some("MikeyCorp"),
       description = Some("Some description"),
-      availability = Some(
-        BusinessAvailability(
-          days = List("Monday", "Tuesday"),
-          startTime = startTime0900,
-          endTime = endTime1700
+      openingHours = Some(
+        List(
+          OpeningHours(
+            day = Monday,
+            openingTime = openingTime0900,
+            closingTime = closingTime1700
+          ),
+          OpeningHours(
+            day = Tuesday,
+            openingTime = openingTime0900,
+            closingTime = closingTime1700
+          )
         )
       )
     )
 
   test(".getByBusinessId() - when there is an existing BusinessSpecifications, given a business_id should return the correct Specifications - Right(Specifications)") {
 
-    val existingSpecificationsForUser = testSpecifications(Some(1), "user_id_1", "business_1")
+    val existingSpecificationsForUser = testSpecifications(Some(1), "userId1", "business_1")
 
     val mockBusinessSpecificationsRepository = new MockBusinessSpecificationsRepository(Map("business_1" -> existingSpecificationsForUser))
     val service = BusinessSpecificationsService[IO](mockBusinessSpecificationsRepository)
@@ -78,7 +94,7 @@ object BusinessSpecificationsServiceSpec extends SimpleIOSuite {
 
   test(".create() - when given a BusinessSpecifications, successfully create the BusinessSpecifications in Database") {
 
-    val sampleSpecifications = testCreateBusinessSpecificationsRequest("user_id_1", "business_1")
+    val sampleSpecifications = testCreateBusinessSpecificationsRequest("userId1", "business_1")
 
     val mockBusinessSpecificationsRepository = new MockBusinessSpecificationsRepository(Map())
     val service = BusinessSpecificationsService[IO](mockBusinessSpecificationsRepository)

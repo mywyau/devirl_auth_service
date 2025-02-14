@@ -4,40 +4,40 @@ import cats.effect.*
 import com.comcast.ip4s.ipv4
 import com.comcast.ip4s.port
 import configuration.models.AppConfig
-import controllers.ControllerISpecBase
 import controllers.business.BusinessSpecificationsController
 import controllers.constants.BusinessSpecificationsControllerConstants.*
 import controllers.fragments.business.BusinessSpecificationsRepoFragments.*
+import controllers.ControllerISpecBase
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
-import io.circe.Json
 import io.circe.syntax.*
-import models.business.specifications.BusinessAvailability
+import io.circe.Json
+import java.time.LocalDateTime
+import java.time.LocalTime
+import models.business.specifications.requests.UpdateBusinessSpecificationsRequest
 import models.business.specifications.BusinessSpecifications
 import models.business.specifications.BusinessSpecificationsPartial
-import models.business.specifications.requests.UpdateBusinessSpecificationsRequest
 import models.database.*
 import models.responses.CreatedResponse
 import models.responses.DeletedResponse
 import models.responses.UpdatedResponse
 import org.http4s.*
-import org.http4s.Method.*
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.Router
 import org.http4s.server.Server
-import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.http4s.Method.*
 import org.typelevel.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.SelfAwareStructuredLogger
 import repositories.business.BusinessSpecificationsRepository
 import services.business.BusinessSpecificationsService
 import shared.HttpClientResource
 import shared.TransactorResource
+import testData.BusinessTestConstants.*
+import testData.TestConstants.*
 import weaver.*
-
-import java.time.LocalDateTime
-import java.time.LocalTime
 
 class BusinessSpecificationsControllerISpec(global: GlobalRead) extends IOSuite with ControllerISpecBase {
 
@@ -55,7 +55,7 @@ class BusinessSpecificationsControllerISpec(global: GlobalRead) extends IOSuite 
     } yield (transactor, client)
 
   test(
-    "GET - /pistachio/business/businesses/specifications/business_id_1 - " +
+    "GET - /pistachio/business/businesses/specifications/businessId1 - " +
       "given a business_id, find the business specifications data for given id, returning OK and the specifications json"
   ) { (sharedResources, log) =>
 
@@ -63,7 +63,7 @@ class BusinessSpecificationsControllerISpec(global: GlobalRead) extends IOSuite 
     val client = sharedResources._2.client
 
     val request =
-      Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/businesses/specifications/business_id_1")
+      Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/businesses/specifications/businessId1")
 
     val expectedBusinessSpecifications = testBusinessSpecs
 
@@ -115,11 +115,7 @@ class BusinessSpecificationsControllerISpec(global: GlobalRead) extends IOSuite 
       UpdateBusinessSpecificationsRequest(
         businessName = "MikeyCorp",
         description = "Some description",
-        availability = BusinessAvailability(
-          days = List("Monday", "Tuesday"),
-          startTime = LocalTime.of(10, 0, 0),
-          endTime = LocalTime.of(10, 30, 0)
-        )
+        openingHours = businessOpeningHours1
       )
 
     val request =

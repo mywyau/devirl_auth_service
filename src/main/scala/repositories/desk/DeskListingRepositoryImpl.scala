@@ -12,6 +12,7 @@ import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.postgres.implicits.*
 import doobie.util.meta.Meta
+import io.circe.parser.decode
 import io.circe.syntax.*
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -26,6 +27,7 @@ import models.desk.deskSpecifications.DeskSpecificationsPartial
 import models.desk.deskSpecifications.DeskType
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import org.typelevel.log4cats.Logger
+import models.OpeningHours
 
 trait DeskListingRepositoryAlgebra[F[_]] {
 
@@ -49,6 +51,9 @@ class DeskListingRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: 
   implicit val localDateTimeMeta: Meta[LocalDateTime] = Meta[Timestamp].imap(_.toLocalDateTime)(Timestamp.valueOf)
 
   implicit val deskTypeMeta: Meta[DeskType] = Meta[String].imap(DeskType.fromString)(_.toString)
+
+  implicit val openingHoursListMeta: Meta[List[OpeningHours]] =
+    Meta[String].imap(jsonStr => decode[List[OpeningHours]](jsonStr).getOrElse(Nil))(_.asJson.noSpaces)
 
   override def getOfficeAndBusinessId(deskId: String): F[Option[DeskListingBusinessAndOffice]] = {
     val fetchOfficeAndBusinessIds =
@@ -85,7 +90,7 @@ class DeskListingRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: 
         ds.desk_type AS ds_desk_type,
         ds.quantity AS ds_quantity,
         ds.features AS ds_features,
-        ds.availability AS ds_availability,
+        ds.opening_hours AS ds_opening_hours,
         ds.rules AS ds_rules,
 
         dp.price_per_hour AS dp_price_per_hour,

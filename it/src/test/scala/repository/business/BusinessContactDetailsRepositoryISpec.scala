@@ -10,9 +10,9 @@ import models.desk.deskSpecifications.PrivateDesk
 import models.business.contact_details.BusinessContactDetails
 import models.business.contact_details.BusinessContactDetailsPartial
 import repositories.business.BusinessContactDetailsRepositoryImpl
-import repository.fragments.business.BusinessContactDetailsRepoFragments.createBusinessContactDetailsTable
-import repository.fragments.business.BusinessContactDetailsRepoFragments.insertBusinessContactDetailsData
-import repository.fragments.business.BusinessContactDetailsRepoFragments.resetBusinessContactDetailsTable
+import repository.fragments.business.BusinessContactDetailsRepoFragments.*
+import testData.BusinessTestConstants.*
+import testData.TestConstants.*
 import shared.TransactorResource
 import weaver.GlobalRead
 import weaver.IOSuite

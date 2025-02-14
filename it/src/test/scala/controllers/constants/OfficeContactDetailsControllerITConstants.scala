@@ -1,11 +1,12 @@
 package controllers.constants
 
 import cats.effect.*
-import models.office.contact_details.OfficeContactDetails
-import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
-
 import java.time.LocalDateTime
+import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
+import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.OfficeContactDetailsPartial
+import testData.OfficeTestConstants.*
+import testData.TestConstants.*
 
 object OfficeContactDetailsControllerITConstants {
 

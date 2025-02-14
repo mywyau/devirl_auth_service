@@ -5,8 +5,9 @@ import io.circe.generic.semiauto.deriveEncoder
 import io.circe.Decoder
 import io.circe.Encoder
 import java.time.LocalDateTime
+import models.OpeningHours
 import models.office.adts.OfficeType
-import models.office.specifications.OfficeAvailability
+
 
 case class OfficeSpecifications(
   id: Option[Int],
@@ -19,7 +20,7 @@ case class OfficeSpecifications(
   totalDesks: Option[Int],
   capacity: Option[Int],
   amenities: Option[List[String]],
-  availability: Option[OfficeAvailability],
+  openingHours: Option[List[OpeningHours]],
   rules: Option[String],
   createdAt: LocalDateTime,
   updatedAt: LocalDateTime

@@ -42,23 +42,23 @@ object DeskPricingRepoFragments {
         updated_at
       ) VALUES
         (
-          'user001',
-          'business001',
-          'office001',
-          'desk001',
-          15.00,
-          100.00,
-          600.00,
-          2000.00,
-          24000.00,
+          'userId1',
+          'businessId1',
+          'officeId1',
+          'deskId1',
+          30.00,
+          180.00,
+          450.00,
+          1000.00,
+          9000.00,
           CURRENT_TIMESTAMP,
           CURRENT_TIMESTAMP
         ),
         (
-          'user002',
-          'business002',
-          'office002',
-          'desk002',
+          'userId2',
+          'businessId2',
+          'officeId2',
+          'deskId2',
           10.00,
           80.00,
           NULL, -- No weekly price
@@ -68,10 +68,10 @@ object DeskPricingRepoFragments {
           CURRENT_TIMESTAMP
         ),
         (
-          'user003',
-          'business003',
-          'office003',
-          'desk003',
+          'userId3',
+          'businessId3',
+          'officeId3',
+          'deskId3',
           0.00, -- Defaulting to 0 for no hourly price
           120.00,
           700.00,
@@ -81,10 +81,10 @@ object DeskPricingRepoFragments {
           CURRENT_TIMESTAMP
         ),
         (
-          'user004',
-          'business004',
-          'office004',
-          'desk004',
+          'userId4',
+          'businessId4',
+          'officeId4',
+          'deskId4',
           20.00,
           0.00, -- Defaulting to 0 for no daily price
           1000.00,
@@ -94,10 +94,10 @@ object DeskPricingRepoFragments {
           CURRENT_TIMESTAMP
         ),
         (
-          'user005',
-          'business005',
-          'office005',
-          'desk005',
+          'userId5',
+          'businessId5',
+          'officeId5',
+          'deskId5',
           0.00, -- Defaulting to 0 for no hourly price
           0.00, -- Defaulting to 0 for no daily price
           0.00, -- Defaulting to 0 for no weekly price

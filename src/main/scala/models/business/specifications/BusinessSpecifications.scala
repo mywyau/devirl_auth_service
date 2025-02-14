@@ -5,6 +5,7 @@ import io.circe.generic.semiauto.deriveEncoder
 import io.circe.Decoder
 import io.circe.Encoder
 import java.time.LocalDateTime
+import models.OpeningHours
 
 case class BusinessSpecifications(
   id: Option[Int],
@@ -12,7 +13,7 @@ case class BusinessSpecifications(
   businessId: String,
   businessName: Option[String],
   description: Option[String],
-  availability: Option[BusinessAvailability],
+  openingHours: Option[List[OpeningHours]],
   createdAt: LocalDateTime,
   updatedAt: LocalDateTime
 )

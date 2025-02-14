@@ -8,14 +8,17 @@ import doobie.*
 import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
+import io.circe.syntax.EncoderOps
+import io.circe.parser.decode
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import models.business.address.BusinessAddressPartial
-import models.business_listing.requests.InitiateBusinessListingRequest
-import models.business_listing.BusinessListing
 import models.business.contact_details.BusinessContactDetailsPartial
 import models.business.specifications.BusinessSpecificationsPartial
+import models.business_listing.requests.InitiateBusinessListingRequest
+import models.business_listing.BusinessListing
 import models.database.*
+import models.OpeningHours
 
 trait BusinessListingRepositoryAlgebra[F[_]] {
 
@@ -35,6 +38,9 @@ class BusinessListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
 
   implicit val localDateTimeMeta: Meta[LocalDateTime] =
     Meta[Timestamp].imap(_.toLocalDateTime)(Timestamp.valueOf)
+
+  implicit val opening_hoursListMeta: Meta[List[OpeningHours]] =
+    Meta[String].imap(jsonStr => decode[List[OpeningHours]](jsonStr).getOrElse(Nil))(_.asJson.noSpaces)
 
   override def findAll(): F[List[BusinessListing]] = {
 
@@ -75,7 +81,7 @@ class BusinessListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
            business_id,
            business_name,
            description,
-           availability
+           opening_hours
          FROM business_specifications
       """.query[BusinessSpecificationsPartial].to[List]
 
@@ -138,7 +144,7 @@ class BusinessListingRepositoryImpl[F[_] : Concurrent : Monad](transactor: Trans
            business_id,
            business_name,
            description,
-           availability
+           opening_hours
         FROM business_specifications WHERE business_id = $businessId
       """.query[BusinessSpecificationsPartial].option
     (

@@ -25,11 +25,11 @@ object BusinessAddressControllerSpec extends SimpleIOSuite with ControllerSpecBa
 
   test("POST - /business/businesses/address/details/ should return 201 when user is created successfully") {
 
-    val mockBusinessAddressService = new MockBusinessAddressService(Map("user_id_1" -> sampleBusinessAddress1))
+    val mockBusinessAddressService = new MockBusinessAddressService(Map("userId1" -> sampleBusinessAddress1))
 
     val controller = createUserController(mockBusinessAddressService)
 
-    val request = Request[IO](Method.GET, uri"/business/businesses/address/details/user_id_1")
+    val request = Request[IO](Method.GET, uri"/business/businesses/address/details/userId1")
 
     for {
       response <- controller.orNotFound.run(request)

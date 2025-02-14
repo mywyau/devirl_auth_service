@@ -6,24 +6,20 @@ import cats.effect.Resource
 import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
+import models.database.*
 import models.desk.deskSpecifications.PrivateDesk
-import models.database.DeleteSuccess
-import models.database.UpdateSuccess
-import models.office.address_details.OfficeAddress
 import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.address_details.requests.UpdateOfficeAddressRequest
+import models.office.address_details.OfficeAddress
 import models.office_listing.requests.OfficeListingRequest
-import models.office.specifications.OfficeAvailability
 import repositories.office.OfficeAddressRepositoryImpl
 import repository.constants.OfficeAddressRepoITConstants.*
-import repository.fragments.OfficeAddressRepoFragments.createOfficeAddressTable
-import repository.fragments.OfficeAddressRepoFragments.insertOfficeAddressTable
-import repository.fragments.OfficeAddressRepoFragments.resetOfficeAddressTable
+import repository.fragments.OfficeAddressRepoFragments.*
 import shared.TransactorResource
+import testData.OfficeTestConstants.*
+import testData.TestConstants.*
 import weaver.GlobalRead
 import weaver.IOSuite
-
-import java.time.LocalDateTime
 
 class OfficeAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
 
@@ -49,17 +45,17 @@ class OfficeAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
 
   test(".findByBusinessId() - should return the office address if business_id exists for a previously created office address") { officeAddressRepo =>
 
-    val expectedResult = testOfficeAddressPartial("business_id_1", "office_id_1")
+    val expectedResult = testOfficeAddressPartial("businessId1", "officeId1")
 
     for {
-      officeAddressOpt <- officeAddressRepo.findByOfficeId("office_id_1")
+      officeAddressOpt <- officeAddressRepo.findByOfficeId("officeId1")
     } yield expect(officeAddressOpt == Valid(expectedResult))
   }
 
   test(".update() - should return UpdateSucess and update the office address if office_id exists for a previously created office address") { officeAddressRepo =>
 
-    val businessId = "business_id_6"
-    val officeId = "office_id_6"
+    val businessId = businessId6
+    val officeId = officeId6
 
     val createRequest = createInitialOfficeAddress(businessId, officeId)
 
@@ -67,11 +63,11 @@ class OfficeAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
       UpdateOfficeAddressRequest(
         buildingName = Some("Empire State Building"),
         floorNumber = Some("5th Floor"),
-        street = Some("123 Main Street"),
+        street = Some("Main street 123"),
         city = Some("New York"),
         country = Some("USA"),
         county = Some("Manhattan"),
-        postcode = Some("10001"),
+        postcode = Some("123456"),
         latitude = Some(40.748817),
         longitude = Some(-73.985428)
       )
@@ -84,7 +80,7 @@ class OfficeAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
 
   test(".delete() - should delete the office address for office_id_2 if it exists for a previously created office address") { officeAddressRepo =>
 
-    val officeId = "office_id_2"
+    val officeId = officeId2
 
     for {
       result <- officeAddressRepo.delete(officeId)

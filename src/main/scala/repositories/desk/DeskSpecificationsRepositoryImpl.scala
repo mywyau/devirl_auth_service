@@ -13,6 +13,7 @@ import doobie.implicits.javasql.*
 import doobie.postgres.implicits.*
 import doobie.util.meta.Meta
 import io.circe.syntax.*
+import io.circe.parser.decode
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import models.database.*
@@ -21,6 +22,7 @@ import models.desk.deskSpecifications.DeskSpecificationsPartial
 import models.desk.deskSpecifications.DeskType
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import org.typelevel.log4cats.Logger
+import models.OpeningHours
 
 trait DeskSpecificationsRepositoryAlgebra[F[_]] {
 
@@ -43,6 +45,9 @@ class DeskSpecificationsRepositoryImpl[F[_] : Concurrent : Monad : Logger](trans
 
   implicit val deskTypeMeta: Meta[DeskType] = Meta[String].imap(DeskType.fromString)(_.toString)
 
+  implicit val openingHoursListMeta: Meta[List[OpeningHours]] =
+    Meta[String].imap(jsonStr => decode[List[OpeningHours]](jsonStr).getOrElse(Nil))(_.asJson.noSpaces)
+
   override def findByDeskId(deskId: String): F[Option[DeskSpecificationsPartial]] = {
     val findQuery: F[Option[DeskSpecificationsPartial]] =
       sql"""
@@ -53,7 +58,7 @@ class DeskSpecificationsRepositoryImpl[F[_] : Concurrent : Monad : Logger](trans
           desk_type,
           quantity,
           features,
-          availability,
+          opening_hours,
           rules
          FROM desk_specifications
          WHERE desk_id = $deskId
@@ -72,7 +77,7 @@ class DeskSpecificationsRepositoryImpl[F[_] : Concurrent : Monad : Logger](trans
           desk_type,
           quantity,
           features,
-          availability,
+          opening_hours,
           rules
          FROM desk_specifications
          WHERE office_id = $officeId
@@ -92,7 +97,7 @@ class DeskSpecificationsRepositoryImpl[F[_] : Concurrent : Monad : Logger](trans
           desk_type,
           quantity,
           features,
-          availability,
+          opening_hours,
           rules
       ) VALUES (
         ${request.deskName},
@@ -100,7 +105,7 @@ class DeskSpecificationsRepositoryImpl[F[_] : Concurrent : Monad : Logger](trans
         ${request.deskType},
         ${request.quantity},
         ${request.features},
-        ${request.availability.asJson.noSpaces}::jsonb,
+        ${request.openingHours.asJson.noSpaces}::jsonb,
         ${request.rules}
       )
     """.update.run.transact(transactor).attempt.map {
@@ -128,7 +133,7 @@ class DeskSpecificationsRepositoryImpl[F[_] : Concurrent : Monad : Logger](trans
         desk_type = ${request.deskType},
         quantity = ${request.quantity},
         features = ${request.features},
-        availability = ${request.availability.asJson.noSpaces}::jsonb,
+        opening_hours = ${request.openingHours.asJson.noSpaces}::jsonb,
         rules = ${request.rules}
       WHERE desk_id = ${deskId}
     """.update.run

@@ -4,60 +4,59 @@ import cats.effect.IO
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
-import java.time.LocalDateTime
-import java.time.LocalTime
-import models.office.adts.*
-import models.office.specifications.requests.UpdateOfficeSpecificationsRequest
-import models.office.specifications.OfficeAvailability
+import models.ModelsBaseSpec
+import testData.OfficeTestConstants.*
 import weaver.SimpleIOSuite
 
-object UpdateOfficeSpecificationsRequestSpec extends SimpleIOSuite {
-
-  val officeSpecifications: UpdateOfficeSpecificationsRequest =
-    UpdateOfficeSpecificationsRequest(
-      officeName = "Modern Workspace",
-      description = "A vibrant office space in the heart of the city, ideal for teams or individuals.",
-      officeType = OpenPlanOffice,
-      numberOfFloors = 3,
-      totalDesks = 3,
-      capacity = 50,
-      amenities = List("Wi-Fi", "Coffee Machine", "Projector", "Whiteboard", "Parking"),
-      availability = OfficeAvailability(
-        days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-        startTime = LocalTime.of(10, 0, 0),
-        endTime = LocalTime.of(10, 30, 0)
-      ),
-      rules = Some("No smoking. Maintain cleanliness.")
-    )
+object UpdateOfficeSpecificationsRequestSpec extends SimpleIOSuite with ModelsBaseSpec {
 
   test("UpdateOfficeSpecificationsRequest model encodes correctly to JSON") {
 
-    val jsonResult = officeSpecifications.asJson
+    val jsonResult = updateOfficeSpecificationsRequest.asJson
 
     val expectedJson =
       """
         |{
-        |   "officeName": "Modern Workspace",
-        |   "description": "A vibrant office space in the heart of the city, ideal for teams or individuals.",
+        |   "officeName": "Maginificanent Office",
+        |   "description": "some office description",
         |   "officeType": "OpenPlanOffice",
         |   "numberOfFloors": 3,
         |   "totalDesks": 3,
         |   "capacity": 50,
-        |   "availability": {
-        |     "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        |     "startTime": "10:00:00",
-        |     "endTime": "10:30:00"
-        |   },
+        |   "openingHours" : [
+        |     {
+        |       "day" : "Monday",
+        |       "openingTime" : "09:00:00",
+        |       "closingTime" : "17:00:00"
+        |     },
+        |     {
+        |       "day" : "Tuesday",
+        |       "openingTime" : "09:00:00",
+        |       "closingTime" : "17:00:00"
+        |     }
+        |   ],
         |   "amenities": ["Wi-Fi", "Coffee Machine", "Projector", "Whiteboard", "Parking"],
-        |   "rules": "No smoking. Maintain cleanliness."
+        |   "rules": "Please keep the office clean and tidy."
         |}
         |""".stripMargin
 
     val expectedResult: Json = parse(expectedJson).getOrElse(Json.Null)
 
+    val jsonResultPretty = printer.print(jsonResult)
+    val expectedResultPretty = printer.print(expectedResult)
+
+    val differences = jsonDiff(jsonResult, expectedResult, expectedResultPretty, jsonResultPretty)
+
     for {
-      _ <- IO("")
-    } yield expect(jsonResult == expectedResult)
+      _ <- IO {
+        if (differences.nonEmpty) {
+          println("=== JSON Difference Detected! ===")
+          differences.foreach(diff => println(s"- $diff"))
+          println("Generated JSON:\n" + jsonResultPretty)
+          println("Expected JSON:\n" + expectedResultPretty)
+        }
+      }
+    } yield expect(differences.isEmpty)
   }
 
 }

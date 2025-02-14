@@ -69,6 +69,7 @@ class BusinessListingControllerImpl[F[_] : Concurrent : Logger](
             val errorResponse = ErrorResponse("placeholder error", "some deleted business listing message")
             BadRequest(errorResponse.asJson)
         }
+
     case DELETE -> Root / "business" / "businesses" / "listing" / "delete" / "all" / userId =>
       Logger[F].info(s"[BusinessListingControllerImpl] DELETE - Attempting to delete all business listings for userId: ${userId}") *>
         businessListingService.deleteByUserId(userId).flatMap {

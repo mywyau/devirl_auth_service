@@ -26,7 +26,7 @@ object BusinessContactDetailsRepositorySpec extends SimpleIOSuite with Repositor
 
     for {
       mockBusinessContactDetailsRepo <- createMockBusinessContactDetailsRepo(Nil)
-      result <- mockBusinessContactDetailsRepo.findByBusinessId("business_id_1")
+      result <- mockBusinessContactDetailsRepo.findByBusinessId("businessId1")
     } yield expect(result.isEmpty)
   }
 

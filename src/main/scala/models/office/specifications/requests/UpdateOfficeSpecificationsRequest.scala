@@ -1,12 +1,14 @@
 package models.office.specifications.requests
 
-import io.circe.generic.semiauto.deriveDecoder
-import io.circe.generic.semiauto.deriveEncoder
 import io.circe.Decoder
 import io.circe.Encoder
-import java.time.LocalDateTime
+import io.circe.generic.semiauto.deriveDecoder
+import io.circe.generic.semiauto.deriveEncoder
 import models.office.adts.OfficeType
-import models.office.specifications.OfficeAvailability
+
+
+import java.time.LocalDateTime
+import models.OpeningHours
 
 case class UpdateOfficeSpecificationsRequest(
   officeName: String,
@@ -16,7 +18,7 @@ case class UpdateOfficeSpecificationsRequest(
   totalDesks: Int,
   capacity: Int,
   amenities: List[String],
-  availability: OfficeAvailability,
+  openingHours: List[OpeningHours],
   rules: Option[String]
 )
 

@@ -9,6 +9,7 @@ import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import io.circe.syntax.*
+import io.circe.parser.decode
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import models.business.specifications.requests.CreateBusinessSpecificationsRequest
@@ -16,6 +17,7 @@ import models.business.specifications.requests.UpdateBusinessSpecificationsReque
 import models.business.specifications.BusinessSpecificationsPartial
 import models.database.*
 import models.office.specifications.requests.UpdateOfficeSpecificationsRequest
+import models.OpeningHours
 
 trait BusinessSpecificationsRepositoryAlgebra[F[_]] {
 
@@ -35,6 +37,9 @@ class BusinessSpecificationsRepositoryImpl[F[_] : Concurrent : Monad](transactor
   implicit val localDateTimeMeta: Meta[LocalDateTime] =
     Meta[Timestamp].imap(_.toLocalDateTime)(Timestamp.valueOf)
 
+  implicit val openingHoursListMeta: Meta[List[OpeningHours]] =
+    Meta[String].imap(jsonStr => decode[List[OpeningHours]](jsonStr).getOrElse(Nil))(_.asJson.noSpaces)
+
   override def findByBusinessId(businessId: String): F[Option[BusinessSpecificationsPartial]] = {
     val findQuery: F[Option[BusinessSpecificationsPartial]] =
       sql"""
@@ -43,7 +48,7 @@ class BusinessSpecificationsRepositoryImpl[F[_] : Concurrent : Monad](transactor
            business_id,
            business_name,
            description,
-           availability
+           opening_hours
          FROM business_specifications
          WHERE business_id = $businessId
        """.query[BusinessSpecificationsPartial].option.transact(transactor)
@@ -58,13 +63,13 @@ class BusinessSpecificationsRepositoryImpl[F[_] : Concurrent : Monad](transactor
         business_id,
         business_name,
         description,
-        availability
+        opening_hours
       ) VALUES (
         ${createBusinessSpecificationsRequest.userId},
         ${createBusinessSpecificationsRequest.businessId},
         ${createBusinessSpecificationsRequest.businessName},
         ${createBusinessSpecificationsRequest.description},
-        ${createBusinessSpecificationsRequest.availability.asJson.noSpaces}::jsonb
+        ${createBusinessSpecificationsRequest.openingHours.asJson.noSpaces}::jsonb
       )
     """.update.run
       .transact(transactor)
@@ -88,7 +93,7 @@ class BusinessSpecificationsRepositoryImpl[F[_] : Concurrent : Monad](transactor
         SET
         business_name = ${request.businessName},
         description = ${request.description},
-        availability = ${request.availability.asJson.noSpaces}::jsonb,
+        opening_hours = ${request.openingHours.asJson.noSpaces}::jsonb,
         updated_at = ${LocalDateTime.now()}
         WHERE business_id = $businessId
       """.update.run

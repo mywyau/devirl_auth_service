@@ -13,6 +13,8 @@ import models.desk.deskPricing.UpdateDeskPricingRequest
 import repositories.desk.DeskPricingRepositoryImpl
 import repository.fragments.desk.DeskPricingRepoFragments.*
 import shared.TransactorResource
+import testData.TestConstants.*
+import testData.DeskTestConstants.*
 import weaver.GlobalRead
 import weaver.IOSuite
 import weaver.ResourceTag
@@ -40,34 +42,20 @@ class DeskPricingRepositoryISpec(global: GlobalRead) extends IOSuite with Reposi
 
   test(".findByDeskId() - should return the desk pricing details for a given deskId") { deskPricingRepo =>
 
-    val expectedResult =
-      RetrievedDeskPricing(
-        pricePerHour = Some(15.0),
-        pricePerDay = Some(100.0),
-        pricePerWeek = Some(600.0),
-        pricePerMonth = Some(2000.0),
-        pricePerYear = Some(24000.0)
-      )
+    val expectedPricing = sampleRetrievedDeskPricing
 
     for {
-      deskPricingOpt <- deskPricingRepo.findByDeskId("desk001")
-    } yield expect(deskPricingOpt == Some(expectedResult))
+      deskPricingOpt <- deskPricingRepo.findByDeskId("deskId1")
+    } yield expect(deskPricingOpt == Some(expectedPricing))
   }
 
   test(".findByOfficeId() - should return the all desk pricing for a given officeId") { deskPricingRepo =>
 
-    val expectedResult =
-      RetrievedDeskPricing(
-        pricePerHour = Some(15.0),
-        pricePerDay = Some(100.0),
-        pricePerWeek = Some(600.0),
-        pricePerMonth = Some(2000.0),
-        pricePerYear = Some(24000.0)
-      )
+    val expectedPricing = sampleRetrievedDeskPricing
 
     for {
-      deskPricingOpt <- deskPricingRepo.findByOfficeId("office001")
-    } yield expect(deskPricingOpt == List(expectedResult))
+      deskPricingOpt <- deskPricingRepo.findByOfficeId("officeId1")
+    } yield expect(deskPricingOpt == List(expectedPricing))
   }
 
   test(".update() - should return UpdateSuccess for successfuly updating a desk pricing") { deskPricingRepo =>
@@ -82,13 +70,13 @@ class DeskPricingRepositoryISpec(global: GlobalRead) extends IOSuite with Reposi
       )
 
     for {
-      deskPricingOpt <- deskPricingRepo.update("desk001", updateRequest)
+      deskPricingOpt <- deskPricingRepo.update("deskId1", updateRequest)
     } yield expect(deskPricingOpt == Valid(UpdateSuccess))
   }
 
   test(".delete() - should return DeleteSuccess for successfuly deleting the desk based on the deskId") { deskPricingRepo =>
     for {
-      deskPricingOpt <- deskPricingRepo.delete("desk002")
+      deskPricingOpt <- deskPricingRepo.delete(deskId2)
     } yield expect(deskPricingOpt == Valid(DeleteSuccess))
   }
 }

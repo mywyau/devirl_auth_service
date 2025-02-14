@@ -16,12 +16,14 @@ import models.desk.deskListing.DeskListingCard
 import models.desk.deskPricing.DeskPricingPartial
 import models.desk.deskPricing.RetrievedDeskPricing
 import models.desk.deskSpecifications.requests.UpdateDeskSpecificationsRequest
-import models.desk.deskSpecifications.Availability
+
 import models.desk.deskSpecifications.DeskSpecificationsPartial
 import models.desk.deskSpecifications.PrivateDesk
 import repositories.desk.DeskListingRepositoryImpl
 import repository.fragments.desk.DeskPricingRepoFragments.*
 import repository.fragments.desk.DeskSpecificationsRepoFragments.*
+import testData.TestConstants.*
+import testData.DeskTestConstants.*
 import shared.TransactorResource
 import weaver.GlobalRead
 import weaver.IOSuite
@@ -55,15 +57,15 @@ class DeskListingRepositoryStreamAllISpec(global: GlobalRead) extends IOSuite wi
 
     val expectedCards =
       List(
-        DeskListingCard("desk001", "Mikey Desk 1", "A quiet, private desk perfect for focused work with a comfortable chair and good lighting."),
-        DeskListingCard("desk002", "Mikey Desk 2", "A shared desk in a collaborative space with easy access to team members."),
-        DeskListingCard("desk003", "Mikey Desk 3", "Spacious desk with a view and ample storage for your items."),
-        DeskListingCard("desk004", "Mikey Desk 4", "A flexible, hot desk available for use in a dynamic work environment."),
-        DeskListingCard("desk005", "Mikey Desk 5", "An executive desk in a quiet, well-lit space designed for high-level work.")
+        DeskListingCard(deskId1, "Luxury supreme desk", description1),
+        DeskListingCard(deskId2, "Luxury supreme desk", description1),
+        DeskListingCard(deskId3, "Luxury supreme desk", description1),
+        DeskListingCard(deskId4, "Luxury supreme desk", description1),
+        DeskListingCard(deskId5, "Luxury supreme desk", description1),
       )
 
     for {
-      deskListings <- deskRepo.streamAllListingCardDetails("office001").compile.toList
+      deskListings <- deskRepo.streamAllListingCardDetails("officeId1").compile.toList
     } yield expect(deskListings == expectedCards)
   }
 

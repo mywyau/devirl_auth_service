@@ -15,11 +15,13 @@ import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.OfficeContactDetailsPartial
 import models.office.specifications.requests.CreateOfficeSpecificationsRequest
-import models.office.specifications.OfficeAvailability
 import models.office.specifications.OfficeSpecificationsPartial
 import models.office_listing.requests.InitiateOfficeListingRequest
 import models.office_listing.requests.OfficeListingRequest
 import models.office_listing.OfficeListing
+import models.Monday
+import models.OpeningHours
+import models.Tuesday
 import services.office.OfficeListingServiceImpl
 import testData.TestConstants.*
 
@@ -29,32 +31,39 @@ object OfficeListingServiceConstants {
     CreateOfficeSpecificationsRequest(
       businessId = businessId1,
       officeId = officeId1,
-      officeName = "Modern Workspace",
-      description = "A vibrant office space in the heart of the city, ideal for teams or individuals.",
+      officeName = officeName1,
+      description = officeDescription1,
       officeType = OpenPlanOffice,
       numberOfFloors = 3,
       totalDesks = 3,
       capacity = 50,
       amenities = List("Wi-Fi", "Coffee Machine", "Projector", "Whiteboard", "Parking"),
-      availability = OfficeAvailability(
-        days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-        startTime = LocalTime.of(10, 0, 0),
-        endTime = LocalTime.of(10, 30, 0)
+      openingHours = List(
+        OpeningHours(
+          day = Monday,
+          openingTime = LocalTime.of(10, 0, 0),
+          closingTime = LocalTime.of(10, 30, 0)
+        ),
+        OpeningHours(
+          day = Tuesday,
+          openingTime = LocalTime.of(10, 0, 0),
+          closingTime = LocalTime.of(10, 30, 0)
+        )
       ),
-      rules = Some("No smoking. Maintain cleanliness.")
+      rules = Some("Please keep the office clean and tidy.")
     )
 
   val testCreateOfficeAddressRequest =
     CreateOfficeAddressRequest(
       businessId = businessId1,
       officeId = officeId1,
-      buildingName = Some("build_123"),
+      buildingName = Some("butter building"),
       floorNumber = Some("floor 1"),
-      street = Some("123 Main Street"),
+      street = Some("Main street 123"),
       city = Some("New York"),
       country = Some("USA"),
-      county = Some("New York County"),
-      postcode = Some("10001"),
+      county = Some("County 123"),
+      postcode = Some("123456"),
       latitude = Some(100.1),
       longitude = Some(-100.1)
     )
@@ -76,10 +85,10 @@ object OfficeListingServiceConstants {
     CreateOfficeContactDetailsRequest(
       businessId = businessId1,
       officeId = officeId1,
-      primaryContactFirstName = "Michael",
-      primaryContactLastName = "Yau",
-      contactEmail = "mike@gmail.com",
-      contactNumber = "07402205071"
+      primaryContactFirstName = primaryContactFirstName1,
+      primaryContactLastName = primaryContactLastName1,
+      contactEmail = contactEmail1,
+      contactNumber = contactNumber1
     )
 
   val officeListingRequest =
@@ -103,7 +112,7 @@ object OfficeListingServiceConstants {
       totalDesks = None,
       capacity = None,
       amenities = None,
-      availability = None,
+      openingHours = None,
       rules = None
     )
 

@@ -15,7 +15,7 @@ import services.RepositorySpecBase
 
 object OfficeContactDetailsRepositorySpec extends SimpleIOSuite with RepositorySpecBase {
 
-  test(".findByOfficeId() - should return the contact details if office_id_1 exists") {
+  test(".findByOfficeId() - should return the contact details if officeId1 exists") {
 
     val existingContactDetailsForUser = testContactDetails(businessId1, officeId1)
 
@@ -25,7 +25,7 @@ object OfficeContactDetailsRepositorySpec extends SimpleIOSuite with RepositoryS
     } yield expect(result.contains(existingContactDetailsForUser))
   }
 
-  test(".findByOfficeId() - should return None if office_id_1 does not exist") {
+  test(".findByOfficeId() - should return None if officeId1 does not exist") {
 
     for {
       mockRepo <- createMockRepo(List())

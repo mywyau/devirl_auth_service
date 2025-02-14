@@ -49,7 +49,7 @@ object BusinessAddressRepoFragments {
           updated_at
         ) VALUES
           ('USER001', 'BUS001', 'Innovation Tower', '5', '123 Tech Street', 'San Francisco', 'USA', 'California', '94105', 37.774929, -122.419416, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
-          ('USER002', 'BUS002', 'Global Tower', '12', '456 Global Ave', 'New York', 'USA', 'New York', '10001', 40.712776, -74.005974, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('USER002', 'BUS002', 'Global Tower', '12', '456 Global Ave', 'New York', 'USA', 'New York', '123456', 40.712776, -74.005974, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
           ('USER003', 'BUS003', 'Eco Center', '3', '789 Greenway Blvd', 'Austin', 'USA', 'Texas', '73301', 30.267153, -97.743057, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
           ('USER004', 'BUS004', 'Market Plaza', '1', '101 Main Street', 'Chicago', 'USA', 'Illinois', '60601', 41.878113, -87.629799, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
           ('USER005', 'BUS005', 'Startup Hub', '2', '202 Startup Lane', 'Seattle', 'USA', 'Washington', '98101', 47.606209, -122.332069, '2025-01-01 00:00:00', '2025-01-01 00:00:00');

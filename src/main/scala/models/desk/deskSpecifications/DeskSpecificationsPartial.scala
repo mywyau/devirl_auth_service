@@ -1,12 +1,13 @@
 package models.desk.deskSpecifications
 
-import io.circe.generic.semiauto.deriveDecoder
-import io.circe.generic.semiauto.deriveEncoder
 import io.circe.Decoder
 import io.circe.Encoder
-import java.time.LocalDateTime
-import models.desk.deskSpecifications.Availability
+import io.circe.generic.semiauto.deriveDecoder
+import io.circe.generic.semiauto.deriveEncoder
 import models.desk.deskSpecifications.DeskType
+import models.OpeningHours
+
+import java.time.LocalDateTime
 
 case class DeskSpecificationsPartial(
   deskId: String,
@@ -15,7 +16,7 @@ case class DeskSpecificationsPartial(
   deskType: Option[DeskType],
   quantity: Option[Int],
   features: Option[List[String]],
-  availability: Option[Availability],
+  openingHours: Option[List[OpeningHours]],
   rules: Option[String]
 )
 

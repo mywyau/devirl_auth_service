@@ -7,14 +7,14 @@ import io.circe.syntax.*
 import io.circe.Decoder
 import io.circe.Encoder
 import java.time.LocalDateTime
-import models.business.specifications.BusinessAvailability
+import models.OpeningHours
 
 case class CreateBusinessSpecificationsRequest(
   userId: String,
   businessId: String,
   businessName: String,
   description: String,
-  availability: BusinessAvailability
+  openingHours: List[OpeningHours]
 )
 
 object CreateBusinessSpecificationsRequest {

@@ -57,8 +57,8 @@ class OfficeListingControllerISpec(global: GlobalRead) extends IOSuite {
     val transactor = sharedResources._1.xa
     val client = sharedResources._2.client
 
-    val businessId = "business_id_1"
-    val officeId = "office_id_1"
+    val businessId = "businessId1"
+    val officeId = "officeId1"
 
     val initiateOfficeListingRequest: Json =
       testInitiateOfficeListingRequest(businessId, officeId).asJson
@@ -92,7 +92,7 @@ class OfficeListingControllerISpec(global: GlobalRead) extends IOSuite {
         }
 
         val request =
-          Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/office/listing/delete/office_id_1")
+          Request[IO](DELETE, uri"http://127.0.0.1:9999/pistachio/business/office/listing/delete/officeId1")
 
         val expectedBody = DeletedResponse(DeleteSuccess.toString, "Office listing deleted successfully")
 

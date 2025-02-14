@@ -6,21 +6,21 @@ import cats.effect.Resource
 import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
+import java.time.LocalDateTime
+import java.time.LocalTime
 import models.database.CreateSuccess
 import models.database.DeleteSuccess
-import models.desk.deskSpecifications.Availability
+import models.desk.deskSpecifications.requests.UpdateDeskSpecificationsRequest
 import models.desk.deskSpecifications.DeskSpecificationsPartial
 import models.desk.deskSpecifications.PrivateDesk
-import models.desk.deskSpecifications.requests.UpdateDeskSpecificationsRequest
 import repositories.desk.DeskSpecificationsRepositoryImpl
 import repository.fragments.desk.DeskSpecificationsRepoFragments.*
 import shared.TransactorResource
+import testData.DeskTestConstants.*
+import testData.TestConstants.*
 import weaver.GlobalRead
 import weaver.IOSuite
 import weaver.ResourceTag
-
-import java.time.LocalDateTime
-import java.time.LocalTime
 
 class DeskSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite with RepositoryISpecBase {
 
@@ -31,13 +31,6 @@ class DeskSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite with
       createDeskSpecificationsTable.update.run.transact(transactor.xa).void *>
         resetDeskSpecificationsTable.update.run.transact(transactor.xa).void *>
         insertDeskSpecifications.update.run.transact(transactor.xa).void
-    )
-
-  val availability =
-    Availability(
-      days = List("Monday", "Tuesday", "Wednesday"),
-      startTime = LocalTime.of(9, 0, 0),
-      endTime = LocalTime.of(17, 0, 0)
     )
 
   def sharedResource: Resource[IO, DeskSpecificationsRepositoryImpl[IO]] = {
@@ -54,22 +47,18 @@ class DeskSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite with
 
     val expectedResult =
       DeskSpecificationsPartial(
-        deskId = "desk001",
-        deskName = "Mikey Desk 1",
-        description = Some("A quiet, private desk perfect for focused work with a comfortable chair and good lighting."),
+        deskId = deskId1,
+        deskName = deskName1,
+        description = Some(description1),
         deskType = Some(PrivateDesk),
         quantity = Some(5),
         features = Some(List("Wi-Fi", "Power Outlets", "Ergonomic Chair", "Desk Lamp")),
-        availability = Some(Availability(
-          days = List("Monday", "Tuesday", "Wednesday"),
-          startTime = LocalTime.of(9, 0, 0),
-          endTime = LocalTime.of(17, 0, 0)
-        )),
-        rules = Some("No loud conversations, please keep the workspace clean.")
+        openingHours = Some(deskOpeningHours),
+        rules = Some(rules)
       )
 
     for {
-      deskSpecificationsOpt <- businessDeskRepo.findByDeskId("desk001")
+      deskSpecificationsOpt <- businessDeskRepo.findByDeskId(deskId1)
     } yield expect(deskSpecificationsOpt == Some(expectedResult))
   }
 
@@ -77,41 +66,24 @@ class DeskSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite with
 
     val expectedResult =
       DeskSpecificationsPartial(
-        deskId = "desk001",
-        deskName = "Mikey Desk 1",
-        description = Some("A quiet, private desk perfect for focused work with a comfortable chair and good lighting."),
+        deskId = deskId1,
+        deskName = deskName1,
+        description = Some(description1),
         deskType = Some(PrivateDesk),
         quantity = Some(5),
         features = Some(List("Wi-Fi", "Power Outlets", "Ergonomic Chair", "Desk Lamp")),
-        availability = Some(Availability(
-          days = List("Monday", "Tuesday", "Wednesday"),
-          startTime = LocalTime.of(9, 0, 0),
-          endTime = LocalTime.of(17, 0, 0)
-        )),
-        rules = Some("No loud conversations, please keep the workspace clean.")
+        openingHours = Some(deskOpeningHours),
+        rules = Some(rules)
       )
 
     for {
-      deskSpecificationsOpt <- businessDeskRepo.findByOfficeId("office01")
+      deskSpecificationsOpt <- businessDeskRepo.findByOfficeId(officeId1)
     } yield expect(deskSpecificationsOpt == List(expectedResult))
   }
 
   test(".create() - should return CreateSuccess for successfuly creating a desk listing") { businessDeskRepo =>
 
-    val createRequest =
-      UpdateDeskSpecificationsRequest(
-        deskName = "Mikey Desk 1",
-        description = Some("A quiet, private desk perfect for focused work with a comfortable chair and good lighting."),
-        deskType = PrivateDesk,
-        quantity = 5,
-        features = List("Wi-Fi", "Power Outlets", "Ergonomic Chair", "Desk Lamp"),
-        availability = Availability(
-          days = List("Monday", "Tuesday", "Wednesday"),
-          startTime = LocalTime.of(9, 0, 0),
-          endTime = LocalTime.of(17, 0, 0)
-        ),
-        rules = Some("No loud conversations, please keep the workspace clean.")
-      )
+    val createRequest = sampleUpdateDeskSpecificationsRequest
 
     for {
       deskSpecificationsOpt <- businessDeskRepo.create(createRequest)
@@ -120,7 +92,7 @@ class DeskSpecificationsRepositoryISpec(global: GlobalRead) extends IOSuite with
 
   test(".delete() - should return DeleteSuccess for successfuly deleting the desk based on the deskId") { businessDeskRepo =>
     for {
-      deskSpecificationsOpt <- businessDeskRepo.delete("desk002")
+      deskSpecificationsOpt <- businessDeskRepo.delete(deskId2)
     } yield expect(deskSpecificationsOpt == Valid(DeleteSuccess))
   }
 }

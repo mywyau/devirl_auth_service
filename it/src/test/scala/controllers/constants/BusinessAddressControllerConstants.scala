@@ -4,6 +4,8 @@ import cats.effect.*
 import java.time.LocalDateTime
 import models.business.address.requests.CreateBusinessAddressRequest
 import models.business.address.BusinessAddressPartial
+import testData.BusinessTestConstants.*
+import testData.TestConstants.*
 
 object BusinessAddressControllerConstants {
 
@@ -13,11 +15,11 @@ object BusinessAddressControllerConstants {
       businessId = businessId,
       buildingName = Some("building_name_1"),
       floorNumber = Some("floor_1"),
-      street = Some("123 Main Street"),
+      street = Some("Main street 123"),
       city = Some("New York"),
       country = Some("USA"),
       county = Some("Manhattan"),
-      postcode = Some("10001"),
+      postcode = Some("123456"),
       latitude = Some(100.1),
       longitude = Some(-100.1)
     )
@@ -29,11 +31,11 @@ object BusinessAddressControllerConstants {
       businessName = Some("business_name_1"),
       buildingName = Some("building_name_1"),
       floorNumber = Some("floor_1"),
-      street = Some("123 Main Street"),
+      street = Some("Main street 123"),
       city = Some("New York"),
       country = Some("USA"),
       county = Some("Manhattan"),
-      postcode = Some("10001"),
+      postcode = Some("123456"),
       latitude = Some(100.1),
       longitude = Some(-100.1)
     )

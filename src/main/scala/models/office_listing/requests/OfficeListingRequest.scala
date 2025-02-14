@@ -10,7 +10,7 @@ import models.office.address_details.requests.CreateOfficeAddressRequest
 import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetails
 import models.office.specifications.requests.CreateOfficeSpecificationsRequest
-import models.office.specifications.OfficeAvailability
+
 import models.office.specifications.OfficeSpecifications
 
 case class OfficeListingRequest(

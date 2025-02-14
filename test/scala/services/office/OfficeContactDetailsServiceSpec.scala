@@ -22,7 +22,7 @@ object OfficeContactDetailsServiceSpec extends SimpleIOSuite with ServiceSpecBas
 
   test(
     ".getByOfficeId() - " +
-      "when there is an existing OfficeContactDetails given a office_id_1 should return the correct ContactDetailsPartial - Right(ContactDetails)"
+      "when there is an existing OfficeContactDetails given a officeId1 should return the correct ContactDetailsPartial - Right(ContactDetails)"
   ) {
 
     val existingContactDetailsForUser = testOfficeContactDetails(Some(1), businessId1, officeId1)

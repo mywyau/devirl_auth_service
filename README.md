@@ -157,7 +157,7 @@ numberOfFloors:=3 \
 totalDesks:=120 \
 capacity:=150 \
 amenities:='["WiFi", "Conference Rooms", "Parking"]' \
-availability:='{"days": ["Monday", "Wednesday"], "startTime": "09:00:00", "endTime": "17:00:00"}' \
+availability:='{"days": ["Monday", "Wednesday"], "openingTime": "09:00:00", "closingTime": "17:00:00"}' \
 rules="No smoking inside the building" \
 updatedAt="2025-01-01T12:00:00"
 

@@ -3,19 +3,19 @@ package models
 import io.circe.Decoder
 import io.circe.Encoder
 
-sealed trait Days
+sealed trait Day
 
-case object Monday extends Days
-case object Tuesday extends Days
-case object Wednesday extends Days
-case object Thursday extends Days
-case object Friday extends Days
-case object Saturday extends Days
-case object Sunday extends Days
+case object Monday extends Day
+case object Tuesday extends Day
+case object Wednesday extends Day
+case object Thursday extends Day
+case object Friday extends Day
+case object Saturday extends Day
+case object Sunday extends Day
 
-object Days {
+object Day {
 
-  def fromString(str: String): Days =
+  def fromString(str: String): Day =
     str match {
       case "Monday" => Monday
       case "Tuesday" => Tuesday
@@ -27,7 +27,7 @@ object Days {
       case _ => throw new Exception(s"Unknown day type: $str")
     }
 
-  implicit val dayEncoder: Encoder[Days] =
+  implicit val dayEncoder: Encoder[Day] =
     Encoder.encodeString.contramap {
       case Monday => "Monday"
       case Tuesday => "Tuesday"
@@ -38,7 +38,7 @@ object Days {
       case Sunday => "Sunday"
     }
 
-  implicit val dayDecoder: Decoder[Days] =
+  implicit val dayDecoder: Decoder[Day] =
     Decoder.decodeString.emap {
       case "Monday" => Right(Monday)
       case "Tuesday" => Right(Tuesday)

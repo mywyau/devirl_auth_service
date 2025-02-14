@@ -4,24 +4,11 @@ import cats.effect.IO
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
-import models.business.specifications.BusinessAvailability
-import models.business.specifications.requests.UpdateBusinessSpecificationsRequest
+import models.ModelsBaseSpec
+import testData.BusinessTestConstants.testUpdateBusinessSpecificationsRequest
 import weaver.SimpleIOSuite
 
-import java.time.LocalTime
-
-object UpdateBusinessSpecificationsRequestSpec extends SimpleIOSuite {
-
-  val testUpdateBusinessSpecificationsRequest: UpdateBusinessSpecificationsRequest =
-    UpdateBusinessSpecificationsRequest(
-      businessName = "MikeyCorp",
-      description = "Some description",
-      availability = BusinessAvailability(
-        days = List("Monday", "Tuesday"),
-        startTime = LocalTime.of(10, 0, 0),
-        endTime = LocalTime.of(10, 30, 0)
-      )
-    )
+object UpdateBusinessSpecificationsRequestSpec extends SimpleIOSuite with ModelsBaseSpec {
 
   test("UpdateBusinessSpecificationsRequest model encodes correctly to JSON") {
 
@@ -30,21 +17,40 @@ object UpdateBusinessSpecificationsRequestSpec extends SimpleIOSuite {
     val expectedJson =
       """
         |{
-        |  "businessName": "MikeyCorp",
-        |  "description": "Some description",
-        |  "availability": {
-        |    "days": ["Monday", "Tuesday"],
-        |    "startTime": "10:00:00",
-        |    "endTime": "10:30:00"
-        |  }
+        |  "businessName": "businessName1",
+        |  "description": "some business description",
+        |  "openingHours": [
+        |    {
+        |      "day" : "Monday",
+        |      "openingTime" : "09:00:00",
+        |      "closingTime" : "17:00:00"
+        |    },
+        |    {
+        |      "day" : "Tuesday",
+        |      "openingTime" : "09:00:00",
+        |      "closingTime" : "17:00:00"
+        |    }
+        |  ]
         |}
         |""".stripMargin
 
     val expectedResult: Json = parse(expectedJson).getOrElse(Json.Null)
 
+    val jsonResultPretty = printer.print(jsonResult)
+    val expectedResultPretty = printer.print(expectedResult)
+
+    val differences = jsonDiff(jsonResult, expectedResult, expectedResultPretty, jsonResultPretty)
+
     for {
-      _ <- IO("")
-    } yield expect(jsonResult == expectedResult)
+      _ <- IO {
+        if (differences.nonEmpty) {
+          println("=== JSON Difference Detected! ===")
+          differences.foreach(diff => println(s"- $diff"))
+          println("Generated JSON:\n" + jsonResultPretty)
+          println("Expected JSON:\n" + expectedResultPretty)
+        }
+      }
+    } yield expect(differences.isEmpty)
   }
 
 }

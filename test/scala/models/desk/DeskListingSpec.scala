@@ -7,48 +7,16 @@ import io.circe.syntax.EncoderOps
 import java.time.LocalTime
 import models.desk.deskListing.DeskListing
 import models.desk.deskPricing.DeskPricingPartial
-import models.desk.deskSpecifications.Availability
+import models.desk.deskPricing.RetrievedDeskPricing
 import models.desk.deskSpecifications.DeskSpecificationsPartial
 import models.desk.deskSpecifications.PrivateDesk
+import models.ModelsBaseSpec
+import models.Monday
+import models.OpeningHours
+import testData.DeskTestConstants.*
 import weaver.SimpleIOSuite
-import models.desk.deskPricing.RetrievedDeskPricing
 
-object DeskListingSpec extends SimpleIOSuite {
-
-  val availability: Availability =
-    Availability(
-      days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-      startTime = LocalTime.of(10, 0, 0),
-      endTime = LocalTime.of(10, 30, 0)
-    )
-
-  val sampleDeskSpecificationsPartial: DeskSpecificationsPartial =
-    DeskSpecificationsPartial(
-      deskId = "desk001",
-      deskName = "Private Office Desk",
-      description = Some("A comfortable desk in a private office space with all amenities included."),
-      deskType = Some(PrivateDesk),
-      quantity = Some(5),
-      features = Some(List("Wi-Fi", "Power Outlets", "Monitor", "Ergonomic Chair")),
-      availability = Some(availability),
-      rules = Some("Please keep the desk clean and quiet."),
-    )
-
-  val sampleDeskPricingPartial: RetrievedDeskPricing =
-    RetrievedDeskPricing(
-      pricePerHour = Some(30.00),
-      pricePerDay = Some(180.00),
-      pricePerWeek = Some(450.00),
-      pricePerMonth = Some(1000.00),
-      pricePerYear = Some(9000.00)
-    )
-
-  val sampleDeskListing: DeskListing =
-    DeskListing(
-      deskId = "desk001",
-      sampleDeskSpecificationsPartial,
-      sampleDeskPricingPartial
-    )
+object DeskListingSpec extends SimpleIOSuite with ModelsBaseSpec {
 
   test("DeskListing model encodes correctly to JSON") {
 
@@ -56,47 +24,60 @@ object DeskListingSpec extends SimpleIOSuite {
 
     val expectedJson =
       """
-        |{
-        |  "deskId" : "desk001",
-        |  "specifications" : {
-        |    "deskId" : "desk001",
-        |    "deskName" : "Private Office Desk",
-        |    "description" : "A comfortable desk in a private office space with all amenities included.",
-        |    "deskType" : "PrivateDesk",
-        |    "quantity" : 5,
-        |    "features" : [
-        |      "Wi-Fi",
-        |      "Power Outlets",
-        |      "Monitor",
-        |      "Ergonomic Chair"
-        |    ],
-        |    "availability" : {
-        |      "days" : [
-        |        "Monday",
-        |        "Tuesday",
-        |        "Wednesday",
-        |        "Thursday",
-        |        "Friday"
-        |      ],
-        |      "startTime" : "10:00:00",
-        |      "endTime" : "10:30:00"
-        |    },
-        |    "rules" : "Please keep the desk clean and quiet."
-        |  },
-        |  "pricing" : {
-        |    "pricePerHour" : 30.0,
-        |    "pricePerDay" : 180.0,
-        |    "pricePerWeek" : 450.0,
-        |    "pricePerMonth" : 1000.0,
-        |    "pricePerYear" : 9000.0
-        |  }
-        |}
+      |{
+      |  "deskId" : "deskId1",
+      |  "pricing" : {
+      |    "pricePerDay" : 180.0,
+      |    "pricePerHour" : 30.0,
+      |    "pricePerMonth" : 1000.0,
+      |    "pricePerWeek" : 450.0,
+      |    "pricePerYear" : 9000.0
+      |  },
+      |  "specifications" : {
+      |    "description" : "Some description",
+      |    "deskId" : "deskId1",
+      |    "deskName" : "Luxury supreme desk",
+      |    "deskType" : "PrivateDesk",
+      |    "features" : [
+      |      "Wi-Fi",
+      |      "Power Outlets",
+      |      "Monitor",
+      |      "Ergonomic Chair"
+      |    ],
+      |    "openingHours" : [
+      |      {
+      |        "closingTime" : "17:00:00",
+      |        "day" : "Monday",
+      |        "openingTime" : "09:00:00"
+      |      },
+      |      {
+      |        "closingTime" : "17:00:00",
+      |        "day" : "Tuesday",
+      |        "openingTime" : "09:00:00"
+      |      }
+      |    ],
+      |    "quantity" : 5,
+      |    "rules" : "Please keep the desk clean and quiet."
+      |  }
+      |}
       """.stripMargin
 
     val expectedResult: Json = parse(expectedJson).getOrElse(Json.Null)
 
+    val jsonResultPretty = printer.print(jsonResult)
+    val expectedResultPretty = printer.print(expectedResult)
+
+    val differences = jsonDiff(jsonResult, expectedResult, expectedResultPretty, jsonResultPretty)
+
     for {
-      _ <- IO("")
-    } yield expect(jsonResult == expectedResult)
+      _ <- IO {
+        if (differences.nonEmpty) {
+          println("=== JSON Difference Detected! ===")
+          differences.foreach(diff => println(s"- $diff"))
+          println("Generated JSON:\n" + jsonResultPretty)
+          println("Expected JSON:\n" + expectedResultPretty)
+        }
+      }
+    } yield expect(differences.isEmpty)
   }
 }

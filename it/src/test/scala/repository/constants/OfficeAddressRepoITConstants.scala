@@ -28,11 +28,11 @@ object OfficeAddressRepoITConstants {
       officeId = officeId,
       buildingName = Some("Empire State Building"),
       floorNumber = Some("5th Floor"),
-      street = Some("123 Main Street"),
+      street = Some("Main street 123"),
       city = Some("New York"),
       country = Some("USA"),
       county = Some("Manhattan"),
-      postcode = Some("10001"),
+      postcode = Some("123456"),
       latitude = Some(40.748817),
       longitude = Some(-73.985428)
     )
@@ -43,11 +43,11 @@ object OfficeAddressRepoITConstants {
       officeId = officeId,
       buildingName = Some("Empire State Building"),
       floorNumber = Some("5th Floor"),
-      street = Some("123 Main Street"),
+      street = Some("Main street 123"),
       city = Some("New York"),
       country = Some("USA"),
       county = Some("Manhattan"),
-      postcode = Some("10001"),
+      postcode = Some("123456"),
       latitude = Some(40.748817),
       longitude = Some(-73.985428)
     )

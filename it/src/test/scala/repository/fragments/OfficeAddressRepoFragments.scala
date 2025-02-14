@@ -48,11 +48,11 @@ object OfficeAddressRepoFragments {
           created_at,
           updated_at
         ) VALUES
-          ('business_id_1', 'office_id_1', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
-          ('business_id_2', 'office_id_2', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
-          ('business_id_3', 'office_id_3', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
-          ('business_id_4', 'office_id_4', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
-          ('business_id_5', 'office_id_5', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00');
+          ('businessId1', 'officeId1', 'Empire State Building', '5th Floor', 'Main street 123', 'New York', 'USA', 'Manhattan', '123456', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('businessId2', 'officeId2', 'Empire State Building', '5th Floor', 'Main street 123', 'New York', 'USA', 'Manhattan', '123456', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('businessId3', 'officeId3', 'Empire State Building', '5th Floor', 'Main street 123', 'New York', 'USA', 'Manhattan', '123456', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('businessId4', 'officeId4', 'Empire State Building', '5th Floor', 'Main street 123', 'New York', 'USA', 'Manhattan', '123456', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('businessId5', 'officeId5', 'Empire State Building', '5th Floor', 'Main street 123', 'New York', 'USA', 'Manhattan', '123456', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00');
     """
   }
 
@@ -73,11 +73,11 @@ object OfficeAddressRepoFragments {
           created_at,
           updated_at
         ) VALUES
-          ('business_id_1', 'office_id_1', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
-          ('business_id_1', 'office_id_2', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
-          ('business_id_1', 'office_id_3', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
-          ('business_id_1', 'office_id_4', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
-          ('business_id_5', 'office_id_5', 'Empire State Building', '5th Floor', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00');
+          ('businessId1', 'officeId1', 'Empire State Building', '5th Floor', 'Main street 123', 'New York', 'USA', 'Manhattan', '123456', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('businessId1', 'officeId2', 'Empire State Building', '5th Floor', 'Main street 123', 'New York', 'USA', 'Manhattan', '123456', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('businessId1', 'officeId3', 'Empire State Building', '5th Floor', 'Main street 123', 'New York', 'USA', 'Manhattan', '123456', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('businessId1', 'officeId4', 'Empire State Building', '5th Floor', 'Main street 123', 'New York', 'USA', 'Manhattan', '123456', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('businessId5', 'officeId5', 'Empire State Building', '5th Floor', 'Main street 123', 'New York', 'USA', 'Manhattan', '123456', 40.748817, -73.985428, '2025-01-01 00:00:00', '2025-01-01 00:00:00');
     """
   }
 
@@ -89,7 +89,7 @@ object OfficeAddressRepoFragments {
           created_at,
           updated_at
         ) VALUES
-          ('business_id_6', 'office_id_6', '2025-01-01 12:00:00', '2025-01-01 12:00:00');
+          ('businessId6', 'officeId6', '2025-01-01 12:00:00', '2025-01-01 12:00:00');
     """
   }
 }

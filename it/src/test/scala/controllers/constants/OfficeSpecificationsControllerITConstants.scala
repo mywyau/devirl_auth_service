@@ -5,9 +5,10 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import models.office.adts.*
 import models.office.specifications.requests.CreateOfficeSpecificationsRequest
-import models.office.specifications.OfficeAvailability
 import models.office.specifications.OfficeSpecifications
 import models.office.specifications.OfficeSpecificationsPartial
+import testData.OfficeTestConstants.*
+import testData.TestConstants.*
 
 object OfficeSpecificationsControllerITConstants {
 
@@ -22,11 +23,7 @@ object OfficeSpecificationsControllerITConstants {
       totalDesks = 50,
       capacity = 100,
       amenities = List("Wi-Fi", "Coffee Machine", "Meeting Rooms"),
-      availability = OfficeAvailability(
-        days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-        startTime = LocalTime.of(8, 0, 0),
-        endTime = LocalTime.of(18, 0, 0)
-      ),
+      openingHours = officeOpeningHours1,
       rules = Some("No loud conversations. Keep the desks clean.")
     )
 
@@ -41,13 +38,7 @@ object OfficeSpecificationsControllerITConstants {
       totalDesks = Some(50),
       capacity = Some(100),
       amenities = Some(List("Wi-Fi", "Coffee Machine", "Meeting Rooms")),
-      availability = Some(
-        OfficeAvailability(
-          days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-          startTime = LocalTime.of(8, 0, 0),
-          endTime = LocalTime.of(18, 0, 0)
-        )
-      ),
+      openingHours = Some(officeOpeningHours1),
       rules = Some("No loud conversations. Keep the desks clean.")
     )
 
@@ -63,13 +54,7 @@ object OfficeSpecificationsControllerITConstants {
       totalDesks = Some(20),
       capacity = Some(40),
       amenities = Some(List("Wi-Fi", "Tea", "Parking")),
-      availability = Some(
-        OfficeAvailability(
-          days = List("Monday", "Wednesday"),
-          startTime = LocalTime.of(8, 0, 0),
-          endTime = LocalTime.of(18, 0, 0)
-        )
-      ),
+      openingHours = Some(officeOpeningHours1),
       rules = Some("No pets. Maintain silence."),
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)

@@ -54,7 +54,7 @@ class BusinessContactDetailsControllerISpec(global: GlobalRead) extends IOSuite 
     } yield (transactor, client)
 
   test(
-    "GET - /pistachio/business/businesses/contact/details/business_id_1 - " +
+    "GET - /pistachio/business/businesses/contact/details/businessId1 - " +
       "given a business_id, find the business contactDetails data for given id, returning OK and the contact details json"
   ) { (sharedResources, log) =>
 
@@ -62,9 +62,9 @@ class BusinessContactDetailsControllerISpec(global: GlobalRead) extends IOSuite 
     val client = sharedResources._2.client
 
     val request =
-      Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/businesses/contact/details/business_id_1")
+      Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/businesses/contact/details/businessId1")
 
-    val expectedBusinessContactDetails = testBusinessContactDetails("user_id_1", "business_id_1")
+    val expectedBusinessContactDetails = testBusinessContactDetails("userId1", "businessId1")
 
     client.run(request).use { response =>
       response.as[BusinessContactDetailsPartial].map { body =>

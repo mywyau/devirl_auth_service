@@ -1,11 +1,8 @@
 package controllers.constants
 
-import java.time.LocalDateTime
-import java.time.LocalTime
 import models.desk.deskPricing.UpdateDeskPricingRequest
-import models.responses.CreatedResponse
-import org.http4s.circe.jsonEncoder
-import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
+import testData.DeskTestConstants.*
+import testData.TestConstants.*
 
 object DeskPricingControllerConstants {
 

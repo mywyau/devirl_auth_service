@@ -4,17 +4,12 @@ import cats.effect.IO
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
-import models.office.address_details.requests.CreateOfficeAddressRequest
-import models.office.adts.*
-import models.office.contact_details.OfficeContactDetails
-import models.office_listing.requests.OfficeListingRequest
-import models.office.specifications.{OfficeAvailability, OfficeSpecifications}
+
+import models.ModelsBaseSpec
+import testData.OfficeTestConstants.*
 import weaver.SimpleIOSuite
-import models.constants.OfficeListingConstants.*
 
-import java.time.{LocalDateTime, LocalTime}
-
-object OfficeListingRequestSpec extends SimpleIOSuite {
+object OfficeListingRequestSpec extends SimpleIOSuite with ModelsBaseSpec {
 
   test("OfficeListingRequest model encodes correctly to JSON") {
 
@@ -23,40 +18,47 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
     val expectedJson =
       """
         |{
-        |  "officeId": "office_id_1",
+        |  "officeId": "officeId1",
         |  "createOfficeSpecificationsRequest": {
-        |    "businessId": "business_id_1",
-        |    "officeId": "office_id_1",
-        |    "officeName": "Modern Workspace",
-        |    "description": "A vibrant office space in the heart of the city, ideal for teams or individuals.",
+        |    "businessId": "businessId1",
+        |    "officeId": "officeId1",
+        |    "officeName": "Maginificanent Office",
+        |    "description": "some office description",
         |    "officeType": "OpenPlanOffice",
         |    "numberOfFloors": 3,
         |    "totalDesks": 3,
         |    "capacity": 50,
-        |    "availability": {
-        |      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        |      "startTime": "10:00:00",
-        |      "endTime": "10:30:00"
-        |    },
+        |    "openingHours" : [
+        |     {
+        |       "day" : "Monday",
+        |       "openingTime" : "09:00:00",
+        |       "closingTime" : "17:00:00"
+        |     },
+        |     {
+        |       "day" : "Tuesday",
+        |       "openingTime" : "09:00:00",
+        |       "closingTime" : "17:00:00"
+        |     }
+        |    ],
         |    "amenities": ["Wi-Fi", "Coffee Machine", "Projector", "Whiteboard", "Parking"],
-        |    "rules": "No smoking. Maintain cleanliness."
+        |    "rules": "Please keep the office clean and tidy."
         |  },
         |  "createOfficeAddressRequest": {
-        |    "businessId": "business_id_1",
-        |    "officeId": "office_id_1",
-        |    "buildingName": "build_123",
+        |    "businessId": "businessId1",
+        |    "officeId": "officeId1",
+        |    "buildingName": "butter building",
         |    "floorNumber": "floor 1",
-        |    "street": "123 Main Street",
+        |    "street": "Main street 123",
         |    "city": "New York",
         |    "country": "USA",
-        |    "county": "New York County",
-        |    "postcode": "10001",
+        |    "county": "County 123",
+        |    "postcode": "123456",
         |    "latitude": 100.1,
         |    "longitude": -100.1
         |  },
         |  "createOfficeContactDetailsRequest": {
-        |    "businessId": "business_id_1",
-        |    "officeId": "office_id_1",
+        |    "businessId": "businessId1",
+        |    "officeId": "officeId1",
         |    "primaryContactFirstName": "Michael",
         |    "primaryContactLastName": "Yau",
         |    "contactEmail": "mike@gmail.com",
@@ -69,13 +71,21 @@ object OfficeListingRequestSpec extends SimpleIOSuite {
 
     val expectedResult: Json = parse(expectedJson).getOrElse(Json.Null)
 
+    val jsonResultPretty = printer.print(jsonResult)
+    val expectedResultPretty = printer.print(expectedResult)
+
+    val differences = jsonDiff(jsonResult, expectedResult, expectedResultPretty, jsonResultPretty)
+
     for {
-      _ <- IO("")
-      //      _ <- IO(println(jsonResult))
-    } yield {
-      expect(jsonResult == expectedResult)
-    }
+      _ <- IO {
+        if (differences.nonEmpty) {
+          println("=== JSON Difference Detected! ===")
+          differences.foreach(diff => println(s"- $diff"))
+          println("Generated JSON:\n" + jsonResultPretty)
+          println("Expected JSON:\n" + expectedResultPretty)
+        }
+      }
+    } yield expect(differences.isEmpty)
   }
 
 }
-

@@ -4,28 +4,13 @@ import cats.effect.IO
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
+import java.time.LocalDateTime
 import models.business.address.requests.CreateBusinessAddressRequest
+import models.ModelsBaseSpec
+import testData.BusinessTestConstants.testCreateBusinessAddressRequest
 import weaver.SimpleIOSuite
 
-import java.time.LocalDateTime
-
-object CreateBusinessAddressRequestSpec extends SimpleIOSuite {
-
-  val testCreateBusinessAddressRequest: CreateBusinessAddressRequest =
-    CreateBusinessAddressRequest(
-      userId = "user_id_1",
-      businessId = "business_id_1",
-      businessName = Some("MikeyCorp"),
-      buildingName = Some("Nameless Building"),
-      floorNumber = Some("floor 1"),
-      street = Some("123 Main Street"),
-      city = Some("New York"),
-      country = Some("USA"),
-      county = Some("New York County"),
-      postcode = Some("CF3 3NJ"),
-      latitude = Some(100.1),
-      longitude = Some(-100.1)
-    )
+object CreateBusinessAddressRequestSpec extends SimpleIOSuite with ModelsBaseSpec {
 
   test("CreateBusinessAddressRequest model encodes correctly to JSON") {
 
@@ -34,16 +19,16 @@ object CreateBusinessAddressRequestSpec extends SimpleIOSuite {
     val expectedJson =
       """
         |{
-        |  "userId": "user_id_1",
-        |  "businessId": "business_id_1",
-        |  "businessName": "MikeyCorp",
-        |  "buildingName": "Nameless Building",
+        |  "userId": "userId1",
+        |  "businessId": "businessId1",
+        |  "businessName": "businessName1",
+        |  "buildingName": "butter building",
         |  "floorNumber": "floor 1",
-        |  "street": "123 Main Street",
+        |  "street": "Main street 123",
         |  "city": "New York",
         |  "country": "USA",
-        |  "county": "New York County",
-        |  "postcode": "CF3 3NJ",
+        |  "county": "County 123",
+        |  "postcode": "123456",
         |  "latitude": 100.1,
         |  "longitude": -100.1
         |}
@@ -51,12 +36,21 @@ object CreateBusinessAddressRequestSpec extends SimpleIOSuite {
 
     val expectedResult: Json = parse(expectedJson).getOrElse(Json.Null)
 
+    val jsonResultPretty = printer.print(jsonResult)
+    val expectedResultPretty = printer.print(expectedResult)
+
+    val differences = jsonDiff(jsonResult, expectedResult, expectedResultPretty, jsonResultPretty)
+
     for {
-      _ <- IO("")
-    } yield {
-      expect(jsonResult == expectedResult)
-    }
+      _ <- IO {
+        if (differences.nonEmpty) {
+          println("=== JSON Difference Detected! ===")
+          differences.foreach(diff => println(s"- $diff"))
+          println("Generated JSON:\n" + jsonResultPretty)
+          println("Expected JSON:\n" + expectedResultPretty)
+        }
+      }
+    } yield expect(differences.isEmpty)
   }
 
 }
-

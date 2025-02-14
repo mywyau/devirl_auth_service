@@ -6,26 +6,27 @@ import cats.effect.Resource
 import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
+import java.time.LocalDateTime
+import java.time.LocalTime
 import models.database.CreateSuccess
 import models.database.DeleteSuccess
-import models.desk.deskListing.DeskListing
 import models.desk.deskListing.requests.InitiateDeskListingRequest
+import models.desk.deskListing.DeskListing
 import models.desk.deskPricing.DeskPricingPartial
-import models.desk.deskSpecifications.Availability
+import models.desk.deskPricing.RetrievedDeskPricing
+import models.desk.deskSpecifications.requests.UpdateDeskSpecificationsRequest
 import models.desk.deskSpecifications.DeskSpecificationsPartial
 import models.desk.deskSpecifications.PrivateDesk
-import models.desk.deskSpecifications.requests.UpdateDeskSpecificationsRequest
 import repositories.desk.DeskListingRepositoryImpl
 import repository.fragments.desk.DeskPricingRepoFragments.*
 import repository.fragments.desk.DeskSpecificationsRepoFragments.*
 import shared.TransactorResource
+import testData.DeskTestConstants.*
+import testData.TestConstants.*
+import utils.Diffable
 import weaver.GlobalRead
 import weaver.IOSuite
 import weaver.ResourceTag
-
-import java.time.LocalDateTime
-import java.time.LocalTime
-import models.desk.deskPricing.RetrievedDeskPricing
 
 class DeskListingRepositoryISpec(global: GlobalRead) extends IOSuite with RepositoryISpecBase {
 
@@ -39,13 +40,6 @@ class DeskListingRepositoryISpec(global: GlobalRead) extends IOSuite with Reposi
         createDeskPricingsTable.update.run.transact(transactor.xa).void *>
         resetDeskPricingsTable.update.run.transact(transactor.xa).void *>
         insertDeskPricings.update.run.transact(transactor.xa).void
-    )
-
-  val availability =
-    Availability(
-      days = List("Monday", "Tuesday", "Wednesday"),
-      startTime = LocalTime.of(9, 0, 0),
-      endTime = LocalTime.of(17, 0, 0)
     )
 
   def sharedResource: Resource[IO, DeskListingRepositoryImpl[IO]] = {
@@ -62,32 +56,27 @@ class DeskListingRepositoryISpec(global: GlobalRead) extends IOSuite with Reposi
 
     val expectedSpecifications =
       DeskSpecificationsPartial(
-        deskId = "desk001",
-        deskName = "Mikey Desk 1",
-        description = Some("A quiet, private desk perfect for focused work with a comfortable chair and good lighting."),
+        deskId = deskId1,
+        deskName = deskName1,
+        description = Some(description1),
         deskType = Some(PrivateDesk),
         quantity = Some(5),
         features = Some(List("Wi-Fi", "Power Outlets", "Ergonomic Chair", "Desk Lamp")),
-        availability = Some(Availability(
-          days = List("Monday", "Tuesday", "Wednesday"),
-          startTime = LocalTime.of(9, 0, 0),
-          endTime = LocalTime.of(17, 0, 0)
-        )),
-        rules = Some("No loud conversations, please keep the workspace clean.")
+        openingHours = Some(deskOpeningHours),
+        rules = Some(rules)
       )
-
-    val expectedPricing =
-      RetrievedDeskPricing(Some(15.00), Some(100.00), Some(600.00), Some(2000.00), Some(24000.00))
 
     val expectedResult =
       DeskListing(
-        deskId = "desk001",
+        deskId = deskId1,
         expectedSpecifications,
-        expectedPricing
+        sampleRetrievedDeskPricing
       )
 
+
     for {
-      deskListingOpt <- businessDeskRepo.findByDeskId("desk001")
+      deskListingOpt <- businessDeskRepo.findByDeskId(deskId1)
+      _ = deskListingOpt.foreach(deskListing => Diffable.logDifferences(expectedResult, deskListing))
     } yield expect(deskListingOpt == Some(expectedResult))
   }
 
@@ -95,11 +84,11 @@ class DeskListingRepositoryISpec(global: GlobalRead) extends IOSuite with Reposi
 
     val initiateRequest =
       InitiateDeskListingRequest(
-        businessId = "business006",
-        officeId = "office006",
-        deskId = "desk006",
-        deskName = "Mikey Desk 1",
-        description = "A quiet, private desk perfect for focused work with a comfortable chair and good lighting."
+        businessId = businessId6,
+        officeId = officeId6,
+        deskId = deskId6,
+        deskName = deskName1,
+        description = description1
       )
 
     for {
@@ -109,7 +98,7 @@ class DeskListingRepositoryISpec(global: GlobalRead) extends IOSuite with Reposi
 
   test(".delete() - should return DeleteSuccess for successfuly deleting the desk based on the deskId") { businessDeskRepo =>
     for {
-      deskListingOpt <- businessDeskRepo.delete("desk002")
+      deskListingOpt <- businessDeskRepo.delete(deskId2)
     } yield expect(deskListingOpt == Valid(DeleteSuccess))
   }
 }

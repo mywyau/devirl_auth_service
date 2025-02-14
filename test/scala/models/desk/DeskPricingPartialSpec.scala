@@ -5,18 +5,11 @@ import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
 import models.desk.deskPricing.DeskPricingPartial
+import models.ModelsBaseSpec
+import testData.DeskTestConstants.sampleDeskPricingPartial
 import weaver.SimpleIOSuite
 
-object DeskPricingPartialSpec extends SimpleIOSuite {
-
-  val sampleDeskPricingPartial: DeskPricingPartial =
-    DeskPricingPartial(
-      pricePerHour = 30.00,
-      pricePerDay = Some(180.00),
-      pricePerWeek = Some(450.00),
-      pricePerMonth = Some(1000.00),
-      pricePerYear = Some(9000.00)
-    )
+object DeskPricingPartialSpec extends SimpleIOSuite with ModelsBaseSpec {
 
   test("DeskPricingPartial model encodes correctly to JSON") {
 
@@ -35,8 +28,20 @@ object DeskPricingPartialSpec extends SimpleIOSuite {
 
     val expectedResult: Json = parse(expectedJson).getOrElse(Json.Null)
 
+    val jsonResultPretty = printer.print(jsonResult)
+    val expectedResultPretty = printer.print(expectedResult)
+
+    val differences = jsonDiff(jsonResult, expectedResult, expectedResultPretty, jsonResultPretty)
+
     for {
-      _ <- IO("")
-    } yield expect(jsonResult == expectedResult)
+      _ <- IO {
+        if (differences.nonEmpty) {
+          println("=== JSON Difference Detected! ===")
+          differences.foreach(diff => println(s"- $diff"))
+          println("Generated JSON:\n" + jsonResultPretty)
+          println("Expected JSON:\n" + expectedResultPretty)
+        }
+      }
+    } yield expect(differences.isEmpty)
   }
 }

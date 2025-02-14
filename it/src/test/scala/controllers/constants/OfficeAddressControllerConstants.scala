@@ -1,50 +1,48 @@
 package controllers.constants
 
 import cats.effect.*
-import models.office.address_details.OfficeAddress
-import models.office.address_details.requests.CreateOfficeAddressRequest
-
 import java.time.LocalDateTime
+import models.office.address_details.requests.CreateOfficeAddressRequest
+import models.office.address_details.OfficeAddress
+import testData.OfficeTestConstants.*
+import testData.TestConstants.*
 
 object OfficeAddressControllerConstants {
 
-  def testCreateOfficeAddressRequest(businessId: String, officeId: String): CreateOfficeAddressRequest = {
+  def testCreateOfficeAddressRequest(businessId: String, officeId: String): CreateOfficeAddressRequest =
     CreateOfficeAddressRequest(
       businessId = businessId,
       officeId = officeId,
       buildingName = Some("Empire State Building"),
       floorNumber = Some("5th Floor"),
-      street = Some("123 Main Street"),
+      street = Some("Main street 123"),
       city = Some("New York"),
       country = Some("USA"),
       county = Some("Manhattan"),
-      postcode = Some("10001"),
+      postcode = Some("123456"),
       latitude = Some(40.748817),
       longitude = Some(-73.985428)
     )
-  }
 
-
-  def testOfficeAddress1(id: Option[Int], businessId: String, officeId: String): OfficeAddress = {
+  def testOfficeAddress1(id: Option[Int], businessId: String, officeId: String): OfficeAddress =
     OfficeAddress(
       id = id,
       businessId = businessId,
       officeId = officeId,
       buildingName = Some("Empire State Building"),
       floorNumber = Some("5th Floor"),
-      street = Some("123 Main Street"),
+      street = Some("Main street 123"),
       city = Some("New York"),
       country = Some("USA"),
       county = Some("Manhattan"),
-      postcode = Some("10001"),
+      postcode = Some("123456"),
       latitude = Some(40.748817),
       longitude = Some(-73.985428),
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
-  }
 
-  def testOfficeAddress2(id: Option[Int], businessId: String, officeId: String): OfficeAddress = {
+  def testOfficeAddress2(id: Option[Int], businessId: String, officeId: String): OfficeAddress =
     OfficeAddress(
       id = id,
       businessId = businessId,
@@ -61,9 +59,8 @@ object OfficeAddressControllerConstants {
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
-  }
 
-  def testOfficeAddress3(id: Option[Int], businessId: String, officeId: String): OfficeAddress = {
+  def testOfficeAddress3(id: Option[Int], businessId: String, officeId: String): OfficeAddress =
     OfficeAddress(
       id = id,
       businessId = businessId,
@@ -80,5 +77,4 @@ object OfficeAddressControllerConstants {
       createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
       updatedAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0)
     )
-  }
 }

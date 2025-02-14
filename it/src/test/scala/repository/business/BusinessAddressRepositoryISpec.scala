@@ -9,14 +9,13 @@ import doobie.implicits.*
 import java.time.LocalDateTime
 import models.business.address.requests.CreateBusinessAddressRequest
 import models.business.address.BusinessAddressPartial
-import models.desk.deskSpecifications.PrivateDesk
-import models.business.specifications.BusinessAvailability
 import models.database.DeleteSuccess
+import models.desk.deskSpecifications.PrivateDesk
 import repositories.business.BusinessAddressRepositoryImpl
-import repository.fragments.business.BusinessAddressRepoFragments.createBusinessAddressTable
-import repository.fragments.business.BusinessAddressRepoFragments.insertBusinessAddressData
-import repository.fragments.business.BusinessAddressRepoFragments.resetBusinessAddressTable
+import repository.fragments.business.BusinessAddressRepoFragments.*
 import shared.TransactorResource
+import testData.BusinessTestConstants.*
+import testData.TestConstants.*
 import weaver.GlobalRead
 import weaver.IOSuite
 import weaver.ResourceTag
@@ -37,13 +36,13 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
       userId = userId,
       businessId = businessId,
       businessName = Some("mikey_corp"),
-      buildingName = Some("build_123"),
+      buildingName = Some("butter building"),
       floorNumber = Some("floor 1"),
-      street = Some("123 Main Street"),
+      street = Some("Main street 123"),
       city = Some("New York"),
       country = Some("USA"),
       county = Some("fake county"),
-      postcode = Some("10001"),
+      postcode = Some("123456"),
       latitude = Some(100.1),
       longitude = Some(-100.1)
     )
@@ -95,7 +94,7 @@ class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
         city = Some("New York"),
         country = Some("USA"),
         county = Some("New York"),
-        postcode = Some("10001"),
+        postcode = Some("123456"),
         latitude = Some(40.712776),
         longitude = Some(-74.005974)
       )

@@ -44,7 +44,7 @@ class BusinessAddressControllerISpec(global: GlobalRead) extends IOSuite with Co
     } yield (transactor, client)
 
   test(
-    "GET - /pistachio/business/businesses/address/details/business_id_1 - " +
+    "GET - /pistachio/business/businesses/address/details/businessId1 - " +
       "given a business_id, find the business address data for given id, returning OK and the address json"
   ) { (transactorResource, log) =>
 
@@ -52,9 +52,9 @@ class BusinessAddressControllerISpec(global: GlobalRead) extends IOSuite with Co
     val client = transactorResource._2.client
 
     val request =
-      Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/businesses/address/details/business_id_1")
+      Request[IO](GET, uri"http://127.0.0.1:9999/pistachio/business/businesses/address/details/businessId1")
 
-    val expectedBusinessAddress = testBusinessAddress("user_id_1", "business_id_1")
+    val expectedBusinessAddress = testBusinessAddress("userId1", "businessId1")
 
     client.run(request).use { response =>
       response.as[BusinessAddressPartial].map { body =>

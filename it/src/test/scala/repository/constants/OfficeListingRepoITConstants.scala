@@ -7,7 +7,7 @@ import models.office.address_details.OfficeAddressPartial
 import models.office.adts.*
 import models.office.contact_details.OfficeContactDetailsPartial
 import models.office_listing.OfficeListing
-import models.office.specifications.OfficeAvailability
+
 import models.office.specifications.OfficeSpecificationsPartial
 
 object OfficeListingRepoITConstants {
@@ -48,16 +48,16 @@ object OfficeListingRepoITConstants {
       totalDesks = None,
       capacity = None,
       amenities = None,
-      availability = None,
+      openingHours = None,
       rules = None
     )
 
-  def testOfficeListing(id: Option[Int], businessId: String, officeId: String): OfficeListing =
+  def testOfficeListing(businessId: String, officeId: String): OfficeListing =
     OfficeListing(
       officeId = officeId,
       addressDetails = testOfficeAddressPartial(businessId, officeId),
-      specifications = testOfficeSpecificationsPartial(businessId, officeId),
-      contactDetails = testContactDetailPartial(businessId, officeId)
+      contactDetails = testContactDetailPartial(businessId, officeId),
+      specifications = testOfficeSpecificationsPartial(businessId, officeId)
     )
 
 }

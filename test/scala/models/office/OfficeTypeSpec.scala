@@ -7,9 +7,10 @@ import io.circe.syntax.*
 import weaver.SimpleIOSuite
 import models.office.adts.*
 import models.office.adts.OfficeType._
+import models.ModelsBaseSpec
 
 
-object OfficeTypeSpec extends SimpleIOSuite {
+object OfficeTypeSpec extends SimpleIOSuite with ModelsBaseSpec {
 
   test("OfficeType.fromString should return the correct OfficeType for valid strings") {
     for {

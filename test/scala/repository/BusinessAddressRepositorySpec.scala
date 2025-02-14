@@ -14,7 +14,7 @@ import weaver.SimpleIOSuite
 
 object BusinessAddressRepositorySpec extends SimpleIOSuite with RepositorySpecBase {
 
-  test(".findByBusinessId() - should return an address if business_id_1 exists") {
+  test(".findByBusinessId() - should return an address if businessId1 exists") {
 
     val existingAddressForUser = testAddress(userId1, businessId1)
 
@@ -24,7 +24,7 @@ object BusinessAddressRepositorySpec extends SimpleIOSuite with RepositorySpecBa
     } yield expect(result.contains(existingAddressForUser))
   }
 
-  test(".findByBusinessId() - should return None if business_id_1 does not exist") {
+  test(".findByBusinessId() - should return None if businessId1 does not exist") {
     for {
       mockRepo <- createMockRepo(List())
       result <- mockRepo.findByBusinessId(businessId1)

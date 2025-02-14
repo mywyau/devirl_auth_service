@@ -12,7 +12,7 @@ import models.office.adts.*
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.OfficeContactDetailsPartial
 import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
-import models.office.specifications.OfficeAvailability
+
 import models.office.specifications.OfficeSpecifications
 import models.office.specifications.OfficeSpecificationsPartial
 import models.office.specifications.requests.CreateOfficeSpecificationsRequest

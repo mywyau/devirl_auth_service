@@ -6,17 +6,18 @@ import cats.data.ValidatedNel
 import cats.effect.IO
 import java.time.LocalDateTime
 import java.time.LocalTime
+import models.*
 import models.business.address.BusinessAddressPartial
+import models.business.contact_details.BusinessContactDetailsPartial
+import models.business.specifications.BusinessSpecificationsPartial
 import models.business_listing.requests.InitiateBusinessListingRequest
 import models.business_listing.BusinessListing
-import models.business.contact_details.BusinessContactDetailsPartial
-import models.business.specifications.BusinessAvailability
-import models.business.specifications.BusinessSpecificationsPartial
+import models.database.CreateSuccess
 import models.database.DatabaseError
 import models.database.DatabaseErrors
-import repositories.business.BusinessListingRepositoryAlgebra
 import models.database.DatabaseSuccess
-import models.database.CreateSuccess
+import models.OpeningHours
+import repositories.business.BusinessListingRepositoryAlgebra
 
 object BusinessListingMocks {
 
@@ -46,11 +47,18 @@ object BusinessListingMocks {
       websiteUrl = Some("https://testbusiness.com")
     )
 
-  val mockBusinessAvailability: BusinessAvailability =
-    BusinessAvailability(
-      days = List("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-      startTime = LocalTime.of(9, 0, 0),
-      endTime = LocalTime.of(17, 0, 0)
+  val mockBusinessAvailability =
+    List(
+      OpeningHours(
+        day = Monday,
+        openingTime = LocalTime.of(10, 0, 0),
+        closingTime = LocalTime.of(10, 30, 0)
+      ),
+      OpeningHours(
+        day = Tuesday,
+        openingTime = LocalTime.of(10, 0, 0),
+        closingTime = LocalTime.of(10, 30, 0)
+      )
     )
 
   val mockBusinessSpecificationsPartial: BusinessSpecificationsPartial =
@@ -59,7 +67,7 @@ object BusinessListingMocks {
       businessId = "business-001",
       businessName = Some("Test Business"),
       description = Some("A test business providing exemplary services."),
-      availability = Some(mockBusinessAvailability)
+      openingHours = Some(mockBusinessAvailability)
     )
 
   val mockBusinessListings: List[BusinessListing] = List(

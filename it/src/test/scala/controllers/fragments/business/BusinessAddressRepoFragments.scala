@@ -48,10 +48,10 @@ object BusinessAddressRepoFragments {
             created_at,
             updated_at
         ) VALUES
-        ('user_id_1','business_id_1', 'building_name_1', 'floor_1', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
-        ('user_id_2','business_id_2', 'building_name_2', 'floor_2', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
-        ('user_id_4','business_id_4', 'building_name_4', 'floor_4', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
-        ('user_id_5','business_id_5', 'building_name_5', 'floor_5', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00');
+        ('userId1','businessId1', 'building_name_1', 'floor_1', 'Main street 123', 'New York', 'USA', 'Manhattan', '123456', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+        ('user_id_2','business_id_2', 'building_name_2', 'floor_2', 'Main street 123', 'New York', 'USA', 'Manhattan', '123456', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+        ('user_id_4','business_id_4', 'building_name_4', 'floor_4', 'Main street 123', 'New York', 'USA', 'Manhattan', '123456', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+        ('user_id_5','business_id_5', 'building_name_5', 'floor_5', 'Main street 123', 'New York', 'USA', 'Manhattan', '123456', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00');
       """
   }
 
@@ -72,9 +72,9 @@ object BusinessAddressRepoFragments {
             created_at,
             updated_at
         ) VALUES
-        ('USER123','business_id_1', 'building_name_1', 'floor_1', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
-        ('USER123','business_id_2', 'building_name_2', 'floor_2', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
-        ('USER123','business_id_3', 'building_name_2', 'floor_2', '123 Main Street', 'New York', 'USA', 'Manhattan', '10001', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00');
+        ('USER123','businessId1', 'building_name_1', 'floor_1', 'Main street 123', 'New York', 'USA', 'Manhattan', '123456', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+        ('USER123','business_id_2', 'building_name_2', 'floor_2', 'Main street 123', 'New York', 'USA', 'Manhattan', '123456', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+        ('USER123','business_id_3', 'building_name_2', 'floor_2', 'Main street 123', 'New York', 'USA', 'Manhattan', '123456', 100.1,-100.1, '2025-01-01 00:00:00', '2025-01-01 00:00:00');
       """
   }
 }

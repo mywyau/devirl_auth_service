@@ -5,8 +5,10 @@ import java.time.LocalTime
 import models.business.address.requests.CreateBusinessAddressRequest
 import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
 import models.business.specifications.requests.CreateBusinessSpecificationsRequest
-import models.business.specifications.BusinessAvailability
 import models.business_listing.requests.BusinessListingRequest
+import models.Monday
+import models.OpeningHours
+import models.Tuesday
 import testData.TestConstants.*
 
 object BusinessListingServiceConstants {
@@ -33,10 +35,17 @@ object BusinessListingServiceConstants {
       businessId = businessId1,
       businessName = businessName1,
       description = businessDescription1,
-      availability = BusinessAvailability(
-        days = List("Monday", "Tuesday"),
-        startTime = startTime0900,
-        endTime = endTime1700
+      openingHours = List(
+        OpeningHours(
+          day = Monday,
+          openingTime = openingTime0900,
+          closingTime = closingTime1700
+        ),
+        OpeningHours(
+          day = Tuesday,
+          openingTime = openingTime0900,
+          closingTime = closingTime1700
+        )
       )
     )
 
@@ -44,11 +53,11 @@ object BusinessListingServiceConstants {
     CreateBusinessContactDetailsRequest(
       userId = userId1,
       businessId = businessId1,
-      primaryContactFirstName = "Michael",
-      primaryContactLastName = "Yau",
-      contactEmail = "mike@gmail.com",
-      contactNumber = "07402205071",
-      websiteUrl = "mikey.com"
+      primaryContactFirstName = primaryContactFirstName1,
+      primaryContactLastName = primaryContactLastName1,
+      contactEmail = contactEmail1,
+      contactNumber = contactNumber1,
+      websiteUrl = websiteUrl1
     )
 
   val businessListingRequest: BusinessListingRequest =
