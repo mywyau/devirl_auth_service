@@ -7,7 +7,6 @@ import cats.effect.IO
 import models.database.CreateSuccess
 import models.database.DatabaseErrors
 import models.office.contact_details.OfficeContactDetails
-import models.office.contact_details.errors.OfficeContactDetailsNotFound
 import repositories.office.OfficeContactDetailsRepositoryAlgebra
 import services.ServiceSpecBase
 import services.constants.OfficeContactDetailsServiceConstants.*
@@ -32,7 +31,7 @@ object OfficeContactDetailsServiceSpec extends SimpleIOSuite with ServiceSpecBas
 
     for {
       result <- service.getByOfficeId(officeId1)
-    } yield expect(result == Right(existingContactDetailsForUser))
+    } yield expect(result == Some(existingContactDetailsForUser))
   }
 
   test(
@@ -45,7 +44,7 @@ object OfficeContactDetailsServiceSpec extends SimpleIOSuite with ServiceSpecBas
 
     for {
       result <- service.getByOfficeId(officeId1)
-    } yield expect(result == Left(OfficeContactDetailsNotFound))
+    } yield expect(result == None)
   }
 
   test(".create() - when given a OfficeContactDetails successfully create the ContactDetails") {

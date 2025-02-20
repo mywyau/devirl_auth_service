@@ -4,9 +4,9 @@ import cats.data.Validated.Valid
 import cats.data.ValidatedNel
 import cats.effect.IO
 import java.time.LocalDateTime
-import models.business.address.errors.BusinessAddressNotFound
-import models.business.address.requests.CreateBusinessAddressRequest
-import models.business.address.requests.UpdateBusinessAddressRequest
+
+import models.business.address.CreateBusinessAddressRequest
+import models.business.address.UpdateBusinessAddressRequest
 import models.business.address.BusinessAddressPartial
 import models.database.CreateSuccess
 import models.database.DatabaseErrors
@@ -15,6 +15,7 @@ import repositories.business.BusinessAddressRepositoryAlgebra
 import services.business.BusinessAddressService
 import services.business.BusinessAddressServiceImpl
 import weaver.SimpleIOSuite
+import models.business.address.BusinessAddressPartial
 
 class MockBusinessAddressRepository(
   existingBusinessAddress: Map[String, BusinessAddressPartial] = Map.empty

@@ -1,6 +1,6 @@
 package controllers.constants
 
-import models.desk.deskSpecifications.requests.UpdateDeskSpecificationsRequest
+import models.desk.deskSpecifications.UpdateDeskSpecificationsRequest
 import models.desk.deskSpecifications.PrivateDesk
 import testData.DeskTestConstants.*
 import testData.TestConstants.*

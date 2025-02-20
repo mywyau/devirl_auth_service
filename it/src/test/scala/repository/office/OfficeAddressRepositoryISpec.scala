@@ -8,8 +8,8 @@ import doobie.*
 import doobie.implicits.*
 import models.database.*
 import models.desk.deskSpecifications.PrivateDesk
-import models.office.address_details.requests.CreateOfficeAddressRequest
-import models.office.address_details.requests.UpdateOfficeAddressRequest
+import models.office.address_details.CreateOfficeAddressRequest
+import models.office.address_details.UpdateOfficeAddressRequest
 import models.office.address_details.OfficeAddress
 import models.office_listing.requests.OfficeListingRequest
 import repositories.office.OfficeAddressRepositoryImpl

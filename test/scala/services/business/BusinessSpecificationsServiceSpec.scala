@@ -6,8 +6,7 @@ import cats.data.ValidatedNel
 import cats.effect.IO
 import java.time.LocalDateTime
 import java.time.LocalTime
-import models.business.specifications.errors.BusinessSpecificationsNotFound
-import models.business.specifications.requests.CreateBusinessSpecificationsRequest
+import models.business.specifications.CreateBusinessSpecificationsRequest
 import models.business.specifications.BusinessSpecifications
 import models.business.specifications.BusinessSpecificationsPartial
 import models.database.CreateSuccess
@@ -79,7 +78,7 @@ object BusinessSpecificationsServiceSpec extends SimpleIOSuite {
 
     for {
       result <- service.getByBusinessId("business_1")
-    } yield expect(result == Right(existingSpecificationsForUser))
+    } yield expect(result == Some(existingSpecificationsForUser))
   }
 
   test(".getByBusinessId() - when there are no existing BusinessSpecifications, given a business_id should return Left(SpecificationsNotFound)") {
@@ -89,7 +88,7 @@ object BusinessSpecificationsServiceSpec extends SimpleIOSuite {
 
     for {
       result <- service.getByBusinessId("business_1")
-    } yield expect(result == Left(BusinessSpecificationsNotFound))
+    } yield expect(result == None)
   }
 
   test(".create() - when given a BusinessSpecifications, successfully create the BusinessSpecifications in Database") {

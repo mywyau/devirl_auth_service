@@ -11,7 +11,7 @@ import doobie.util.transactor.Transactor
 import io.circe.Json
 import io.circe.syntax.*
 import models.business_listing.BusinessListingCard
-import models.business_listing.requests.InitiateBusinessListingRequest
+import models.business_listing.InitiateBusinessListingRequest
 import models.responses.CreatedResponse
 import org.http4s.*
 import org.http4s.Method.*

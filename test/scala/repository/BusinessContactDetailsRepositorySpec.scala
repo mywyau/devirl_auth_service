@@ -2,7 +2,7 @@ package repository
 
 import cats.data.Validated.Valid
 import mocks.MockBusinessContactDetailsRepository
-import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
+import models.business.contact_details.CreateBusinessContactDetailsRequest
 import models.business.contact_details.BusinessContactDetails
 import models.database.CreateSuccess
 import repository.constants.BusinessContactDetailsRepoConstants.*

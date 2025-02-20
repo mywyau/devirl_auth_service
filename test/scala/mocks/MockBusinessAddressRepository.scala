@@ -7,11 +7,12 @@ import cats.effect.kernel.Ref
 import cats.effect.IO
 import cats.implicits.*
 import java.time.LocalDateTime
-import models.business.address.requests.CreateBusinessAddressRequest
-import models.business.address.requests.UpdateBusinessAddressRequest
+import models.business.address.CreateBusinessAddressRequest
+import models.business.address.UpdateBusinessAddressRequest
 import models.business.address.BusinessAddressPartial
 import models.database.*
 import repositories.business.BusinessAddressRepositoryAlgebra
+import models.business.address.BusinessAddressPartial
 
 case class MockBusinessAddressRepository(ref: Ref[IO, List[BusinessAddressPartial]]) extends BusinessAddressRepositoryAlgebra[IO] {
 

@@ -7,15 +7,15 @@ import cats.implicits.*
 import mocks.MockOfficeListingRepository
 import models.database.*
 import models.office.address_details.OfficeAddressPartial
-import models.office.address_details.requests.CreateOfficeAddressRequest
-import models.office.adts.*
+import models.office.address_details.CreateOfficeAddressRequest
+
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.OfficeContactDetailsPartial
-import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
+import models.office.contact_details.CreateOfficeContactDetailsRequest
 
 import models.office.specifications.OfficeSpecifications
 import models.office.specifications.OfficeSpecificationsPartial
-import models.office.specifications.requests.CreateOfficeSpecificationsRequest
+import models.office.specifications.CreateOfficeSpecificationsRequest
 import models.office_listing.OfficeListing
 import models.office_listing.OfficeListingCard
 import models.office_listing.requests.InitiateOfficeListingRequest

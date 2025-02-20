@@ -5,7 +5,7 @@ import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
 import java.time.LocalDateTime
-import models.business.address.requests.CreateBusinessAddressRequest
+import models.business.address.CreateBusinessAddressRequest
 import models.ModelsBaseSpec
 import testData.BusinessTestConstants.testCreateBusinessAddressRequest
 import weaver.SimpleIOSuite

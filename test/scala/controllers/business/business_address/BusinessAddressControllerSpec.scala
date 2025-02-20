@@ -4,7 +4,6 @@ import cats.effect.IO
 import controllers.ControllerSpecBase
 import controllers.business.BusinessAddressController
 import controllers.business.business_address.BusinessAddressControllerConstants.*
-import models.business.address.errors.BusinessUserNotFound
 import models.responses.ErrorResponse
 import org.http4s.*
 import org.http4s.Status.BadRequest
@@ -49,7 +48,7 @@ object BusinessAddressControllerSpec extends SimpleIOSuite with ControllerSpecBa
       body <- response.as[ErrorResponse]
     } yield expect.all(
       response.status == BadRequest,
-      body == ErrorResponse(BusinessUserNotFound.code, BusinessUserNotFound.errorMessage)
+      body == ErrorResponse("error", "error codes")
     )
   }
 }

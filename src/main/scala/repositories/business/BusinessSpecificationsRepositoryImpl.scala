@@ -12,11 +12,11 @@ import io.circe.syntax.*
 import io.circe.parser.decode
 import java.sql.Timestamp
 import java.time.LocalDateTime
-import models.business.specifications.requests.CreateBusinessSpecificationsRequest
-import models.business.specifications.requests.UpdateBusinessSpecificationsRequest
+import models.business.specifications.CreateBusinessSpecificationsRequest
+import models.business.specifications.UpdateBusinessSpecificationsRequest
 import models.business.specifications.BusinessSpecificationsPartial
 import models.database.*
-import models.office.specifications.requests.UpdateOfficeSpecificationsRequest
+import models.office.specifications.UpdateOfficeSpecificationsRequest
 import models.OpeningHours
 
 trait BusinessSpecificationsRepositoryAlgebra[F[_]] {

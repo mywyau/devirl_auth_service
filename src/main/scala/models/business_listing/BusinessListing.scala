@@ -7,6 +7,7 @@ import io.circe.Encoder
 import models.business.address.BusinessAddressPartial
 import models.business.contact_details.BusinessContactDetailsPartial
 import models.business.specifications.BusinessSpecificationsPartial
+import models.business.address.BusinessAddressPartial
 
 case class BusinessListing(
   userId: String,

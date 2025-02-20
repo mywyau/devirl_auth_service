@@ -5,7 +5,7 @@ import cats.effect.Concurrent
 import cats.effect.IO
 import cats.implicits.*
 import io.circe.syntax.*
-import models.desk.deskSpecifications.requests.UpdateDeskSpecificationsRequest
+import models.desk.deskSpecifications.UpdateDeskSpecificationsRequest
 import models.responses.CreatedResponse
 import models.responses.DeletedResponse
 import models.responses.ErrorResponse

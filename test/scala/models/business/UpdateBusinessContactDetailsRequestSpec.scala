@@ -4,7 +4,7 @@ import cats.effect.IO
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
-import models.business.contact_details.requests.UpdateBusinessContactDetailsRequest
+import models.business.contact_details.UpdateBusinessContactDetailsRequest
 import models.ModelsBaseSpec
 import testData.BusinessTestConstants.testUpdateBusinessContactDetailsRequest
 import weaver.SimpleIOSuite

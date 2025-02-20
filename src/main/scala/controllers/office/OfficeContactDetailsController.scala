@@ -5,8 +5,8 @@ import cats.data.Validated.Valid
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
-import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
-import models.office.contact_details.requests.UpdateOfficeContactDetailsRequest
+import models.office.contact_details.CreateOfficeContactDetailsRequest
+import models.office.contact_details.UpdateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetails
 import models.responses.CreatedResponse
 import models.responses.DeletedResponse
@@ -36,11 +36,11 @@ class OfficeContactDetailsControllerImpl[F[_] : Concurrent](
     case GET -> Root / "business" / "offices" / "contact" / "details" / officeId =>
       logger.info(s"[OfficeContactDetailsControllerImpl] GET - Office contact details for officeId: $officeId") *>
         officeContactDetailsService.getByOfficeId(officeId).flatMap {
-          case Right(contactDetails) =>
+          case Some(contactDetails) =>
             logger.info(s"[OfficeContactDetailsControllerImpl] GET - Successfully retrieved office specification") *>
               Ok(contactDetails.asJson)
-          case Left(error) =>
-            val errorResponse = ErrorResponse(error.code, error.errorMessage)
+          case _ =>
+            val errorResponse = ErrorResponse("error", "")
             BadRequest(errorResponse.asJson)  
         }
 

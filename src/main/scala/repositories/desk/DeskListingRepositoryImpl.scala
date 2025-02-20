@@ -17,7 +17,7 @@ import io.circe.syntax.*
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import models.database.*
-import models.desk.deskListing.requests.InitiateDeskListingRequest
+import models.desk.deskListing.InitiateDeskListingRequest
 import models.desk.deskListing.DeskListing
 import models.desk.deskListing.DeskListingBusinessAndOffice
 import models.desk.deskListing.DeskListingCard

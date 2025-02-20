@@ -10,8 +10,8 @@ import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import java.sql.Timestamp
 import java.time.LocalDateTime
-import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
-import models.business.contact_details.requests.UpdateBusinessContactDetailsRequest
+import models.business.contact_details.CreateBusinessContactDetailsRequest
+import models.business.contact_details.UpdateBusinessContactDetailsRequest
 import models.business.contact_details.BusinessContactDetails
 import models.business.contact_details.BusinessContactDetailsPartial
 import models.database.*

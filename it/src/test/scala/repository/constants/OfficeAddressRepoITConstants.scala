@@ -1,7 +1,7 @@
 package repository.constants
 
 import java.time.LocalDateTime
-import models.office.address_details.requests.CreateOfficeAddressRequest
+import models.office.address_details.CreateOfficeAddressRequest
 import models.office.address_details.OfficeAddress
 import models.office.address_details.OfficeAddressPartial
 

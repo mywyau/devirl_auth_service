@@ -5,7 +5,7 @@ import cats.effect.Concurrent
 import cats.syntax.all.*
 import cats.Monad
 import cats.NonEmptyParallel
-import models.business_listing.requests.InitiateBusinessListingRequest
+import models.business_listing.InitiateBusinessListingRequest
 import models.business_listing.BusinessListing
 import models.business_listing.BusinessListingCard
 import models.database.DatabaseErrors

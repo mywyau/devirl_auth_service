@@ -2,16 +2,14 @@ package services.business
 
 import cats.data.Validated.Valid
 import cats.effect.IO
-import models.business.address.errors.BusinessAddressNotFound
-import models.business.address.requests.CreateBusinessAddressRequest
+import java.time.LocalDateTime
+import models.business.address.CreateBusinessAddressRequest
 import models.database.CreateSuccess
 import repositories.business.BusinessAddressRepositoryAlgebra
 import services.business.mocks.MockBusinessAddressRepository
 import services.constants.BusinessAddressServiceConstants.*
 import testData.TestConstants.*
 import weaver.SimpleIOSuite
-
-import java.time.LocalDateTime
 
 object BusinessAddressServiceSpec extends SimpleIOSuite {
 
@@ -24,7 +22,7 @@ object BusinessAddressServiceSpec extends SimpleIOSuite {
 
     for {
       result <- service.getByBusinessId(businessId1)
-    } yield expect(result == Right(existingAddressForUser))
+    } yield expect(result == Some(existingAddressForUser))
   }
 
   test(".getByBusinessId() - when there are no existing business address details given a businessId should return Left(AddressNotFound)") {
@@ -34,7 +32,7 @@ object BusinessAddressServiceSpec extends SimpleIOSuite {
 
     for {
       result <- service.getByBusinessId(businessId1)
-    } yield expect(result == Left(BusinessAddressNotFound))
+    } yield expect(result == None)
   }
 
   test(".created() - when given a BusinessAddress successfully create the address") {

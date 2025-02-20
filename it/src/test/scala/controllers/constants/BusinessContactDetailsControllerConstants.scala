@@ -3,7 +3,7 @@ package controllers.constants
 import cats.effect.*
 import models.business.contact_details.BusinessContactDetails
 import models.business.contact_details.BusinessContactDetailsPartial
-import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
+import models.business.contact_details.CreateBusinessContactDetailsRequest
 import models.business.specifications.BusinessSpecifications
 import testData.BusinessTestConstants.*
 import testData.TestConstants.*

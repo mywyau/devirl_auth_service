@@ -5,8 +5,8 @@ import cats.data.ValidatedNel
 import cats.effect.kernel.Ref
 import cats.effect.IO
 import java.time.LocalDateTime
-import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
-import models.business.contact_details.requests.UpdateBusinessContactDetailsRequest
+import models.business.contact_details.CreateBusinessContactDetailsRequest
+import models.business.contact_details.UpdateBusinessContactDetailsRequest
 import models.business.contact_details.BusinessContactDetails
 import models.business.contact_details.BusinessContactDetailsPartial
 import models.database.CreateSuccess

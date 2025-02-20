@@ -5,8 +5,8 @@ import cats.data.Validated.Valid
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
-import models.business.address.requests.CreateBusinessAddressRequest
-import models.business.address.requests.UpdateBusinessAddressRequest
+import models.business.address.CreateBusinessAddressRequest
+import models.business.address.UpdateBusinessAddressRequest
 import models.responses.CreatedResponse
 import models.responses.DeletedResponse
 import models.responses.ErrorResponse
@@ -23,19 +23,19 @@ trait BusinessAddressControllerAlgebra[F[_]] {
 
 class BusinessAddressControllerImpl[F[_] : Concurrent : Logger](businessAddressService: BusinessAddressServiceAlgebra[F]) extends Http4sDsl[F] with BusinessAddressControllerAlgebra[F] {
 
-  implicit val businessAddressRequestRequestDecoder: EntityDecoder[F, CreateBusinessAddressRequest] = jsonOf[F, CreateBusinessAddressRequest]
-  implicit val updateBusinessAddressRequestDecoder: EntityDecoder[F, UpdateBusinessAddressRequest] = jsonOf[F, UpdateBusinessAddressRequest]
+  implicit val createDecoder: EntityDecoder[F, CreateBusinessAddressRequest] = jsonOf[F, CreateBusinessAddressRequest]
+  implicit val updateDecoder: EntityDecoder[F, UpdateBusinessAddressRequest] = jsonOf[F, UpdateBusinessAddressRequest]
 
   val routes: HttpRoutes[F] = HttpRoutes.of[F] {
 
     case GET -> Root / "business" / "businesses" / "address" / "details" / businessId =>
       Logger[F].info(s"[BusinessAddressControllerImpl] GET - Business address details for userId: $businessId") *>
         businessAddressService.getByBusinessId(businessId).flatMap {
-          case Right(address) =>
+          case Some(address) =>
             Logger[F].info(s"[BusinessAddressControllerImpl] GET - Successfully retrieved business address") *>
               Ok(address.asJson)
-          case Left(error) =>
-            val errorResponse = ErrorResponse(error.code, error.errorMessage)
+          case _ =>
+            val errorResponse = ErrorResponse("error", "error codes")
             BadRequest(errorResponse.asJson)
         }
 

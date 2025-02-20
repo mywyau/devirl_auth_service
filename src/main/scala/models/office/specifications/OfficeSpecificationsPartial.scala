@@ -5,7 +5,7 @@ import io.circe.generic.semiauto.deriveEncoder
 import io.circe.Decoder
 import io.circe.Encoder
 import java.time.LocalDateTime
-import models.office.adts.OfficeType
+import models.office.OfficeType
 import models.OpeningHours
 
 case class OfficeSpecificationsPartial(

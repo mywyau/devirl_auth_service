@@ -4,7 +4,7 @@ import cats.effect.IO
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
-import models.desk.deskListing.requests.InitiateDeskListingRequest
+import models.desk.deskListing.InitiateDeskListingRequest
 import models.ModelsBaseSpec
 import testData.DeskTestConstants.sampleInitiateDeskListingRequest
 import weaver.SimpleIOSuite

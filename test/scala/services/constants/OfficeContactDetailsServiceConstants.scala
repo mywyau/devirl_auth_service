@@ -5,8 +5,8 @@ import cats.data.ValidatedNel
 import cats.effect.IO
 import java.time.LocalDateTime
 import models.database.*
-import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
-import models.office.contact_details.requests.UpdateOfficeContactDetailsRequest
+import models.office.contact_details.CreateOfficeContactDetailsRequest
+import models.office.contact_details.UpdateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.OfficeContactDetailsPartial
 import repositories.office.OfficeContactDetailsRepositoryAlgebra

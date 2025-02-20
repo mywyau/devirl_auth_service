@@ -4,7 +4,7 @@ import cats.effect.IO
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.EncoderOps
-import models.business.address.requests.UpdateBusinessAddressRequest
+import models.business.address.UpdateBusinessAddressRequest
 import models.ModelsBaseSpec
 import testData.BusinessTestConstants.testUpdateBusinessAddressRequest
 import weaver.SimpleIOSuite

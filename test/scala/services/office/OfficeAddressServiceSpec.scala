@@ -4,24 +4,22 @@ import cats.data.Validated.Valid
 import cats.data.ValidatedNel
 import cats.effect.IO
 import cats.syntax.all.*
+import java.time.LocalDateTime
 import mocks.MockOfficeAddressRepository
 import models.database.*
+import models.office.address_details.CreateOfficeAddressRequest
 import models.office.address_details.OfficeAddress
 import models.office.address_details.OfficeAddressPartial
-import models.office.address_details.errors.OfficeAddressNotFound
-import models.office.address_details.requests.CreateOfficeAddressRequest
-import models.office.address_details.requests.UpdateOfficeAddressRequest
-import org.typelevel.log4cats.SelfAwareStructuredLogger
+import models.office.address_details.UpdateOfficeAddressRequest
 import org.typelevel.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.SelfAwareStructuredLogger
 import repositories.office.OfficeAddressRepositoryAlgebra
-import services.ServiceSpecBase
 import services.constants.OfficeAddressServiceConstants.*
 import services.office.OfficeAddressService
 import services.office.OfficeAddressServiceImpl
+import services.ServiceSpecBase
 import testData.TestConstants.*
 import weaver.SimpleIOSuite
-
-import java.time.LocalDateTime
 
 object OfficeAddressServiceSpec extends SimpleIOSuite with ServiceSpecBase {
 
@@ -60,6 +58,5 @@ object OfficeAddressServiceSpec extends SimpleIOSuite with ServiceSpecBase {
       result <- service.create(sampleAddress)
     } yield expect(result == Valid(CreateSuccess))
   }
-
 
 }

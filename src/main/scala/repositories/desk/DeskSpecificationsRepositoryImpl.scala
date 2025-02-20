@@ -17,7 +17,7 @@ import io.circe.parser.decode
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import models.database.*
-import models.desk.deskSpecifications.requests.UpdateDeskSpecificationsRequest
+import models.desk.deskSpecifications.UpdateDeskSpecificationsRequest
 import models.desk.deskSpecifications.DeskSpecificationsPartial
 import models.desk.deskSpecifications.DeskType
 import org.typelevel.log4cats.slf4j.Slf4jLogger

@@ -2,10 +2,10 @@ package repository.constants
 
 import java.time.LocalDateTime
 import java.time.LocalTime
-import models.office.address_details.requests.CreateOfficeAddressRequest
+import models.office.address_details.CreateOfficeAddressRequest
 import models.office.address_details.OfficeAddress
-import models.office.adts.OpenPlanOffice
-import models.office.specifications.requests.CreateOfficeSpecificationsRequest
+import models.office.OpenPlanOffice
+import models.office.specifications.CreateOfficeSpecificationsRequest
 import models.office.specifications.OfficeAvailability
 import models.office.specifications.OfficeSpecifications
 import testData.TestConstants.*

@@ -5,7 +5,6 @@ import cats.data.Validated.Valid
 import cats.data.ValidatedNel
 import cats.effect.IO
 import java.time.LocalDateTime
-import models.business.contact_details.errors.BusinessContactDetailsNotFound
 import models.business.contact_details.BusinessContactDetails
 import models.database.CreateSuccess
 import models.database.DatabaseErrors
@@ -25,7 +24,7 @@ object BusinessContactDetailsServiceSpec extends SimpleIOSuite {
 
     for {
       result <- service.getByBusinessId("businessId1")
-    } yield expect(result == Right(existingContactDetailsForUser))
+    } yield expect(result == Some(existingContactDetailsForUser))
   }
 
   test(".getByBusinessId() - when there are no existing user ContactDetails details given a business_id should return Left(ContactDetailsNotFound)") {
@@ -35,7 +34,7 @@ object BusinessContactDetailsServiceSpec extends SimpleIOSuite {
 
     for {
       result <- service.getByBusinessId("businessId1")
-    } yield expect(result == Left(BusinessContactDetailsNotFound))
+    } yield expect(result == None)
   }
 
   test(".createBusinessContactDetails() - when given a BusinessContactDetails successfully create the ContactDetails") {

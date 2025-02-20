@@ -3,12 +3,13 @@ package controllers.constants
 import cats.effect.*
 import java.time.LocalDateTime
 import java.time.LocalTime
-import models.business.address.requests.CreateBusinessAddressRequest
-import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
-import models.business.specifications.requests.CreateBusinessSpecificationsRequest
-import models.business_listing.requests.BusinessListingRequest
+import models.business.address.CreateBusinessAddressRequest
+import models.business.contact_details.CreateBusinessContactDetailsRequest
+import models.business.specifications.CreateBusinessSpecificationsRequest
+import models.business_listing.BusinessListingRequest
 import testData.BusinessTestConstants.*
 import testData.TestConstants.*
+import models.business.address.CreateBusinessAddressRequest
 
 object BusinessListingControllerConstants {
 

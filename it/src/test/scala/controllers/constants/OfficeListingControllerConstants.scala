@@ -2,20 +2,21 @@ package controllers.constants
 
 import java.time.LocalDateTime
 import java.time.LocalTime
-import models.office.address_details.requests.CreateOfficeAddressRequest
+import models.office.address_details.CreateOfficeAddressRequest
 import models.office.address_details.OfficeAddress
 import models.office.address_details.OfficeAddressPartial
-import models.office.adts.*
-import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
+
+import models.office.contact_details.CreateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.OfficeContactDetailsPartial
-import models.office.specifications.requests.CreateOfficeSpecificationsRequest
+import models.office.specifications.CreateOfficeSpecificationsRequest
 import models.office.specifications.OfficeSpecifications
 import models.office.specifications.OfficeSpecificationsPartial
 import models.office_listing.requests.InitiateOfficeListingRequest
 import models.office_listing.OfficeListing
 import testData.OfficeTestConstants.*
 import testData.TestConstants.*
+import models.office.OpenPlanOffice
 
 object OfficeListingControllerConstants {
 

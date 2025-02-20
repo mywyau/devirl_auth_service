@@ -9,7 +9,7 @@ import models.database.*
 import models.desk.deskListing.DeskListing
 import models.desk.deskListing.DeskListingBusinessAndOffice
 import models.desk.deskListing.DeskListingCard
-import models.desk.deskListing.requests.InitiateDeskListingRequest
+import models.desk.deskListing.InitiateDeskListingRequest
 import models.office_listing.requests.InitiateOfficeListingRequest
 import repositories.desk.DeskListingRepositoryAlgebra
 

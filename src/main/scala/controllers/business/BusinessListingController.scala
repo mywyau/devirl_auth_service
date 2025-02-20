@@ -5,7 +5,7 @@ import cats.data.Validated.Valid
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.*
-import models.business_listing.requests.InitiateBusinessListingRequest
+import models.business_listing.InitiateBusinessListingRequest
 import models.responses.DeletedResponse
 import models.responses.ErrorResponse
 import org.http4s.*

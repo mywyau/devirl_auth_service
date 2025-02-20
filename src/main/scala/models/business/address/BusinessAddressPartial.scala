@@ -5,6 +5,7 @@ import io.circe.generic.semiauto.deriveEncoder
 import io.circe.Decoder
 import io.circe.Encoder
 import java.time.LocalDateTime
+import models.business.address.BusinessAddressPartial
 
 case class BusinessAddressPartial(
   userId: String,

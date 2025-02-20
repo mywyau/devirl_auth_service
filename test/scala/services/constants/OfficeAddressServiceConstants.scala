@@ -5,7 +5,7 @@ import cats.data.ValidatedNel
 import cats.effect.IO
 import models.database.*
 import models.office.address_details.OfficeAddressPartial
-import models.office.address_details.requests.CreateOfficeAddressRequest
+import models.office.address_details.CreateOfficeAddressRequest
 import testData.TestConstants.*
 
 import java.time.LocalDateTime

@@ -9,11 +9,10 @@ import cats.implicits.*
 import cats.Monad
 import cats.NonEmptyParallel
 import models.database.*
-import models.office.address_details.errors.*
-import models.office.address_details.requests.CreateOfficeAddressRequest
-import models.office.address_details.requests.UpdateOfficeAddressRequest
+import models.office.address_details.CreateOfficeAddressRequest
 import models.office.address_details.OfficeAddress
 import models.office.address_details.OfficeAddressPartial
+import models.office.address_details.UpdateOfficeAddressRequest
 import org.typelevel.log4cats.Logger
 import repositories.office.OfficeAddressRepositoryAlgebra
 
@@ -34,7 +33,6 @@ class OfficeAddressServiceImpl[F[_] : Concurrent : NonEmptyParallel : Monad : Lo
 
   override def findByOfficeId(officeId: String): F[ValidatedNel[DatabaseErrors, OfficeAddressPartial]] =
     officeAddressRepository.findByOfficeId(officeId)
-
 
   override def create(request: CreateOfficeAddressRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
     officeAddressRepository.create(request)

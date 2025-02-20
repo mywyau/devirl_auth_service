@@ -5,7 +5,7 @@ import cats.effect.kernel.Ref
 import cats.effect.IO
 import java.time.LocalDateTime
 import mocks.MockOfficeContactDetailsRepository
-import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
+import models.office.contact_details.CreateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.OfficeContactDetailsPartial
 import testData.TestConstants.*

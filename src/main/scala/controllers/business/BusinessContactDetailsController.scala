@@ -5,8 +5,8 @@ import cats.data.Validated.Valid
 import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
-import models.business.contact_details.requests.CreateBusinessContactDetailsRequest
-import models.business.contact_details.requests.UpdateBusinessContactDetailsRequest
+import models.business.contact_details.CreateBusinessContactDetailsRequest
+import models.business.contact_details.UpdateBusinessContactDetailsRequest
 import models.business.contact_details.BusinessContactDetails
 import models.responses.CreatedResponse
 import models.responses.DeletedResponse
@@ -35,11 +35,11 @@ class BusinessContactDetailsControllerImpl[F[_] : Concurrent : Logger](
     case GET -> Root / "business" / "businesses" / "contact" / "details" / businessId =>
       Logger[F].info(s"[BusinessContactDetailsControllerImpl] GET - Business contactDetails details for businessId: $businessId") *>
         businessContactDetailsService.getByBusinessId(businessId).flatMap {
-          case Right(contactDetails) =>
+          case Some(contactDetails) =>
             Logger[F].info(s"[BusinessContactDetailsControllerImpl] GET - Successfully retrieved business contact details") *>
               Ok(contactDetails.asJson)
-          case Left(error) =>
-            val errorResponse = ErrorResponse(error.code, error.errorMessage)
+          case _ =>
+            val errorResponse = ErrorResponse("error", "error message")
             NotFound(errorResponse.asJson)
         }
 

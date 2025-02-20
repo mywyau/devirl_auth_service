@@ -9,7 +9,7 @@ import doobie.implicits.*
 import java.time.LocalDateTime
 import models.desk.deskSpecifications.PrivateDesk
 import models.database.DeleteSuccess
-import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
+import models.office.contact_details.CreateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.OfficeContactDetailsPartial
 import repositories.office.OfficeContactDetailsRepositoryImpl

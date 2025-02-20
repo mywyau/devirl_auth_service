@@ -1,10 +1,12 @@
 package services.constants
 
 import models.business.address.BusinessAddressPartial
-import models.business.address.requests.CreateBusinessAddressRequest
+import models.business.address.CreateBusinessAddressRequest
 import models.database.*
 import services.business.BusinessListingServiceImpl
 import testData.TestConstants.*
+import models.business.address.CreateBusinessAddressRequest
+import models.business.address.BusinessAddressPartial
 
 object BusinessAddressServiceConstants {
 

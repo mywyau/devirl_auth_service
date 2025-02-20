@@ -8,10 +8,10 @@ import io.circe.Json
 import java.time.LocalDateTime
 import models.desk.deskSpecifications.DeskType
 
-import models.office.address_details.requests.CreateOfficeAddressRequest
-import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
+import models.office.address_details.CreateOfficeAddressRequest
+import models.office.contact_details.CreateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetails
-import models.office.specifications.requests.CreateOfficeSpecificationsRequest
+import models.office.specifications.CreateOfficeSpecificationsRequest
 
 import models.office.specifications.OfficeSpecifications
 

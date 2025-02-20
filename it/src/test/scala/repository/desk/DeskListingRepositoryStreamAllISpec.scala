@@ -10,12 +10,12 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import models.database.CreateSuccess
 import models.database.DeleteSuccess
-import models.desk.deskListing.requests.InitiateDeskListingRequest
+import models.desk.deskListing.InitiateDeskListingRequest
 import models.desk.deskListing.DeskListing
 import models.desk.deskListing.DeskListingCard
 import models.desk.deskPricing.DeskPricingPartial
 import models.desk.deskPricing.RetrievedDeskPricing
-import models.desk.deskSpecifications.requests.UpdateDeskSpecificationsRequest
+import models.desk.deskSpecifications.UpdateDeskSpecificationsRequest
 
 import models.desk.deskSpecifications.DeskSpecificationsPartial
 import models.desk.deskSpecifications.PrivateDesk

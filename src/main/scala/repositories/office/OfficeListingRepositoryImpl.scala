@@ -16,8 +16,8 @@ import java.time.LocalDateTime
 import models.database.*
 import models.office.address_details.OfficeAddress
 import models.office.address_details.OfficeAddressPartial
-import models.office.adts.OfficeType
-import models.office.contact_details.requests.UpdateOfficeContactDetailsRequest
+import models.office.OfficeType
+import models.office.contact_details.UpdateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetails
 import models.office.contact_details.OfficeContactDetailsPartial
 import models.office.specifications.OfficeSpecificationsPartial

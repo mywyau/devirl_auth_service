@@ -14,7 +14,7 @@ import io.circe.syntax.*
 import io.circe.Json
 import java.time.LocalDateTime
 import java.time.LocalTime
-import models.business.specifications.requests.UpdateBusinessSpecificationsRequest
+import models.business.specifications.UpdateBusinessSpecificationsRequest
 import models.business.specifications.BusinessSpecifications
 import models.business.specifications.BusinessSpecificationsPartial
 import models.database.*

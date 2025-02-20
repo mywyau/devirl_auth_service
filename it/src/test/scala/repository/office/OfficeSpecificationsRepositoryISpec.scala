@@ -15,11 +15,11 @@ import models.database.CreateSuccess
 import models.database.DeleteSuccess
 import models.database.NotFoundError
 import models.database.UpdateSuccess
-import models.office.address_details.requests.UpdateOfficeAddressRequest
-import models.office.adts.OpenPlanOffice
-import models.office.adts.PrivateOffice
-import models.office.specifications.requests.CreateOfficeSpecificationsRequest
-import models.office.specifications.requests.UpdateOfficeSpecificationsRequest
+import models.office.address_details.UpdateOfficeAddressRequest
+import models.office.OpenPlanOffice
+import models.office.PrivateOffice
+import models.office.specifications.CreateOfficeSpecificationsRequest
+import models.office.specifications.UpdateOfficeSpecificationsRequest
 import models.office.specifications.OfficeSpecifications
 import models.office.specifications.OfficeSpecificationsPartial
 import repositories.office.OfficeSpecificationsRepositoryImpl

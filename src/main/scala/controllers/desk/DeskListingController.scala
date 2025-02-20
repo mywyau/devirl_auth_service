@@ -6,7 +6,7 @@ import cats.effect.IO
 import cats.implicits.*
 import io.circe.syntax.*
 import models.database.CreateSuccess
-import models.desk.deskListing.requests.InitiateDeskListingRequest
+import models.desk.deskListing.InitiateDeskListingRequest
 import models.responses.CreatedResponse
 import models.responses.DeletedResponse
 import models.responses.ErrorResponse

@@ -7,7 +7,7 @@ import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
 import java.time.LocalDateTime
-import models.business.address.requests.CreateBusinessAddressRequest
+import models.business.address.CreateBusinessAddressRequest
 import models.business.address.BusinessAddressPartial
 import models.database.DeleteSuccess
 import models.desk.deskSpecifications.PrivateDesk
@@ -19,6 +19,8 @@ import testData.TestConstants.*
 import weaver.GlobalRead
 import weaver.IOSuite
 import weaver.ResourceTag
+import models.business.address.CreateBusinessAddressRequest
+import models.business.address.BusinessAddressPartial
 
 class BusinessAddressRepositoryISpec(global: GlobalRead) extends IOSuite {
 

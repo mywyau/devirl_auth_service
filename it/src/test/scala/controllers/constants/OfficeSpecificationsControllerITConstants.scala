@@ -3,12 +3,12 @@ package controllers.constants
 import cats.effect.*
 import java.time.LocalDateTime
 import java.time.LocalTime
-import models.office.adts.*
-import models.office.specifications.requests.CreateOfficeSpecificationsRequest
+import models.office.specifications.CreateOfficeSpecificationsRequest
 import models.office.specifications.OfficeSpecifications
 import models.office.specifications.OfficeSpecificationsPartial
 import testData.OfficeTestConstants.*
 import testData.TestConstants.*
+import models.office.PrivateOffice
 
 object OfficeSpecificationsControllerITConstants {
 

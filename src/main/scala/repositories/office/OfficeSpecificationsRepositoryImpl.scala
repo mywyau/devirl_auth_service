@@ -14,9 +14,9 @@ import io.circe.parser.decode
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import models.database.*
-import models.office.adts.OfficeType
-import models.office.specifications.requests.CreateOfficeSpecificationsRequest
-import models.office.specifications.requests.UpdateOfficeSpecificationsRequest
+import models.office.OfficeType
+import models.office.specifications.CreateOfficeSpecificationsRequest
+import models.office.specifications.UpdateOfficeSpecificationsRequest
 import models.office.specifications.OfficeSpecificationsPartial
 import models.Day
 import models.OpeningHours

@@ -5,8 +5,7 @@ import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.*
 import weaver.SimpleIOSuite
-import models.office.adts.*
-import models.office.adts.OfficeType._
+import OfficeType._
 import models.ModelsBaseSpec
 
 

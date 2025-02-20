@@ -8,8 +8,8 @@ import java.time.LocalDateTime
 import models.database.CreateSuccess
 import models.database.DatabaseErrors
 import models.database.DatabaseSuccess
-import models.office.contact_details.requests.CreateOfficeContactDetailsRequest
-import models.office.contact_details.requests.UpdateOfficeContactDetailsRequest
+import models.office.contact_details.CreateOfficeContactDetailsRequest
+import models.office.contact_details.UpdateOfficeContactDetailsRequest
 import models.office.contact_details.OfficeContactDetailsPartial
 import repositories.office.OfficeContactDetailsRepositoryAlgebra
 

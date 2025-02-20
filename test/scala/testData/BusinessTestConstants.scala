@@ -2,30 +2,29 @@ package testData
 
 import java.time.LocalDateTime
 import java.time.LocalTime
-import models.business.address.requests.CreateBusinessAddressRequest
-import models.business.address.requests.UpdateBusinessAddressRequest
-import models.business.contact_details.requests.UpdateBusinessContactDetailsRequest
+import models.business.address.CreateBusinessAddressRequest
+import models.business.address.UpdateBusinessAddressRequest
 import models.business.contact_details.BusinessContactDetails
-import models.business.specifications.requests.UpdateBusinessSpecificationsRequest
-
-import models.OpeningHours
+import models.business.contact_details.UpdateBusinessContactDetailsRequest
+import models.business.specifications.UpdateBusinessSpecificationsRequest
 import models.Monday
+import models.OpeningHours
 import models.Tuesday
 import testData.TestConstants.*
 
 object BusinessTestConstants {
 
   val businessOpeningHours1 =
-      List(
-        OpeningHours(
-          day = Monday,
-          openingTime = openingTime0900,
-          closingTime = closingTime1700
-        ),
-        OpeningHours(
-          day = Tuesday,
-          openingTime = openingTime0900,
-          closingTime = closingTime1700
+    List(
+      OpeningHours(
+        day = Monday,
+        openingTime = openingTime0900,
+        closingTime = closingTime1700
+      ),
+      OpeningHours(
+        day = Tuesday,
+        openingTime = openingTime0900,
+        closingTime = closingTime1700
       )
     )
 

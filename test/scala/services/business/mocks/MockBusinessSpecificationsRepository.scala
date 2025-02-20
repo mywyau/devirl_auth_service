@@ -6,8 +6,8 @@ import cats.data.ValidatedNel
 import cats.effect.IO
 import models.business.specifications.BusinessSpecifications
 import models.business.specifications.BusinessSpecificationsPartial
-import models.business.specifications.requests.CreateBusinessSpecificationsRequest
-import models.business.specifications.requests.UpdateBusinessSpecificationsRequest
+import models.business.specifications.CreateBusinessSpecificationsRequest
+import models.business.specifications.UpdateBusinessSpecificationsRequest
 import models.database.CreateSuccess
 import models.database.DatabaseErrors
 import models.database.DatabaseSuccess

@@ -4,9 +4,11 @@ import cats.data.Validated.Valid
 import cats.effect.kernel.Ref
 import cats.effect.IO
 import java.time.LocalDateTime
-import models.business.address.requests.CreateBusinessAddressRequest
+import models.business.address.CreateBusinessAddressRequest
 import models.business.address.BusinessAddressPartial
 import mocks.MockBusinessAddressRepository
+import models.business.address.CreateBusinessAddressRequest
+import models.business.address.BusinessAddressPartial
 
 object BusinessAddressRepoConstants {
 

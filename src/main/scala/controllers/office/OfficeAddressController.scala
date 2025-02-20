@@ -6,8 +6,8 @@ import cats.effect.Concurrent
 import cats.implicits.*
 import io.circe.syntax.EncoderOps
 import models.office.address_details.OfficeAddress
-import models.office.address_details.requests.CreateOfficeAddressRequest
-import models.office.address_details.requests.UpdateOfficeAddressRequest
+import models.office.address_details.CreateOfficeAddressRequest
+import models.office.address_details.UpdateOfficeAddressRequest
 import models.responses.CreatedResponse
 import models.responses.DeletedResponse
 import models.responses.ErrorResponse

@@ -6,7 +6,7 @@ import cats.implicits.*
 import cats.Monad
 import cats.NonEmptyParallel
 import models.database.*
-import models.desk.deskSpecifications.requests.UpdateDeskSpecificationsRequest
+import models.desk.deskSpecifications.UpdateDeskSpecificationsRequest
 import models.desk.deskSpecifications.DeskSpecificationsPartial
 import models.desk.deskSpecifications.DeskType
 import repositories.desk.DeskSpecificationsRepositoryAlgebra
