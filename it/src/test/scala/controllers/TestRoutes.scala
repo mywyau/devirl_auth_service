@@ -3,17 +3,11 @@ package controllers
 import cats.effect.*
 import cats.implicits.*
 import cats.syntax.all.*
-import controllers.business.BusinessAddressController
-import controllers.business.BusinessContactDetailsController
-import controllers.business.BusinessListingController
-import controllers.business.BusinessSpecificationsController
+import controllers.business.*
 import controllers.desk.DeskListingController
 import controllers.desk.DeskPricingController
 import controllers.desk.DeskSpecificationsController
-import controllers.office.OfficeAddressController
-import controllers.office.OfficeContactDetailsController
-import controllers.office.OfficeListingController
-import controllers.office.OfficeSpecificationsController
+import controllers.office.*
 import doobie.hikari.HikariTransactor
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
@@ -23,42 +17,16 @@ import org.http4s.server.Router
 import org.http4s.HttpRoutes
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import org.typelevel.log4cats.SelfAwareStructuredLogger
-import repositories.business.BusinessAddressRepository
-import repositories.business.BusinessContactDetailsRepository
-import repositories.business.BusinessListingRepository
-import repositories.business.BusinessSpecificationsRepository
-import repositories.desk.DeskListingRepository
-import repositories.desk.DeskPricingRepository
-import repositories.desk.DeskSpecificationsRepository
-import repositories.office.OfficeAddressRepository
-import repositories.office.OfficeContactDetailsRepository
-import repositories.office.OfficeListingRepository
-import repositories.office.OfficeSpecificationsRepository
-import services.business.BusinessAddressService
-import services.business.BusinessContactDetailsService
-import services.business.BusinessListingService
-import services.business.BusinessSpecificationsService
-import services.desk.DeskListingService
-import services.desk.DeskPricingService
-import services.desk.DeskSpecificationsService
-import services.office.OfficeAddressService
-import services.office.OfficeContactDetailsService
-import services.office.OfficeListingService
-import services.office.OfficeSpecificationsService
+import repositories.business.*
+import repositories.desk.*
+import repositories.office.*
+import services.business.*
+import services.desk.*
+import services.office.*
 
 object TestRoutes {
 
   implicit val testLogger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
-
-  def businessContactDetailsRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
-
-    val businessContactDetailsRepository = BusinessContactDetailsRepository(transactor)
-
-    val businessContactDetailsService = BusinessContactDetailsService(businessContactDetailsRepository)
-    val businessContactDetailsController = BusinessContactDetailsController(businessContactDetailsService)
-
-    businessContactDetailsController.routes
-  }
 
   def businessAddressRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
 
@@ -70,6 +38,16 @@ object TestRoutes {
     businessAddressController.routes
   }
 
+  def businessContactDetailsRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
+
+    val businessContactDetailsRepository = BusinessContactDetailsRepository(transactor)
+
+    val businessContactDetailsService = BusinessContactDetailsService(businessContactDetailsRepository)
+    val businessContactDetailsController = BusinessContactDetailsController(businessContactDetailsService)
+
+    businessContactDetailsController.routes
+  }
+
   def businessSpecificationsRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
 
     val businessSpecificationsRepository = BusinessSpecificationsRepository(transactor)
@@ -78,6 +56,16 @@ object TestRoutes {
     val businessSpecificationsController = BusinessSpecificationsController(businessSpecificationsService)
 
     businessSpecificationsController.routes
+  }
+
+  def businessAvailabilityRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
+
+    val businessAvailabilityRepository = BusinessAvailabilityRepository(transactor)
+
+    val businessAvailabilityService = BusinessAvailabilityService(businessAvailabilityRepository)
+    val businessAvailabilityController = BusinessAvailabilityController(businessAvailabilityService)
+
+    businessAvailabilityController.routes
   }
 
   def businessListingRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
@@ -108,7 +96,7 @@ object TestRoutes {
     deskPricingController.routes
   }
 
-   def deskListingRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
+  def deskListingRoutes(transactor: Transactor[IO]): HttpRoutes[IO] = {
 
     val deskListingRepository = DeskListingRepository(transactor)
     val deskListingService = DeskListingService(deskListingRepository)
@@ -162,6 +150,7 @@ object TestRoutes {
         businessAddressRoutes(transactor) <+>
           businessContactDetailsRoutes(transactor) <+>
           businessSpecificationsRoutes(transactor) <+>
+          businessAvailabilityRoutes(transactor) <+>
           businessListingRoutes(transactor) <+>
           officeAddressRoutes(transactor) <+>
           officeContactDetailsRoutes(transactor) <+>

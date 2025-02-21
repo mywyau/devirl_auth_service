@@ -24,7 +24,7 @@ trait BusinessAvailabilityRepositoryAlgebra[F[_]] {
 
   def createDaysOpen(request: CreateBusinessDaysRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
-  def updateDaysOpen(businessId: String, request: UpdateBusinessDaysRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
+  def updateDaysOpen(request: UpdateBusinessDaysRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
   def createOpeningHours(request: CreateBusinessOpeningHoursRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
@@ -102,18 +102,17 @@ class BusinessAvailabilityRepositoryImpl[F[_] : Concurrent : Monad](transactor: 
   }
 
   override def updateDaysOpen(
-    businessId: String,
     request: UpdateBusinessDaysRequest
   ): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = {
 
     val deleteExisting =
       sql"""
-        DELETE FROM business_opening_hours WHERE business_id = $businessId
+        DELETE FROM business_opening_hours WHERE business_id = ${request.businessId} AND user_id = ${request.userId}
       """.update.run
 
-    val insertNew = Update[(String, Day)](
-      "INSERT INTO business_opening_hours (business_id, weekday) VALUES (?, ?)"
-    ).updateMany(request.days.map(day => (businessId, day)))
+    val insertNew = Update[(String, String, Day)](
+      "INSERT INTO business_opening_hours (user_id, business_id, weekday) VALUES (?, ?, ?)"
+    ).updateMany(request.days.map(day => (request.userId, request.businessId, day)))
 
     (for {
       _ <- deleteExisting
@@ -196,7 +195,7 @@ class BusinessAvailabilityRepositoryImpl[F[_] : Concurrent : Monad](transactor: 
     val deleteQuery: Update0 =
       sql"""
          DELETE FROM business_opening_hours
-         WHERE businessId = $businessId
+         WHERE business_id = $businessId
        """.update
 
     deleteQuery.run.transact(transactor).attempt.map {

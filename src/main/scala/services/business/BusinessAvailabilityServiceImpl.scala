@@ -9,6 +9,7 @@ import cats.Monad
 import cats.NonEmptyParallel
 import models.business.availability.RetrieveSingleBusinessAvailability
 import models.business.availability.RetrievedBusinessAvailability
+import models.business.availability.UpdateBusinessDaysRequest
 import models.business.availability.UpdateBusinessOpeningHoursRequest
 import models.database.CreateSuccess
 import models.database.DatabaseErrors
@@ -21,6 +22,8 @@ trait BusinessAvailabilityServiceAlgebra[F[_]] {
 
   def findAvailabilityForBusiness(businessId: String): F[List[RetrieveSingleBusinessAvailability]]
 
+  def updateDays(request: UpdateBusinessDaysRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
+
   def updateOpeningHours(businessId: String, request: UpdateBusinessOpeningHoursRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
   def deleteAllAvailability(businessId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
@@ -32,6 +35,9 @@ class BusinessAvailabilityServiceImpl[F[_] : Concurrent : NonEmptyParallel : Mon
 
   override def findAvailabilityForBusiness(businessId: String): F[List[RetrieveSingleBusinessAvailability]] =
     businessAvailabilityRepo.findAvailabilityForBusiness(businessId)
+
+  override def updateDays(request: UpdateBusinessDaysRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
+    businessAvailabilityRepo.updateDaysOpen(request)
 
   override def updateOpeningHours(businessId: String, request: UpdateBusinessOpeningHoursRequest): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
     businessAvailabilityRepo.updateOpeningHours(request)

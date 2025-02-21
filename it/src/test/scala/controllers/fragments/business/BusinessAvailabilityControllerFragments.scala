@@ -1,9 +1,9 @@
-package repository.fragments.business
+package controllers.fragments.business
 
 import doobie.implicits.*
 import doobie.util.fragment
 
-object BusinessAvailabilityRepoFragments {
+object BusinessAvailabilityControllerFragments {
 
   val resetBusinessAvailabilityTable: fragment.Fragment =
     sql"TRUNCATE TABLE business_opening_hours RESTART IDENTITY"
@@ -40,6 +40,8 @@ object BusinessAvailabilityRepoFragments {
           ('userId1', 'businessId1', 'Wednesday', '09:00:00+01', '17:00:00+01', '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
           ('userId2', 'businessId2', 'Saturday', '09:00:00+01', '17:00:00+01', '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
           ('userId3', 'businessId3', 'Saturday', '09:00:00+01', '17:00:00+01', '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('userId7', 'businessId7', 'Saturday', '09:00:00+01', '17:00:00+01', '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
+          ('userId7', 'businessId7', 'Sunday', '09:00:00+01', '17:00:00+01', '2025-01-01 00:00:00', '2025-01-01 00:00:00'),
           ('userId2', 'businessId2', 'Sunday', '09:00:00+01', '17:00:00+01', '2025-01-01 00:00:00', '2025-01-01 00:00:00');
       """
 

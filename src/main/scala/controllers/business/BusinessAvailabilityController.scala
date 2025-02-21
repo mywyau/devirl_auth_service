@@ -7,6 +7,7 @@ import cats.implicits.*
 import io.circe.syntax.*
 import models.business.availability.CreateBusinessDaysRequest
 import models.business.availability.CreateBusinessOpeningHoursRequest
+import models.business.availability.RetrieveSingleBusinessAvailability
 import models.business.availability.UpdateBusinessDaysRequest
 import models.business.availability.UpdateBusinessOpeningHoursRequest
 import models.responses.CreatedResponse
@@ -18,7 +19,6 @@ import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
 import org.typelevel.log4cats.Logger
 import services.business.BusinessAvailabilityServiceAlgebra
-import models.business.availability.RetrieveSingleBusinessAvailability
 
 trait BusinessAvailabilityControllerAlgebra[F[_]] {
   def routes: HttpRoutes[F]
@@ -27,7 +27,6 @@ trait BusinessAvailabilityControllerAlgebra[F[_]] {
 class BusinessAvailabilityControllerImpl[F[_] : Concurrent : Logger](businessAvailabilityService: BusinessAvailabilityServiceAlgebra[F])
     extends Http4sDsl[F]
     with BusinessAvailabilityControllerAlgebra[F] {
-
 
   implicit val createDayDecoder: EntityDecoder[F, CreateBusinessDaysRequest] = jsonOf[F, CreateBusinessDaysRequest]
   implicit val updateDayDecoder: EntityDecoder[F, UpdateBusinessDaysRequest] = jsonOf[F, UpdateBusinessDaysRequest]
@@ -40,9 +39,9 @@ class BusinessAvailabilityControllerImpl[F[_] : Concurrent : Logger](businessAva
     case GET -> Root / "business" / "availability" / "all" / businessId =>
       Logger[F].info(s"[BusinessAvailabilityControllerImpl] GET - Business availability details for userId: $businessId") *>
         businessAvailabilityService.findAvailabilityForBusiness(businessId).flatMap {
-          case List(availability) =>
+          case availabilities if availabilities.nonEmpty => // ✅ Correctly match multiple records
             Logger[F].info(s"[BusinessAvailabilityControllerImpl] GET - Successfully retrieved business availability") *>
-              Ok(availability.asJson)
+              Ok(availabilities.asJson)
           case _ =>
             val errorResponse = ErrorResponse("error", "error codes")
             BadRequest(errorResponse.asJson)
@@ -60,7 +59,20 @@ class BusinessAvailabilityControllerImpl[F[_] : Concurrent : Logger](businessAva
     //       }
     //     }
 
-    case req @ PUT -> Root / "business" / "availability" / "opening" / "hours" /"update" / businessId =>
+    case req @ PUT -> Root / "business" / "availability" / "days" / "update" =>
+      Logger[F].info(s"[BusinessAvailabilityControllerImpl] PUT - Updating business availability days") *>
+        req.decode[UpdateBusinessDaysRequest] { request =>
+          businessAvailabilityService.updateDays(request).flatMap {
+            case Valid(response) =>
+              Logger[F].info(s"[BusinessAvailabilityControllerImpl] PUT - Successfully updated business availability for ID: ${request.businessId}") *>
+                Ok(UpdatedResponse(response.toString, "Business availability days updated successfully").asJson)
+            case Invalid(errors) =>
+              Logger[F].warn(s"[BusinessAvailabilityControllerImpl] PUT - Validation failed for business availability update: ${errors.toList}") *>
+                BadRequest(ErrorResponse(code = "VALIDATION_ERROR", message = errors.toList.mkString(", ")).asJson)
+          }
+        }
+
+    case req @ PUT -> Root / "business" / "availability" / "opening" / "hours" / "update" / businessId =>
       Logger[F].info(s"[BusinessAvailabilityControllerImpl] PUT - Updating business availability with ID: $businessId") *>
         req.decode[UpdateBusinessOpeningHoursRequest] { request =>
           businessAvailabilityService.updateOpeningHours(businessId, request).flatMap {

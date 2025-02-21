@@ -7,6 +7,8 @@ import io.circe.Encoder
 import models.Day
 
 case class UpdateBusinessDaysRequest(
+  userId: String,
+  businessId: String,
   days: List[Day]
 )
 

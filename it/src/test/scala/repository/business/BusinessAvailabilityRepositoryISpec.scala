@@ -6,8 +6,6 @@ import cats.effect.Resource
 import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
-import java.time.LocalDateTime
-import java.time.LocalTime
 import models.*
 import models.business.availability.*
 import models.database.*
@@ -20,6 +18,9 @@ import testData.TestConstants.*
 import weaver.GlobalRead
 import weaver.IOSuite
 import weaver.ResourceTag
+
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 class BusinessAvailabilityRepositoryISpec(global: GlobalRead) extends IOSuite {
 
@@ -46,9 +47,9 @@ class BusinessAvailabilityRepositoryISpec(global: GlobalRead) extends IOSuite {
 
     val expectedResult =
       List(
-        RetrieveSingleBusinessAvailability(Monday, Some(LocalTime.of(10, 0, 0)), Some(LocalTime.of(17, 0, 0))),
-        RetrieveSingleBusinessAvailability(Tuesday, Some(LocalTime.of(10, 0, 0)), Some(LocalTime.of(17, 0, 0))),
-        RetrieveSingleBusinessAvailability(Wednesday, Some(LocalTime.of(10, 0, 0)), Some(LocalTime.of(17, 0, 0)))
+        RetrieveSingleBusinessAvailability(Monday, Some(LocalTime.of(9, 0, 0)), Some(LocalTime.of(17, 0, 0))),
+        RetrieveSingleBusinessAvailability(Tuesday, Some(LocalTime.of(9, 0, 0)), Some(LocalTime.of(17, 0, 0))),
+        RetrieveSingleBusinessAvailability(Wednesday, Some(LocalTime.of(9, 0, 0)), Some(LocalTime.of(17, 0, 0)))
       )
 
     for {
@@ -56,9 +57,19 @@ class BusinessAvailabilityRepositoryISpec(global: GlobalRead) extends IOSuite {
     } yield expect(retrieivedAvailability == expectedResult)
   }
 
+  test(".findAvailabilityForDay() - should find the availability for a given day for a business") { businessAvailabilityRepo =>
+
+    val expectedResult =
+        Some(RetrieveSingleBusinessAvailability(Monday, Some(LocalTime.of(9, 0, 0)), Some(LocalTime.of(17, 0, 0))))
+
+    for {
+      retrieivedAvailability <- businessAvailabilityRepo.findAvailabilityForDay(businessId1, Monday)
+    } yield expect(retrieivedAvailability == expectedResult)
+  }
+
   test(".findAvailabilityForDay() - should find the availability for a given business id and single day") { businessAvailabilityRepo =>
 
-    val expectedResult = RetrieveSingleBusinessAvailability(Monday, Some(LocalTime.of(10, 0, 0)), Some(LocalTime.of(17, 0, 0)))
+    val expectedResult = RetrieveSingleBusinessAvailability(Monday, Some(LocalTime.of(9, 0, 0)), Some(LocalTime.of(17, 0, 0)))
 
     for {
       retrieivedAvailability <- businessAvailabilityRepo.findAvailabilityForDay(businessId1, Monday)
@@ -108,6 +119,24 @@ class BusinessAvailabilityRepositoryISpec(global: GlobalRead) extends IOSuite {
       updateResult <- businessAvailabilityRepo.updateOpeningHours(updateRequest)
     } yield expect.all(
       createResult == Valid(expectedCreatedResult),
+      updateResult == Valid(expectedUpdateResult)
+    )
+  }
+
+  test(".updateDaysOpen() - should update the days a business is available for") { businessAvailabilityRepo =>
+
+    val updateRequest =
+      UpdateBusinessDaysRequest(
+        userId = userId1,
+        businessId = businessId6,
+        days = List(Monday, Tuesday, Wednesday, Thursday)
+      )
+
+    val expectedUpdateResult = UpdateSuccess
+
+    for {
+      updateResult <- businessAvailabilityRepo.updateDaysOpen(updateRequest)
+    } yield expect.all(
       updateResult == Valid(expectedUpdateResult)
     )
   }
