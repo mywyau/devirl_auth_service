@@ -5,17 +5,16 @@ import cats.implicits.*
 import cats.syntax.all.*
 import configuration.AppConfig
 import dev.profunktor.redis4cats.*
-import dev.profunktor.redis4cats.RedisCommands
 import dev.profunktor.redis4cats.data.RedisCodec
 import dev.profunktor.redis4cats.effect.Log.Stdout.*
+import dev.profunktor.redis4cats.RedisCommands
 import io.circe.generic.auto.*
 import io.circe.parser.decode
 import io.circe.syntax.*
 import models.auth.UserSession
-import org.http4s.EntityDecoder
 import org.http4s.circe.*
+import org.http4s.EntityDecoder
 import org.typelevel.log4cats.Logger
-
 import scala.concurrent.duration.*
 
 trait RedisCacheAlgebra[F[_]] {
@@ -29,11 +28,14 @@ trait RedisCacheAlgebra[F[_]] {
   def deleteSession(userId: String): F[Long]
 }
 
-class RedisCacheImpl[F[_] : Async : Logger](redisHost: String, redisPort: Int, appConfig: AppConfig) extends RedisCacheAlgebra[F] {
+class RedisCacheImpl[F[_] : Async : Logger](appConfig: AppConfig) extends RedisCacheAlgebra[F] {
 
   implicit val userSessionDecoder: EntityDecoder[F, UserSession] = jsonOf[F, UserSession]
 
-  private val uri = s"redis://$redisHost:$redisPort"
+  val redisHost = appConfig.redisConfig.host
+  val redisPort = appConfig.redisConfig.port
+
+  private val uri = s"redis://${redisHost}:${redisPort}"
 
   private def withRedis[A](fa: RedisCommands[F, String, String] => F[A]): F[A] = {
     val redisUri = s"redis://$redisHost:$redisPort"
@@ -98,9 +100,16 @@ object RedisCache {
   import dev.profunktor.redis4cats.effect.Log.Stdout.given // With logs
   // import dev.profunktor.redis4cats.effect.Log.NoOp.given // No logs
 
-  def apply[F[_] : Async : Logger](redisHost: String, redisPort: Int, appConfig: AppConfig): RedisCacheAlgebra[F] =
-    new RedisCacheImpl[F](redisHost, redisPort, appConfig)
+  // def apply[F[_] : Async : Logger](redisHost: String, redisPort: Int, appConfig: AppConfig): RedisCacheAlgebra[F] =
+  //   new RedisCacheImpl[F](redisHost, redisPort, appConfig)
 
-  def make[F[_] : Async : Logger](redisHost: String, redisPort: Int, appConfig: AppConfig): Resource[F, RedisCacheAlgebra[F]] =
-    Resource.pure(apply(redisHost, redisPort, appConfig))
+  def apply[F[_] : Async : Logger](appConfig: AppConfig): RedisCacheAlgebra[F] =
+    new RedisCacheImpl[F](appConfig)
+
+  // def make[F[_] : Async : Logger](redisHost: String, redisPort: Int, appConfig: AppConfig): Resource[F, RedisCacheAlgebra[F]] =
+  // Resource.pure(apply(redisHost, redisPort, appConfig))
+
+  def make[F[_] : Async : Logger](appConfig: AppConfig): Resource[F, RedisCacheAlgebra[F]] =
+    Resource.pure(apply(appConfig))
+
 }

@@ -39,7 +39,7 @@ object TestRoutes extends BaseAppConfig {
     baseController.routes
   }
 
-  def createTestRouter(transactor: Transactor[IO], appConfig: AppConfig): Resource[IO, HttpRoutes[IO]] = {
+  def createTestRouter(appConfig: AppConfig, transactor: Transactor[IO]): Resource[IO, HttpRoutes[IO]] = {
 
     val redisHost = sys.env.getOrElse("REDIS_HOST", appConfig.redisConfig.host)
     val redisPort = sys.env.get("REDIS_PORT").flatMap(p => scala.util.Try(p.toInt).toOption).getOrElse(appConfig.redisConfig.port)

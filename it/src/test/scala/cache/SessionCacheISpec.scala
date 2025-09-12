@@ -16,7 +16,6 @@ import weaver.GlobalRead
 import weaver.IOSuite
 
 class SessionCacheISpec(global: GlobalRead) extends IOSuite with ControllerISpecBase {
-
   type Res = (SessionCacheResource, HttpClientResource)
 
   // Sample session data for tests
@@ -47,12 +46,12 @@ class SessionCacheISpec(global: GlobalRead) extends IOSuite with ControllerISpec
       client <- global.getOrFailR[HttpClientResource]()
     } yield (sessionCache, client)
 
-  test("getSession returns empty for a not present key  - return empty") { (shared, log) =>
+  test(".getSession() returns empty for a not present key  - return empty") { (shared, log) =>
     val cache = shared._1.sessionCache
     cache.getSession("no-user").map(result => expect(result == None))
   }
 
-  test("storeSession / getSession should round-trip JSON") { (shared, log) =>
+  test(".storeSession() / getSession should round-trip JSON") { (shared, log) =>
     val cache = shared._1.sessionCache
     for {
       // store the full JSON
@@ -64,7 +63,7 @@ class SessionCacheISpec(global: GlobalRead) extends IOSuite with ControllerISpec
     } yield e1.and(e2)
   }
 
-  test("lookupSession should decode the stored session") { (shared, log) =>
+  test(".lookupSession() - should decode the stored session") { (shared, log) =>
 
     val cache = shared._1.sessionCache
 
@@ -74,7 +73,7 @@ class SessionCacheISpec(global: GlobalRead) extends IOSuite with ControllerISpec
     } yield expect(found.contains(testSession4))
   }
 
-  test("deleteSession should remove keys") { (shared, log) =>
+  test(".deleteSession() should remove keys") { (shared, log) =>
     val cache = shared._1.sessionCache
     for {
       _ <- cache.storeSession(testSession3.userId, Some(testSession3))
@@ -87,7 +86,7 @@ class SessionCacheISpec(global: GlobalRead) extends IOSuite with ControllerISpec
     } yield e1.and(e2).and(e3)
   }
 
-  test("storeOnlyCookie writes raw token and lookupSession fails") { (shared, log) =>
+  test(".storeOnlyCookie() writes raw token and lookupSession fails") { (shared, log) =>
 
     val cache = shared._1.sessionCache
 

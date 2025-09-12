@@ -1,4 +1,4 @@
-package testData
+package test_data
 
 import java.time.Instant
 import java.time.LocalDateTime
@@ -18,24 +18,6 @@ object ITestConstants {
   val clientId4 = "clientId4"
   val clientId5 = "clientId5"
 
-  val businessId1 = "businessId1"
-  val businessId2 = "businessId2"
-  val businessId3 = "businessId3"
-  val businessId4 = "businessId4"
-  val businessId5 = "businessId5"
-  val businessId6 = "businessId6"
-
-  val officeId1 = "officeId1"
-  val officeId2 = "officeId2"
-  val officeId3 = "officeId3"
-  val officeId4 = "officeId4"
-  val officeId5 = "officeId5"
-  val officeId6 = "officeId6"
-
-  val businessName1 = "businessName1"
-  val businessName2 = "businessName2"
-  val businessName3 = "businessName3"
-
   val buildingName1 = "butter building"
   val floorNumber1 = "floor 1"
   val floorNumber2 = "floor 2"
@@ -48,9 +30,7 @@ object ITestConstants {
   val longitude1 = -100.1
 
   val officeName1 = "Magnificent Office"
-
   val officeDescription1 = "some office description"
-
   val businessDescription1 = "some business description"
 
   val openingTime0900 = LocalTime.of(9, 0, 0)

@@ -1,16 +1,18 @@
 package controllers
 
-import infrastructure.cache.*
+import cats.effect.*
 import com.comcast.ip4s.Host
 import com.comcast.ip4s.Port
-import cats.effect.*
 import configuration.models.*
+import configuration.AppConfig
 import configuration.BaseAppConfig
 import controllers.test_routes.TestRoutes.*
 import dev.profunktor.redis4cats.Redis
 import doobie.*
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
+import infrastructure.cache.*
+import infrastructure.cache.SessionCache
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.client.Client
@@ -28,7 +30,6 @@ import shared.SessionCacheResource
 import shared.TransactorResource
 import weaver.GlobalResource
 import weaver.GlobalWrite
-import infrastructure.cache.SessionCache
 
 object ControllerSharedResource extends GlobalResource with BaseAppConfig {
 
@@ -48,44 +49,62 @@ object ControllerSharedResource extends GlobalResource with BaseAppConfig {
     EmberClientBuilder.default[IO].build
 
   def serverResource(
-    host: Host,
-    port: Port,
-    router: Resource[IO, HttpRoutes[IO]]
-  ): Resource[IO, Server] =
-    router.flatMap { router =>
-      EmberServerBuilder
+    appConfig: AppConfig,
+    routerResource: Resource[IO, HttpRoutes[IO]]
+  ) = {
+
+    val hostResource: Resource[IO, Host] =
+      Resource.eval(
+        IO.fromEither(
+          Host
+            .fromString(appConfig.serverConfig.host)
+            .toRight(new RuntimeException("[ControllerSharedResource] Invalid host configuration"))
+        )
+      )
+
+    val portResource: Resource[IO, Port] =
+      Resource.eval(
+        IO.fromEither(
+          Port
+            .fromInt(appConfig.serverConfig.port)
+            .toRight(new RuntimeException("[ControllerSharedResource] Invalid port configuration"))
+        )
+      )
+
+    for {
+      host: Host <- hostResource
+      port: Port <- portResource
+      router: HttpRoutes[IO] <- routerResource
+      server <- EmberServerBuilder
         .default[IO]
         .withHost(host)
         .withPort(port)
         .withHttpApp(router.orNotFound)
         .build
-    }
+    } yield server
+  }
 
   def sharedResources(global: GlobalWrite): Resource[IO, Unit] =
     for {
       appConfig <- appConfigResource
-      host <- hostResource(appConfig)
-      port <- portResource(appConfig)
-      postgresqlConfig <- postgresqlConfigResource(appConfig)
-      postgresqlHost <- Resource.eval {
-        IO.pure(sys.env.getOrElse("DB_HOST", postgresqlConfig.host))
-      }
-      postgresqlPort <- Resource.eval {
-        IO.pure(sys.env.get("DB_PORT").flatMap(p => scala.util.Try(p.toInt).toOption).getOrElse(postgresqlConfig.port))
-      }
-      appRedisConfig <- redisConfigResource(appConfig)
-      redisHost <- Resource.eval {
-        IO.pure(sys.env.getOrElse("REDIS_HOST", appRedisConfig.host))
-      }
-      redisPort <- Resource.eval {
-        IO.pure(sys.env.get("REDIS_PORT").flatMap(p => scala.util.Try(p.toInt).toOption).getOrElse(appRedisConfig.port))
-      }
       ce <- executionContextResource
-      xa <- transactorResource(postgresqlConfig.copy(host = postgresqlHost, port = postgresqlPort), ce)
-      redis <- RedisCache.make[IO](redisHost, redisPort, appConfig)
-      sessionCache <- SessionCache.make[IO](redisHost, redisPort, appConfig)
+      // postgresqlConfig <- postgresqlConfigResource(appConfig)
+      // postgresqlHost <- Resource.eval(IO.pure(sys.env.getOrElse("DB_HOST", postgresqlConfig.host)))
+      // postgresqlPort <- Resource.eval(IO.pure(sys.env.get("DB_PORT").flatMap(p => scala.util.Try(p.toInt).toOption).getOrElse(postgresqlConfig.port)))
+      // appRedisConfig <- redisConfigResource(appConfig)
+      // redisHost <- Resource.eval(IO.pure(sys.env.getOrElse("REDIS_HOST", appRedisConfig.host)))
+      // redisPort <- Resource.eval(IO.pure(sys.env.get("REDIS_PORT").flatMap(p => scala.util.Try(p.toInt).toOption).getOrElse(appRedisConfig.port)))
+      postgresqlConfig: PostgresqlConfig = appConfig.postgresqlConfig
+      redisConfig: RedisConfig = appConfig.redisConfig
+      // xa <- transactorResource(postgresqlConfig.copy(host = postgresqlHost, port = postgresqlPort), ce)
+      xa <- transactorResource(postgresqlConfig, ce)
+      // redis <- RedisCache.make[IO](redisHost, redisPort, appConfig)
+      redis <- RedisCache.make[IO](appConfig)
+      sessionCache <- SessionCache.make[IO](appConfig)
       client <- clientResource
-      _ <- serverResource(host, port, createTestRouter(xa, appConfig))
+      // _ <- serverResource(host, port, createTestRouter(xa, appConfig))
+      testRouter = createTestRouter(appConfig, xa)
+      _ <- serverResource(appConfig, testRouter)
       _ <- global.putR(TransactorResource(xa))
       _ <- global.putR(HttpClientResource(client))
       _ <- global.putR(RedisCacheResource(redis))

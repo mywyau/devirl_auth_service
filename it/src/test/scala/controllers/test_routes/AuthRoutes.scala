@@ -40,14 +40,12 @@ object AuthRoutes extends BaseAppConfig {
   }
 
   def authRoutes(
-    // redisHost: String,
-    // redisPort: Int,
     appConfig: AppConfig,
     transactor: Transactor[IO]
   ): HttpRoutes[IO] = {
 
     val userDataRepository = UserDataRepository(transactor)
-    val sessionCache = new SessionCacheImpl[IO](appConfig.redisConfig.host, appConfig.redisConfig.port, appConfig)
+    val sessionCache = new SessionCacheImpl[IO](appConfig)
     val sessionService = new SessionServiceImpl[IO](userDataRepository, sessionCache)
     val authController = AuthController(sessionService)
 

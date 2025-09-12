@@ -40,9 +40,12 @@ trait SessionCacheAlgebra[F[_]] {
   def lookupSession(token: String): F[Option[UserSession]]
 }
 
-class SessionCacheImpl[F[_] : Async : Logger](redisHost: String, redisPort: Int, appConfig: AppConfig) extends SessionCacheAlgebra[F] {
+class SessionCacheImpl[F[_] : Async : Logger](appConfig: AppConfig) extends SessionCacheAlgebra[F] {
 
   implicit val userSessionDecoder: EntityDecoder[F, UserSession] = jsonOf[F, UserSession]
+
+  val redisHost = appConfig.redisConfig.host
+  val redisPort = appConfig.redisConfig.port
 
   private def withRedis[A](fa: RedisCommands[F, String, String] => F[A]): F[A] = {
     val redisUri = s"redis://$redisHost:$redisPort"
@@ -155,9 +158,15 @@ object SessionCache {
   import dev.profunktor.redis4cats.effect.Log.Stdout.given // With logs
   // import dev.profunktor.redis4cats.effect.Log.NoOp.given // No logs
 
-  def apply[F[_] : Async : Logger](redisHost: String, redisPort: Int, appConfig: AppConfig): SessionCacheAlgebra[F] =
-    new SessionCacheImpl[F](redisHost, redisPort, appConfig)
+  // def apply[F[_] : Async : Logger](redisHost: String, redisPort: Int, appConfig: AppConfig): SessionCacheAlgebra[F] =
+  //   new SessionCacheImpl[F](redisHost, redisPort, appConfig)
 
-  def make[F[_] : Async : Logger](redisHost: String, redisPort: Int, appConfig: AppConfig): Resource[F, SessionCacheAlgebra[F]] =
-    Resource.pure(apply(redisHost, redisPort, appConfig))
+  // def make[F[_] : Async : Logger](redisHost: String, redisPort: Int, appConfig: AppConfig): Resource[F, SessionCacheAlgebra[F]] =
+  //   Resource.pure(apply(redisHost, redisPort, appConfig))
+
+  def apply[F[_] : Async : Logger](appConfig: AppConfig): SessionCacheAlgebra[F] =
+    new SessionCacheImpl[F](appConfig)
+
+  def make[F[_] : Async : Logger](appConfig: AppConfig): Resource[F, SessionCacheAlgebra[F]] =
+    Resource.pure(apply(appConfig))
 }

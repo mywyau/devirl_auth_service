@@ -12,7 +12,10 @@ import org.http4s.client.Client
 import org.http4s.headers.Origin
 import org.http4s.server.middleware.CORS
 import org.http4s.server.Router
-import org.http4s.{HttpApp, HttpRoutes, Method, Uri}
+import org.http4s.HttpApp
+import org.http4s.HttpRoutes
+import org.http4s.Method
+import org.http4s.Uri
 import org.typelevel.ci.CIString
 import org.typelevel.log4cats.Logger
 import routes.*
@@ -20,7 +23,7 @@ import scala.concurrent.duration.*
 
 object HttpModule {
 
-  def corsPolicy[F[_]: Async: Parallel: Logger](routes: HttpRoutes[F]): HttpRoutes[F] =
+  def corsPolicy[F[_] : Async : Parallel : Logger](routes: HttpRoutes[F]): HttpRoutes[F] =
     CORS.policy
       .withAllowOriginHost(
         Set(
@@ -45,26 +48,26 @@ object HttpModule {
       .withAllowMethodsIn(Set(Method.GET, Method.POST, Method.PUT, Method.DELETE, Method.OPTIONS))
       .apply(routes)
 
-  private def allRoutes[F[_]: Async: Parallel: Logger](
+  private def allRoutes[F[_] : Async : Parallel : Logger](
     appConfig: AppConfig,
     transactor: HikariTransactor[F],
     redisHost: String,
     redisPort: Int,
     redis: RedisCommands[F, String, String],
-    httpClient: Client[F],
+    httpClient: Client[F]
   ): HttpRoutes[F] =
     Router(
       "/dev-quest-service" -> (
         Routes.baseRoutes() <+>
-        AuthRoutes.authRoutes(redisHost, redisPort, transactor, appConfig)
+          AuthRoutes.authRoutes(appConfig, transactor)
       )
     )
 
-  def make[F[_]: Async: Parallel: Logger](
+  def make[F[_] : Async : Parallel : Logger](
     appConfig: AppConfig,
     transactor: HikariTransactor[F],
     redis: RedisCommands[F, String, String],
-    httpClient: Client[F],
+    httpClient: Client[F]
   ): Resource[F, HttpApp[F]] = {
 
     val redisHost = appConfig.redisConfig.host

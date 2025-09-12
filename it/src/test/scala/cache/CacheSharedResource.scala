@@ -1,6 +1,5 @@
 package cache
 
-import infrastructure.cache.*
 import cats.data.Validated
 import cats.data.Validated.Invalid
 import cats.data.Validated.Valid
@@ -18,6 +17,7 @@ import dev.profunktor.redis4cats.Redis
 import doobie.*
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
+import infrastructure.cache.*
 import io.circe.parser
 import io.circe.syntax.EncoderOps
 import io.circe.Json
@@ -78,7 +78,7 @@ object CacheSharedResource extends GlobalResource with BaseAppConfig {
       }
       ce <- executionContextResource
       client <- clientResource
-      sessionCache <- infrastructure.cache.SessionCache.make[IO](redisHost, redisPort, appConfig)
+      sessionCache <- infrastructure.cache.SessionCache.make[IO](appConfig)
       _ <- global.putR(HttpClientResource(client))
       _ <- global.putR(SessionCacheResource(sessionCache))
     } yield ()
