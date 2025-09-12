@@ -14,10 +14,6 @@ import org.http4s.HttpRoutes
 import org.typelevel.log4cats.Logger
 import repositories.*
 import services.*
-import services.s3.LiveS3Client
-import services.s3.LiveS3Presigner
-import services.s3.UploadServiceImpl
-import services.LevelService
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider

@@ -1,15 +1,14 @@
 package controllers.mocks
 
-import infrastructure.cache.SessionCacheAlgebra
 import cats.data.Validated
 import cats.data.ValidatedNel
 import cats.effect.*
 import cats.implicits.*
 import dev.profunktor.redis4cats.RedisCommands
 import doobie.util.transactor.Transactor
+import infrastructure.cache.SessionCacheAlgebra
 import models.auth.UserSession
 import models.cache.*
-import models.pricing.PlanSnapshot
 import org.http4s.server.Router
 import org.http4s.HttpRoutes
 import org.http4s.Uri
@@ -17,7 +16,6 @@ import org.typelevel.log4cats.slf4j.Slf4jLogger
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import repositories.*
 import services.*
-import services.stripe.*
 
 class MockSessionCache(ref: Ref[IO, Map[String, UserSession]]) extends SessionCacheAlgebra[IO] {
 

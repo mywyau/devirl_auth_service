@@ -129,26 +129,6 @@ class UserDataControllerImpl[F[_] : Async : Concurrent : Logger](
           Unauthorized(`WWW-Authenticate`(Challenge("Bearer", "api")), "Missing Cookie")
       }
 
-    // case req @ PUT -> Root / "user" / "update" / "type" / userId =>
-    //   extractSessionToken(req) match {
-    //     case Some(headerToken) =>
-    //       withValidSession(userId, headerToken) {
-    //         Logger[F].debug(s"[UserDataControllerImpl] PUT - Updating user with ID: $userId") *>
-    //           req.decode[Registration] { request =>
-    //             userService.registerUser(userId, request).flatMap {
-    //               case Valid(response) =>
-    //                 Logger[F].debug(s"[UserDataControllerImpl] PUT - Successfully updated user for ID: $userId") *>
-    //                   Ok(UpdatedResponse(UpdateSuccess.toString, s"User $userId updated successfully with type: ${request.userType}").asJson)
-    //               case Invalid(errors) =>
-    //                 Logger[F].debug(s"[UserDataControllerImpl] PUT - Validation failed for user update: ${errors.toList}") *>
-    //                   BadRequest(ErrorResponse(code = "VALIDATION_ERROR", message = errors.toList.mkString(", ")).asJson)
-    //             }
-    //           }
-    //       }
-    //     case None =>
-    //       Unauthorized(`WWW-Authenticate`(Challenge("Bearer", "api")), "Missing Cookie")
-    //   }
-
     case req @ DELETE -> Root / "user" / "data" / "delete" / userId =>
       extractCookieSessionToken(req) match {
         case Some(headerToken) =>
