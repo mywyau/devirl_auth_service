@@ -22,7 +22,6 @@ import org.http4s.implicits.*
 import org.http4s.server.Server
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import org.typelevel.log4cats.Logger
-import repository.DatabaseResource.postgresqlConfigResource
 import scala.concurrent.ExecutionContext
 import shared.HttpClientResource
 import shared.RedisCacheResource
@@ -88,21 +87,12 @@ object ControllerSharedResource extends GlobalResource with BaseAppConfig {
     for {
       appConfig <- appConfigResource
       ce <- executionContextResource
-      // postgresqlConfig <- postgresqlConfigResource(appConfig)
-      // postgresqlHost <- Resource.eval(IO.pure(sys.env.getOrElse("DB_HOST", postgresqlConfig.host)))
-      // postgresqlPort <- Resource.eval(IO.pure(sys.env.get("DB_PORT").flatMap(p => scala.util.Try(p.toInt).toOption).getOrElse(postgresqlConfig.port)))
-      // appRedisConfig <- redisConfigResource(appConfig)
-      // redisHost <- Resource.eval(IO.pure(sys.env.getOrElse("REDIS_HOST", appRedisConfig.host)))
-      // redisPort <- Resource.eval(IO.pure(sys.env.get("REDIS_PORT").flatMap(p => scala.util.Try(p.toInt).toOption).getOrElse(appRedisConfig.port)))
       postgresqlConfig: PostgresqlConfig = appConfig.postgresqlConfig
       redisConfig: RedisConfig = appConfig.redisConfig
-      // xa <- transactorResource(postgresqlConfig.copy(host = postgresqlHost, port = postgresqlPort), ce)
       xa <- transactorResource(postgresqlConfig, ce)
-      // redis <- RedisCache.make[IO](redisHost, redisPort, appConfig)
       redis <- RedisCache.make[IO](appConfig)
       sessionCache <- SessionCache.make[IO](appConfig)
       client <- clientResource
-      // _ <- serverResource(host, port, createTestRouter(xa, appConfig))
       testRouter = createTestRouter(appConfig, xa)
       _ <- serverResource(appConfig, testRouter)
       _ <- global.putR(TransactorResource(xa))

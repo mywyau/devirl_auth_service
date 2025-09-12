@@ -33,7 +33,6 @@ import org.http4s.server.Server
 import org.http4s.EntityDecoder
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import org.typelevel.log4cats.Logger
-import repository.DatabaseResource.postgresqlConfigResource
 import scala.concurrent.duration.*
 import scala.concurrent.ExecutionContext
 import shared.HttpClientResource
@@ -69,13 +68,6 @@ object CacheSharedResource extends GlobalResource with BaseAppConfig {
   def sharedResources(global: GlobalWrite): Resource[IO, Unit] =
     for {
       appConfig <- appConfigResource
-      appRedisConfig <- redisConfigResource(appConfig)
-      redisHost <- Resource.eval {
-        IO.pure(sys.env.getOrElse("REDIS_HOST", appRedisConfig.host))
-      }
-      redisPort <- Resource.eval {
-        IO.pure(sys.env.get("REDIS_PORT").flatMap(p => scala.util.Try(p.toInt).toOption).getOrElse(appRedisConfig.port))
-      }
       ce <- executionContextResource
       client <- clientResource
       sessionCache <- infrastructure.cache.SessionCache.make[IO](appConfig)

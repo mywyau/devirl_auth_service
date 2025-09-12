@@ -29,15 +29,8 @@ object DatabaseResource extends GlobalResource with BaseAppConfig {
   def sharedResources(global: GlobalWrite): Resource[IO, Unit] =
     for {
       appConfig <- appConfigResource
-      postgresqlConfig <- postgresqlConfigResource(appConfig)
-      postgresqlHost <- Resource.eval {
-        IO.pure(sys.env.getOrElse("DB_HOST", postgresqlConfig.host))
-      }
-      postgresqlPort <- Resource.eval {
-        IO.pure(sys.env.get("DB_PORT").flatMap(p => scala.util.Try(p.toInt).toOption).getOrElse(postgresqlConfig.port))
-      }
       ce <- executionContextResource
-      xa <- transactorResource(postgresqlConfig.copy(host = postgresqlHost, port = postgresqlPort), ce)
+      xa <- transactorResource(appConfig.postgresqlConfig, ce)
       _ <- global.putR(TransactorResource(xa))
       // Uncomment the following lines to enable schema printing and test insertion during initialization
       // _ <- printSchema(xa)
