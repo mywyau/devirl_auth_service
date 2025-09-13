@@ -161,21 +161,7 @@ accidentally set a new schema in flyway conf
 ```
 ALTER ROLE shared_user SET search_path TO share_schema, public;
 ```
-
-### Httpie requests
-
-We can use httpie instead of curl to trigger our endpoints.
-
-```
-
-```
-
-### TODO: WIP
-
-```
-sbt docker:publishLocal
-```
-
+---
 
 ### Mermaid Wireframe Diagrams
 
@@ -185,7 +171,7 @@ To view any mermaid diagrams
 command+shift+v 
 ```
 
-## ✅ Option 3: Export to images (for READMEs, docs, or Confluence)
+### Mermaid diagram notes export to images (for READMEs, docs, or Confluence)
 
 This can be in a separate repo so we do not install the dependency here.
 
