@@ -57,7 +57,7 @@ object HttpModule {
     httpClient: Client[F]
   ): HttpRoutes[F] =
     Router(
-      "/dev-quest-service" -> (
+      "/devirl-auth-service" -> (
         Routes.baseRoutes() <+>
           AuthRoutes.authRoutes(appConfig, transactor)
       )

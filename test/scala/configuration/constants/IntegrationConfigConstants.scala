@@ -35,7 +35,7 @@ object IntegrationConfigConstants {
   val kafkaConfig =
     KafkaConfig(
       bootstrapServers = "localhost:9092",
-      clientId = "dev-quest-service",
+      clientId = "devirl-auth-service",
       acks = "all",
       lingerMs = 5,
       retries = 10,

@@ -53,7 +53,7 @@ object TestRoutes extends BaseAppConfig {
         appConfig.kafka.retries
       )
     } yield Router(
-      "/dev-quest-service" -> (
+      "/devirl-auth-service" -> (
         baseRoutes() <+>
           authRoutes(appConfig, transactor)
       )
