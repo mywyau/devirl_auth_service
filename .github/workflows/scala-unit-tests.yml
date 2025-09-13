@@ -55,7 +55,7 @@ jobs:
       REDIS_PORT: "6379"
 
       DB_HOST: postgres
-      DB_PORT: "5432"
+      DB_PORT: "5431"
       DB_USER: dev_quest_test_user
       DB_PASSWORD: turnip
       DB_NAME: dev_quest_test_db
@@ -157,7 +157,7 @@ jobs:
           PGPASSWORD: turnip
         run: |
           for i in {1..30}; do
-            if pg_isready -h postgres -p 5432 -U dev_quest_test_user; then
+            if pg_isready -h postgres -p 5431 -U dev_quest_test_user; then
               echo "Postgres is ready";
               break;
             fi
@@ -169,8 +169,8 @@ jobs:
         env:
           PGPASSWORD: turnip
         run: |
-          psql -h postgres -p 5432 -U dev_quest_test_user -d postgres -c "DROP DATABASE IF EXISTS dev_quest_test_db;"
-          psql -h postgres -p 5432 -U dev_quest_test_user -d postgres -c "CREATE DATABASE dev_quest_test_db;"
+          psql -h postgres -p 5431 -U dev_quest_test_user -d postgres -c "DROP DATABASE IF EXISTS dev_quest_test_db;"
+          psql -h postgres -p 5431 -U dev_quest_test_user -d postgres -c "CREATE DATABASE dev_quest_test_db;"
 
       - name: Install AWS CLI v2 (no sudo)
         run: |
