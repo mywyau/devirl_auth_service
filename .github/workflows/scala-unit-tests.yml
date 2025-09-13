@@ -1,4 +1,4 @@
-name: dev-quest-service Unit and Integration Tests
+name: devirl-auth-service Unit and Integration Tests
 
 on:
   push:
