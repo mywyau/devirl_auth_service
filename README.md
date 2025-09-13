@@ -1,17 +1,21 @@
-# dev-quest-service
+# devirl_auth_service
 
-This Backend service is responsible for business domain data e.g. businesses, offices and desks.
+Auth backend microservice codebase
 
 ### Order of setup scripts:
+
+To run the app locally and run integration tests
 
 To set up the postgres db please run scripts from repo:
 
 ### dev-irl-database-setup
 
 1. ./setup_postgres.sh
+1. ./setup_postgres_it.sh
 2. ./setup_flyway_migrations.sh
 
-Then (this can be ran whenever):
+(Note to run and test locally this is not necessarily needed but can be ran to check the docker container build)
+To build the Application docker container locally:
 
 ```
  ./setup_app.sh
@@ -55,11 +59,54 @@ del <keyId>
 ./run.sh
 ```
 
-### To run the tests locally
+or
+
+```
+sbt run
+```
+
+### To run the unit tests
 
 ```
 ./run_tests.sh
 ```
+
+or
+
+```
+sbt test
+```
+
+### To run the integration tests
+
+```
+./run_tests.sh
+```
+
+or
+
+```
+sbt test
+```
+
+### Application Config:
+
+APP_ENV environment variable controls which app config is ran with "local" being the default when running the application locally 
+
+Running integration tests APP_ENV is set to "integration" in build.sbt, hence referencing:
+
+```
+devirl_auth_service/src/main/resources/application.integration.conf
+```
+
+### Production App Config
+
+Production build dockerfile ENV APP_ENV=prod hence referencing: 
+
+```
+devirl_auth_service/src/main/resources/application.prod.conf
+```
+
 
 ### To run only a single test suite in the integration tests:
 
@@ -129,121 +176,10 @@ We can use httpie instead of curl to trigger our endpoints.
 sbt docker:publishLocal
 ```
 
-### Make s3 test bucket for it tests
-
-aws --endpoint-url=http://localhost:4566 s3 mb s3://test-bucket
-aws --endpoint-url=http://localhost:4566 s3 mb s3://dev-submissions
-aws --endpoint-url=http://localhost:4566 s3 ls s3://test-bucket
-
----
-
-### Inspect local stack bucket contents from testing
-
-aws --endpoint-url=http://localhost:4566 s3 cp s3://test-bucket/integration-test/hello.txt - | cat
-
-aws --endpoint-url=http://localhost:4566 s3api get-object \
- --bucket test-bucket \
- --key integration-test/hello.txt \
- output.txt
-
-cat output.txt
-
----
-
-```
-aws --endpoint-url=http://localhost:4566 s3 ls s3://test-bucket/uploads/
-```
-
-```
-aws --endpoint-url=http://localhost:4566 s3api get-object \
-  --bucket test-bucket \
-  --key uploads/<UUID>-test.txt \
-  output.txt
-
-cat output.txt
-```
-
-http -f POST http://localhost:8080/dev-quest-service/upload file@./src/main/scala/controllers/UploadController.scala
-
-aws --endpoint-url=http://localhost:4566 s3 ls s3://dev-submissions/uploads/
-
-aws --endpoint-url=http://localhost:4566 s3api get-object \
- --bucket dev-submissions \
- --key uploads/ed677064-ac83-4bf5-9885-e834df6c80bc-UploadController.scala \
- output.txt
-
-cat output.txt
-
-### some useful http commands to testing and reminding
-
-```
-http --download "http://localhost:4566/dev-submissions/uploads/ed677064-ac83-4bf5-9885-e834df6c80bc-UploadController.scala?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250611T174401Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIA46ZDE3YHIZ4M2JBR%2F20250611%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Expires=900&X-Amz-Signature=0abf1491fa2c893969b0e37c8c68f221ef1dd98a7d90285f8ab713dcecd99d1f"
-http POST http://localhost:8080/dev-quest-service/s3/presign-download key="uploads/ed677064-ac83-4bf5-9885-e834df6c80bc-UploadController.scala"
-http POST http://localhost:8080/dev-quest-service/s3/presign-download key="uploads/ed677064-ac83-4bf5-9885-e834df6c80bc-UploadController.scala"
-http -f POST http://localhost:8080/dev-quest-service/upload file@./src/main/scala/controllers/UploadController.scala
-```
-
-
- uploads/b508ce06-258e-4d0b-b314-0671cbd6c982-DevQuestBackendAuthController.test.ts
-
-
-### Download example
-
-```
-http POST http://localhost:8080/dev-quest-service/s3/presign-download key=uploads/b508ce06-258e-4d0b-b314-0671cbd6c982-DevQuestBackendAuthController.test.ts
-```
-
-
-http --download GET "http://localhost:4566/dev-submissions/uploads/b508ce06-258e-4d0b-b314-0671cbd6c982-DevQuestBackendAuthController.test.ts?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250612T151211Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIA46ZDE3YHIZ4M2JBR%2F20250612%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Expires=900&X-Amz-Signature=40b039fb31d064e800a8280d25693d1acfdb1a45be613ba40d3b50fb46fcfd67"
-
-
-### 
-
-#### Request to get signed download url
-
-```
- http POST http://localhost:8080/dev-quest-service/s3/presign-download key=uploads/b508ce06-258e-4d0b-b314-0671cbd6c982-DevQuestBackendAuthController.test.ts
-```
-
-#### response for useful signed download url
-```
-HTTP/1.1 200 OK
-Connection: keep-alive
-Content-Length: 396
-Content-Type: application/json
-Date: Thu, 12 Jun 2025 15:12:11 GMT
-Vary: Origin
-
-{
-    "url": "http://localhost:4566/dev-submissions/uploads/b508ce06-258e-4d0b-b314-0671cbd6c982-DevQuestBackendAuthController.test.ts?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250612T151211Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIA46ZDE3YHIZ4M2JBR%2F20250612%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Expires=900&X-Amz-Signature=40b039fb31d064e800a8280d25693d1acfdb1a45be613ba40d3b50fb46fcfd67"
-}
-```
-
-### Download the file using signed url example
-
-```
-http --download GET  "http://localhost:4566/dev-submissions/uploads/b508ce06-258e-4d0b-b314-0671cbd6c982-DevQuestBackendAuthController.test.ts?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250612T151211Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIA46ZDE3YHIZ4M2JBR%2F20250612%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Expires=900&X-Amz-Signature=40b039fb31d064e800a8280d25693d1acfdb1a45be613ba40d3b50fb46fcfd67"
-```
-
-
-
-```
-aws --endpoint-url=http://localhost:4566 s3 rm s3://dev-submissions --recursive
-```
-
-### Stripe webhook local testing
-
-```
-stripe login
-```
-
-```
-stripe listen --forward-to localhost:8080/dev-quest-service/billing/webhook
-```
-
 
 ### Mermaid Wireframe Diagrams
-this is for mermaid diagrams 
+
+To view any mermaid diagrams 
 
 ```
 command+shift+v 
@@ -252,7 +188,6 @@ command+shift+v
 ## ✅ Option 3: Export to images (for READMEs, docs, or Confluence)
 
 This can be in a separate repo so we do not install the dependency here.
-
 
 ```
 npm install -g @mermaid-js/mermaid-cli
