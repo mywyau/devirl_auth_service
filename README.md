@@ -155,8 +155,7 @@ turnip
 
 ### Set base search path for schema
 
-••• Only needed if using multiple schemas in the db. At the moment we are using public so no need beforehand
-accidentally set a new schema in flyway conf
+Only needed if using multiple schemas in the db. At the moment we are using public so no need beforehand accidentally set a new schema in flyway conf
 
 ```
 ALTER ROLE shared_user SET search_path TO share_schema, public;
