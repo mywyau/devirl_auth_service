@@ -18,8 +18,6 @@ object AppConfigSpec extends SimpleIOSuite {
   given Eq[RedisConfig] = Eq.fromUniversalEquals
   given Eq[S3Config] = Eq.fromUniversalEquals
   given Eq[PostgresqlConfig] = Eq.fromUniversalEquals
-  given Eq[LocalAppConfig] = Eq.fromUniversalEquals
-  given Eq[IntegrationSpecConfig] = Eq.fromUniversalEquals
   given Eq[FeatureSwitches] = Eq.fromUniversalEquals
   given Eq[AppConfig] = Eq.fromUniversalEquals
 
