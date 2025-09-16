@@ -37,7 +37,6 @@ import scala.concurrent.duration.*
 import scala.concurrent.duration.DurationInt
 import services.*
 
-
 object Main extends IOApp {
 
   implicit def logger[F[_] : Sync]: Logger[F] = Slf4jLogger.getLogger[F]
@@ -66,4 +65,3 @@ object Main extends IOApp {
     serverResource.use(_ => IO.never).as(ExitCode.Success)
   }
 }
-

@@ -14,13 +14,6 @@ import org.http4s.HttpRoutes
 import org.typelevel.log4cats.Logger
 import repositories.*
 import services.*
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
-import software.amazon.awssdk.regions.Region
-import software.amazon.awssdk.services.s3.presigner.S3Presigner
-import software.amazon.awssdk.services.s3.S3AsyncClient
-import software.amazon.awssdk.services.s3.S3Configuration
 
 object Routes {
 
@@ -30,8 +23,4 @@ object Routes {
 
     baseController.routes
   }
-
-
-
-
 }

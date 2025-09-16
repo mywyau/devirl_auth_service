@@ -7,7 +7,6 @@ object AppDependencies {
   val catsEffectVersion = "3.5.1"
   val http4sVersion = "0.23.28"
   val doobieVersion = "1.0.0-RC4"
-  val passayVersion = "1.6.1"
   val jwtCirceVersion = "9.0.5"
   val redis4catsVersion = "1.7.1"
   val circeVersion = "0.14.7"
@@ -32,16 +31,12 @@ object AppDependencies {
     "org.tpolecat" %% "doobie-hikari" % doobieVersion,
     "org.tpolecat" %% "doobie-postgres" % doobieVersion,
     "org.tpolecat" %% "doobie-postgres-circe" % doobieVersion, // this one is needed
-    "org.passay" % "passay" % passayVersion,
-    "com.github.jwt-scala" %% "jwt-circe" % jwtCirceVersion,
     "dev.profunktor" %% "redis4cats-effects" % redis4catsVersion,
     "io.circe" %% "circe-generic" % circeVersion,
     "io.circe" %% "circe-core" % circeVersion,
     "io.circe" %% "circe-parser" % circeVersion,
     "org.http4s" %% "http4s-ember-client" % "0.23.28",
     "com.github.pureconfig" %% "pureconfig-core" % "0.17.8",
-    "software.amazon.awssdk" % "s3" % "2.25.0",
-    "com.stripe" % "stripe-java" % "29.2.0", // or latest
     "io.github.cdimascio" % "dotenv-java" % "3.0.0"
   )
 
@@ -52,7 +47,6 @@ object AppDependencies {
     "com.disneystreaming" %% "weaver-cats" % weaverVersion % Test,
     "com.disneystreaming" %% "weaver-scalacheck" % "0.7.6" % Test,
     "org.http4s" %% "http4s-ember-client" % "0.23.28" % Test,
-    "org.scalamock" %% "scalamock" % "7.3.2" % Test
   )
 
   // Integration test dependencies
@@ -64,7 +58,6 @@ object AppDependencies {
     "org.http4s" %% "http4s-ember-client" % "0.23.28" % Test,
     "com.disneystreaming" %% "weaver-scalacheck" % "0.7.6" % Test,
     "com.github.pureconfig" %% "pureconfig-core" % "0.17.8" % Test,
-    "org.scalamock" %% "scalamock" % "7.3.2" % Test
   )
 
   // Additional workaround for macOS if needed
