@@ -7,7 +7,5 @@ import pureconfig.ConfigReader
 case class FeatureSwitches(
   useDockerHost: Boolean,
   localTesting: Boolean,
-  useCors: Boolean,
-  useHttpsLocalstack: Boolean,
-  useProdStripe: Boolean
+  useCors: Boolean
 ) derives ConfigReader

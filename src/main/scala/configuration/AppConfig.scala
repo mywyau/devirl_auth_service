@@ -7,10 +7,8 @@ import pureconfig.generic.derivation.*
 
 case class AppConfig(
   featureSwitches: FeatureSwitches,
-  kafka: KafkaConfig,
   devIrlFrontendConfig: DevIrlFrontendConfig,
   redisConfig: RedisConfig,
   postgresqlConfig: PostgresqlConfig,
-  serverConfig: ServerConfig,
-  stripeConfig: StripeConfig
+  serverConfig: ServerConfig
 ) derives ConfigReader

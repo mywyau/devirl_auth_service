@@ -1,22 +1,20 @@
 package configuration
 
-import cats.Eq
 import cats.effect.IO
 import cats.syntax.eq.*
-import configuration.AppConfig
+import cats.Eq
 import configuration.constants.IntegrationConfigConstants.*
 import configuration.constants.LocalAppConfigConstants.*
 import configuration.constants.ProdAppConfigConstants.*
 import configuration.models.*
+import configuration.AppConfig
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 import weaver.SimpleIOSuite
 
 object AppConfigSpec extends SimpleIOSuite {
 
-  given Eq[DevSubmissionConfig] = Eq.fromUniversalEquals
   given Eq[RedisConfig] = Eq.fromUniversalEquals
-  given Eq[S3Config] = Eq.fromUniversalEquals
   given Eq[PostgresqlConfig] = Eq.fromUniversalEquals
   given Eq[FeatureSwitches] = Eq.fromUniversalEquals
   given Eq[AppConfig] = Eq.fromUniversalEquals
