@@ -49,7 +49,7 @@ object ControllerSharedResource extends GlobalResource with BaseAppConfig {
 
   def serverResource(
     appConfig: AppConfig,
-    routerResource: Resource[IO, HttpRoutes[IO]]
+    httpRoutes: HttpRoutes[IO]
   ) = {
 
     val hostResource: Resource[IO, Host] =
@@ -73,7 +73,7 @@ object ControllerSharedResource extends GlobalResource with BaseAppConfig {
     for {
       host: Host <- hostResource
       port: Port <- portResource
-      router: HttpRoutes[IO] <- routerResource
+      router: HttpRoutes[IO] = httpRoutes
       server <- EmberServerBuilder
         .default[IO]
         .withHost(host)

@@ -39,20 +39,12 @@ object TestRoutes extends BaseAppConfig {
     baseController.routes
   }
 
-  def createTestRouter(appConfig: AppConfig, transactor: Transactor[IO]): Resource[IO, HttpRoutes[IO]] = {
+  def createTestRouter(appConfig: AppConfig, transactor: Transactor[IO]): HttpRoutes[IO] = {
 
     val redisHost = sys.env.getOrElse("REDIS_HOST", appConfig.redisConfig.host)
     val redisPort = sys.env.get("REDIS_PORT").flatMap(p => scala.util.Try(p.toInt).toOption).getOrElse(appConfig.redisConfig.port)
 
-    for {
-      kafkaProducer: KafkaProducer[IO, String, String] <- KafkaProducerProvider.make[IO](
-        appConfig.kafka.bootstrapServers,
-        appConfig.kafka.clientId,
-        appConfig.kafka.acks,
-        appConfig.kafka.lingerMs,
-        appConfig.kafka.retries
-      )
-    } yield Router(
+    Router(
       "/devirl-auth-service" -> (
         baseRoutes() <+>
           authRoutes(appConfig, transactor)
