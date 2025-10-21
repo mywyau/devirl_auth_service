@@ -29,7 +29,7 @@ trait SessionServiceAlgebra[F[_]] {
 
   def storeOnlyCookie(userId: String, token: String): F[Unit]
 
-  def storeUserSession(userId: String, cookieToken: String): F[ValidatedNel[CacheErrors, CacheSuccess]]
+  def syncUserSessionFromDb(userId: String, cookieToken: String): F[ValidatedNel[CacheErrors, CacheSuccess]]
 
   def updateUserSession(userId: String, cookieToken: String): F[ValidatedNel[CacheErrors, CacheSuccess]]
 
@@ -51,7 +51,7 @@ class SessionServiceImpl[F[_] : Concurrent : Monad : Logger](
   override def storeOnlyCookie(userId: String, cookieToken: String): F[Unit] = 
     sessionCache.storeOnlyCookie(userId, cookieToken)
 
-  override def storeUserSession(
+  override def syncUserSessionFromDb(
     userId: String,
     cookieToken: String
   ): F[ValidatedNel[CacheErrors, CacheSuccess]] =

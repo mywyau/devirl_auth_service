@@ -6,24 +6,25 @@ import cats.effect.*
 import cats.implicits.*
 import configuration.AppConfig
 import configuration.BaseAppConfig
-import controllers.mocks.*
 import controllers.AuthController
 import controllers.RegistrationController
+import controllers.mocks.*
 import dev.profunktor.redis4cats.RedisCommands
 import doobie.util.transactor.Transactor
 import infrastructure.cache.*
+import models.auth.UserSession
+import models.cache.*
+import org.http4s.HttpRoutes
+import org.http4s.Uri
+import org.http4s.server.Router
+import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
+import repositories.*
+import services.*
+
 import java.net.URI
 import java.time.Duration
 import java.time.Instant
-import models.auth.UserSession
-import models.cache.*
-import org.http4s.server.Router
-import org.http4s.HttpRoutes
-import org.http4s.Uri
-import org.typelevel.log4cats.slf4j.Slf4jLogger
-import org.typelevel.log4cats.SelfAwareStructuredLogger
-import repositories.*
-import services.*
 
 object AuthRoutes extends BaseAppConfig {
 
@@ -37,19 +38,6 @@ object AuthRoutes extends BaseAppConfig {
       email = s"$userId@example.com",
       userType = "Dev"
     )
-  }
-
-  def authRoutes(
-    appConfig: AppConfig,
-    transactor: Transactor[IO]
-  ): HttpRoutes[IO] = {
-
-    val userDataRepository = UserDataRepository(transactor)
-    val sessionCache = new SessionCacheImpl[IO](appConfig)
-    val sessionService = new SessionServiceImpl[IO](userDataRepository, sessionCache)
-    val authController = AuthController(sessionService)
-
-    authController.routes
   }
 
   val mockAuthCachedSessions =
@@ -67,7 +55,20 @@ object AuthRoutes extends BaseAppConfig {
       )
     )
 
-  def userDataRoutes(appConfig: AppConfig, transactor: Transactor[IO]): Resource[IO, HttpRoutes[IO]] =
+  def authRoutes(
+    appConfig: AppConfig,
+    transactor: Transactor[IO]
+  ): HttpRoutes[IO] = {
+
+    val userDataRepository = UserDataRepository(transactor)
+    val sessionCache = new SessionCacheImpl[IO](appConfig)
+    val sessionService = new SessionServiceImpl[IO](userDataRepository, sessionCache)
+    val authController = AuthController(sessionService)
+
+    authController.routes
+  }
+
+  def registrationRoutes(appConfig: AppConfig, transactor: Transactor[IO]): Resource[IO, HttpRoutes[IO]] =
     for {
       ref <- Resource.eval(mockAuthCachedSessions)
       mockSessionCache = new MockSessionCache(ref)

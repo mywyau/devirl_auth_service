@@ -9,7 +9,7 @@ case class UserSession(
   userId: String,
   cookieValue: String,
   email: String,
-  userType: String
+    userType: String
 )
 
 object UserSession {

@@ -1,11 +1,11 @@
 package models.responses
 
-import io.circe.generic.semiauto.deriveDecoder
-import io.circe.generic.semiauto.deriveEncoder
 import io.circe.Decoder
 import io.circe.Encoder
+import io.circe.generic.semiauto.deriveDecoder
+import io.circe.generic.semiauto.deriveEncoder
 
-case class GetResponse(code:String, message: String)
+case class GetResponse(code: String, message: String)
 
 object GetResponse {
   implicit val encoder: Encoder[GetResponse] = deriveEncoder[GetResponse]
