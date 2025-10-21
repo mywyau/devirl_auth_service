@@ -1,31 +1,30 @@
 package controllers
 
 import cats.effect.*
-import controllers.ControllerISpecBase
 import controllers.fragments.UserDataControllerFragments.*
+import controllers.ControllerISpecBase
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
-import io.circe.Json
 import io.circe.syntax.*
+import io.circe.Json
+import java.time.LocalDateTime
 import models.*
 import models.auth.UserSession
 import models.database.*
 import models.responses.*
 import models.users.*
 import org.http4s.*
-import org.http4s.Method.*
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.implicits.*
+import org.http4s.Method.*
 import org.typelevel.ci.CIStringSyntax
-import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.SelfAwareStructuredLogger
 import repository.fragments.UserRepoFragments.createUserTable
 import shared.HttpClientResource
 import shared.TransactorResource
 import weaver.*
-
-import java.time.LocalDateTime
 
 class AuthControllerISpec(global: GlobalRead) extends IOSuite with ControllerISpecBase {
 
@@ -47,10 +46,10 @@ class AuthControllerISpec(global: GlobalRead) extends IOSuite with ControllerISp
     val transactor = transactorResource._1.xa
     val client = transactorResource._2.client
 
-    val reuser =
+    val request =
       Request[IO](GET, uri"http://127.0.0.1:9999/devirl-auth-service/auth/health")
 
-    client.run(reuser).use { response =>
+    client.run(request).use { response =>
       response.as[GetResponse].map { body =>
         expect.all(
           response.status == Status.Ok,
@@ -60,7 +59,7 @@ class AuthControllerISpec(global: GlobalRead) extends IOSuite with ControllerISp
     }
   }
 
-  test("GET - /devirl-auth-service/auth/session - for a given user with session stored in cache, return a successful GET response") { (transactorResource, log) =>
+  test("GET - /devirl-auth-service/auth/session/USER001 - for a given user with session stored in cache, return a successful GET response") { (transactorResource, log) =>
 
     val transactor = transactorResource._1.xa
     val client = transactorResource._2.client
@@ -69,16 +68,16 @@ class AuthControllerISpec(global: GlobalRead) extends IOSuite with ControllerISp
       UserSession(
         userId = "USER001",
         cookieValue = "test-session-token",
-        email = "fakeEmail@gmail.com",
+        email = "USER001@example.com",
         userType = "Dev"
       )
 
     val successfulResponse = GetResponse("200", s"Session token: $userSession")
 
-    val reuser =
+    val request =
       Request[IO](GET, uri"http://127.0.0.1:9999/devirl-auth-service/auth/session/USER001")
 
-    client.run(reuser).use { response =>
+    client.run(request).use { response =>
       response.as[GetResponse].map { body =>
         expect.all(
           response.status == Status.Ok,
@@ -88,7 +87,7 @@ class AuthControllerISpec(global: GlobalRead) extends IOSuite with ControllerISp
     }
   }
 
-  test("POST - /devirl-auth-service/auth/session - for a given user with session stored in cache, return a successful Created response") { (transactorResource, log) =>
+  test("POST - /devirl-auth-service/auth/session/USER007 - for a given user with session stored in cache, return a successful Created response") { (transactorResource, log) =>
 
     val transactor = transactorResource._1.xa
     val client = transactorResource._2.client
@@ -106,12 +105,12 @@ class AuthControllerISpec(global: GlobalRead) extends IOSuite with ControllerISp
     val requestBody: Json = testCreateAuth().asJson
     val expectedBody = CreatedResponse("USER007", "Session stored from cookie in session cache")
 
-    val reuser =
+    val request =
       Request[IO](POST, uri"http://127.0.0.1:9999/devirl-auth-service/auth/session/USER007")
         .addCookie("auth_session", sessionToken)
         .withEntity(requestBody)
 
-    client.run(reuser).use { response =>
+    client.run(request).use { response =>
       response.as[CreatedResponse].map { body =>
         expect.all(
           response.status == Status.Created,
@@ -121,40 +120,106 @@ class AuthControllerISpec(global: GlobalRead) extends IOSuite with ControllerISp
     }
   }
 
-  test("POST - /devirl-auth-service/auth/session/sync - for a given user with user details data in DB, store the details in the auth session cache and return a successful Created response") { (transactorResource, log) =>
+  test("POST - /devirl-auth-service/auth/session/sync/USER002 - for a given user with user details data in DB, store the details in the auth session cache and return a successful Created response") {
+    (transactorResource, log) =>
+
+      val transactor = transactorResource._1.xa
+      val client = transactorResource._2.client
+
+      val sessionToken = "test-session-token"
+
+      def testCreateAuth(): CreateUserData =
+        CreateUserData(
+          email = "danny_smith@gmail.com",
+          firstName = Some("Danny"),
+          lastName = Some("Smith"),
+          userType = Some(Client)
+        )
+
+      val requestBody: Json = testCreateAuth().asJson
+      val expectedBody = CreatedResponse("USER002", "Session synced from DB")
+
+      val request =
+        Request[IO](POST, uri"http://127.0.0.1:9999/devirl-auth-service/auth/session/sync/USER002")
+          .addCookie("auth_session", sessionToken)
+          .withEntity(requestBody)
+
+      client.run(request).use { response =>
+        response.as[CreatedResponse].map { body =>
+          expect.all(
+            response.status == Status.Created,
+            body == expectedBody
+          )
+        }
+      }
+  }
+
+  test(
+    "DELETE - /devirl-auth-service/auth/session/delete/USER004 - for a given user with user details in auth session cache, delete the details from the auth session cache. Return a successful OK response"
+  ) { (transactorResource, log) =>
 
     val transactor = transactorResource._1.xa
     val client = transactorResource._2.client
 
-    val sessionToken = "test-session-token"
+    val expectedBody = DeletedResponse("USER004", "Session deleted")
 
-    def testCreateAuth(): CreateUserData =
-      CreateUserData(
-        email = "danny_smith@gmail.com",
-        firstName = Some("Danny"),
-        lastName = Some("Smith"),
-        userType = Some(Client)
+    val getRequest =
+      Request[IO](GET, uri"http://127.0.0.1:9999/devirl-auth-service/auth/session/USER004")
+
+    val deleteRequest =
+      Request[IO](DELETE, uri"http://127.0.0.1:9999/devirl-auth-service/auth/session/delete/USER004")
+
+    // client.run(deleteRequest).use { response =>
+    //   response.as[DeletedResponse].map { body =>
+    //     expect.all(
+    //       response.status == Status.Ok,
+    //       body == expectedBody
+    //     )
+    //   }
+    // }
+
+    // client.run(getRequest).use { response =>
+    //   response.as[GetResponse].map { body =>
+    //     expect.all(
+    //       response.status == Status.Ok,
+    //       body == expectedBody
+    //     )
+    //   }
+    // }
+
+    val userSession =
+      UserSession(
+        userId = "USER004",
+        cookieValue = "test-session-token",
+        email = "USER004@example.com",
+        userType = "Dev"
       )
 
-    val requestBody: Json = testCreateAuth().asJson
-    val expectedBody = CreatedResponse("USER002", "Session synced from DB")
-
-    val reuser =
-      Request[IO](POST, uri"http://127.0.0.1:9999/devirl-auth-service/auth/session/sync/USER002")
-        .addCookie("auth_session", sessionToken)
-        .withEntity(requestBody)
-
-    client.run(reuser).use { response =>
-      response.as[CreatedResponse].map { body =>
-        expect.all(
-          response.status == Status.Created,
-          body == expectedBody
-        )
+    for {
+      initialGetExpect <- client.run(getRequest).use { response =>
+        response.as[GetResponse].map { response =>
+          expect.all(
+            response.code == "200",
+            response == GetResponse("200", s"Session token: $userSession")
+          )
+        }
       }
-    }
+      deleteExpect <- client.run(deleteRequest).use { response =>
+        response.as[DeletedResponse].map { body =>
+          expect.all(
+            response.status == Status.Ok,
+            body == expectedBody
+          )
+        }
+      }
+      afterGetExpect <- client.run(getRequest).use { response =>
+        response.as[GetResponse].map { response =>
+          expect.all(
+            response.code == "NOT_FOUND",
+            response == GetResponse("NOT_FOUND", s"No session for userId USER004")
+          )
+        }
+      }
+    } yield initialGetExpect && deleteExpect && afterGetExpect
   }
-
-
-
-
 }

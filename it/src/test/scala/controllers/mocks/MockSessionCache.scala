@@ -1,6 +1,8 @@
 package controllers.mocks
 
 import cats.data.Validated
+import cats.data.Validated.Invalid
+import cats.data.Validated.Valid
 import cats.data.ValidatedNel
 import cats.effect.*
 import cats.implicits.*
@@ -23,9 +25,27 @@ class MockSessionCache(ref: Ref[IO, Map[String, UserSession]]) extends SessionCa
 
   override def lookupSession(token: String): IO[Option[UserSession]] = ???
 
-  override def storeOnlyCookie(userId: String, token: String): IO[Unit] = ???
+  override def storeOnlyCookie(userId: String, token: String): IO[Unit] =
+    ref.update(
+      _ + (
+        userId ->
+          UserSession(
+            userId = userId,
+            cookieValue = token,
+            email = s"$userId@gmail.com",
+            userType = "Dev"
+          )
+      )
+    )
 
-  override def storeSession(userId: String, session: Option[UserSession]): IO[ValidatedNel[CacheErrors, CacheSuccess]] = ???
+  override def storeSession(userId: String, session: Option[UserSession]): IO[ValidatedNel[CacheErrors, CacheSuccess]] =
+    session match {
+      case Some(sess) =>
+        ref.update(_ + (userId -> sess)) *>
+          Sync[IO].pure(Valid(CacheUpdateSuccess))
+      case None =>
+        Sync[IO].pure(Invalid(CacheUpdateFailure).toValidatedNel)
+    }
 
   override def getSession(userId: String): IO[Option[UserSession]] =
     ref.get.map(_.get(s"auth:session:$userId"))

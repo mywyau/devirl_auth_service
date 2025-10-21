@@ -39,15 +39,17 @@ object TestRoutes extends BaseAppConfig {
     baseController.routes
   }
 
-  def createTestRouter(appConfig: AppConfig, transactor: Transactor[IO]): HttpRoutes[IO] = {
+  def createTestRouter(appConfig: AppConfig, transactor: Transactor[IO]): Resource[IO, HttpRoutes[IO]] = {
 
     val redisHost = sys.env.getOrElse("REDIS_HOST", appConfig.redisConfig.host)
     val redisPort = sys.env.get("REDIS_PORT").flatMap(p => scala.util.Try(p.toInt).toOption).getOrElse(appConfig.redisConfig.port)
 
-    Router(
+    for {
+      authRoutes <- authRoutes(appConfig, transactor)
+    } yield Router(
       "/devirl-auth-service" -> (
         baseRoutes() <+>
-          authRoutes(appConfig, transactor)
+          authRoutes
       )
     )
   }

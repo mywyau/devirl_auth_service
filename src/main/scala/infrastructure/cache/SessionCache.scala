@@ -158,12 +158,6 @@ object SessionCache {
   import dev.profunktor.redis4cats.effect.Log.Stdout.given // With logs
   // import dev.profunktor.redis4cats.effect.Log.NoOp.given // No logs
 
-  // def apply[F[_] : Async : Logger](redisHost: String, redisPort: Int, appConfig: AppConfig): SessionCacheAlgebra[F] =
-  //   new SessionCacheImpl[F](redisHost, redisPort, appConfig)
-
-  // def make[F[_] : Async : Logger](redisHost: String, redisPort: Int, appConfig: AppConfig): Resource[F, SessionCacheAlgebra[F]] =
-  //   Resource.pure(apply(redisHost, redisPort, appConfig))
-
   def apply[F[_] : Async : Logger](appConfig: AppConfig): SessionCacheAlgebra[F] =
     new SessionCacheImpl[F](appConfig)
 

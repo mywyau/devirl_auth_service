@@ -93,7 +93,7 @@ object ControllerSharedResource extends GlobalResource with BaseAppConfig {
       redis <- RedisCache.make[IO](appConfig)
       sessionCache <- SessionCache.make[IO](appConfig)
       client <- clientResource
-      testRouter = createTestRouter(appConfig, xa)
+      testRouter <- createTestRouter(appConfig, xa)
       _ <- serverResource(appConfig, testRouter)
       _ <- global.putR(TransactorResource(xa))
       _ <- global.putR(HttpClientResource(client))
