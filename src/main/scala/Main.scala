@@ -47,10 +47,8 @@ object Main extends IOApp {
       config <- Resource.eval(ConfigReader[IO].loadAppConfig)
       transactor <- DatabaseModule.make[IO](config)
       redis <- RedisModule.make[IO](config)
-      // kafkaProducers <- KafkaModule.make[IO](config)
       httpClient <- HttpClientModule.make[IO]
       httpApp <- HttpModule.make(config, transactor, redis, httpClient)
-      // _ <- BackgroundJobsModule.runAll(transactor, config, kafkaProducers.questEstimationProducer)
       host <- Resource.eval(IO.fromOption(Host.fromString(config.serverConfig.host))(new RuntimeException("Invalid host in configuration")))
       port <- Resource.eval(IO.fromOption(Port.fromInt(config.serverConfig.port))(new RuntimeException("Invalid port in configuration")))
       server <- EmberServerBuilder
