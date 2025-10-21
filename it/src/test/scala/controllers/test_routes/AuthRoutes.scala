@@ -62,7 +62,6 @@ object AuthRoutes extends BaseAppConfig {
       ref <- Resource.eval(mockAuthCachedSessions)
       mockSessionCache = new MockSessionCache(ref)
       userDataRepository = UserDataRepository(transactor)
-      // sessionCache = new SessionCacheImpl[IO](appConfig)
       sessionService = new SessionServiceImpl[IO](userDataRepository, mockSessionCache)
       authController = AuthController(sessionService)
     } yield authController.routes
