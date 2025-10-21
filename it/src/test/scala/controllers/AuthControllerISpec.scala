@@ -169,24 +169,6 @@ class AuthControllerISpec(global: GlobalRead) extends IOSuite with ControllerISp
     val deleteRequest =
       Request[IO](DELETE, uri"http://127.0.0.1:9999/devirl-auth-service/auth/session/delete/USER004")
 
-    // client.run(deleteRequest).use { response =>
-    //   response.as[DeletedResponse].map { body =>
-    //     expect.all(
-    //       response.status == Status.Ok,
-    //       body == expectedBody
-    //     )
-    //   }
-    // }
-
-    // client.run(getRequest).use { response =>
-    //   response.as[GetResponse].map { body =>
-    //     expect.all(
-    //       response.status == Status.Ok,
-    //       body == expectedBody
-    //     )
-    //   }
-    // }
-
     val userSession =
       UserSession(
         userId = "USER004",

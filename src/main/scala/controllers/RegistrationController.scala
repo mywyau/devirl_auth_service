@@ -61,7 +61,7 @@ class RegistrationControllerImpl[F[_] : Async : Concurrent : Logger](
 
     case req @ GET -> Root / "registration" / "health" =>
       Logger[F].debug(s"[BaseControllerImpl] GET - Health check for backend RegistrationController service") *>
-        Ok(GetResponse("/dev-user-service/health", "I am alive").asJson)
+        Ok(GetResponse("/devirl-auth-service/registration/health", "I am alive - RegistrationControllerImpl").asJson)
 
     case req @ GET -> Root / "registration" / "account" /"data" / userId =>
       (
