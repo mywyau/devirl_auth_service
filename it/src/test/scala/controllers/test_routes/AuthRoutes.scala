@@ -34,7 +34,7 @@ object AuthRoutes extends BaseAppConfig {
     UserSession(
       userId = userId,
       cookieValue = sessionToken,
-      email = s"$userId@example.com",
+      email = s"$userId@gmail.com",
       userType = "Dev"
     )
   }
@@ -49,6 +49,7 @@ object AuthRoutes extends BaseAppConfig {
         s"auth:session:USER005" -> fakeUserSession("USER005"),
         s"auth:session:USER006" -> fakeUserSession("USER006"),
         s"auth:session:USER008" -> fakeUserSession("USER008"),
+        s"auth:session:USER007" -> fakeUserSession("USER007"),
         s"auth:session:USER009" -> fakeUserSession("USER009"),
         s"auth:session:USER010" -> fakeUserSession("USER010")
       )

@@ -142,7 +142,7 @@ turnip
 ### To connect to TEST postgresql Database
 
 ```
-psql -h localhost -p 5431 -U dev_quest_test_user -d dev_quest_test_db
+psql -h localhost -p 5434 -U dev_auth_test_user -d dev_auth_test_db
 ```
 
 #### TEST Database Password:

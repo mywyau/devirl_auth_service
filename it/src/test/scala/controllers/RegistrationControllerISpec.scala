@@ -71,6 +71,7 @@ class RegistrationControllerISpec(global: GlobalRead) extends IOSuite with Contr
 
     def testCreateRegistration(): CreateUserData =
       CreateUserData(
+        username = "Perfect_Cell",
         email = "danny_smith@gmail.com",
         firstName = Some("Danny"),
         lastName = Some("Smith"),
@@ -84,7 +85,7 @@ class RegistrationControllerISpec(global: GlobalRead) extends IOSuite with Contr
         .addCookie("auth_session", sessionToken)
         .withEntity(requestBody)
 
-    val expectedBody = CreatedResponse(UpdateSuccess.toString(), "user details created successfully")
+    val expectedBody = CreatedResponse(code = UpdateSuccess.toString(), message = "user details created successfully")
 
     client.run(reuser).use { response =>
       response.as[CreatedResponse].map { body =>
@@ -106,8 +107,8 @@ class RegistrationControllerISpec(global: GlobalRead) extends IOSuite with Contr
 
     val sessionToken = "test-session-token"
 
-    val updateUserTypeRequest: Registration =
-      Registration(
+    val updateUserTypeRequest: RegistrationData =
+      RegistrationData(
         username = "videl2",
         firstName = "bob",
         lastName = "smith",
@@ -119,7 +120,7 @@ class RegistrationControllerISpec(global: GlobalRead) extends IOSuite with Contr
         .addCookie("auth_session", sessionToken)
         .withEntity(updateUserTypeRequest.asJson)
 
-    val expectedBody = UpdatedResponse(UpdateSuccess.toString, "User USER008 updated successfully with type: Client")
+    val expectedBody = UpdatedResponse(UpdateSuccess.toString, "User USER008 updated successfully")
 
     client.run(reuser).use { response =>
       response.as[UpdatedResponse].map { body =>
