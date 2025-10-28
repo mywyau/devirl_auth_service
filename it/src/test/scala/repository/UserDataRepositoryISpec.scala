@@ -6,25 +6,19 @@ import cats.effect.Resource
 import cats.implicits.*
 import doobie.*
 import doobie.implicits.*
-import java.time.LocalDateTime
+import models.*
 import models.database.*
-import models.database.DeleteSuccess
-import models.database.UpdateSuccess
-import models.users.CreateUserData
-import models.users.Registration
-import models.users.UserData
-import models.Client
-import models.Completed
-import models.Dev
-import models.InProgress
+import models.users.*
 import repositories.UserDataRepositoryImpl
-import repository.fragments.UserRepoFragments.*
 import repository.RepositoryISpecBase
+import repository.fragments.UserRepoFragments.*
 import shared.TransactorResource
 import test_data.ITestConstants.*
 import weaver.GlobalRead
 import weaver.IOSuite
 import weaver.ResourceTag
+
+import java.time.LocalDateTime
 
 class UserDataRepositoryISpec(global: GlobalRead) extends IOSuite with RepositoryISpecBase {
   type Res = UserDataRepositoryImpl[IO]
@@ -89,7 +83,7 @@ class UserDataRepositoryISpec(global: GlobalRead) extends IOSuite with Repositor
       originalData <- userRepo.findUser("USER002")
       result <- userRepo.registerUser(
         "USER002",
-        Registration(
+        RegistrationData(
           username = "tifa2",
           firstName = "Dylan",
           lastName = "Smith",

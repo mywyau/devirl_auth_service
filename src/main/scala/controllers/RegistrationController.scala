@@ -2,27 +2,26 @@ package controllers
 
 import cats.data.Validated.Invalid
 import cats.data.Validated.Valid
-import cats.effect.Concurrent
 import cats.effect.kernel.Async
+import cats.effect.Concurrent
 import cats.implicits.*
 import fs2.Stream
 import infrastructure.cache.*
 import infrastructure.cache.SessionCacheAlgebra
-import io.circe.Json
 import io.circe.syntax.EncoderOps
+import io.circe.Json
 import models.database.UpdateSuccess
 import models.responses.*
 import models.users.*
 import org.http4s.*
-import org.http4s.Challenge
 import org.http4s.circe.*
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.`WWW-Authenticate`
 import org.http4s.syntax.all.http4sHeaderSyntax
+import org.http4s.Challenge
 import org.typelevel.log4cats.Logger
-import services.UserDataServiceAlgebra
-
 import scala.concurrent.duration.*
+import services.UserDataServiceAlgebra
 
 trait RegistrationControllerAlgebra[F[_]] {
   def routes: HttpRoutes[F]
@@ -34,7 +33,7 @@ class RegistrationControllerImpl[F[_] : Async : Concurrent : Logger](
 ) extends Http4sDsl[F]
     with RegistrationControllerAlgebra[F] {
 
-  implicit val registrationDecoder: EntityDecoder[F, Registration] = jsonOf[F, Registration]
+  implicit val registrationDataDecoder: EntityDecoder[F, RegistrationData] = jsonOf[F, RegistrationData]
   implicit val updateUserDataDecoder: EntityDecoder[F, UpdateUserData] = jsonOf[F, UpdateUserData]
   implicit val createUserDataDecoder: EntityDecoder[F, CreateUserData] = jsonOf[F, CreateUserData]
 
@@ -61,9 +60,9 @@ class RegistrationControllerImpl[F[_] : Async : Concurrent : Logger](
 
     case req @ GET -> Root / "registration" / "health" =>
       Logger[F].debug(s"[BaseControllerImpl] GET - Health check for backend RegistrationController service") *>
-        Ok(GetResponse("/dev-user-service/health", "I am alive").asJson)
+        Ok(GetResponse("/devirl-auth-service/registration/health", "I am alive - RegistrationControllerImpl").asJson)
 
-    case req @ GET -> Root / "registration" / "account" /"data" / userId =>
+    case req @ GET -> Root / "registration" / "account" / "data" / userId =>
       (
         Logger[F].debug(s"[RegistrationController][/user/data/$userId] GET - Attempting to retrieve user details") *>
           Async[F].pure(extractCookieSessionToken(req))
@@ -108,8 +107,8 @@ class RegistrationControllerImpl[F[_] : Async : Concurrent : Logger](
         case Some(headerToken) =>
           withValidSession(userId, headerToken) {
             Logger[F].debug(s"[UserDataControllerImpl] PUT - Updating user with ID: $userId") *>
-              req.decode[UpdateUserData] { request =>
-                userService.updateUserData(userId, request).flatMap {
+              req.decode[RegistrationData] { request =>
+                userService.registerUser(userId, request).flatMap {
                   case Valid(response) =>
                     Logger[F].debug(s"[UserDataControllerImpl] PUT - Successfully updated user for ID: $userId") *>
                       Ok(UpdatedResponse(UpdateSuccess.toString, s"User $userId updated successfully").asJson)

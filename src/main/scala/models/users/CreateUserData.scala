@@ -8,6 +8,7 @@ import java.time.LocalDateTime
 import models.UserType
 
 case class CreateUserData(
+  username: String,
   email: String,
   firstName: Option[String],
   lastName: Option[String],

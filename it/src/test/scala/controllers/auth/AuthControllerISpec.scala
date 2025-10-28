@@ -37,7 +37,7 @@ class AuthControllerISpec(global: GlobalRead) extends IOSuite with ControllerISp
     UserSession(
       userId = userId,
       cookieValue = sessionToken,
-      email = "fakeEmail@gmail.com",
+      email = s"$userId@gmail.com",
       userType = "Dev"
     )
 
@@ -92,7 +92,7 @@ class AuthControllerISpec(global: GlobalRead) extends IOSuite with ControllerISp
       Request[IO](POST, uri"http://127.0.0.1:9999/devirl-auth-service/auth/session/USER006")
         .addCookie("auth_session", sessionToken)
 
-    val expectedBody = CreatedResponse("USER006", "Session stored from cookie")
+    val expectedBody = CreatedResponse("USER006", "Session stored from cookie in session cache")
 
     client.run(request).use { response =>
       response.as[CreatedResponse].map { body =>

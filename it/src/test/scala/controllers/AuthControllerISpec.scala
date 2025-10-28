@@ -68,7 +68,7 @@ class AuthControllerISpec(global: GlobalRead) extends IOSuite with ControllerISp
       UserSession(
         userId = "USER001",
         cookieValue = "test-session-token",
-        email = "USER001@example.com",
+        email = "USER001@gmail.com",
         userType = "Dev"
       )
 
@@ -96,6 +96,7 @@ class AuthControllerISpec(global: GlobalRead) extends IOSuite with ControllerISp
 
     def testCreateAuth(): CreateUserData =
       CreateUserData(
+        username = "Perfect_Cell",
         email = "danny_smith@gmail.com",
         firstName = Some("Danny"),
         lastName = Some("Smith"),
@@ -130,6 +131,7 @@ class AuthControllerISpec(global: GlobalRead) extends IOSuite with ControllerISp
 
       def testCreateAuth(): CreateUserData =
         CreateUserData(
+          username = "Perfect_Cell",
           email = "danny_smith@gmail.com",
           firstName = Some("Danny"),
           lastName = Some("Smith"),
@@ -169,29 +171,11 @@ class AuthControllerISpec(global: GlobalRead) extends IOSuite with ControllerISp
     val deleteRequest =
       Request[IO](DELETE, uri"http://127.0.0.1:9999/devirl-auth-service/auth/session/delete/USER004")
 
-    // client.run(deleteRequest).use { response =>
-    //   response.as[DeletedResponse].map { body =>
-    //     expect.all(
-    //       response.status == Status.Ok,
-    //       body == expectedBody
-    //     )
-    //   }
-    // }
-
-    // client.run(getRequest).use { response =>
-    //   response.as[GetResponse].map { body =>
-    //     expect.all(
-    //       response.status == Status.Ok,
-    //       body == expectedBody
-    //     )
-    //   }
-    // }
-
     val userSession =
       UserSession(
         userId = "USER004",
         cookieValue = "test-session-token",
-        email = "USER004@example.com",
+        email = "USER004@gmail.com",
         userType = "Dev"
       )
 

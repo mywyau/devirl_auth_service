@@ -1,24 +1,23 @@
 package repositories
 
-import cats.Monad
 import cats.data.ValidatedNel
 import cats.effect.Concurrent
 import cats.syntax.all.*
+import cats.Monad
 import doobie.*
 import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import doobie.util.transactor.Transactor
 import fs2.Stream
-import models.UserType
+import java.sql.Timestamp
+import java.time.LocalDateTime
 import models.database.*
 import models.users.*
+import models.UserType
 import org.typelevel.log4cats.Logger
 import utils.DatabaseErrorHandler
 import utils.DatabaseErrorHandler.*
-
-import java.sql.Timestamp
-import java.time.LocalDateTime
 
 trait UserDataRepositoryAlgebra[F[_]] {
 
@@ -30,14 +29,14 @@ trait UserDataRepositoryAlgebra[F[_]] {
 
   def updateUserData(userId: String, updateUserData: UpdateUserData): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
-  def registerUser(userId: String, userType: Registration): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
+  def registerUser(userId: String, registrationData: RegistrationData): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 
   def deleteUser(userId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 }
 
 class UserDataRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: Transactor[F]) extends UserDataRepositoryAlgebra[F] {
 
-  implicit val userMeta: Meta[UserType] = 
+  implicit val userMeta: Meta[UserType] =
     Meta[String].timap(UserType.fromString)(_.toString)
 
   implicit val localDateTimeMeta: Meta[LocalDateTime] =
@@ -83,6 +82,7 @@ class UserDataRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: Tra
     sql"""
       INSERT INTO users (
         user_id,
+        username,
         email,
         first_name,
         last_name,
@@ -90,6 +90,7 @@ class UserDataRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: Tra
       )
       VALUES (
         $userId,
+        ${createUserData.username},
         ${createUserData.email},
         ${createUserData.firstName},
         ${createUserData.lastName},
@@ -97,6 +98,7 @@ class UserDataRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: Tra
       )
       ON CONFLICT (user_id) DO UPDATE
       SET
+        username = EXCLUDED.username,
         email = EXCLUDED.email,
         first_name = EXCLUDED.first_name,
         last_name = EXCLUDED.last_name,
@@ -145,14 +147,14 @@ class UserDataRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: Tra
           UnexpectedResultError.invalidNel
       }
 
-  override def registerUser(userId: String, userType: Registration): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
+  override def registerUser(userId: String, registrationData: RegistrationData): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
     sql"""
       UPDATE users
       SET
-          username = ${userType.username},
-          first_name = ${userType.firstName},
-          last_name = ${userType.lastName},
-          user_type = ${userType.userType}
+          username = ${registrationData.username},
+          first_name = ${registrationData.firstName},
+          last_name = ${registrationData.lastName},
+          user_type = ${registrationData.userType}
       WHERE user_id = $userId
     """.update.run
       .transact(transactor)

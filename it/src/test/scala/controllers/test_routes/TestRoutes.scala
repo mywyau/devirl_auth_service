@@ -46,10 +46,12 @@ object TestRoutes extends BaseAppConfig {
 
     for {
       authRoutes <- authRoutes(appConfig, transactor)
+      registrationRoutes <- registrationRoutes(appConfig, transactor)
     } yield Router(
       "/devirl-auth-service" -> (
         baseRoutes() <+>
-          authRoutes
+          authRoutes <+>
+          registrationRoutes
       )
     )
   }
