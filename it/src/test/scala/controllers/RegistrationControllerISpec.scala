@@ -47,10 +47,10 @@ class RegistrationControllerISpec(global: GlobalRead) extends IOSuite with Contr
     val transactor = transactorResource._1.xa
     val client = transactorResource._2.client
 
-    val reuser =
+    val request =
       Request[IO](GET, uri"http://127.0.0.1:9999/devirl-auth-service/registration/health")
 
-    client.run(reuser).use { response =>
+    client.run(request).use { response =>
       response.as[GetResponse].map { body =>
         expect.all(
           response.status == Status.Ok,
@@ -80,14 +80,14 @@ class RegistrationControllerISpec(global: GlobalRead) extends IOSuite with Contr
 
     val requestBody: Json = testCreateRegistration().asJson
 
-    val reuser =
+    val request =
       Request[IO](POST, uri"http://127.0.0.1:9999/devirl-auth-service/registration/account/data/create/USER007")
         .addCookie("auth_session", sessionToken)
         .withEntity(requestBody)
 
     val expectedBody = CreatedResponse(code = UpdateSuccess.toString(), message = "user details created successfully")
 
-    client.run(reuser).use { response =>
+    client.run(request).use { response =>
       response.as[CreatedResponse].map { body =>
         expect.all(
           response.status == Status.Created,
@@ -115,14 +115,14 @@ class RegistrationControllerISpec(global: GlobalRead) extends IOSuite with Contr
         userType = Client
       )
 
-    val reuser =
+    val request =
       Request[IO](PUT, uri"http://127.0.0.1:9999/devirl-auth-service/registration/account/data/update/USER008")
         .addCookie("auth_session", sessionToken)
         .withEntity(updateUserTypeRequest.asJson)
 
     val expectedBody = UpdatedResponse(UpdateSuccess.toString, "User USER008 updated successfully")
 
-    client.run(reuser).use { response =>
+    client.run(request).use { response =>
       response.as[UpdatedResponse].map { body =>
         expect.all(
           response.status == Status.Ok,
