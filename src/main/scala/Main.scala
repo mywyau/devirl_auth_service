@@ -1,7 +1,7 @@
+import cats.NonEmptyParallel
 import cats.effect.*
 import cats.implicits.*
 import cats.syntax.all.*
-import cats.NonEmptyParallel
 import com.comcast.ip4s.*
 import configuration.AppConfig
 import configuration.ConfigReader
@@ -12,30 +12,30 @@ import infrastructure.Database
 import infrastructure.KafkaProducerProvider
 import infrastructure.Redis
 import infrastructure.Server
-import java.time.*
-import java.time.temporal.ChronoUnit
 import middleware.Middleware.throttleMiddleware
 import modules.*
+import org.http4s.HttpRoutes
+import org.http4s.Method
+import org.http4s.Uri
 import org.http4s.client.Client
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.headers.Origin
 import org.http4s.implicits.*
-import org.http4s.server.middleware.CORS
 import org.http4s.server.Router
 import org.http4s.server.Server
-import org.http4s.HttpRoutes
-import org.http4s.Method
-import org.http4s.Uri
+import org.http4s.server.middleware.CORS
 import org.typelevel.ci.CIString
-import org.typelevel.log4cats.slf4j.Slf4jLogger
 import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import repositories.*
-import routes.AuthRoutes.*
 import routes.Routes.*
+import services.*
+
+import java.time.*
+import java.time.temporal.ChronoUnit
 import scala.concurrent.duration.*
 import scala.concurrent.duration.DurationInt
-import services.*
 
 object Main extends IOApp {
 
@@ -43,21 +43,22 @@ object Main extends IOApp {
 
   override def run(args: List[String]): IO[ExitCode] = {
 
-    val serverResource: Resource[IO, Server] = for {
-      config <- Resource.eval(ConfigReader[IO].loadAppConfig)
-      transactor <- DatabaseModule.make[IO](config)
-      redis <- RedisModule.make[IO](config)
-      httpClient <- HttpClientModule.make[IO]
-      httpApp <- HttpModule.make(config, transactor, redis, httpClient)
-      host <- Resource.eval(IO.fromOption(Host.fromString(config.serverConfig.host))(new RuntimeException("Invalid host in configuration")))
-      port <- Resource.eval(IO.fromOption(Port.fromInt(config.serverConfig.port))(new RuntimeException("Invalid port in configuration")))
-      server <- EmberServerBuilder
-        .default[IO]
-        .withHost(host)
-        .withPort(port)
-        .withHttpApp(httpApp)
-        .build
-    } yield server
+    val serverResource: Resource[IO, Server] =
+      for {
+        config <- Resource.eval(ConfigReader[IO].loadAppConfig)
+        transactor <- DatabaseModule.make[IO](config)
+        redis <- RedisModule.make[IO](config)
+        httpClient <- HttpClientModule.make[IO]
+        httpApp <- HttpModule.make(config, transactor)
+        host <- Resource.eval(IO.fromOption(Host.fromString(config.serverConfig.host))(new RuntimeException("Invalid host in configuration")))
+        port <- Resource.eval(IO.fromOption(Port.fromInt(config.serverConfig.port))(new RuntimeException("Invalid port in configuration")))
+        server <- EmberServerBuilder
+          .default[IO]
+          .withHost(host)
+          .withPort(port)
+          .withHttpApp(httpApp)
+          .build
+      } yield server
 
     // Run the server forever
     serverResource.use(_ => IO.never).as(ExitCode.Success)

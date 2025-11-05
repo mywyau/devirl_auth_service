@@ -72,7 +72,7 @@ object AuthRoutes extends BaseAppConfig {
       ref <- Resource.eval(mockAuthCachedSessions)
       mockSessionCache = new MockSessionCache(ref)
       userDataRepository = UserDataRepository(transactor)
-      userDataService = UserDataService(userDataRepository)
-      registrationController = RegistrationController(userDataService, mockSessionCache)
+      registrationService = RegistrationService(userDataRepository)
+      registrationController = RegistrationController(registrationService, mockSessionCache)
     } yield registrationController.routes
 }

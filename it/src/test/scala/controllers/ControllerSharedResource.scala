@@ -24,7 +24,6 @@ import org.typelevel.log4cats.slf4j.Slf4jLogger
 import org.typelevel.log4cats.Logger
 import scala.concurrent.ExecutionContext
 import shared.HttpClientResource
-import shared.RedisCacheResource
 import shared.SessionCacheResource
 import shared.TransactorResource
 import weaver.GlobalResource
@@ -90,14 +89,12 @@ object ControllerSharedResource extends GlobalResource with BaseAppConfig {
       postgresqlConfig: PostgresqlConfig = appConfig.postgresqlConfig
       redisConfig: RedisConfig = appConfig.redisConfig
       xa <- transactorResource(postgresqlConfig, ce)
-      redis <- RedisCache.make[IO](appConfig)
       sessionCache <- SessionCache.make[IO](appConfig)
       client <- clientResource
       testRouter <- createTestRouter(appConfig, xa)
       _ <- serverResource(appConfig, testRouter)
       _ <- global.putR(TransactorResource(xa))
       _ <- global.putR(HttpClientResource(client))
-      _ <- global.putR(RedisCacheResource(redis))
       _ <- global.putR(SessionCacheResource(sessionCache))
     } yield ()
 }

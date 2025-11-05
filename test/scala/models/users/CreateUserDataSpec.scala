@@ -13,6 +13,7 @@ object CreateUserDataSpec extends SimpleIOSuite with ModelsBaseSpec {
 
   val testCreateUserData =
     CreateUserData(
+      username = "Username123",
       email = "USER001",
       firstName = Some("bob"),
       lastName = Some("smith"),
@@ -26,6 +27,7 @@ object CreateUserDataSpec extends SimpleIOSuite with ModelsBaseSpec {
     val expectedJson =
       """
         |{
+        |  "username": "Username123",
         |  "email": "USER001",
         |  "firstName": "bob",
         |  "lastName": "smith",

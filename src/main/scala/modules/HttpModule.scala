@@ -18,7 +18,7 @@ import org.http4s.Method
 import org.http4s.Uri
 import org.typelevel.ci.CIString
 import org.typelevel.log4cats.Logger
-import routes.*
+import routes.Routes.*
 import scala.concurrent.duration.*
 
 object HttpModule {
@@ -50,30 +50,25 @@ object HttpModule {
 
   private def allRoutes[F[_] : Async : Parallel : Logger](
     appConfig: AppConfig,
-    transactor: HikariTransactor[F],
-    redisHost: String,
-    redisPort: Int,
-    redis: RedisCommands[F, String, String],
-    httpClient: Client[F]
+    transactor: HikariTransactor[F]
   ): HttpRoutes[F] =
     Router(
       "/devirl-auth-service" -> (
-        Routes.baseRoutes() <+>
-          AuthRoutes.authRoutes(appConfig, transactor)
+        baseRoutes() <+>
+          authRoutes(appConfig, transactor) <+>
+          registrationRoutes(appConfig, transactor)
       )
     )
 
   def make[F[_] : Async : Parallel : Logger](
     appConfig: AppConfig,
-    transactor: HikariTransactor[F],
-    redis: RedisCommands[F, String, String],
-    httpClient: Client[F]
+    transactor: HikariTransactor[F]
   ): Resource[F, HttpApp[F]] = {
 
     val redisHost = appConfig.redisConfig.host
     val redisPort = appConfig.redisConfig.port
 
-    val rawRoutes = allRoutes(appConfig, transactor, redisHost, redisPort, redis, httpClient)
+    val rawRoutes = allRoutes(appConfig, transactor)
 
     val withCors =
       if (appConfig.featureSwitches.useCors) corsPolicy(rawRoutes)

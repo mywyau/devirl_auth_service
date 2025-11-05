@@ -21,14 +21,14 @@ import org.http4s.syntax.all.http4sHeaderSyntax
 import org.http4s.Challenge
 import org.typelevel.log4cats.Logger
 import scala.concurrent.duration.*
-import services.UserDataServiceAlgebra
+import services.RegistrationServiceAlgebra
 
 trait RegistrationControllerAlgebra[F[_]] {
   def routes: HttpRoutes[F]
 }
 
 class RegistrationControllerImpl[F[_] : Async : Concurrent : Logger](
-  userService: UserDataServiceAlgebra[F],
+  registrationService: RegistrationServiceAlgebra[F],
   sessionCache: SessionCacheAlgebra[F]
 ) extends Http4sDsl[F]
     with RegistrationControllerAlgebra[F] {
@@ -62,37 +62,37 @@ class RegistrationControllerImpl[F[_] : Async : Concurrent : Logger](
       Logger[F].debug(s"[BaseControllerImpl] GET - Health check for backend RegistrationController service") *>
         Ok(GetResponse("/devirl-auth-service/registration/health", "I am alive - RegistrationControllerImpl").asJson)
 
-    case req @ GET -> Root / "registration" / "account" / "data" / userId =>
-      (
-        Logger[F].debug(s"[RegistrationController][/user/data/$userId] GET - Attempting to retrieve user details") *>
-          Async[F].pure(extractCookieSessionToken(req))
-      ).flatMap {
-        case Some(cookieToken) =>
-          withValidSession(userId, cookieToken) {
-            Logger[F].debug(s"[RegistrationController] GET - Authenticated for userId $userId") *>
-              userService.getUser(userId).flatMap {
-                case Some(user) =>
-                  Logger[F].debug(s"[RegistrationController] GET - Found user ${userId.toString()}") *>
-                    Ok(user.asJson)
-                case None =>
-                  BadRequest(ErrorResponse("No_User_Data", "No user found").asJson)
-              }
-          }
-        case None =>
-          Logger[F].debug(s"[RegistrationController] GET - Unauthorised") *>
-            Unauthorized(`WWW-Authenticate`(Challenge("Bearer", "api")), "Missing Cookie")
-      }
+    // case req @ GET -> Root / "registration" / "account" / "data" / userId =>
+    //   (
+    //     Logger[F].debug(s"[RegistrationController][/user/data/$userId] GET - Attempting to retrieve user details") *>
+    //       Async[F].pure(extractCookieSessionToken(req))
+    //   ).flatMap {
+    //     case Some(cookieToken) =>
+    //       withValidSession(userId, cookieToken) {
+    //         Logger[F].debug(s"[RegistrationController] GET - Authenticated for userId $userId") *>
+    //           registrationService.getUser(userId).flatMap {
+    //             case Some(user) =>
+    //               Logger[F].debug(s"[RegistrationController] GET - Found user ${userId.toString()}") *>
+    //                 Ok(user.asJson)
+    //             case None =>
+    //               BadRequest(ErrorResponse("No_User_Data", "No user found").asJson)
+    //           }
+    //       }
+    //     case None =>
+    //       Logger[F].debug(s"[RegistrationController] GET - Unauthorised") *>
+    //         Unauthorized(`WWW-Authenticate`(Challenge("Bearer", "api")), "Missing Cookie")
+    //   }
 
     case req @ POST -> Root / "registration" / "account" / "data" / "create" / userId =>
       extractCookieSessionToken(req) match {
         case Some(headerToken) =>
           withValidSession(userId, headerToken) {
-            Logger[F].debug(s"[RegistrationControllerImpl] POST - Creating user") *>
-              req.decode[CreateUserData] { request =>
-                userService.createUser(userId, request).flatMap {
+            Logger[F].debug(s"[RegistrationControllerImpl] POST - Registering user") *>
+              req.decode[RegistrationData] { request =>
+                registrationService.registerUser(userId, request).flatMap {
                   case Valid(response) =>
-                    Logger[F].debug(s"[RegistrationControllerImpl] POST - Successfully created a user") *>
-                      Created(CreatedResponse(response.toString, "user details created successfully").asJson)
+                    Logger[F].debug(s"[RegistrationControllerImpl] POST - Successfully registered a user") *>
+                      Created(CreatedResponse(response.toString, "user details successfully registered").asJson)
                   case Invalid(_) =>
                     InternalServerError(ErrorResponse(code = "Code", message = "An error occurred").asJson)
                 }
@@ -102,50 +102,51 @@ class RegistrationControllerImpl[F[_] : Async : Concurrent : Logger](
           Unauthorized(`WWW-Authenticate`(Challenge("Bearer", "api")), "Missing Cookie")
       }
 
-    case req @ PUT -> Root / "registration" / "account" / "data" / "update" / userId =>
-      extractCookieSessionToken(req) match {
-        case Some(headerToken) =>
-          withValidSession(userId, headerToken) {
-            Logger[F].debug(s"[UserDataControllerImpl] PUT - Updating user with ID: $userId") *>
-              req.decode[RegistrationData] { request =>
-                userService.registerUser(userId, request).flatMap {
-                  case Valid(response) =>
-                    Logger[F].debug(s"[UserDataControllerImpl] PUT - Successfully updated user for ID: $userId") *>
-                      Ok(UpdatedResponse(UpdateSuccess.toString, s"User $userId updated successfully").asJson)
-                  case Invalid(errors) =>
-                    Logger[F].debug(s"[UserDataControllerImpl] PUT - Validation failed for user update: ${errors.toList}") *>
-                      BadRequest(ErrorResponse(code = "VALIDATION_ERROR", message = errors.toList.mkString(", ")).asJson)
-                }
-              }
-          }
-        case None =>
-          Unauthorized(`WWW-Authenticate`(Challenge("Bearer", "api")), "Missing Cookie")
-      }
+    // case req @ PUT -> Root / "registration" / "account" / "data" / "update" / userId =>
+    //   extractCookieSessionToken(req) match {
+    //     case Some(headerToken) =>
+    //       withValidSession(userId, headerToken) {
+    //         Logger[F].debug(s"[UserDataControllerImpl] PUT - Updating user with ID: $userId") *>
+    //           req.decode[RegistrationData] { request =>
+    //             registrationService.registerUser(userId, request).flatMap {
+    //               case Valid(response) =>
+    //                 Logger[F].debug(s"[UserDataControllerImpl] PUT - Successfully updated user for ID: $userId") *>
+    //                   Ok(UpdatedResponse(UpdateSuccess.toString, s"User $userId updated successfully").asJson)
+    //               case Invalid(errors) =>
+    //                 Logger[F].debug(s"[UserDataControllerImpl] PUT - Validation failed for user update: ${errors.toList}") *>
+    //                   BadRequest(ErrorResponse(code = "VALIDATION_ERROR", message = errors.toList.mkString(", ")).asJson)
+    //             }
+    //           }
+    //       }
+    //     case None =>
+    //       Unauthorized(`WWW-Authenticate`(Challenge("Bearer", "api")), "Missing Cookie")
+    //   }
 
-    case req @ DELETE -> Root / "registration" / "account" / "data" / "delete" / userId =>
-      extractCookieSessionToken(req) match {
-        case Some(headerToken) =>
-          withValidSession(userId, headerToken) {
-            Logger[F].debug(s"[RegistrationControllerImpl] DELETE - Attempting to delete user") *>
-              userService.deleteUser(userId).flatMap {
-                case Valid(response) =>
-                  Logger[F].debug(s"[RegistrationControllerImpl] DELETE - Successfully deleted user for $userId") *>
-                    Ok(DeletedResponse(response.toString, "User deleted successfully").asJson)
-                case Invalid(error) =>
-                  val errorResponse = ErrorResponse("placeholder error", "some deleted user message")
-                  BadRequest(errorResponse.asJson)
-              }
-          }
-        case None =>
-          Unauthorized(`WWW-Authenticate`(Challenge("Bearer", "api")), "Missing cookie token")
-      }
+    // case req @ DELETE -> Root / "registration" / "account" / "data" / "delete" / userId =>
+    //   extractCookieSessionToken(req) match {
+    //     case Some(headerToken) =>
+    //       withValidSession(userId, headerToken) {
+    //         Logger[F].debug(s"[RegistrationControllerImpl] DELETE - Attempting to delete user") *>
+    //           registrationService.deleteUser(userId).flatMap {
+    //             case Valid(response) =>
+    //               Logger[F].debug(s"[RegistrationControllerImpl] DELETE - Successfully deleted user for $userId") *>
+    //                 Ok(DeletedResponse(response.toString, "User deleted successfully").asJson)
+    //             case Invalid(error) =>
+    //               val errorResponse = ErrorResponse("placeholder error", "some deleted user message")
+    //               BadRequest(errorResponse.asJson)
+    //           }
+    //       }
+    //     case None =>
+    //       Unauthorized(`WWW-Authenticate`(Challenge("Bearer", "api")), "Missing cookie token")
+    //   }
   }
 }
 
 object RegistrationController {
+
   def apply[F[_] : Async : Concurrent](
-    userService: UserDataServiceAlgebra[F],
+    registrationService: RegistrationServiceAlgebra[F],
     sessionCache: SessionCacheAlgebra[F]
   )(implicit logger: Logger[F]): RegistrationControllerAlgebra[F] =
-    new RegistrationControllerImpl[F](userService, sessionCache)
+    new RegistrationControllerImpl[F](registrationService, sessionCache)
 }

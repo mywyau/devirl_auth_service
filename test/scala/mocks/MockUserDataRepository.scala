@@ -19,7 +19,7 @@ case object MockUserDataRepository extends UserDataRepositoryAlgebra[IO] {
 
   override def updateUserData(userId: String, updateUserData: UpdateUserData): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = ???
 
-  override def registerUser(userId: String, userType: Registration): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = ???
+  override def registerUser(userId: String, userType: RegistrationData): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = ???
 
   override def deleteUser(userId: String): IO[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = ???
 

@@ -6,13 +6,13 @@ import io.circe.parser.*
 import io.circe.syntax.EncoderOps
 import models.Dev
 import models.ModelsBaseSpec
-import models.users.Registration
+import models.users.RegistrationData
 import weaver.SimpleIOSuite
 
 object UpdateUserTypeSpec extends SimpleIOSuite with ModelsBaseSpec {
 
   val testUpdateUserType =
-    Registration(
+    RegistrationData(
       username = "kaiba",
       firstName = "bob",
       lastName = "smith",
