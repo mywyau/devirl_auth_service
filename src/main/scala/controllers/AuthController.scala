@@ -4,21 +4,20 @@ import cats.data.Validated.Invalid
 import cats.data.Validated.Valid
 import cats.effect.kernel.Async
 import cats.implicits.*
-import infrastructure.cache.*
+import infrastructure.*
 import io.circe.syntax.*
 import io.circe.syntax.EncoderOps
 import models.responses.*
 import org.http4s.*
-import org.http4s.MediaType
 import org.http4s.circe.*
-import org.http4s.dsl.Http4sDsl
 import org.http4s.dsl.io.*
+import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.`Content-Type`
+import org.http4s.MediaType
 import org.typelevel.log4cats.Logger
+import scala.concurrent.duration.*
 import services.SessionService
 import services.SessionServiceAlgebra
-
-import scala.concurrent.duration.*
 
 trait AuthControllerAlgebra[F[_]] {
   def routes: HttpRoutes[F]

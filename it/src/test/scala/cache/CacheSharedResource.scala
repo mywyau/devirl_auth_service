@@ -17,7 +17,7 @@ import dev.profunktor.redis4cats.Redis
 import doobie.*
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
-import infrastructure.cache.*
+import infrastructure.*
 import io.circe.parser
 import io.circe.syntax.EncoderOps
 import io.circe.Json

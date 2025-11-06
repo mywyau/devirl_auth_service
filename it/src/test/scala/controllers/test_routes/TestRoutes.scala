@@ -13,7 +13,7 @@ import controllers.BaseController
 import dev.profunktor.redis4cats.RedisCommands
 import doobie.util.transactor.Transactor
 import fs2.kafka.*
-import infrastructure.cache.*
+import infrastructure.*
 import infrastructure.KafkaProducerProvider
 import java.net.URI
 import java.time.Duration
@@ -39,8 +39,7 @@ object TestRoutes extends BaseAppConfig {
     baseController.routes
   }
 
-  def createTestRouter(appConfig: AppConfig, transactor: Transactor[IO]): Resource[IO, HttpRoutes[IO]] = {
-
+  def createTestRouter(appConfig: AppConfig, transactor: Transactor[IO]): Resource[IO, HttpRoutes[IO]] =
     for {
       authRoutes <- authRoutes(appConfig, transactor)
       registrationRoutes <- registrationRoutes(appConfig, transactor)
@@ -51,5 +50,4 @@ object TestRoutes extends BaseAppConfig {
           registrationRoutes
       )
     )
-  }
 }

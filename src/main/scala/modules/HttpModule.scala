@@ -50,25 +50,27 @@ object HttpModule {
 
   private def allRoutes[F[_] : Async : Parallel : Logger](
     appConfig: AppConfig,
-    transactor: HikariTransactor[F]
+    transactor: HikariTransactor[F],
+    kafkaProducers: KafkaProducers[F]
   ): HttpRoutes[F] =
     Router(
       "/devirl-auth-service" -> (
         baseRoutes() <+>
           authRoutes(appConfig, transactor) <+>
-          registrationRoutes(appConfig, transactor)
+          registrationRoutes(appConfig, transactor, kafkaProducers.registrationEventProducer)
       )
     )
 
   def make[F[_] : Async : Parallel : Logger](
     appConfig: AppConfig,
-    transactor: HikariTransactor[F]
+    transactor: HikariTransactor[F],
+    kafkaProducers: KafkaProducers[F]
   ): Resource[F, HttpApp[F]] = {
 
     val redisHost = appConfig.redisConfig.host
     val redisPort = appConfig.redisConfig.port
 
-    val rawRoutes = allRoutes(appConfig, transactor)
+    val rawRoutes = allRoutes(appConfig, transactor, kafkaProducers)
 
     val withCors =
       if (appConfig.featureSwitches.useCors) corsPolicy(rawRoutes)

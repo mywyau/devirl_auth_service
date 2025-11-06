@@ -1,19 +1,18 @@
 package routes
 
-import cats.NonEmptyParallel
 import cats.effect.*
+import cats.NonEmptyParallel
 import configuration.AppConfig
 import controllers.*
 import doobie.hikari.HikariTransactor
-import infrastructure.cache.SessionCache
-import infrastructure.cache.SessionCacheImpl
-import org.http4s.HttpRoutes
+import infrastructure.*
+import java.net.URI
+import kafka.*
 import org.http4s.client.Client
+import org.http4s.HttpRoutes
 import org.typelevel.log4cats.Logger
 import repositories.*
 import services.*
-
-import java.net.URI
 
 object Routes {
 
@@ -39,12 +38,13 @@ object Routes {
 
   def registrationRoutes[F[_] : Async : NonEmptyParallel : Logger](
     appConfig: AppConfig,
-    transactor: HikariTransactor[F]
+    transactor: HikariTransactor[F],
+    registrationEventProducer: RegistrationEventProducerAlgebra[F]
   ): HttpRoutes[F] = {
 
     val sessionCache = SessionCache(appConfig)
     val userDataRepository = new UserDataRepositoryImpl(transactor)
-    val registrationService = RegistrationService(userDataRepository)
+    val registrationService = RegistrationService(userDataRepository, registrationEventProducer)
     val registrationController = RegistrationController(registrationService, sessionCache)
 
     registrationController.routes

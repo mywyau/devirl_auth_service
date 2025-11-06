@@ -1,6 +1,6 @@
 package services
 
-import infrastructure.cache.SessionCacheAlgebra
+import infrastructure.SessionCacheAlgebra
 import cats.data.Validated
 import cats.data.Validated.Invalid
 import cats.data.Validated.Valid

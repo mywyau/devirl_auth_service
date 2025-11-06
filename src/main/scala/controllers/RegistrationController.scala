@@ -6,8 +6,7 @@ import cats.effect.kernel.Async
 import cats.effect.Concurrent
 import cats.implicits.*
 import fs2.Stream
-import infrastructure.cache.*
-import infrastructure.cache.SessionCacheAlgebra
+import infrastructure.SessionCacheAlgebra
 import io.circe.syntax.EncoderOps
 import io.circe.Json
 import models.database.UpdateSuccess

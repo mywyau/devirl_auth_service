@@ -1,4 +1,4 @@
-package infrastructure.cache
+package infrastructure
 
 import cats.data.Validated
 import cats.data.Validated.Invalid

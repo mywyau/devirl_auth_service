@@ -11,7 +11,7 @@ import dev.profunktor.redis4cats.Redis
 import doobie.*
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
-import infrastructure.cache.*
+import infrastructure.*
 import infrastructure.cache.SessionCache
 import org.http4s.*
 import org.http4s.circe.*

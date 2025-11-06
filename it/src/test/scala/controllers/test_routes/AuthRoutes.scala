@@ -11,7 +11,7 @@ import controllers.AuthController
 import controllers.RegistrationController
 import dev.profunktor.redis4cats.RedisCommands
 import doobie.util.transactor.Transactor
-import infrastructure.cache.*
+import infrastructure.*
 import java.net.URI
 import java.time.Duration
 import java.time.Instant
