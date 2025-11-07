@@ -44,7 +44,8 @@ object Routes {
 
     val sessionCache = SessionCache(appConfig)
     val userDataRepository = new UserDataRepositoryImpl(transactor)
-    val registrationService = RegistrationService(userDataRepository, registrationEventProducer)
+    val outboxRepositoryImpl = new OutboxRepositoryImpl(transactor)
+    val registrationService = RegistrationService(userDataRepository, outboxRepositoryImpl, registrationEventProducer)
     val registrationController = RegistrationController(registrationService, sessionCache)
 
     registrationController.routes
