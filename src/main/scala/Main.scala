@@ -1,4 +1,3 @@
-import _root_.services.services.outbox.OutboxPublisherService
 import cats.effect.*
 import cats.implicits.*
 import cats.syntax.all.*
@@ -33,6 +32,7 @@ import routes.Routes.*
 import scala.concurrent.duration.*
 import scala.concurrent.duration.DurationInt
 import services.*
+import services.OutboxPublisherService
 
 object Main extends IOApp {
 
@@ -48,13 +48,7 @@ object Main extends IOApp {
         kafkaProducers <- KafkaModule.make[IO](config)
         httpClient <- HttpClientModule.make[IO]
         httpApp <- HttpModule.make(config, transactor, kafkaProducers)
-        publisher = new OutboxPublisherService[IO](
-          outboxRepo = outboxRepo,
-          kafkaProducer = kafkaProducers.registrationEventProducer,
-          topicName = "user.registered",
-          batchSize = 100,
-          pollInterval = 1.second
-        )
+        _ <- OutboxModule.make[IO](transactor, kafkaProducers.registrationEventProducer)
         host <- Resource.eval(IO.fromOption(Host.fromString(config.serverConfig.host))(new RuntimeException("Invalid host in configuration")))
         port <- Resource.eval(IO.fromOption(Port.fromInt(config.serverConfig.port))(new RuntimeException("Invalid port in configuration")))
         server <- EmberServerBuilder

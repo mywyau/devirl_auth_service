@@ -37,8 +37,6 @@ trait RegistrationServiceAlgebra[F[_]] {
 class RegistrationServiceImpl[F[_] : Concurrent : Monad : Logger](
   userRepo: UserDataRepositoryAlgebra[F],
   outboxRepo: OutboxRepositoryAlgebra[F]
-  // registrationEventProducer: RegistrationEventProducerAlgebra[F]
-  // xa: Transactor[F] // shared transactor for atomic commit
 ) extends RegistrationServiceAlgebra[F] {
 
   override def registerUser(userId: String, registrationData: RegistrationData): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = {
@@ -88,11 +86,9 @@ object RegistrationService {
   def apply[F[_] : Concurrent : Logger](
     userRepo: UserDataRepositoryAlgebra[F],
     outboxRepo: OutboxRepositoryAlgebra[F]
-    // registrationEventProducer: RegistrationEventProducerAlgebra[F]
   ): RegistrationServiceAlgebra[F] =
     new RegistrationServiceImpl[F](
       userRepo,
       outboxRepo
-      // registrationEventProducer
     )
 }
