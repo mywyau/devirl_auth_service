@@ -10,8 +10,9 @@ final case class OutboxEvent(
   aggregateType: String, // e.g., "User"
   aggregateId: String, // e.g., userId
   eventType: String, // e.g., "UserRegisteredEvent"
-  payload: String, // JSON
+  payload: io.circe.Json, // ✅ use proper JSON
   published: Boolean = false,
+  retryCount: Int = 0,
   createdAt: Instant = Instant.now()
 )
 
@@ -23,6 +24,6 @@ object OutboxEvent {
       aggregateType = aggregateType,
       aggregateId = aggregateId,
       eventType = eventType,
-      payload = payload.asJson.noSpaces
+      payload = payload.asJson
     )
 }

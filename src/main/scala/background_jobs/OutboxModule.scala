@@ -7,9 +7,11 @@ import doobie.hikari.HikariTransactor
 import kafka.RegistrationEventProducerAlgebra
 import org.typelevel.log4cats.Logger
 import repositories.OutboxRepositoryImpl
-import services.OutboxPublisherService
-
 import scala.concurrent.duration.*
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
+import services.OutboxPublisherService
 
 object OutboxModule {
 
@@ -34,4 +36,10 @@ object OutboxModule {
         publisher.stream.compile.drain.start
     )
   }
+
+  def parseInt(s: String): Either[String, Int] =
+    Either
+      .catchOnly[NumberFormatException](s.toInt)
+      .leftMap(_ => s"Unable to parse: $s")
+
 }

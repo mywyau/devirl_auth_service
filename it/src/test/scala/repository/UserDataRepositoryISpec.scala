@@ -21,6 +21,7 @@ import weaver.ResourceTag
 import java.time.LocalDateTime
 
 class UserDataRepositoryISpec(global: GlobalRead) extends IOSuite with RepositoryISpecBase {
+  
   type Res = UserDataRepositoryImpl[IO]
 
   private def initializeSchema(transactor: TransactorResource): Resource[IO, Unit] =
@@ -85,6 +86,7 @@ class UserDataRepositoryISpec(global: GlobalRead) extends IOSuite with Repositor
         "USER002",
         RegistrationData(
           username = "tifa2",
+          email = "some email",
           firstName = "Dylan",
           lastName = "Smith",
           userType = Dev

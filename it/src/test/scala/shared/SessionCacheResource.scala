@@ -1,6 +1,6 @@
 package shared
 
-import infrastructure.cache.SessionCacheAlgebra
+import infrastructure.SessionCacheAlgebra
 import cats.effect.IO
 
 final case class SessionCacheResource(sessionCache: SessionCacheAlgebra[IO])
