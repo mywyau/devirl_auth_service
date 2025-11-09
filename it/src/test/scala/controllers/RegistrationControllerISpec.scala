@@ -85,48 +85,12 @@ class RegistrationControllerISpec(global: GlobalRead) extends IOSuite with Contr
         .addCookie("auth_session", sessionToken)
         .withEntity(requestBody)
 
-    val expectedBody = CreatedResponse(code = UpdateSuccess.toString(), message = "user details created successfully")
+    val expectedBody = CreatedResponse(code = UpsertSuccess.toString(), message = "user details successfully registered")
 
     client.run(request).use { response =>
       response.as[CreatedResponse].map { body =>
         expect.all(
           response.status == Status.Created,
-          body == expectedBody
-        )
-      }
-    }
-  }
-
-  test(
-    "PUT - /devirl-auth-service/registration/account/data/update/USER008 - " +
-      "given a valid user_id should update the user type for given user - returning Updated response"
-  ) { (transactorResource, log) =>
-
-    val transactor = transactorResource._1.xa
-    val client = transactorResource._2.client
-
-    val sessionToken = "test-session-token"
-
-    val updateUserTypeRequest: RegistrationData =
-      RegistrationData(
-        username = "videl2",
-        email = "videl2@gmail.com",
-        firstName = "bob",
-        lastName = "smith",
-        userType = Client
-      )
-
-    val request =
-      Request[IO](PUT, uri"http://127.0.0.1:9999/devirl-auth-service/registration/account/data/update/USER008")
-        .addCookie("auth_session", sessionToken)
-        .withEntity(updateUserTypeRequest.asJson)
-
-    val expectedBody = UpdatedResponse(UpdateSuccess.toString, "User USER008 updated successfully")
-
-    client.run(request).use { response =>
-      response.as[UpdatedResponse].map { body =>
-        expect.all(
-          response.status == Status.Ok,
           body == expectedBody
         )
       }

@@ -30,7 +30,9 @@ import repositories.OutboxRepositoryAlgebra
 import repositories.UserDataRepositoryAlgebra
 
 trait RegistrationServiceAlgebra[F[_]] {
+
   def registerUser(userId: String, registrationData: RegistrationData): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
+
   def deleteUser(userId: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]]
 }
 
@@ -40,36 +42,43 @@ class RegistrationServiceImpl[F[_] : Concurrent : Monad : Logger](
 ) extends RegistrationServiceAlgebra[F] {
 
   override def registerUser(userId: String, registrationData: RegistrationData): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = {
-    val event = UserRegisteredEvent(
-      userId = userId,
-      username = registrationData.username,
-      email = registrationData.email,
-      userType = registrationData.userType,
-      createdAt = Instant.now()
-    )
 
-    val outboxRecord = OutboxEvent.from(
-      aggregateType = "User",
-      aggregateId = userId,
-      eventType = "UserRegisteredEvent",
-      payload = event
-    )
+    val event =
+      UserRegisteredEvent(
+        userId = userId,
+        username = registrationData.username,
+        email = registrationData.email,
+        userType = registrationData.userType,
+        createdAt = Instant.now()
+      )
+
+    val outboxRecord =
+      OutboxEvent.from(
+        aggregateType = "User",
+        aggregateId = userId,
+        eventType = "UserRegisteredEvent",
+        payload = event
+      )
 
     // Atomic transaction: write user + outbox record
     val transaction: F[Validated[NonEmptyList[DatabaseErrors], DatabaseSuccess]] =
       for {
         dbResult <- userRepo.registerUser(userId, registrationData)
         _ <- dbResult match {
-          case Valid(_) => outboxRepo.insert(outboxRecord).void
-          case Invalid(_) => ().pure[F]
+          case Valid(_) =>
+            Logger[F].info(s"[RegistrationService][registerUser] - User $userId registered. Outbox event inserted.") *>
+            outboxRepo.insert(outboxRecord).void
+          case Invalid(_) =>
+            Logger[F].info(s"[RegistrationService][registerUser] - Error Outbox event not inserted.") *>
+            ().pure[F]
         }
       } yield dbResult
 
     transaction.flatTap {
       case Valid(_) =>
-        Logger[F].info(s"[RegistrationService] User $userId registered. Outbox event saved.")
+        Logger[F].info(s"[RegistrationService][registerUser] - User $userId registered. Outbox event saved.")
       case Invalid(e) =>
-        Logger[F].warn(s"[RegistrationService] Failed registration for user $userId: ${e.toList.mkString(", ")}")
+        Logger[F].warn(s"[RegistrationService][registerUser] - Failed registration for user $userId: ${e.toList.mkString(", ")}")
     }
   }
 

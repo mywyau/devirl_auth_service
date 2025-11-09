@@ -21,7 +21,7 @@ flowchart TD
 
   %% ============ Kafka ============
   subgraph KafkaBus["Kafka"]
-    QC[quest.created.v1]
+    QC[user.registered.v1]
     EF[estimation.finalized.v1]
     QU[quest.updated.v1]
   end
@@ -82,3 +82,4 @@ flowchart TD
   EstimationFinalizer -->|queries expired| ReadDB
   EstimationFinalizer -->|finalize -> produce EF| KafkaBus
   EstimationFinalizer -->|calls| ServiceLogic
+```
