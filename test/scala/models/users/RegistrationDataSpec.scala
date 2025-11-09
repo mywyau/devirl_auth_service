@@ -9,11 +9,12 @@ import models.ModelsBaseSpec
 import models.users.RegistrationData
 import weaver.SimpleIOSuite
 
-object UpdateUserTypeSpec extends SimpleIOSuite with ModelsBaseSpec {
+object RegistrationDataSpec extends SimpleIOSuite with ModelsBaseSpec {
 
   val testUpdateUserType =
     RegistrationData(
       username = "kaiba",
+      email = "kaiba@gmail.com",
       firstName = "bob",
       lastName = "smith",
       userType = Dev
@@ -27,6 +28,7 @@ object UpdateUserTypeSpec extends SimpleIOSuite with ModelsBaseSpec {
       """
         |{
         |  "username": "kaiba",
+        |  "email": "kaiba@gmail.com",
         |  "firstName": "bob",
         |  "lastName": "smith",
         |  "userType": "Dev"

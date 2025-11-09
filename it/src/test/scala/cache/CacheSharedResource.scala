@@ -70,7 +70,7 @@ object CacheSharedResource extends GlobalResource with BaseAppConfig {
       appConfig <- appConfigResource
       ce <- executionContextResource
       client <- clientResource
-      sessionCache <- infrastructure.cache.SessionCache.make[IO](appConfig)
+      sessionCache <- infrastructure.SessionCache.make[IO](appConfig)
       _ <- global.putR(HttpClientResource(client))
       _ <- global.putR(SessionCacheResource(sessionCache))
     } yield ()

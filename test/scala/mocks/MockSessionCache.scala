@@ -1,16 +1,21 @@
 package mocks
 
-import cats.effect.{Ref, Sync}
-import cats.data.Validated.{Invalid, Valid}
+import cats.data.Validated.Invalid
+import cats.data.Validated.Valid
 import cats.data.ValidatedNel
+import cats.effect.Ref
+import cats.effect.Sync
 import cats.implicits._
+import infrastructure.SessionCacheAlgebra
 import models.auth.UserSession
-import models.cache.{CacheErrors, CacheUpdateFailure, CacheUpdateSuccess, CacheSuccess}
-import infrastructure.cache.SessionCacheAlgebra
+import models.cache.CacheErrors
+import models.cache.CacheSuccess
+import models.cache.CacheUpdateFailure
+import models.cache.CacheUpdateSuccess
 
-class MockSessionCache[F[_]: Sync] private (
+class MockSessionCache[F[_] : Sync] private (
   sessions: Ref[F, Map[String, UserSession]],
-  cookies:  Ref[F, Map[String, String]]
+  cookies: Ref[F, Map[String, String]]
 ) extends SessionCacheAlgebra[F] {
 
   // just look up the raw token
@@ -29,7 +34,7 @@ class MockSessionCache[F[_]: Sync] private (
   override def storeSession(userId: String, session: Option[UserSession]): F[ValidatedNel[CacheErrors, CacheSuccess]] =
     session match {
       case Some(sess) =>
-        sessions.update(_ + (userId -> sess)) *> 
+        sessions.update(_ + (userId -> sess)) *>
           Sync[F].pure(Valid(CacheUpdateSuccess))
       case None =>
         Sync[F].pure(Invalid(CacheUpdateFailure).toValidatedNel)
@@ -43,14 +48,14 @@ class MockSessionCache[F[_]: Sync] private (
   override def deleteSession(userId: String): F[Long] =
     for {
       sessGone <- sessions.modify { m =>
-                    val had = m.contains(userId)
-                    (m - userId, if (had) 1L else 0L)
-                  }
+        val had = m.contains(userId)
+        (m - userId, if (had) 1L else 0L)
+      }
       cookGone <- cookies.modify { m =>
-                    val had = m.contains(userId)
-                    (m - userId, if (had) 1L else 0L)
-                  }
-    } yield ((sessGone + cookGone) min 1)  // mimic Redis `DEL` on a single key
+        val had = m.contains(userId)
+        (m - userId, if (had) 1L else 0L)
+      }
+    } yield ((sessGone + cookGone) min 1) // mimic Redis `DEL` on a single key
 
   // find a UserSession by token
   override def lookupSession(token: String): F[Option[UserSession]] =
@@ -60,10 +65,11 @@ class MockSessionCache[F[_]: Sync] private (
 }
 
 object MockSessionCache {
+
   /** Build a brand-new in-memory cache for F (e.g. IO) */
-  def make[F[_]: Sync]: F[SessionCacheAlgebra[F]] =
+  def make[F[_] : Sync]: F[SessionCacheAlgebra[F]] =
     for {
       sessionsRef <- Ref.of[F, Map[String, UserSession]](Map.empty)
-      cookiesRef  <- Ref.of[F, Map[String, String]](Map.empty)
+      cookiesRef <- Ref.of[F, Map[String, String]](Map.empty)
     } yield new MockSessionCache[F](sessionsRef, cookiesRef)
 }

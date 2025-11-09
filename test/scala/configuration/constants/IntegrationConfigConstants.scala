@@ -9,7 +9,7 @@ object IntegrationConfigConstants {
     FeatureSwitches(
       useDockerHost = false,
       localTesting = false,
-      useCors = false,
+      useCors = false
     )
 
   val itDevIrlFrontendConfig =
@@ -43,12 +43,25 @@ object IntegrationConfigConstants {
       port = 6380
     )
 
+  val kafkaConfig =
+    KafkaConfig(
+      bootstrapServers = "localhost:9092",
+      clientId = "devirl-auth-service",
+      acks = "all",
+      lingerMs = 5,
+      retries = 10,
+      topic = KafkaTopicConfig(
+        "user.registered.v1"
+      )
+    )
+
   val integrationAppConfigConstant =
     AppConfig(
       featureSwitches = featureSwitches,
       devIrlFrontendConfig = itDevIrlFrontendConfig,
       redisConfig = itRedisConfig,
+      kafkaConfig = kafkaConfig,
       postgresqlConfig = itPostgresqlConfig,
-      serverConfig = itSpecServerConfig,
+      serverConfig = itSpecServerConfig
     )
 }

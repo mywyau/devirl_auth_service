@@ -9,7 +9,7 @@ object ProdAppConfigConstants {
     FeatureSwitches(
       useDockerHost = false,
       localTesting = false,
-      useCors = false,
+      useCors = false
     )
 
   val devIrlFrontendConfig =
@@ -43,13 +43,25 @@ object ProdAppConfigConstants {
       port = 6379
     )
 
+  val kafkaConfig =
+    KafkaConfig(
+      bootstrapServers = "localhost:9092",
+      clientId = "devirl-auth-service",
+      acks = "all",
+      lingerMs = 5,
+      retries = 10,
+      topic = KafkaTopicConfig(
+        "user.registered.v1"
+      )
+    )
 
   val prodAppConfigConstant =
     AppConfig(
       featureSwitches = featureSwitches,
       devIrlFrontendConfig = devIrlFrontendConfig,
       redisConfig = redisConfig,
+      kafkaConfig = kafkaConfig,
       postgresqlConfig = containerPostgreSqlConfig,
-      serverConfig = appServerConfig,
+      serverConfig = appServerConfig
     )
 }

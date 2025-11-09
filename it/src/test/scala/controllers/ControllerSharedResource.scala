@@ -12,7 +12,6 @@ import doobie.*
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
 import infrastructure.*
-import infrastructure.cache.SessionCache
 import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.client.Client

@@ -1,23 +1,24 @@
 package repositories
 
+import cats.Monad
 import cats.data.ValidatedNel
 import cats.effect.Concurrent
 import cats.syntax.all.*
-import cats.Monad
 import doobie.*
 import doobie.implicits.*
 import doobie.implicits.javasql.*
 import doobie.util.meta.Meta
 import doobie.util.transactor.Transactor
 import fs2.Stream
-import java.sql.Timestamp
-import java.time.LocalDateTime
+import models.UserType
 import models.database.*
 import models.users.*
-import models.UserType
 import org.typelevel.log4cats.Logger
 import utils.DatabaseErrorHandler
 import utils.DatabaseErrorHandler.*
+
+import java.sql.Timestamp
+import java.time.LocalDateTime
 
 trait UserDataRepositoryAlgebra[F[_]] {
 
@@ -147,22 +148,25 @@ class UserDataRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: Tra
           UnexpectedResultError.invalidNel
       }
 
-  override def registerUser(userId: String, registrationData: RegistrationData): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
+  override def registerUser(
+    userId: String,
+    registrationData: RegistrationData
+  ): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
     sql"""
-      UPDATE users
+      INSERT INTO users (user_id, username, email, first_name, last_name, user_type)
+      VALUES ($userId, ${registrationData.username}, ${registrationData.email}, ${registrationData.firstName}, ${registrationData.lastName}, ${registrationData.userType})
+      ON CONFLICT (user_id) DO UPDATE
       SET
-          username = ${registrationData.username},
-          first_name = ${registrationData.firstName},
-          last_name = ${registrationData.lastName},
-          user_type = ${registrationData.userType}
-      WHERE user_id = $userId
+        username = EXCLUDED.username,
+        email = EXCLUDED.email,
+        first_name = EXCLUDED.first_name,
+        last_name = EXCLUDED.last_name,
+        user_type = EXCLUDED.user_type
     """.update.run
       .transact(transactor)
       .attempt
       .map {
-        case Right(1) => UpdateSuccess.validNel
-        case Right(0) => NotFoundError.invalidNel
-        case Right(_) => UnexpectedResultError.invalidNel
+        case Right(_) => UpsertSuccess.validNel
         case Left(ex) => DatabaseErrorHandler.fromThrowable(ex).invalidNel
       }
 

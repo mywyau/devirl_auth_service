@@ -8,7 +8,7 @@ import cats.effect.*
 import cats.implicits.*
 import dev.profunktor.redis4cats.RedisCommands
 import doobie.util.transactor.Transactor
-import infrastructure.cache.SessionCacheAlgebra
+import infrastructure.SessionCacheAlgebra
 import models.auth.UserSession
 import models.cache.*
 import org.http4s.server.Router

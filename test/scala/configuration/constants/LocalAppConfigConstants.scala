@@ -1,7 +1,7 @@
 package configuration.constants
 
-import configuration.AppConfig
 import configuration.models.*
+import configuration.AppConfig
 
 object LocalAppConfigConstants {
 
@@ -43,11 +43,24 @@ object LocalAppConfigConstants {
       port = 6379
     )
 
+  val kafkaConfig =
+    KafkaConfig(
+      bootstrapServers = "localhost:9092",
+      clientId = "devirl-auth-service",
+      acks = "all",
+      lingerMs = 5,
+      retries = 10,
+      topic = KafkaTopicConfig(
+        "user.registered.v1"
+      )
+    )
+
   val localAppConfigConstant =
     AppConfig(
       featureSwitches = featureSwitches,
       devIrlFrontendConfig = devIrlFrontendConfig,
       redisConfig = redisConfig,
+      kafkaConfig = kafkaConfig,
       postgresqlConfig = containerPostgreSqlConfig,
       serverConfig = appServerConfig
     )
