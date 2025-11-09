@@ -57,7 +57,8 @@ class UserDataRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: Tra
          WHERE user_id = $userId
        """.query[UserData].option.transact(transactor)
 
-    findQuery
+    Logger[F].info(s"[RegistrationService][registerUser] - User $userId registered. Outbox event inserted.") *>
+      findQuery
   }
 
   override def findUserNoUserName(userId: String): F[Option[RegistrationUserDataPartial]] = {
@@ -73,7 +74,8 @@ class UserDataRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: Tra
          WHERE user_id = $userId
        """.query[RegistrationUserDataPartial].option.transact(transactor)
 
-    findQuery
+    Logger[F].info(s"[RegistrationService][registerUser] - User $userId registered. Outbox event inserted.") *>
+      findQuery
   }
 
   override def createUser(
@@ -151,8 +153,10 @@ class UserDataRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: Tra
   override def registerUser(
     userId: String,
     registrationData: RegistrationData
-  ): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] =
-    sql"""
+  ): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = {
+
+    val query =
+      sql"""
       INSERT INTO users (user_id, username, email, first_name, last_name, user_type)
       VALUES ($userId, ${registrationData.username}, ${registrationData.email}, ${registrationData.firstName}, ${registrationData.lastName}, ${registrationData.userType})
       ON CONFLICT (user_id) DO UPDATE
@@ -162,13 +166,22 @@ class UserDataRepositoryImpl[F[_] : Concurrent : Monad : Logger](transactor: Tra
         first_name = EXCLUDED.first_name,
         last_name = EXCLUDED.last_name,
         user_type = EXCLUDED.user_type
-    """.update.run
-      .transact(transactor)
-      .attempt
-      .map {
-        case Right(_) => UpsertSuccess.validNel
-        case Left(ex) => DatabaseErrorHandler.fromThrowable(ex).invalidNel
+    """
+
+    for {
+      _ <- Logger[F].info(s"[RegistrationService][registerUser] - Attempting upsert for user: $userId")
+      result <- query.update.run.transact(transactor).attempt
+      validated <- result match {
+        case Right(_) =>
+          Logger[F].info(s"[RegistrationService][registerUser] - Successfully upserted user $userId") *>
+            UpsertSuccess.validNel.pure[F]
+
+        case Left(ex) =>
+          Logger[F].error(ex)(s"[RegistrationService][registerUser] - Failed to upsert user $userId: ${ex.getMessage}") *>
+            DatabaseErrorHandler.fromThrowable(ex).invalidNel.pure[F]
       }
+    } yield validated
+  }
 
   override def deleteUser(user_id: String): F[ValidatedNel[DatabaseErrors, DatabaseSuccess]] = {
     val deleteQuery: Update0 =
