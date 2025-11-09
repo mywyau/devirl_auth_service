@@ -9,6 +9,7 @@ import io.circe.syntax.*
 import java.time.Instant
 import kafka.events.*
 import kafka.events.UserRegisteredEvent
+import kafka.fragments.OutboxSqlFragments.*
 import models.outbox.OutboxEvent
 import models.Dev
 import org.typelevel.log4cats.slf4j.Slf4jLogger
@@ -25,29 +26,12 @@ class OutboxPublisherISpec(global: GlobalRead) extends IOSuite {
 
   implicit val logger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
 
-  private def resetOutboxTable(xa: doobie.Transactor[IO]): IO[Unit] =
-    sql"""TRUNCATE TABLE outbox_events RESTART IDENTITY""".update.run.transact(xa).void
-
-  private def createOutboxTable(xa: doobie.Transactor[IO]): IO[Unit] =
-    sql"""
-    CREATE TABLE IF NOT EXISTS outbox_events (
-      event_id TEXT PRIMARY KEY,
-      aggregate_type TEXT NOT NULL,
-      aggregate_id TEXT NOT NULL,
-      event_type TEXT NOT NULL,
-      payload JSONB NOT NULL,
-      published BOOLEAN NOT NULL DEFAULT FALSE,
-      retry_count INT NOT NULL DEFAULT 0,
-      created_at TIMESTAMP NOT NULL DEFAULT NOW()
-    )
-  """.update.run.transact(xa).void
-
   def sharedResource: Resource[IO, Res] =
     for {
       transactor <- global.getOrFailR[TransactorResource]()
       _ <- Resource.eval(
-        resetOutboxTable(transactor.xa).void *>
-          createOutboxTable(transactor.xa).void
+        resetOutboxTable.update.run.transact(transactor.xa).void *>
+          createOutboxTable.update.run.transact(transactor.xa).void
       )
       producer <- global.getOrFailR[KafkaProducerResource]()
       outboxRepo = new OutboxRepositoryImpl[IO](transactor.xa)
@@ -65,7 +49,7 @@ class OutboxPublisherISpec(global: GlobalRead) extends IOSuite {
       s"docker exec kafka-container-redpanda-1 rpk topic delete $topic --brokers localhost:9092".!
     }.void
 
-  test("OutboxPublisher publishes event and marks it as published") { (sharedResource, log) =>
+  test("OutboxPublisher - publishes UNPUBLISHED events from Outbox table and marks them as published") { (sharedResource, log) =>
 
     val kafkaRes = sharedResource._1
     val outboxRepo = sharedResource._2
@@ -101,7 +85,7 @@ class OutboxPublisherISpec(global: GlobalRead) extends IOSuite {
       )
 
     // Helper: read 1 message from a topic (with a fresh consumer group)
-    def readTopicMessages(t: String): IO[List[String]] = {
+    def readTopicMessages(topicName: String): IO[List[String]] = {
       val consumerSettings =
         ConsumerSettings[IO, String, String]
           .withBootstrapServers("localhost:9092") // or use your resource value
@@ -110,7 +94,7 @@ class OutboxPublisherISpec(global: GlobalRead) extends IOSuite {
 
       KafkaConsumer
         .stream(consumerSettings)
-        .subscribeTo(t)
+        .subscribeTo(topicName)
         .records
         .map(_.record.value)
         .take(1) // read at least one published record
@@ -128,10 +112,10 @@ class OutboxPublisherISpec(global: GlobalRead) extends IOSuite {
       decodedEvents = publishedEvents.flatMap { jsonStr =>
         io.circe.parser.decode[UserRegisteredEvent](jsonStr).toOption
       }
-      _ <- logger.info(s"***** $decodedEvents")
+      _ <- logger.info(s"[OutboxPublisherISpec][test-1] $decodedEvents")
       dbState <- outboxRepo.fetchUnpublished(10) // step 4: check DB state
       _ <- fiber.cancel
-      // _ <- deleteTopic(topic)
+      _ <- deleteTopic(topic)
     } yield expect.all(
       publishedEvents.nonEmpty,
       decodedEvents == List(event),
