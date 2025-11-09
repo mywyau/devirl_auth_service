@@ -95,7 +95,7 @@ class UserDataRepositoryISpec(global: GlobalRead) extends IOSuite with Repositor
       updatedUser <- userRepo.findUser("USER002")
     } yield expect.all(
       originalData == Some(orignalUser),
-      result == Valid(UpdateSuccess),
+      result == Valid(UpsertSuccess),
       updatedUser == Some(expectedResult)
     )
   }

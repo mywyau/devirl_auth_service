@@ -15,6 +15,7 @@ import org.typelevel.log4cats.slf4j.Slf4jLogger
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import repositories.*
 import scala.concurrent.duration.*
+import services.OutboxPublisherService
 import services.OutboxPublisherServiceImpl
 import shared.*
 import weaver.*
@@ -23,6 +24,9 @@ class OutboxPublisherISpec(global: GlobalRead) extends IOSuite {
   type Res = (KafkaProducerResource, OutboxRepositoryImpl[IO])
 
   implicit val logger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
+
+  private def resetOutboxTable(xa: doobie.Transactor[IO]): IO[Unit] =
+    sql"""TRUNCATE TABLE outbox_events RESTART IDENTITY""".update.run.transact(xa).void
 
   private def createOutboxTable(xa: doobie.Transactor[IO]): IO[Unit] =
     sql"""
@@ -41,7 +45,10 @@ class OutboxPublisherISpec(global: GlobalRead) extends IOSuite {
   def sharedResource: Resource[IO, Res] =
     for {
       transactor <- global.getOrFailR[TransactorResource]()
-      _ <- Resource.eval(createOutboxTable(transactor.xa)) 
+      _ <- Resource.eval(
+        resetOutboxTable(transactor.xa).void *>
+          createOutboxTable(transactor.xa).void
+      )
       producer <- global.getOrFailR[KafkaProducerResource]()
       outboxRepo = new OutboxRepositoryImpl[IO](transactor.xa)
     } yield (producer, outboxRepo)
@@ -71,7 +78,7 @@ class OutboxPublisherISpec(global: GlobalRead) extends IOSuite {
         username = "Alice",
         email = "alice@example.com",
         userType = Dev,
-        createdAt = Instant.now()
+        createdAt = Instant.parse("2025-11-09T20:00:00Z")
       )
 
     val outbox =
@@ -83,13 +90,13 @@ class OutboxPublisherISpec(global: GlobalRead) extends IOSuite {
           payload = event
         )
 
-    val regProducer =
+    val registrationProducer =
       new RegistrationEventProducerImpl[IO](topic, kafkaRes.producer)
 
-    val publisher =
-      new OutboxPublisherServiceImpl[IO](
+    val outBoxPublisher =
+      OutboxPublisherService[IO](
         outboxRepo = outboxRepo,
-        registrationEventProducer = regProducer,
+        registrationEventProducer = registrationProducer,
         topicName = topic
       )
 
@@ -113,13 +120,22 @@ class OutboxPublisherISpec(global: GlobalRead) extends IOSuite {
     }
 
     for {
+      _ <- resetKafkaTopic(topic)
       _ <- outboxRepo.insert(outbox) // step 1: simulate a pending outbox record
-      fiber <- publisher.stream.compile.drain.start // step 2: start the publisher
+      fiber <- outBoxPublisher.stream.compile.drain.start // step 2: start the publisher
       _ <- IO.sleep(2.seconds) // give it time to pick up the event
       publishedEvents <- readTopicMessages(topic) // step 3: consume from Kafka
+      decodedEvents = publishedEvents.flatMap { jsonStr =>
+        io.circe.parser.decode[UserRegisteredEvent](jsonStr).toOption
+      }
+      _ <- logger.info(s"***** $decodedEvents")
       dbState <- outboxRepo.fetchUnpublished(10) // step 4: check DB state
       _ <- fiber.cancel
-    } yield expect(publishedEvents.nonEmpty) and
-      expect(dbState.isEmpty)
+      // _ <- deleteTopic(topic)
+    } yield expect.all(
+      publishedEvents.nonEmpty,
+      decodedEvents == List(event),
+      dbState.isEmpty
+    )
   }
 }
